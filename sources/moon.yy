@@ -11,6 +11,7 @@
 
 	// Flex functions
 	extern int yylex();
+	extern void yyerror(const char *error);
 %}
 
 /* Better errors!! */
