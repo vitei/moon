@@ -1,0 +1,9 @@
+# Intermediate files
+*.o
+
+# IDE files
+*.sublime-*
+
+# OS problem files
+.DS_Store
+.tags
