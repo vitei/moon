@@ -26,8 +26,10 @@ lexer.cpp: moon.ll parser.h
 %.o: %.cpp
 	$(CXX) -c $(CPP_FLAGS) $(CXX_FLAGS) -o $@ $<
 
-compiler: error.o lexer.o main.o parser.o
+../bin/compiler: error.o lexer.o main.o parser.o
 	$(CXX) $(CPP_FLAGS) $(CXX_FLAGS) -o $@ $^
 
+compiler: ../bin/compiler
+
 clean:
-	rm -rf *.o compiler
+	rm -rf *.o ../bin/compiler
