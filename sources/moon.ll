@@ -7,11 +7,12 @@
  */
 
 %{
+	#include "error.h"
 	#include "parser.h"
-	#include <iostream> // DEBUG
 %}
 
 %option noyywrap
+%option yylineno
 
 %x COMMENT
 %x STRING
@@ -43,3 +44,8 @@
 .							return yytext[0];
 
 %%
+
+void yyerror(const char *error)
+{
+	emitError(yylineno, error);
+}

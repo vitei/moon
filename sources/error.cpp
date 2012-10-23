@@ -2,7 +2,7 @@
 #include "error.h"
 
 
-void yyerror(const char *error)
+void emitError(unsigned int lineNum, const char *error)
 {
-	std::cerr << "Error: " << error << std::endl;
+	std::cerr << "Error on line #" << lineNum << ": " << error << std::endl;
 }
