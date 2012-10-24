@@ -15,7 +15,6 @@
 %option yylineno
 
 /* States */
-%x STRING
 %x LINE_COMMENT
 %x BLOCK_COMMENT
 
@@ -45,7 +44,8 @@
 "ref"                           return TOKEN_REF;
 
 	/* Identifiers */
-[a-zA-Z_][a-zA-Z0-9_]*          return TOKEN_IDENTIFIER;
+[A-Z][a-zA-Z0-9_]*              return TOKEN_ID_CLASS;
+[a-z_][a-zA-Z0-9_]*             return TOKEN_ID_GENERIC;
 
 	/* Line Comments */
 "//"                            BEGIN LINE_COMMENT;                                                 /* One line comments... */

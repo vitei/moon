@@ -40,7 +40,8 @@
 %token TOKEN_REF
 
 /* Identifiers */
-%token TOKEN_IDENTIFIER
+%token TOKEN_ID_CLASS
+%token TOKEN_ID_GENERIC
 
 /* Start symbol */
 %start program
@@ -66,7 +67,7 @@ program_uses        :   /* Empty */
                     |   use_statement
                     ;
 
-use_statement       :   TOKEN_USE TOKEN_IDENTIFIER TOKEN_EOS
+use_statement       :   TOKEN_USE TOKEN_ID_CLASS TOKEN_EOS
                     ;
 
 program_vrs         :   /* Empty */                                                                 /* VRs = variables + references */
@@ -101,7 +102,7 @@ program_functions   :   /* Empty */
 
 
 
-function_prototype  :   TOKEN_IDENTIFIER TOKEN_PARENTHESIS_OPEN TOKEN_PARENTHESIS_CLOSE
+function_prototype  :   TOKEN_ID_GENERIC TOKEN_PARENTHESIS_OPEN TOKEN_PARENTHESIS_CLOSE
                     ;
 
 
@@ -122,16 +123,16 @@ statement_block     :   TOKEN_BRACE_OPEN TOKEN_BRACE_CLOSE                      
                     |   TOKEN_BRACE_OPEN statements TOKEN_BRACE_CLOSE
                     ;
 
-variable_statement  :   TOKEN_VAR TOKEN_IDENTIFIER TOKEN_EOS
+variable_statement  :   TOKEN_VAR TOKEN_ID_GENERIC TOKEN_EOS
                     ;
 
-reference_statement :   TOKEN_REF TOKEN_IDENTIFIER TOKEN_EOS
+reference_statement :   TOKEN_REF TOKEN_ID_GENERIC TOKEN_EOS
                     ;
 
 expression_statement:   expression TOKEN_EOS
                     ;
 
-expression          :   TOKEN_IDENTIFIER
+expression          :   TOKEN_ID_GENERIC
                     ;
 
 %%
