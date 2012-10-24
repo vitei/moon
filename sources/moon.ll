@@ -24,6 +24,10 @@
 
 [ \t\n]                         ;                                                                   /* Skip whitespace... */
 ";"                             return TOKEN_EOS;
+"("                             return TOKEN_PARENTHESIS_OPEN;
+")"                             return TOKEN_PARENTHESIS_CLOSE;
+"{"                             return TOKEN_BRACE_OPEN;
+"}"                             return TOKEN_BRACE_CLOSE;
 
 	/* Basic Types */
 [0-9]+                          return TOKEN_INTEGER;
@@ -35,7 +39,9 @@
 
 	/* Keywords */
 "global"                        return TOKEN_GLOBAL;
+"shared"                        return TOKEN_SHARED;
 "var"                           return TOKEN_VAR;
+"ref"                           return TOKEN_REF;
 
 	/* Identifiers */
 [a-zA-Z_][a-zA-Z0-9_]*          return TOKEN_IDENTIFIER;
