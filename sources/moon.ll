@@ -50,13 +50,13 @@
 	/* Line Comments */
 "//"                            BEGIN LINE_COMMENT;                                                 /* One line comments... */
 <LINE_COMMENT>.                 ;
-<LINE_COMMENT>"\n"              BEGIN 0;
-<LINE_COMMENT><<EOF>>           BEGIN 0;
+<LINE_COMMENT>"\n"              BEGIN INITIAL;
+<LINE_COMMENT><<EOF>>           BEGIN INITIAL;
 
 	/* Block Comments */
 "/*"                            BEGIN BLOCK_COMMENT;                                                /* Block comments... */
 <BLOCK_COMMENT>.                ;
-<BLOCK_COMMENT>"*/"             BEGIN 0;
+<BLOCK_COMMENT>"*/"             BEGIN INITIAL;
 
 	/* Anything else...*/
 .                               return yytext[0];
