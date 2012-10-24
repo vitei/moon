@@ -38,6 +38,8 @@
 <STRING>"\""                    BEGIN 0; return TOKEN_STRING;
 
 	/* Keywords */
+"include"                       return TOKEN_INCLUDE;
+"use"                           return TOKEN_USE;
 "global"                        return TOKEN_GLOBAL;
 "shared"                        return TOKEN_SHARED;
 "var"                           return TOKEN_VAR;

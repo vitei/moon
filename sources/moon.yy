@@ -32,6 +32,8 @@
 %token TOKEN_STRING
 
 /* Keywords */
+%token TOKEN_INCLUDE
+%token TOKEN_USE
 %token TOKEN_GLOBAL
 %token TOKEN_SHARED
 %token TOKEN_VAR
@@ -45,14 +47,26 @@
 
 %%
 
-program             :   program_includes program_vrs program_functions
+program             :   program_includes program_uses program_vrs program_functions
                         {
                             //yyerror("Test");
                         }
                     ;
 
 program_includes    :   /* Empty */
-                    |   
+                    |   program_includes include_statement
+                    |   include_statement
+                    ;
+
+include_statement   :   TOKEN_INCLUDE TOKEN_STRING TOKEN_EOS
+                    ;
+
+program_uses        :   /* Empty */
+                    |   program_uses use_statement
+                    |   use_statement
+                    ;
+
+use_statement       :   TOKEN_USE TOKEN_IDENTIFIER TOKEN_EOS
                     ;
 
 program_vrs         :   /* Empty */                                                                 /* VRs = variables + references */
