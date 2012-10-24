@@ -45,7 +45,7 @@
 "ref"                           return TOKEN_REF;
 
 	/* Identifiers */
-[A-Z][a-zA-Z0-9_]*              return TOKEN_ID_CLASS;
+[A-Z][a-zA-Z0-9]*               return TOKEN_ID_CLASS;
 [a-z_][a-zA-Z0-9_]*             return TOKEN_ID_GENERIC;
 
 	/* Line Comments */
