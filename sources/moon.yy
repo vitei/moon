@@ -139,7 +139,14 @@ expression          :   TOKEN_ID_GENERIC
                     |   numeric_expression
                     ;
 
-numeric_expression  :   TOKEN_INTEGER
+numeric_expression  :   integer_expression
+                    |   float_expression
+                    ;
+
+integer_expression  :   TOKEN_INTEGER
+                    ;
+
+float_expression    :   TOKEN_FLOAT
                     ;
 
 %%
