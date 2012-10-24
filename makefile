@@ -1,6 +1,6 @@
 
-.PHONY: compiler all clean
-all: compiler
+.PHONY: compiler tests all clean
+all: compiler tests
 
 compiler:
 	@$(MAKE) -C sources
