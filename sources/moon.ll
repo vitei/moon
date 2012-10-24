@@ -14,7 +14,8 @@
 %option noyywrap
 %option yylineno
 
-%x COMMENT
+%x LINE_COMMENT
+%x BLOCK_COMMENT
 %x STRING
 
 %%
@@ -31,14 +32,21 @@
 "\""						BEGIN STRING;
 <STRING>"\""				BEGIN 0; return TOKEN_STRING;
 
+	/* Keywords */
+"global"					return TOKEN_GLOBAL;
+"var"						return TOKEN_VAR;
+
 	/* Identifiers */
 [a-zA-Z_][a-zA-Z0-9_]* 		return TOKEN_IDENTIFIER;
 
 	/* Comments */
-"//".*\n					;													/* One line comments... */
-"/*"						BEGIN COMMENT;										/* Block comments... */
-<COMMENT>.					;
-<COMMENT>"*/"				BEGIN 0;
+"//"						BEGIN LINE_COMMENT;									/* One line comments... */
+<LINE_COMMENT>.				;
+<LINE_COMMENT>"\n"			BEGIN 0;
+<LINE_COMMENT><<EOF>>		BEGIN 0;
+"/*"						BEGIN BLOCK_COMMENT;								/* Block comments... */
+<BLOCK_COMMENT>.			;
+<BLOCK_COMMENT>"*/"			BEGIN 0;
 
 	/* Anything else...*/
 .							return yytext[0];
