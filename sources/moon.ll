@@ -34,8 +34,7 @@
 [0-9]*\.[0-9]+                  return TOKEN_FLOAT;
 
 	/* Strings */
-"\""                            BEGIN STRING;
-<STRING>"\""                    BEGIN 0; return TOKEN_STRING;
+\"[^\n"]+\"                     return TOKEN_STRING;
 
 	/* Keywords */
 "include"                       return TOKEN_INCLUDE;
