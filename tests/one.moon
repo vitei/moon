@@ -1,5 +1,8 @@
-global var position_x;
-global var position_y;
+include "vector.inc";
+use Base;
+
+global var positionX;
+global var positionY;
 
 //var x = 30;
 //var y = 20;
@@ -8,9 +11,9 @@ global var position_y;
 
 main()
 {
-	var local_x;
+	var localX;
 
-	//position_x = 0;
+	//positionX = 0;
 
 //	for(test = 0; test < 10; test++)
 //	{
