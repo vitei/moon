@@ -14,9 +14,10 @@
 %option noyywrap
 %option yylineno
 
+/* States */
+%x STRING
 %x LINE_COMMENT
 %x BLOCK_COMMENT
-%x STRING
 
 %%
 	/* Language structure */
@@ -39,11 +40,13 @@
 	/* Identifiers */
 [a-zA-Z_][a-zA-Z0-9_]*          return TOKEN_IDENTIFIER;
 
-	/* Comments */
+	/* Line Comments */
 "//"                            BEGIN LINE_COMMENT;                                                 /* One line comments... */
 <LINE_COMMENT>.                 ;
 <LINE_COMMENT>"\n"              BEGIN 0;
 <LINE_COMMENT><<EOF>>           BEGIN 0;
+
+	/* Block Comments */
 "/*"                            BEGIN BLOCK_COMMENT;                                                /* Block comments... */
 <BLOCK_COMMENT>.                ;
 <BLOCK_COMMENT>"*/"             BEGIN 0;
