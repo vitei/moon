@@ -7,11 +7,11 @@
  */
 
 %{
-	#include "error.h"
+    #include "error.h"
 
-	// Flex functions
-	extern int yylex();
-	extern void yyerror(const char *error);
+    // Flex functions
+    extern int yylex();
+    extern void yyerror(const char *error);
 %}
 
 /* Better errors!! */
@@ -28,7 +28,8 @@
 %token TOKEN_STRING
 
 /* Keywords */
-
+%token TOKEN_GLOBAL
+%token TOKEN_VAR
 
 /* Identifiers */
 %token TOKEN_IDENTIFIER
@@ -38,42 +39,42 @@
 
 %%
 
-program				:	program_includes	program_variables	program_functions
-						{
-							//yyerror("Test");
-						}
-					;
+program             :   program_includes program_variables program_functions
+                        {
+                            //yyerror("Test");
+                        }
+                    ;
 
-program_includes	:	/*  */
-					|	
-					;
+program_includes    :   /*  */
+                    |   
+                    ;
 
-program_variables	:	/*  */
-					|	"global" variable_definition
-					|	variable_definition
-					;
+program_variables   :   /*  */
+                    |   TOKEN_GLOBAL variable_definition
+                    |   variable_definition
+                    ;
 
-program_functions	:	/*  */
-					|	
-					;
-
-
-
-
-
-variable_definition	:
-					;	
+program_functions   :   /*  */
+                    |   
+                    ;
 
 
 
 
 
+variable_definition :   TOKEN_VAR TOKEN_IDENTIFIER
+                    ;
 
-statements			:	statement
-					|	statements	statement
-					;
 
-statement			:	TOKEN_IDENTIFIER
-					;
+
+
+
+
+statements          :   statement
+                    |   statements statement
+                    ;
+
+statement           :   TOKEN_IDENTIFIER
+                    ;
 
 %%
