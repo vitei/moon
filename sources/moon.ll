@@ -23,6 +23,7 @@
 
 [ \t\n]                         ;                                                                   /* Skip whitespace... */
 ";"                             return TOKEN_EOS;
+"="                             return TOKEN_EQUALS;
 "("                             return TOKEN_PARENTHESIS_OPEN;
 ")"                             return TOKEN_PARENTHESIS_CLOSE;
 "{"                             return TOKEN_BRACE_OPEN;

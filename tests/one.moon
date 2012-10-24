@@ -4,8 +4,8 @@ use Base;
 global var positionX;
 global var positionY;
 
-//var x = 30;
-//var y = 20;
+var x = 30;
+var y = 20;
 
 //ref test = x;
 

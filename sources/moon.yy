@@ -19,6 +19,7 @@
 
 /* Language structure */
 %token TOKEN_EOS
+%token TOKEN_EQUALS
 %token TOKEN_PARENTHESIS_OPEN
 %token TOKEN_PARENTHESIS_CLOSE
 %token TOKEN_BRACE_OPEN
@@ -124,15 +125,21 @@ statement_block     :   TOKEN_BRACE_OPEN TOKEN_BRACE_CLOSE                      
                     ;
 
 variable_statement  :   TOKEN_VAR TOKEN_ID_GENERIC TOKEN_EOS
+                    |   TOKEN_VAR TOKEN_ID_GENERIC TOKEN_EQUALS expression TOKEN_EOS
                     ;
 
 reference_statement :   TOKEN_REF TOKEN_ID_GENERIC TOKEN_EOS
+                    |   TOKEN_REF TOKEN_ID_GENERIC TOKEN_EQUALS expression TOKEN_EOS /* FIXME... */
                     ;
 
 expression_statement:   expression TOKEN_EOS
                     ;
 
 expression          :   TOKEN_ID_GENERIC
+                    |   numeric_expression
+                    ;
+
+numeric_expression  :   TOKEN_INTEGER
                     ;
 
 %%
