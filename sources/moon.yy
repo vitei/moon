@@ -41,8 +41,10 @@
 %token TOKEN_REF
 
 /* Identifiers */
+%token TOKEN_ID_INTEGER
+%token TOKEN_ID_FLOAT
 %token TOKEN_ID_CLASS
-%token TOKEN_ID_GENERIC
+%token TOKEN_ID_UNKNOWN
 
 /* Start symbol */
 %start program
@@ -103,7 +105,7 @@ program_functions   :   /* Empty */
 
 
 
-function_prototype  :   TOKEN_ID_GENERIC TOKEN_PARENTHESIS_OPEN TOKEN_PARENTHESIS_CLOSE
+function_prototype  :   TOKEN_ID_UNKNOWN TOKEN_PARENTHESIS_OPEN TOKEN_PARENTHESIS_CLOSE
                     ;
 
 
@@ -121,21 +123,33 @@ statement           :   variable_statement
                     ;
 
 statement_block     :   TOKEN_BRACE_OPEN TOKEN_BRACE_CLOSE                                          /* Empty... */
-                    |   TOKEN_BRACE_OPEN statements TOKEN_BRACE_CLOSE
+                    |   block_start statements block_end
                     ;
 
-variable_statement  :   TOKEN_VAR TOKEN_ID_GENERIC TOKEN_EOS
-                    |   TOKEN_VAR TOKEN_ID_GENERIC TOKEN_EQUALS expression TOKEN_EOS
+block_start         :   TOKEN_BRACE_OPEN
+                        {
+
+                        }
                     ;
 
-reference_statement :   TOKEN_REF TOKEN_ID_GENERIC TOKEN_EOS
-                    |   TOKEN_REF TOKEN_ID_GENERIC TOKEN_EQUALS expression TOKEN_EOS /* FIXME... */
+block_end           :   TOKEN_BRACE_CLOSE
+                        {
+
+                        }
+                    ;
+
+variable_statement  :   TOKEN_VAR TOKEN_ID_UNKNOWN TOKEN_EOS
+                    |   TOKEN_VAR TOKEN_ID_UNKNOWN TOKEN_EQUALS expression TOKEN_EOS
+                    ;
+
+reference_statement :   TOKEN_REF TOKEN_ID_UNKNOWN TOKEN_EOS
+                    |   TOKEN_REF TOKEN_ID_UNKNOWN TOKEN_EQUALS expression TOKEN_EOS /* FIXME... */
                     ;
 
 expression_statement:   expression TOKEN_EOS
                     ;
 
-expression          :   TOKEN_ID_GENERIC
+expression          :   TOKEN_ID_UNKNOWN /* FIXME */
                     |   numeric_expression
                     ;
 
