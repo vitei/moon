@@ -46,7 +46,7 @@
 
 	/* Identifiers */
 [A-Z][a-zA-Z0-9]*               return TOKEN_ID_CLASS;
-[a-z_][a-zA-Z0-9_]*             return TOKEN_ID_GENERIC;
+[a-z_][a-zA-Z0-9_]*             return TOKEN_ID_UNKNOWN; /* FIXME, this should return something if known... */
 
 	/* Line Comments */
 "//"                            BEGIN LINE_COMMENT;                                                 /* One line comments... */
