@@ -25,6 +25,7 @@
 %token TOKEN_PARENTHESIS_CLOSE
 %token TOKEN_BRACE_OPEN
 %token TOKEN_BRACE_CLOSE
+%token TOKEN_CAST
 
 /* Basic Types */
 %token TOKEN_INTEGER
@@ -164,9 +165,11 @@ numeric_expression  :   integer_expression
                     ;
 
 integer_expression  :   TOKEN_INTEGER
+                    |   TOKEN_ID_INTEGER
                     ;
 
 float_expression    :   TOKEN_FLOAT
+                    |   TOKEN_ID_FLOAT
                     ;
 
 %%
