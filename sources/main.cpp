@@ -1,6 +1,6 @@
 #include <iostream>
 #include <stdio.h>
-//#include ""
+#include "tree.h"
 
 
 // Bison and Flex stuff
@@ -13,6 +13,9 @@ int main(int argc, char *argv[])
 	{
 		if((yyin = fopen(argv[i], "r")))
 		{
+			// Setup??
+			tree::Block::setCurrentBlock(new tree::Block());
+
 			yyparse();
 			fclose(yyin);
 

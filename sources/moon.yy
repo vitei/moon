@@ -8,6 +8,7 @@
 
 %{
     #include "error.h"
+    #include "tree.h"
 
     // Flex functions
     extern int yylex();
@@ -128,13 +129,18 @@ statement_block     :   TOKEN_BRACE_OPEN TOKEN_BRACE_CLOSE                      
 
 block_start         :   TOKEN_BRACE_OPEN
                         {
+                            tree::Block *block = new tree::Block();
 
+                            tree::Block::getCurrentBlock()->addBlock(block);
+                            tree::Block::setCurrentBlock(block);
                         }
                     ;
 
 block_end           :   TOKEN_BRACE_CLOSE
                         {
+                            tree::Block *block = tree::Block::getCurrentBlock();
 
+                            tree::Block::setCurrentBlock(block->getParent());
                         }
                     ;
 
