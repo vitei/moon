@@ -9,6 +9,7 @@
 %{
 	#include "error.h"
 	#include "parser.h"
+	#include "tree.h"
 %}
 
 %option noyywrap

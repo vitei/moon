@@ -23,13 +23,13 @@ parser.h: parser.cpp
 lexer.cpp: moon.ll parser.h
 	$(FLEX) $(FLEX_FLAGS) -o $@ $<
 
-%.o: %.cpp
+%.o: %.cpp %.cpp
 	$(CXX) -c $(CPP_FLAGS) $(CXX_FLAGS) -o $@ $<
 
-../bin/moon: error.o lexer.o main.o parser.o
+../bin/moon: error.o lexer.o main.o parser.o tree/block.o
 	$(CXX) $(CPP_FLAGS) $(CXX_FLAGS) -o $@ $^
 
 compiler: ../bin/moon
 
 clean:
-	rm -rf *.o ../bin/moon
+	rm -rf *.o tree/*.o ../bin/moon
