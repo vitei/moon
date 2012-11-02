@@ -35,12 +35,25 @@
 ":"                             return TOKEN_CAST;
 
     /* Basic Types */
-[0-9]+                          yylval.integer = atoi(yytext); return TOKEN_INTEGER;
-[0-9]*\.[0-9]+                  yylval.real = (float)atof(yytext); return TOKEN_FLOAT;
+[0-9]+                          {
+                                    yylval.integer = atoi(yytext);
+                                    return TOKEN_INTEGER;
+                                }
+[0-9]*\.[0-9]+                  {
+                                    yylval.real = (float)atof(yytext);
+                                    return TOKEN_FLOAT;
+                                }
 
     /* Strings */
-\"                              BEGIN STRING_LITERAL; sStringLength = 0;
-<STRING_LITERAL>\"              BEGIN INITIAL; yylval.string[sStringLength] = 0; return TOKEN_STRING;
+\"                              {
+                                    BEGIN STRING_LITERAL;
+                                    sStringLength = 0;
+                                }
+<STRING_LITERAL>\"              {
+                                    BEGIN INITIAL;
+                                    yylval.string[sStringLength] = 0;
+                                    return TOKEN_STRING;
+                                }
 <STRING_LITERAL>.               yylval.string[sStringLength++] = *yytext;
 
     /* Keywords */
