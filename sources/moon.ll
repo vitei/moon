@@ -10,12 +10,15 @@
     #include "error.h"
     #include "parser.h"
     #include "tree.h"
+
+    static unsigned int sStringLength;
 %}
 
 %option noyywrap
 %option yylineno
 
 /* States */
+%x STRING_LITERAL
 %x LINE_COMMENT
 %x BLOCK_COMMENT
 
@@ -36,7 +39,9 @@
 [0-9]*\.[0-9]+                  yylval.real = (float)atof(yytext); return TOKEN_FLOAT;
 
     /* Strings */
-\"[^\n"]+\"                     strcpy(yylval.string, yytext); return TOKEN_STRING;
+\"                              BEGIN STRING_LITERAL; sStringLength = 0;
+<STRING_LITERAL>\"              BEGIN INITIAL; yylval.string[sStringLength] = 0; return TOKEN_STRING;
+<STRING_LITERAL>.               yylval.string[sStringLength++] = *yytext;
 
     /* Keywords */
 "include"                       return TOKEN_INCLUDE;
@@ -58,25 +63,25 @@
                                         switch(identifier->getIdentifierType())
                                         {
                                             case tree::Identifier::TYPE_VARIABLE:
+                                            {
+                                                tree::Variable *variable = static_cast<tree::Variable *>(identifier);
+
+                                                switch(variable->getVariableType())
                                                 {
-                                                    tree::Variable *variable = static_cast<tree::Variable *>(identifier);
+                                                    case tree::Variable::TYPE_INTEGER:
+                                                        return TOKEN_ID_INTEGER;
 
-                                                    switch(variable->getVariableType())
-                                                    {
-                                                        case tree::Variable::TYPE_INTEGER:
-                                                            return TOKEN_ID_INTEGER;
-
-                                                        case tree::Variable::TYPE_FLOAT:
-                                                            return TOKEN_ID_FLOAT;
-                                                    }
-
-                                                    break;
+                                                    case tree::Variable::TYPE_FLOAT:
+                                                        return TOKEN_ID_FLOAT;
                                                 }
 
+                                                break;
+                                            }
+
                                             //case tree::Identifier::TYPE_REFERENCE:
-                                            //    {
-                                            //        break;
-                                            //    }
+                                            //{
+                                            //    break;
+                                            //}
                                         }
                                     }
                                     else
