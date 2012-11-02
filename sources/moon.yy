@@ -18,6 +18,13 @@
 /* Better errors!! */
 %error-verbose
 
+/*  */
+%union {
+    int integer;
+    float real;
+    char string[1024]; /* FIXME: We should make this bigger... */
+}
+
 /* Language structure */
 %token TOKEN_EOS
 %token TOKEN_EQUALS
@@ -28,11 +35,11 @@
 %token TOKEN_CAST
 
 /* Basic Types */
-%token TOKEN_INTEGER
-%token TOKEN_FLOAT
+%token<integer> TOKEN_INTEGER
+%token<real> TOKEN_FLOAT
 
 /* Strings */
-%token TOKEN_STRING
+%token<string> TOKEN_STRING
 
 /* Keywords */
 %token TOKEN_INCLUDE

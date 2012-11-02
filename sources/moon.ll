@@ -32,11 +32,11 @@
 ":"                             return TOKEN_CAST;
 
     /* Basic Types */
-[0-9]+                          return TOKEN_INTEGER;
-[0-9]*\.[0-9]+                  return TOKEN_FLOAT;
+[0-9]+                          yylval.integer = atoi(yytext); return TOKEN_INTEGER;
+[0-9]*\.[0-9]+                  yylval.real = (float)atof(yytext); return TOKEN_FLOAT;
 
     /* Strings */
-\"[^\n"]+\"                     return TOKEN_STRING;
+\"[^\n"]+\"                     strcpy(yylval.string, yytext); return TOKEN_STRING;
 
     /* Keywords */
 "include"                       return TOKEN_INCLUDE;
