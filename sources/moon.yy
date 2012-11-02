@@ -7,10 +7,12 @@
  */
 
 %{
+    #include <stdio.h>
     #include "error.h"
     #include "tree.h"
 
-    // Flex functions
+    // Flex stuff
+    extern "C" FILE *yyin;
     extern int yylex();
     extern void yyerror(const char *error);
 %}
@@ -72,6 +74,23 @@ program_includes    :   /* Empty */
                     ;
 
 include_statement   :   TOKEN_INCLUDE TOKEN_STRING TOKEN_EOS
+                        {
+                            FILE *currentFile = yyin;
+
+                            printf("%s\n", $2);
+
+                            if((yyin = fopen($2, "r")))
+                            {
+                                yyparse();
+                                fclose(yyin);
+                            }
+                            else
+                            {
+                                yyerror("Could not find include file ..."); /* FIXME */
+                            }
+
+                            yyin = currentFile;
+                        }
                     ;
 
 program_uses        :   /* Empty */
