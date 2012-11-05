@@ -54,7 +54,8 @@
 "*"                             return TOKEN_MULTIPLY;
 "/"                             return TOKEN_DIVIDE;
 "%"                             return TOKEN_MODULUS;
-"!"                             return TOKEN_NOT;
+"!"                             return TOKEN_LOGICAL_NOT;
+"~"                             return TOKEN_NOT;
 ":"                             return TOKEN_CAST;
 "="                             return TOKEN_EQUALS;
 
@@ -95,8 +96,7 @@
 "float"                         return TOKEN_TYPE_FLOAT;
 
     /* Identifiers */
-[A-Z][A-Z0-9]*                  return TOKEN_ID_CONSTANT; /*FIXME*/
-[A-Z][a-zA-Z0-9]*               return TOKEN_ID_CLASS;    /*FIXME*/
+[A-Z][a-zA-Z0-9]*               return TOKEN_NAME;
 [a-z_][a-zA-Z0-9_]*             return TOKEN_ID;
 
     /* Line Comments */

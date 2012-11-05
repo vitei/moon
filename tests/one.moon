@@ -9,13 +9,13 @@ var y = 20;
 
 var x = 30;
 
-//ref test = x;
+ref test = x;
 
-function main()
+function main(float:one, int:two)
 {
-	var localX;
+	var float:localX = 0.0;
 
-	//positionX = 0;
+	positionX = 0;
 
 //	for(test = 0; test < 10; test++)
 //	{
