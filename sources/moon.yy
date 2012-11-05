@@ -205,19 +205,18 @@ statement           :   variable_statement
                     ;
 
 statement_block     :   TOKEN_BRACE_OPEN TOKEN_BRACE_CLOSE                                          /* Empty... */
-                    |   block_start statements block_end
-                    ;
-
-block_start         :   TOKEN_BRACE_OPEN
+                    |   TOKEN_BRACE_OPEN
                         {
                             tree::Block *block = new tree::Block();
 
                             tree::Block::getCurrentBlock()->addBlock(block);
                             tree::Block::setCurrentBlock(block);
                         }
-                    ;
+                        statements
+                        {
 
-block_end           :   TOKEN_BRACE_CLOSE
+                        }
+                        TOKEN_BRACE_CLOSE
                         {
                             tree::Block *block = tree::Block::getCurrentBlock();
 
