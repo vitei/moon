@@ -91,15 +91,18 @@
 
 %%
 
-program             :   program_includes program_uses program_vrs program_functions
+program             :   o_program_includes o_program_uses o_program_vrs o_program_functions
                         {
                             //yyerror("Test");
                         }
                     ;
 
-program_includes    :   /* Empty */
+o_program_includes  :   /* Empty */
+                    |   program_includes
+                    ;
+
+program_includes    :   include_statement
                     |   program_includes include_statement
-                    |   include_statement
                     ;
 
 include_statement   :   TOKEN_INCLUDE TOKEN_STRING TOKEN_EOS
@@ -122,17 +125,23 @@ include_statement   :   TOKEN_INCLUDE TOKEN_STRING TOKEN_EOS
                         }
                     ;
 
-program_uses        :   /* Empty */
+o_program_uses      :   /* Empty */
+                    |   program_uses
+                    ;
+
+program_uses        :   use_statement
                     |   program_uses use_statement
-                    |   use_statement
                     ;
 
 use_statement       :   TOKEN_USE TOKEN_NAME TOKEN_EOS
                     ;
 
-program_vrs         :   /* Empty */                                                                 /* VRs = variables + references */
+o_program_vrs       :   /* Empty */                                                                 /* VRs = variables + references */
+                    |   program_vrs
+                    ;
+
+program_vrs         :   program_vr                                                                /* VRs = variables + references */
                     |   program_vrs program_vr
-                    |   program_vr
                     ;
 
 program_vr          :   program_variable
@@ -149,10 +158,15 @@ program_reference   :   TOKEN_GLOBAL reference_statement
                     |   reference_statement
                     ;
 
-program_functions   :   /* Empty */
-                    |   function_prototype statement_block
+o_program_functions :   /* Empty */
+                    |   program_functions
                     ;
 
+program_functions   :   program_function
+                    |   program_functions program_function
+                    ;
+program_function    :   function_prototype statement_block
+                    ;
 
 
 
