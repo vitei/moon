@@ -47,11 +47,11 @@
                                 }
 
     /* Strings */
-\"                              {
+"\""                            {
                                     BEGIN STRING_LITERAL;
                                     sStringLength = 0;
                                 }
-<STRING_LITERAL>\"              {
+<STRING_LITERAL>"\""            {
                                     BEGIN INITIAL;
                                     yylval.string[sStringLength] = 0;
                                     return TOKEN_STRING;
