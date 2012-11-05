@@ -23,18 +23,40 @@
 %x BLOCK_COMMENT
 
 %%
-    /* Language structure */
 
+    /* Language structure */
 [ \t\n]                         ;                                                                   /* Skip whitespace... */
 ";"                             return TOKEN_EOS;
-"="                             return TOKEN_EQUALS;
+"["                             return TOKEN_BRACKETS_OPEN;
+"]"                             return TOKEN_BRACKETS_CLOSE;
 "("                             return TOKEN_PARENTHESIS_OPEN;
 ")"                             return TOKEN_PARENTHESIS_CLOSE;
 "{"                             return TOKEN_BRACE_OPEN;
 "}"                             return TOKEN_BRACE_CLOSE;
-":"                             return TOKEN_CAST;
+","                             return TOKEN_COMMA;
 "."                             return TOKEN_DIRECT_ACCESS;
 "->"                            return TOKEN_MESSAGE_ACCESS;
+
+    /* Operators */
+"||"                            return TOKEN_LOGICAL_OR;
+"&&"                            return TOKEN_LOGICAL_AND;
+"|"                             return TOKEN_OR;
+"^"                             return TOKEN_XOR;
+"&"                             return TOKEN_AND;
+"=="                            return TOKEN_EQ;
+"!="                            return TOKEN_NE;
+"<="                            return TOKEN_LE;
+"<"                             return TOKEN_LT;
+">="                            return TOKEN_GE;
+">"                             return TOKEN_GT;
+"+"                             return TOKEN_ADD;
+"-"                             return TOKEN_SUBTRACT;
+"*"                             return TOKEN_MULTIPLY;
+"/"                             return TOKEN_DIVIDE;
+"%"                             return TOKEN_MODULUS;
+"!"                             return TOKEN_NOT;
+":"                             return TOKEN_CAST;
+"="                             return TOKEN_EQUALS;
 
     /* Basic Types */
 [0-9]+                          {
