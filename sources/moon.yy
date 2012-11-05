@@ -164,6 +164,8 @@ program_functions   :   /* Empty */
 
 function_prototype  :   TOKEN_FUNCTION id_type TOKEN_PARENTHESIS_OPEN TOKEN_PARENTHESIS_CLOSE
                     |   TOKEN_FUNCTION id_type TOKEN_PARENTHESIS_OPEN argument_definitions TOKEN_PARENTHESIS_CLOSE
+                    |   TOKEN_FUNCTION id_type TOKEN_PARENTHESIS_OPEN TOKEN_PARENTHESIS_CLOSE TOKEN_LT TOKEN_NAME TOKEN_GT
+                    |   TOKEN_FUNCTION id_type TOKEN_PARENTHESIS_OPEN argument_definitions TOKEN_PARENTHESIS_CLOSE TOKEN_LT TOKEN_NAME TOKEN_GT
                     ;
 
 argument_definitions:   id_type
