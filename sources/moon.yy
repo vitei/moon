@@ -318,6 +318,7 @@ expression_atom     :   TOKEN_NAME /* Constant */
 
 type                :   TOKEN_TYPE_INT
                     |   TOKEN_TYPE_FLOAT
+                    |   TOKEN_NAME
                     ;
 
 %%
