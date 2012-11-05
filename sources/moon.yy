@@ -29,14 +29,36 @@
 
 /* Language structure */
 %token TOKEN_EOS
-%token TOKEN_EQUALS
+%token TOKEN_BRACKETS_OPEN
+%token TOKEN_BRACKETS_CLOSE
 %token TOKEN_PARENTHESIS_OPEN
 %token TOKEN_PARENTHESIS_CLOSE
 %token TOKEN_BRACE_OPEN
 %token TOKEN_BRACE_CLOSE
-%token TOKEN_CAST
+%token TOKEN_COMMA
 %token TOKEN_DIRECT_ACCESS
 %token TOKEN_MESSAGE_ACCESS
+
+/* Operators */
+%token TOKEN_LOGICAL_OR
+%token TOKEN_LOGICAL_AND
+%token TOKEN_OR
+%token TOKEN_XOR
+%token TOKEN_AND
+%token TOKEN_EQ
+%token TOKEN_NE
+%token TOKEN_LE
+%token TOKEN_LT
+%token TOKEN_GE
+%token TOKEN_GT
+%token TOKEN_ADD
+%token TOKEN_SUBTRACT
+%token TOKEN_MULTIPLY
+%token TOKEN_DIVIDE
+%token TOKEN_MODULUS
+%token TOKEN_NOT
+%token TOKEN_CAST
+%token TOKEN_EQUALS
 
 /* Basic Types */
 %token<integer> TOKEN_INTEGER
@@ -140,9 +162,13 @@ program_functions   :   /* Empty */
 
 
 
-function_prototype  :   TOKEN_FUNCTION TOKEN_ID TOKEN_PARENTHESIS_OPEN TOKEN_PARENTHESIS_CLOSE
+function_prototype  :   TOKEN_FUNCTION id_type TOKEN_PARENTHESIS_OPEN TOKEN_PARENTHESIS_CLOSE
+                    |   TOKEN_FUNCTION id_type TOKEN_PARENTHESIS_OPEN argument_definitions TOKEN_PARENTHESIS_CLOSE
                     ;
 
+argument_definitions:   id_type
+                    |   argument_definitions TOKEN_COMMA id_type
+                    ;
 
 
 
@@ -153,6 +179,7 @@ statements          :   statement
 
 statement           :   variable_statement
                     |   reference_statement
+                    |   assignment_statement
                     |   expression_statement    /* statements types here... */
                     |   statement_block
                     ;
@@ -178,39 +205,102 @@ block_end           :   TOKEN_BRACE_CLOSE
                         }
                     ;
 
-variable_statement  :   TOKEN_VAR TOKEN_ID TOKEN_EOS
-                    |   TOKEN_VAR type TOKEN_CAST TOKEN_ID TOKEN_EOS
-                    |   TOKEN_VAR TOKEN_ID TOKEN_EQUALS expression TOKEN_EOS
-                    |   TOKEN_VAR type TOKEN_CAST TOKEN_ID TOKEN_EQUALS expression TOKEN_EOS
+variable_statement  :   TOKEN_VAR id_type TOKEN_EOS
+                    |   TOKEN_VAR id_type TOKEN_EQUALS expression TOKEN_EOS
                     ;
 
-type                :   TOKEN_TYPE_INT
-                    |   TOKEN_TYPE_FLOAT
+
+
+reference_statement :   TOKEN_REF id_type TOKEN_EOS
+                    |   TOKEN_REF id_type TOKEN_EQUALS expression TOKEN_EOS /* FIXME... */
                     ;
 
-reference_statement :   TOKEN_REF TOKEN_ID TOKEN_EOS
-                    |   TOKEN_REF TOKEN_ID TOKEN_EQUALS expression TOKEN_EOS /* FIXME... */
+id_type             :   TOKEN_ID
+                    |   type TOKEN_CAST TOKEN_ID
+                    ;
+
+assignment_statement:   TOKEN_ID TOKEN_EQUALS expression TOKEN_EOS
                     ;
 
 expression_statement:   expression TOKEN_EOS
                     ;
 
-expression          :   TOKEN_ID /* FIXME */
-                    |   numeric_expression
+expression          :   l_or_expression
                     ;
 
-numeric_expression  :   integer_expression
-                    |   float_expression
+l_or_expression     :   l_and_expression
+                    |   l_or_expression TOKEN_LOGICAL_OR l_and_expression
                     ;
 
-integer_expression  :   TOKEN_INTEGER
+l_and_expression    :   or_expression
+                    |   l_and_expression TOKEN_LOGICAL_AND or_expression
+                    ;
+
+or_expression       :   xor_expression
+                    |   or_expression TOKEN_OR xor_expression
+                    ;
+
+xor_expression      :   and_expression
+                    |   xor_expression TOKEN_XOR and_expression
+                    ;
+
+and_expression      :   eq_expression
+                    |   and_expression TOKEN_AND eq_expression
+                    ;
+
+eq_expression       :   rel_expression
+                    |   eq_expression TOKEN_EQ rel_expression
+                    |   eq_expression TOKEN_NE rel_expression
+                    ;
+
+rel_expression      :   add_expression
+                    |   rel_expression TOKEN_LT add_expression
+                    |   rel_expression TOKEN_LE add_expression
+                    |   rel_expression TOKEN_GT add_expression
+                    |   rel_expression TOKEN_GE add_expression
+                    ;
+
+add_expression      :   mult_expression
+                    |   add_expression TOKEN_ADD mult_expression
+                    |   add_expression TOKEN_SUBTRACT mult_expression
+                    ;
+
+mult_expression     :   cast_expression
+                    |   mult_expression TOKEN_MULTIPLY cast_expression
+                    |   mult_expression TOKEN_DIVIDE cast_expression
+                    |   mult_expression TOKEN_MODULUS cast_expression
+                    ;
+
+cast_expression     :   unary_expression
+                    |   type TOKEN_CAST expression_atom
+                    ;
+
+unary_expression    :   postfix_expression
+                    |   TOKEN_SUBTRACT postfix_expression
+                    |   TOKEN_NOT postfix_expression
+                    ;
+
+postfix_expression  :   expression_atom
+                    |   postfix_expression TOKEN_BRACKETS_OPEN expression TOKEN_BRACKETS_CLOSE
+                    |   postfix_expression TOKEN_PARENTHESIS_OPEN TOKEN_PARENTHESIS_CLOSE
+                    |   postfix_expression TOKEN_PARENTHESIS_OPEN argument_expressions TOKEN_PARENTHESIS_CLOSE
+                    |   postfix_expression TOKEN_DIRECT_ACCESS TOKEN_ID
+                    |   postfix_expression TOKEN_MESSAGE_ACCESS TOKEN_ID
+                    ;
+
+argument_expressions:   expression
+                    |   argument_expressions TOKEN_COMMA expression
+                    ;
+
+expression_atom     :   TOKEN_ID_CONSTANT /* FIXME?? */
+                    |   TOKEN_INTEGER
+                    |   TOKEN_FLOAT
                     |   TOKEN_ID
-                    |   TOKEN_ID_CONSTANT
+                    |   TOKEN_PARENTHESIS_OPEN expression TOKEN_PARENTHESIS_CLOSE
                     ;
 
-float_expression    :   TOKEN_FLOAT
-                    |   TOKEN_ID
-                    |   TOKEN_ID_CONSTANT
+type                :   TOKEN_TYPE_INT
+                    |   TOKEN_TYPE_FLOAT
                     ;
 
 %%
