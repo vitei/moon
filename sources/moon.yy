@@ -82,8 +82,7 @@
 %token TOKEN_TYPE_FLOAT
 
 /* Identifiers */
-%token TOKEN_ID_CONSTANT
-%token TOKEN_ID_CLASS
+%token TOKEN_NAME
 %token TOKEN_ID
 
 /* Start symbol */
@@ -127,7 +126,7 @@ program_uses        :   /* Empty */
                     |   use_statement
                     ;
 
-use_statement       :   TOKEN_USE TOKEN_ID_CLASS TOKEN_EOS
+use_statement       :   TOKEN_USE TOKEN_NAME TOKEN_EOS
                     ;
 
 program_vrs         :   /* Empty */                                                                 /* VRs = variables + references */
@@ -277,6 +276,7 @@ cast_expression     :   unary_expression
 
 unary_expression    :   postfix_expression
                     |   TOKEN_SUBTRACT postfix_expression
+                    |   TOKEN_LOGICAL_NOT postfix_expression
                     |   TOKEN_NOT postfix_expression
                     ;
 
@@ -292,7 +292,7 @@ argument_expressions:   expression
                     |   argument_expressions TOKEN_COMMA expression
                     ;
 
-expression_atom     :   TOKEN_ID_CONSTANT /* FIXME?? */
+expression_atom     :   TOKEN_NAME /* Constant */
                     |   TOKEN_INTEGER
                     |   TOKEN_FLOAT
                     |   TOKEN_ID
