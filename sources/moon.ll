@@ -96,7 +96,7 @@
 "float"                         return TOKEN_TYPE_FLOAT;
 
     /* Identifiers */
-[A-Z][a-zA-Z0-9]*               return TOKEN_NAME;
+[A-Z][a-zA-Z0-9_]*               return TOKEN_NAME;
 [a-z_][a-zA-Z0-9_]*             return TOKEN_ID;
 
     /* Line Comments */
