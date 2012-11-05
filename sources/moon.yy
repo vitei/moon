@@ -35,6 +35,8 @@
 %token TOKEN_BRACE_OPEN
 %token TOKEN_BRACE_CLOSE
 %token TOKEN_CAST
+%token TOKEN_DIRECT_ACCESS
+%token TOKEN_MESSAGE_ACCESS
 
 /* Basic Types */
 %token<integer> TOKEN_INTEGER
@@ -48,14 +50,19 @@
 %token TOKEN_USE
 %token TOKEN_GLOBAL
 %token TOKEN_SHARED
+%token TOKEN_CONST
 %token TOKEN_VAR
 %token TOKEN_REF
+%token TOKEN_FUNCTION
+
+/* Built-In Types */
+%token TOKEN_TYPE_INT
+%token TOKEN_TYPE_FLOAT
 
 /* Identifiers */
-%token TOKEN_ID_INTEGER
-%token TOKEN_ID_FLOAT
+%token TOKEN_ID_CONSTANT
 %token TOKEN_ID_CLASS
-%token TOKEN_ID_UNKNOWN
+%token TOKEN_ID
 
 /* Start symbol */
 %start program
@@ -77,7 +84,7 @@ include_statement   :   TOKEN_INCLUDE TOKEN_STRING TOKEN_EOS
                         {
                             FILE *currentFile = yyin;
 
-                            printf("%s\n", $2);
+                            //printf("%s\n", $2);
 
                             if((yyin = fopen($2, "r")))
                             {
@@ -133,7 +140,7 @@ program_functions   :   /* Empty */
 
 
 
-function_prototype  :   TOKEN_ID_UNKNOWN TOKEN_PARENTHESIS_OPEN TOKEN_PARENTHESIS_CLOSE
+function_prototype  :   TOKEN_FUNCTION TOKEN_ID TOKEN_PARENTHESIS_OPEN TOKEN_PARENTHESIS_CLOSE
                     ;
 
 
@@ -171,18 +178,24 @@ block_end           :   TOKEN_BRACE_CLOSE
                         }
                     ;
 
-variable_statement  :   TOKEN_VAR TOKEN_ID_UNKNOWN TOKEN_EOS
-                    |   TOKEN_VAR TOKEN_ID_UNKNOWN TOKEN_EQUALS expression TOKEN_EOS
+variable_statement  :   TOKEN_VAR TOKEN_ID TOKEN_EOS
+                    |   TOKEN_VAR type TOKEN_CAST TOKEN_ID TOKEN_EOS
+                    |   TOKEN_VAR TOKEN_ID TOKEN_EQUALS expression TOKEN_EOS
+                    |   TOKEN_VAR type TOKEN_CAST TOKEN_ID TOKEN_EQUALS expression TOKEN_EOS
                     ;
 
-reference_statement :   TOKEN_REF TOKEN_ID_UNKNOWN TOKEN_EOS
-                    |   TOKEN_REF TOKEN_ID_UNKNOWN TOKEN_EQUALS expression TOKEN_EOS /* FIXME... */
+type                :   TOKEN_TYPE_INT
+                    |   TOKEN_TYPE_FLOAT
+                    ;
+
+reference_statement :   TOKEN_REF TOKEN_ID TOKEN_EOS
+                    |   TOKEN_REF TOKEN_ID TOKEN_EQUALS expression TOKEN_EOS /* FIXME... */
                     ;
 
 expression_statement:   expression TOKEN_EOS
                     ;
 
-expression          :   TOKEN_ID_UNKNOWN /* FIXME */
+expression          :   TOKEN_ID /* FIXME */
                     |   numeric_expression
                     ;
 
@@ -191,11 +204,50 @@ numeric_expression  :   integer_expression
                     ;
 
 integer_expression  :   TOKEN_INTEGER
-                    |   TOKEN_ID_INTEGER
+                    |   TOKEN_ID
+                    |   TOKEN_ID_CONSTANT
                     ;
 
 float_expression    :   TOKEN_FLOAT
-                    |   TOKEN_ID_FLOAT
+                    |   TOKEN_ID
+                    |   TOKEN_ID_CONSTANT
                     ;
 
 %%
+
+/*
+{
+                                    tree::Block *block = tree::Block::getCurrentBlock();
+                                    std::string name(yytext);
+                                    tree::Identifier *identifier = block->getIdentifier(name);
+
+                                    if(identifier)
+                                    {
+                                        switch(identifier->getIdentifierType())
+                                        {
+                                            case tree::Identifier::TYPE_VARIABLE:
+                                            {
+                                                tree::Variable *variable = static_cast<tree::Variable *>(identifier);
+
+                                                switch(variable->getVariableType())
+                                                {
+                                                    case tree::Variable::TYPE_INTEGER:
+                                                        return TOKEN_ID_INTEGER;
+
+                                                    case tree::Variable::TYPE_FLOAT:
+                                                        return TOKEN_ID_FLOAT;
+                                                }
+
+                                                break;
+                                            }
+
+                                            //case tree::Identifier::TYPE_REFERENCE:
+                                            //{
+                                            //    break;
+                                            //}
+                                        }
+                                    }
+                                    else
+                                    {
+                                        
+*/
