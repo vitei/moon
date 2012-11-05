@@ -1,5 +1,5 @@
 BISON = bison
-BISON_FLAGS = 
+BISON_FLAGS = --verbose
 
 C = clang
 C_FLAGS = 
@@ -32,4 +32,4 @@ lexer.cpp: moon.ll parser.h
 compiler: ../bin/moon
 
 clean:
-	rm -rf *.o tree/*.o ../bin/moon
+	rm -rf parser.output *.o tree/*.o ../bin/moon
