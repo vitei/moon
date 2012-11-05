@@ -91,7 +91,7 @@
 
 %%
 
-program             :   o_program_includes o_program_uses o_program_vrs o_program_functions
+program             :   o_program_includes o_program_uses o_program_cvrs o_program_functions
                         {
                             //yyerror("Test");
                         }
@@ -136,16 +136,20 @@ program_uses        :   use_statement
 use_statement       :   TOKEN_USE TOKEN_NAME TOKEN_EOS
                     ;
 
-o_program_vrs       :   /* Empty */                                                                 /* VRs = variables + references */
-                    |   program_vrs
+o_program_cvrs      :   /* Empty */                                                                 /* VRs = variables + references */
+                    |   program_cvrs
                     ;
 
-program_vrs         :   program_vr                                                                /* VRs = variables + references */
-                    |   program_vrs program_vr
+program_cvrs        :   program_cvr                                                                /* VRs = variables + references */
+                    |   program_cvrs program_cvr
                     ;
 
-program_vr          :   program_variable
+program_cvr         :   constant_statement
+                    |   program_variable
                     |   program_reference
+                    ;
+
+constant_statement  :   TOKEN_CONST id_type TOKEN_EQUALS expression TOKEN_EOS
                     ;
 
 program_variable    :   TOKEN_GLOBAL variable_statement
