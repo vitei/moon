@@ -1,4 +1,4 @@
-include "vector.inc";
+//include "vector.inc";
 use Base;
 
 global var positionX;
@@ -7,9 +7,11 @@ global var positionY;
 var x = 30;
 var y = 20;
 
+var x = 30;
+
 //ref test = x;
 
-main()
+function main()
 {
 	var localX;
 

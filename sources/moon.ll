@@ -33,6 +33,8 @@
 "{"                             return TOKEN_BRACE_OPEN;
 "}"                             return TOKEN_BRACE_CLOSE;
 ":"                             return TOKEN_CAST;
+"."                             return TOKEN_DIRECT_ACCESS;
+"->"                            return TOKEN_MESSAGE_ACCESS;
 
     /* Basic Types */
 [0-9]+                          {
@@ -61,47 +63,19 @@
 "use"                           return TOKEN_USE;
 "global"                        return TOKEN_GLOBAL;
 "shared"                        return TOKEN_SHARED;
+"const"                         return TOKEN_CONST;
 "var"                           return TOKEN_VAR;
 "ref"                           return TOKEN_REF;
+"function"                      return TOKEN_FUNCTION;
+
+    /* Built-In Types */
+"int"                           return TOKEN_TYPE_INT;
+"float"                         return TOKEN_TYPE_FLOAT;
 
     /* Identifiers */
-[A-Z][a-zA-Z0-9]*               return TOKEN_ID_CLASS;
-[a-z_][a-zA-Z0-9_]*             {
-                                    tree::Block *block = tree::Block::getCurrentBlock();
-                                    std::string name(yytext);
-                                    tree::Identifier *identifier = block->getIdentifier(name);
-
-                                    if(identifier)
-                                    {
-                                        switch(identifier->getIdentifierType())
-                                        {
-                                            case tree::Identifier::TYPE_VARIABLE:
-                                            {
-                                                tree::Variable *variable = static_cast<tree::Variable *>(identifier);
-
-                                                switch(variable->getVariableType())
-                                                {
-                                                    case tree::Variable::TYPE_INTEGER:
-                                                        return TOKEN_ID_INTEGER;
-
-                                                    case tree::Variable::TYPE_FLOAT:
-                                                        return TOKEN_ID_FLOAT;
-                                                }
-
-                                                break;
-                                            }
-
-                                            //case tree::Identifier::TYPE_REFERENCE:
-                                            //{
-                                            //    break;
-                                            //}
-                                        }
-                                    }
-                                    else
-                                    {
-                                        return TOKEN_ID_UNKNOWN;
-                                    }
-                                }
+[A-Z][A-Z0-9]*                  return TOKEN_ID_CONSTANT; /*FIXME*/
+[A-Z][a-zA-Z0-9]*               return TOKEN_ID_CLASS;    /*FIXME*/
+[a-z_][a-zA-Z0-9_]*             return TOKEN_ID;
 
     /* Line Comments */
 "//"                            BEGIN LINE_COMMENT;                                                 /* One line comments... */
