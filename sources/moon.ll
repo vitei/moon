@@ -24,6 +24,16 @@
 
 %%
 
+%{
+    static bool startSymbolIssued = false;
+    
+    if(!startSymbolIssued)
+    {
+        startSymbolIssued = true;
+        return START_PROGRAM;
+    }
+%}
+
     /* Language structure */
 [ \t\n]                         ;                                                                   /* Skip whitespace... */
 ";"                             return TOKEN_EOS;

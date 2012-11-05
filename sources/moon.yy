@@ -17,6 +17,9 @@
     extern void yyerror(const char *error);
 %}
 
+/* We need to be able to use the parser again... */
+/*%define api.pure true*/ /*FIXME*/
+
 /* Better errors!! */
 %error-verbose
 
@@ -26,6 +29,9 @@
     float real;
     char string[1024]; /* FIXME: We should make this bigger... */
 }
+
+/* Start tokens */
+%token START_PROGRAM
 
 /* Language structure */
 %token TOKEN_EOS
@@ -87,9 +93,12 @@
 %token TOKEN_ID
 
 /* Start symbol */
-%start program
+%start start
 
 %%
+
+start               :   START_PROGRAM program
+                    ;
 
 program             :   o_program_includes o_program_uses o_program_cvrs o_program_functions
                         {
