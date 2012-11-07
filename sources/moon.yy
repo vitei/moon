@@ -73,8 +73,6 @@
 /* Basic Types */
 %token<integer> TOKEN_INTEGER
 %token<real> TOKEN_FLOAT
-
-/* Strings */
 %token<string> TOKEN_STRING
 
 /* Keywords */
@@ -90,6 +88,7 @@
 /* Built-In Types */
 %token TOKEN_TYPE_INT
 %token TOKEN_TYPE_FLOAT
+%token TOKEN_TYPE_STRING
 
 /* Identifiers */
 %token TOKEN_NAME
@@ -132,8 +131,6 @@ include_statement   :   TOKEN_INCLUDE TOKEN_STRING TOKEN_EOS
 
                                 yylex_destroy(newScanner);
                                 fclose(input);
-
-                                // ...
                             }
                             else
                             {
@@ -338,6 +335,7 @@ expression_atom     :   TOKEN_NAME /* Constant */
 
 type                :   TOKEN_TYPE_INT
                     |   TOKEN_TYPE_FLOAT
+                    |   TOKEN_TYPE_STRING
                     |   TOKEN_NAME
                     ;
 
