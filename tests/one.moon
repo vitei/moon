@@ -11,9 +11,13 @@ var x = 30;
 
 ref test = x;
 
+const string:STR_ONE = "One";
+const string:STR_TWO = "Two";
+
 function main(float:one, int:two)
 {
 	var float:localX = 0.0;
+	var string:test = STR_ONE + STR_TWO;
 
 	positionX = 0;
 

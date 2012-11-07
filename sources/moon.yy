@@ -163,7 +163,7 @@ program_cvr         :   constant_statement
                     |   program_reference
                     ;
 
-constant_statement  :   TOKEN_CONST id_type TOKEN_EQUALS expression TOKEN_EOS
+constant_statement  :   TOKEN_CONST name_type TOKEN_EQUALS expression TOKEN_EOS
                     ;
 
 program_variable    :   TOKEN_GLOBAL variable_statement
@@ -252,6 +252,10 @@ id_type             :   TOKEN_ID
                     |   type TOKEN_CAST TOKEN_ID
                     ;
 
+name_type           :   TOKEN_NAME
+                    |   type TOKEN_CAST TOKEN_NAME
+                    ;
+
 assignment_statement:   TOKEN_ID TOKEN_EQUALS expression TOKEN_EOS
                     ;
 
@@ -330,6 +334,7 @@ expression_atom     :   TOKEN_NAME /* Constant */
                     |   TOKEN_INTEGER
                     |   TOKEN_FLOAT
                     |   TOKEN_ID
+                    |   TOKEN_STRING
                     |   TOKEN_PARENTHESIS_OPEN expression TOKEN_PARENTHESIS_CLOSE
                     ;
 
