@@ -9,16 +9,19 @@
 %{
     #include <stdio.h>
     #include "error.h"
+    #include "parser.h"
+    #include "lexer.h"
     #include "tree.h"
 
-    // Flex stuff
-    extern "C" FILE *yyin;
-    extern int yylex();
-    extern void yyerror(const char *error);
+    // Error stuff
+    extern void yyerror(void *locp, const char *error);
 %}
 
-/* We need to be able to use the parser again... */
-/*%define api.pure true*/ /*FIXME*/
+/*%locations*/
+%pure-parser
+
+%lex-param {void *scanner}
+%parse-param {void *scanner}
 
 /* Better errors!! */
 %error-verbose
@@ -116,21 +119,26 @@ program_includes    :   include_statement
 
 include_statement   :   TOKEN_INCLUDE TOKEN_STRING TOKEN_EOS
                         {
-                            FILE *currentFile = yyin;
+                            FILE *input;
 
-                            //printf("%s\n", $2);
-
-                            if((yyin = fopen($2, "r")))
+                            if((input = fopen($2, "r")))
                             {
-                                yyparse();
-                                fclose(yyin);
+                                yyscan_t newScanner;
+
+                                yylex_init(&newScanner);
+                                yyset_in(input, newScanner);
+
+                                yyparse(newScanner);
+
+                                yylex_destroy(newScanner);
+                                fclose(input);
+
+                                // ...
                             }
                             else
                             {
-                                yyerror("Could not find include file ..."); /* FIXME */
+                                yyerror(scanner, "Could not find include file ..."); /* FIXME */
                             }
-
-                            yyin = currentFile;
                         }
                     ;
 

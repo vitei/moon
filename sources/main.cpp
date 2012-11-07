@@ -1,23 +1,31 @@
 #include <iostream>
 #include <stdio.h>
+#include "parser.h"
+#include "lexer.h"
 #include "tree.h"
 
 
-// Bison and Flex stuff
-extern int yyparse();
-extern "C" FILE *yyin;
+extern void yyparse(void *scanner);
 
 int main(int argc, char *argv[])
 {
 	for(unsigned int i = 1; i < argc; i++)
 	{
-		if((yyin = fopen(argv[i], "r")))
+		FILE *input;
+
+		if((input = fopen(argv[i], "r")))
 		{
+			yyscan_t scanner;
+
 			// Setup??
 			tree::Block::setCurrentBlock(new tree::Block());
+			yylex_init(&scanner);
+			yyset_in(input, scanner);
 
-			yyparse();
-			fclose(yyin);
+			yyparse(scanner);
+
+			yylex_destroy(scanner);
+			fclose(input);
 
 			// ...
 		}
