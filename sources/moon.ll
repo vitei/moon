@@ -16,6 +16,9 @@
 
 %option noyywrap
 %option yylineno
+%option reentrant
+%option bison-bridge
+/*%option bison-locations*/
 
 /* States */
 %x STRING_LITERAL
@@ -26,7 +29,7 @@
 
 %{
     static bool startSymbolIssued = false;
-    
+
     if(!startSymbolIssued)
     {
         startSymbolIssued = true;
@@ -71,11 +74,11 @@
 
     /* Basic Types */
 [0-9]+                          {
-                                    yylval.integer = atoi(yytext);
+                                    yylval->integer = atoi(yytext);
                                     return TOKEN_INTEGER;
                                 }
 [0-9]*\.[0-9]+                  {
-                                    yylval.real = (float)atof(yytext);
+                                    yylval->real = (float)atof(yytext);
                                     return TOKEN_FLOAT;
                                 }
 
@@ -86,10 +89,10 @@
                                 }
 <STRING_LITERAL>"\""            {
                                     BEGIN INITIAL;
-                                    yylval.string[sStringLength] = 0;
+                                    yylval->string[sStringLength] = 0;
                                     return TOKEN_STRING;
                                 }
-<STRING_LITERAL>.               yylval.string[sStringLength++] = *yytext;
+<STRING_LITERAL>.               yylval->string[sStringLength++] = *yytext;
 
     /* Keywords */
 "include"                       return TOKEN_INCLUDE;
@@ -125,7 +128,7 @@
 
 %%
 
-void yyerror(const char *error)
+void yyerror(void *locp, const char *error)
 {
-    emitError(yylineno, error);
+    emitError(/*yylineno*/0, error);
 }
