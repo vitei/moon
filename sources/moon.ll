@@ -107,6 +107,7 @@
     /* Built-In Types */
 "int"                           return TOKEN_TYPE_INT;
 "float"                         return TOKEN_TYPE_FLOAT;
+"string"                        return TOKEN_TYPE_STRING;
 
     /* Identifiers */
 [A-Z][a-zA-Z0-9_]*              return TOKEN_NAME;
