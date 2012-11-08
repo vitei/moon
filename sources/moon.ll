@@ -11,14 +11,21 @@
     #include "parser.h"
     #include "tree.h"
 
+    /* This should let us have line numbers... */
+    #define YY_USER_ACTION yylloc->first_line = yylineno;
+
     static unsigned int sStringLength;
 %}
 
-%option noyywrap
-%option yylineno
+/* Re-entrant */
 %option reentrant
+
+%option noyywrap
 %option bison-bridge
-/*%option bison-locations*/
+
+/* Program locations */
+%option yylineno
+%option bison-locations
 
 /* States */
 %x STRING_LITERAL
@@ -128,8 +135,3 @@
 .                               return yytext[0];
 
 %%
-
-void yyerror(void *locp, const char *error)
-{
-    emitError(/*yylineno*/0, error);
-}

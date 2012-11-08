@@ -13,15 +13,16 @@
     #include "lexer.h"
     #include "tree.h"
 
-    // Error stuff
-    extern void yyerror(void *locp, const char *error);
+    void yyerror(YYLTYPE *locp, void *scanner, const char *error);
 %}
 
-/*%locations*/
+/* Re-entrant */
 %pure-parser
-
 %lex-param {void *scanner}
 %parse-param {void *scanner}
+
+/* Program locations */
+%locations
 
 /* Better errors!! */
 %error-verbose
@@ -134,7 +135,7 @@ include_statement   :   TOKEN_INCLUDE TOKEN_STRING TOKEN_EOS
                             }
                             else
                             {
-                                yyerror(scanner, "Could not find include file ..."); /* FIXME */
+                                //emitError(locp->first_line, "Could not find include file ...");
                             }
                         }
                     ;
@@ -216,6 +217,8 @@ statement           :   variable_statement
                     |   assignment_statement
                     |   expression_statement    /* statements types here... */
                     |   statement_block
+
+                    |   error_statement                                                             /* Special case!! */
                     ;
 
 statement_block     :   TOKEN_BRACE_OPEN TOKEN_BRACE_CLOSE                                          /* Empty... */
@@ -344,4 +347,12 @@ type                :   TOKEN_TYPE_INT
                     |   TOKEN_NAME
                     ;
 
+error_statement     :   error TOKEN_EOS
+                    ;
+
 %%
+
+void yyerror(YYLTYPE *locp, void *scanner, const char *error)
+{
+    emitError(locp->first_line, error);
+}
