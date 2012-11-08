@@ -110,6 +110,7 @@
 "var"                           return TOKEN_VAR;
 "ref"                           return TOKEN_REF;
 "function"                      return TOKEN_FUNCTION;
+"return"                        return TOKEN_RETURN;
 
     /* Built-In Types */
 "int"                           return TOKEN_TYPE_INT;

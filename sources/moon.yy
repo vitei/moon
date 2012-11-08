@@ -85,6 +85,7 @@
 %token TOKEN_VAR
 %token TOKEN_REF
 %token TOKEN_FUNCTION
+%token TOKEN_RETURN
 
 /* Built-In Types */
 %token TOKEN_TYPE_INT
@@ -215,6 +216,7 @@ statement           :   variable_statement
                     |   reference_statement
                     |   assignment_statement
                     |   expression_statement    /* statements types here... */
+                    |   return_statement
                     |   statement_block
 
                     |   error_statement                                                             /* Special case!! */
@@ -344,6 +346,9 @@ type                :   TOKEN_TYPE_INT
                     |   TOKEN_TYPE_FLOAT
                     |   TOKEN_TYPE_STRING
                     |   TOKEN_NAME
+                    ;
+
+return_statement    :   TOKEN_RETURN expression TOKEN_EOS
                     ;
 
 error_statement     :   error TOKEN_EOS
