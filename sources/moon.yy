@@ -153,11 +153,11 @@ program_uses        :   use_statement
 use_statement       :   TOKEN_USE TOKEN_NAME TOKEN_EOS
                     ;
 
-o_program_cvrs      :   /* Empty */                                                                 /* VRs = variables + references */
+o_program_cvrs      :   /* Empty */
                     |   program_cvrs
                     ;
 
-program_cvrs        :   program_cvr                                                                /* VRs = variables + references */
+program_cvrs        :   program_cvr                                                                 /* CVRs = constants + variables + references */
                     |   program_cvrs program_cvr
                     ;
 
@@ -198,7 +198,7 @@ program_function    :   function_prototype statement_block
 
 
 function_prototype  :   TOKEN_FUNCTION id_type TOKEN_PARENTHESIS_OPEN argument_definitions TOKEN_PARENTHESIS_CLOSE
-                    |   TOKEN_FUNCTION id_type TOKEN_PARENTHESIS_OPEN argument_definitions TOKEN_PARENTHESIS_CLOSE TOKEN_LT TOKEN_NAME TOKEN_GT
+                    |   TOKEN_FUNCTION id_type TOKEN_PARENTHESIS_OPEN argument_definitions TOKEN_PARENTHESIS_CLOSE TOKEN_LT state_name TOKEN_GT
                     ;
 
 argument_definitions:   /* Empty */
@@ -206,6 +206,9 @@ argument_definitions:   /* Empty */
                     |   argument_definitions TOKEN_COMMA id_type
                     ;
 
+state_name          :   /* Empty (default state) */
+                    |   TOKEN_NAME
+                    ;
 
 
 
