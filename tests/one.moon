@@ -14,12 +14,19 @@ ref test = x;
 const string:STR_ONE = "One";
 const string:STR_TWO = "Two";
 
-function main(float:one, int:two)
+function float:test_add(float:one, int:two)
+{
+	return one + two;
+}
+
+function main()
 {
 	var float:localX = 0.0;
 	var string:test = STR_ONE + STR_TWO;
 
 	positionX = 0;
+
+	test_add(1.0, 2.0);
 
 //	for(test = 0; test < 10; test++)
 //	{
