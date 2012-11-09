@@ -3,9 +3,11 @@ Version 0.0.1
 
 Abtract
 	Vitei's in-house compiler. Currently under construction.
-	Please feel free to use, but expect a lot of bugs whilst we iron out some of the features.
+	Please feel free to use, but expect a lot of bugs whilst
+	we iron out some of the features.
 
-	PLEASE READ THE NOTES FOR EVERY VERSION OF THIS COMPILER UNTIL WE HIT A STABLE RELEASE.
+	PLEASE READ THE NOTES FOR EVERY VERSION OF THIS COMPILER
+	UNTIL WE HIT A STABLE RELEASE.
 
 Licence
 	Licenced under the zlib/libpng license. Full text in LICENCE.
