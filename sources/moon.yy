@@ -317,7 +317,7 @@ name_type           :   TOKEN_NAME
 assignment_statement:   TOKEN_ID TOKEN_EQUALS expression TOKEN_EOS
                         {
                             //tree::Identifier *id = new tree::Identifier($1);
-                            //$$ = new tree::AssignmentStatement(id, $3);
+                            //$$ = new tree::BinaryExpression(tree::Assign, id, $3);
                         }
                     ;
 
@@ -330,91 +330,91 @@ expression          :   l_or_expression
 l_or_expression     :   l_and_expression
                     |   l_or_expression TOKEN_LOGICAL_OR l_and_expression
                         {
-                            //$$ = new tree::BinaryLogicalOrExpression($1, $3);
+                            //$$ = new tree::BinaryExpression(tree::LogicalOr, $1, $3);
                         }
                     ;
 
 l_and_expression    :   or_expression
                     |   l_and_expression TOKEN_LOGICAL_AND or_expression
                         {
-                            //$$ = new tree::BinaryLogicalAndExpression($1, $3);
+                            //$$ = new tree::BinaryExpression(tree::LogicalAnd, $1, $3);
                         }
                     ;
 
 or_expression       :   xor_expression
                     |   or_expression TOKEN_OR xor_expression
                         {
-                            //$$ = new tree::BinaryOrExpression($1, $3);
+                            //$$ = new tree::BinaryExpression(tree::Or, $1, $3);
                         }
                     ;
 
 xor_expression      :   and_expression
                     |   xor_expression TOKEN_XOR and_expression
                         {
-                            //$$ = new tree::BinaryXorExpression($1, $3);
+                            //$$ = new tree::BinaryExpression(tree::Xor, $1, $3);
                         }
                     ;
 
 and_expression      :   eq_expression
                     |   and_expression TOKEN_AND eq_expression
                         {
-                            //$$ = new tree::BinaryAndExpression($1, $3);
+                            //$$ = new tree::BinaryExpression(tree::And, $1, $3);
                         }
                     ;
 
 eq_expression       :   rel_expression
                     |   eq_expression TOKEN_EQ rel_expression
                         {
-                            //$$ = new tree::BinaryEqualExpression($1, $3);
+                            //$$ = new tree::BinaryExpression(tree::Equal, $1, $3);
                         }
                     |   eq_expression TOKEN_NE rel_expression
                         {
-                            //$$ = new tree::BinaryUnequalExpression($1, $3);
+                            //$$ = new tree::BinaryExpression(tree::Unequal, $1, $3);
                         }
                     ;
 
 rel_expression      :   add_expression
                     |   rel_expression TOKEN_LT add_expression
                         {
-                            //$$ = new tree::BinaryLessThanExpression($1, $3);
+                            //$$ = new tree::BinaryExpression(tree::LessThan, $1, $3);
                         }
                     |   rel_expression TOKEN_LE add_expression
                         {
-                            //$$ = new tree::BinaryLessEqualExpression($1, $3);
+                            //$$ = new tree::BinaryExpression(tree::LessEqual, $1, $3);
                         }
                     |   rel_expression TOKEN_GT add_expression
                         {
-                            //$$ = new tree::BinaryGreaterThanExpression($1, $3);
+                            //$$ = new tree::BinaryExpression(tree::GreaterThan, $1, $3);
                         }
                     |   rel_expression TOKEN_GE add_expression
                         {
-                            //$$ = new tree::BinaryGreaterEqualExpression($1, $3);
+                            //$$ = new tree::BinaryExpression(tree::GreaterEqual, $1, $3);
                         }
                     ;
 
 add_expression      :   mult_expression
                     |   add_expression TOKEN_ADD mult_expression
                         {
-                            //$$ = new tree::BinaryAddExpression($1, $3);
+                            //$$ = new tree::BinaryExpression(tree::Add, $1, $3);
                         }
                     |   add_expression TOKEN_SUBTRACT mult_expression
                         {
-                            //$$ = new tree::BinarySubtractExpression($1, $3);
+                            //$$ = new tree::BinaryExpression(tree::Subtract, $1, $3);
                         }
                     ;
 
 mult_expression     :   cast_expression
                     |   mult_expression TOKEN_MULTIPLY cast_expression
                         {
-                            //$$ = new tree::BinaryMultiplyExpression($1, $3);
+                            //$$ = new tree::BinaryExpression(tree::Multiply, $1, $3);
                         }
                     |   mult_expression TOKEN_DIVIDE cast_expression
                         {
-                            //$$ = new tree::BinaryDivideExpression($1, $3);
+                            //$$ = new tree::BinaryExpression(tree::Divide, $1, $3);
                         }
                     |   mult_expression TOKEN_MODULUS cast_expression
                         {
-                            //$$ = new tree::BinaryModulusExpression($1, $3);
+                            //$$ = new tree::BinaryExpression(tree::Modulus, $1, $3);
                         }
                     ;
 
@@ -428,15 +428,15 @@ cast_expression     :   unary_expression
 unary_expression    :   access_expression
                     |   TOKEN_SUBTRACT access_expression
                         {
-                            //$$ = new tree::UnaryMinusExpression($2);
+                            //$$ = new tree::UnaryExpression(tree::Subtract, $2);
                         }
                     |   TOKEN_LOGICAL_NOT access_expression
                         {
-                            //$$ = new tree::UnaryLogicalNotExpression($2);
+                            //$$ = new tree::UnaryExpression(tree::LogicalNot, $2);
                         }
                     |   TOKEN_NOT access_expression
                         {
-                            //$$ = new tree::UnaryNotExpression($2);
+                            //$$ = new tree::UnaryExpression(tree::Not, $2);
                         }
                     ;
 
@@ -523,7 +523,7 @@ type                :   TOKEN_TYPE_INT
                         }
                     |   TOKEN_NAME
                         {
-                            //$$ = new tree::Type(tree::TYPE_UDT, $1);
+                            //$$ = new tree::Type(tree::TYPE_UDT, $1);                              /* UDTs force this class to be needed?? FIXME */
                         }
                     ;
 
