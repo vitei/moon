@@ -1,9 +1,10 @@
 #include <iostream>
 #include <stdio.h>
-#include "parser.h"
-#include "lexer.h"
 #include "tree.h"
 
+/* Generated headers */
+#include "parser.h"
+#include "lexer.h"
 
 extern void yyparse(void *scanner);
 
@@ -18,7 +19,7 @@ int main(int argc, char *argv[])
 			yyscan_t scanner;
 
 			// Setup??
-			tree::Block::setCurrentBlock(new tree::Block());
+			//tree::Block::setCurrentBlock(new tree::Block());
 			yylex_init(&scanner);
 			yyset_in(input, scanner);
 

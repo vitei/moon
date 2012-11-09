@@ -9,9 +9,11 @@
 %{
     #include <stdio.h>
     #include "error.h"
+    #include "tree.h"
+
+    /* Generated headers */
     #include "parser.h"
     #include "lexer.h"
-    #include "tree.h"
 
     void yyerror(YYLTYPE *locp, void *scanner, const char *error);
 %}
@@ -29,6 +31,10 @@
 
 /*  */
 %union {
+    tree::Expression *expression;
+    tree::Statement *statement;
+
+    /* The lexer returns these... */
     int integer;
     float real;
     char string[1024]; /* FIXME: We should make this bigger... */
@@ -159,6 +165,9 @@ o_program_cvrs      :   /* Empty */
 
 program_cvrs        :   program_cvr                                                                 /* CVRs = constants + variables + references */
                     |   program_cvrs program_cvr
+                        {
+                            //$1->setSibling($2);
+                        }
                     ;
 
 program_cvr         :   constant_statement
@@ -185,8 +194,14 @@ o_program_functions :   /* Empty */
 
 program_functions   :   program_function
                     |   program_functions program_function
+                        {
+                            //$1->setSibling($2);
+                        }
                     ;
 program_function    :   function_prototype statement_block
+                        {
+                            //$1->setChild($2);
+                        }
                     ;
 
 
@@ -198,22 +213,49 @@ program_function    :   function_prototype statement_block
 
 
 function_prototype  :   TOKEN_FUNCTION id_type TOKEN_PARENTHESIS_OPEN argument_definitions TOKEN_PARENTHESIS_CLOSE
+                        {
+                            //$$ = new tree::FunctionPrototype($2, $4);
+                        }
                     |   TOKEN_FUNCTION id_type TOKEN_PARENTHESIS_OPEN argument_definitions TOKEN_PARENTHESIS_CLOSE TOKEN_LT state_name TOKEN_GT
+                        {
+                            //$$ = new tree::FunctionPrototype($2, $4, $7);
+                        }
                     ;
 
 argument_definitions:   /* Empty */
+                        {
+                            //$$ = null;
+                        }
                     |   id_type
+                        {
+                            //$$ = new tree::IdList();
+                            //$$->push($1);
+                        }
                     |   argument_definitions TOKEN_COMMA id_type
+                        {
+                            //$1->push($3);
+                        }
                     ;
 
+
+
 state_name          :   /* Empty (default state) */
+                        {
+
+                        }
                     |   TOKEN_NAME
+                        {
+
+                        }
                     ;
 
 
 
 statements          :   statement
                     |   statements statement
+                        {
+                            //$1->setSibling($2);
+                        }
                     ;
 
 statement           :   variable_statement
@@ -230,10 +272,10 @@ statement           :   variable_statement
 statement_block     :   TOKEN_BRACE_OPEN TOKEN_BRACE_CLOSE                                          /* Empty... */
                     |   TOKEN_BRACE_OPEN
                         {
-                            tree::Block *block = new tree::Block();
+                            //tree::Block *block = new tree::Block();
 
-                            tree::Block::getCurrentBlock()->addBlock(block);
-                            tree::Block::setCurrentBlock(block);
+                            //tree::Block::getCurrentBlock()->addBlock(block);
+                            //tree::Block::setCurrentBlock(block);
                         }
                         statements
                         {
@@ -241,9 +283,9 @@ statement_block     :   TOKEN_BRACE_OPEN TOKEN_BRACE_CLOSE                      
                         }
                         TOKEN_BRACE_CLOSE
                         {
-                            tree::Block *block = tree::Block::getCurrentBlock();
+                            //tree::Block *block = tree::Block::getCurrentBlock();
 
-                            tree::Block::setCurrentBlock(block->getParent());
+                            //tree::Block::setCurrentBlock(block->getParent());
                         }
                     ;
 
@@ -276,87 +318,213 @@ expression          :   l_or_expression
 
 l_or_expression     :   l_and_expression
                     |   l_or_expression TOKEN_LOGICAL_OR l_and_expression
+                        {
+
+                        }
                     ;
 
 l_and_expression    :   or_expression
                     |   l_and_expression TOKEN_LOGICAL_AND or_expression
+                        {
+
+                        }
                     ;
 
 or_expression       :   xor_expression
                     |   or_expression TOKEN_OR xor_expression
+                        {
+
+                        }
                     ;
 
 xor_expression      :   and_expression
                     |   xor_expression TOKEN_XOR and_expression
+                        {
+
+                        }
                     ;
 
 and_expression      :   eq_expression
                     |   and_expression TOKEN_AND eq_expression
+                        {
+
+                        }
                     ;
 
 eq_expression       :   rel_expression
                     |   eq_expression TOKEN_EQ rel_expression
+                        {
+
+                        }
                     |   eq_expression TOKEN_NE rel_expression
+                        {
+
+                        }
                     ;
 
 rel_expression      :   add_expression
                     |   rel_expression TOKEN_LT add_expression
+                        {
+
+                        }
                     |   rel_expression TOKEN_LE add_expression
+                        {
+
+                        }
                     |   rel_expression TOKEN_GT add_expression
+                        {
+
+                        }
                     |   rel_expression TOKEN_GE add_expression
+                        {
+
+                        }
                     ;
 
 add_expression      :   mult_expression
                     |   add_expression TOKEN_ADD mult_expression
+                        {
+
+                        }
                     |   add_expression TOKEN_SUBTRACT mult_expression
+                        {
+
+                        }
                     ;
 
 mult_expression     :   cast_expression
                     |   mult_expression TOKEN_MULTIPLY cast_expression
+                        {
+
+                        }
                     |   mult_expression TOKEN_DIVIDE cast_expression
+                        {
+
+                        }
                     |   mult_expression TOKEN_MODULUS cast_expression
+                        {
+
+                        }
                     ;
 
 cast_expression     :   unary_expression
                     |   type TOKEN_CAST expression_atom
+                        {
+
+                        }
                     ;
 
-unary_expression    :   postfix_expression
-                    |   TOKEN_SUBTRACT postfix_expression
-                    |   TOKEN_LOGICAL_NOT postfix_expression
-                    |   TOKEN_NOT postfix_expression
+unary_expression    :   access_expression
+                    |   TOKEN_SUBTRACT access_expression
+                        {
+
+                        }
+                    |   TOKEN_LOGICAL_NOT access_expression
+                        {
+
+                        }
+                    |   TOKEN_NOT access_expression
+                        {
+
+                        }
+                    ;
+
+access_expression   :   postfix_expression ///////////////////////////////////////////////////////////////////////////////////////////////////
+                    |   postfix_expression TOKEN_DIRECT_ACCESS postfix_expression
+                        {
+
+                        }
+                    |   postfix_expression TOKEN_MESSAGE_ACCESS postfix_expression
+                        {
+
+                        }
                     ;
 
 postfix_expression  :   expression_atom
-                    |   postfix_expression TOKEN_BRACKETS_OPEN expression TOKEN_BRACKETS_CLOSE
-                    |   postfix_expression TOKEN_PARENTHESIS_OPEN TOKEN_PARENTHESIS_CLOSE
+                    |   array_expression
+                    |   call_expression
+                    ;
+
+array_expression    :   postfix_expression TOKEN_BRACKETS_OPEN expression TOKEN_BRACKETS_CLOSE
+                        {
+
+                        }
+                    ;
+
+call_expression     :   postfix_expression TOKEN_PARENTHESIS_OPEN TOKEN_PARENTHESIS_CLOSE
+                        {
+
+                        }
                     |   postfix_expression TOKEN_PARENTHESIS_OPEN argument_expressions TOKEN_PARENTHESIS_CLOSE
-                    |   postfix_expression TOKEN_DIRECT_ACCESS TOKEN_ID
-                    |   postfix_expression TOKEN_MESSAGE_ACCESS TOKEN_ID
+                        {
+
+                        }
                     ;
 
 argument_expressions:   expression
+                        {
+                            
+                        }
                     |   argument_expressions TOKEN_COMMA expression
+                        {
+                            
+                        }
                     ;
 
 expression_atom     :   TOKEN_NAME /* Constant */
+                        {
+                            //$$ = new tree::Identifier($1);
+                        }
                     |   TOKEN_INTEGER
+                        {
+                            //$$ = new tree::LiteralInteger($1);
+                        }
                     |   TOKEN_FLOAT
-                    |   TOKEN_ID
+                        {
+                            //$$ = new tree::LiteralFloat($1);
+                        }
                     |   TOKEN_STRING
+                        {
+                            //$$ = new tree::LiteralString($1);
+                        }
+                    |   TOKEN_ID
+                        {
+                            //$$ = new tree::Identifier($1);
+                        }
                     |   TOKEN_PARENTHESIS_OPEN expression TOKEN_PARENTHESIS_CLOSE
+                        {
+                            //$$ = $2;
+                        }
                     ;
 
 type                :   TOKEN_TYPE_INT
+                        {
+                            //$$ = new tree::Type(tree::TYPE_INT);
+                        }
                     |   TOKEN_TYPE_FLOAT
+                        {
+                            //$$ = new tree::Type(tree::TYPE_FLOAT);
+                        }
                     |   TOKEN_TYPE_STRING
+                        {
+                            //$$ = new tree::Type(tree::TYPE_STRING);
+                        }
                     |   TOKEN_NAME
+                        {
+                            //$$ = new tree::Type(tree::TYPE_UDT, $1);
+                        }
                     ;
 
 return_statement    :   TOKEN_RETURN expression TOKEN_EOS
+                        {
+                            //$$ = new tree::ReturnStatement($2);
+                        }
                     ;
 
-state_statement     :   TOKEN_STATE TOKEN_NAME TOKEN_EOS
+state_statement     :   TOKEN_STATE state_name TOKEN_EOS /* FIXME, blank state name to reset to default is best?? */
+                        {
+                            //$$ = new tree::StateStatement($2);
+                        }
                     ;
 
 error_statement     :   error TOKEN_EOS
