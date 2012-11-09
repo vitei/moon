@@ -200,7 +200,7 @@ program_functions   :   program_function
                     ;
 program_function    :   function_prototype statement_block
                         {
-                            //$1->setChild($2);
+                            //$$ = new Function($1, $2);
                         }
                     ;
 
@@ -241,11 +241,11 @@ argument_definitions:   /* Empty */
 
 state_name          :   /* Empty (default state) */
                         {
-
+                            //
                         }
                     |   TOKEN_NAME
                         {
-
+                            //
                         }
                     ;
 
@@ -290,7 +290,14 @@ statement_block     :   TOKEN_BRACE_OPEN TOKEN_BRACE_CLOSE                      
                     ;
 
 variable_statement  :   TOKEN_VAR id_type TOKEN_EOS
+                        {
+                            //$$ = tree::Variable($2);
+                        }
                     |   TOKEN_VAR id_type TOKEN_EQUALS expression TOKEN_EOS
+                        {
+                            //$$ = tree::Variable($2);
+                            //ASSIGNMENT GOES HERE
+                        }
                     ;
 
 
@@ -308,6 +315,10 @@ name_type           :   TOKEN_NAME
                     ;
 
 assignment_statement:   TOKEN_ID TOKEN_EQUALS expression TOKEN_EOS
+                        {
+                            //tree::Identifier *id = new tree::Identifier($1);
+                            //$$ = new tree::AssignmentStatement(id, $3);
+                        }
                     ;
 
 expression_statement:   expression TOKEN_EOS
@@ -319,124 +330,124 @@ expression          :   l_or_expression
 l_or_expression     :   l_and_expression
                     |   l_or_expression TOKEN_LOGICAL_OR l_and_expression
                         {
-
+                            //$$ = new tree::BinaryLogicalOrExpression($1, $3);
                         }
                     ;
 
 l_and_expression    :   or_expression
                     |   l_and_expression TOKEN_LOGICAL_AND or_expression
                         {
-
+                            //$$ = new tree::BinaryLogicalAndExpression($1, $3);
                         }
                     ;
 
 or_expression       :   xor_expression
                     |   or_expression TOKEN_OR xor_expression
                         {
-
+                            //$$ = new tree::BinaryOrExpression($1, $3);
                         }
                     ;
 
 xor_expression      :   and_expression
                     |   xor_expression TOKEN_XOR and_expression
                         {
-
+                            //$$ = new tree::BinaryXorExpression($1, $3);
                         }
                     ;
 
 and_expression      :   eq_expression
                     |   and_expression TOKEN_AND eq_expression
                         {
-
+                            //$$ = new tree::BinaryAndExpression($1, $3);
                         }
                     ;
 
 eq_expression       :   rel_expression
                     |   eq_expression TOKEN_EQ rel_expression
                         {
-
+                            //$$ = new tree::BinaryEqualExpression($1, $3);
                         }
                     |   eq_expression TOKEN_NE rel_expression
                         {
-
+                            //$$ = new tree::BinaryUnequalExpression($1, $3);
                         }
                     ;
 
 rel_expression      :   add_expression
                     |   rel_expression TOKEN_LT add_expression
                         {
-
+                            //$$ = new tree::BinaryLessThanExpression($1, $3);
                         }
                     |   rel_expression TOKEN_LE add_expression
                         {
-
+                            //$$ = new tree::BinaryLessEqualExpression($1, $3);
                         }
                     |   rel_expression TOKEN_GT add_expression
                         {
-
+                            //$$ = new tree::BinaryGreaterThanExpression($1, $3);
                         }
                     |   rel_expression TOKEN_GE add_expression
                         {
-
+                            //$$ = new tree::BinaryGreaterEqualExpression($1, $3);
                         }
                     ;
 
 add_expression      :   mult_expression
                     |   add_expression TOKEN_ADD mult_expression
                         {
-
+                            //$$ = new tree::BinaryAddExpression($1, $3);
                         }
                     |   add_expression TOKEN_SUBTRACT mult_expression
                         {
-
+                            //$$ = new tree::BinarySubtractExpression($1, $3);
                         }
                     ;
 
 mult_expression     :   cast_expression
                     |   mult_expression TOKEN_MULTIPLY cast_expression
                         {
-
+                            //$$ = new tree::BinaryMultiplyExpression($1, $3);
                         }
                     |   mult_expression TOKEN_DIVIDE cast_expression
                         {
-
+                            //$$ = new tree::BinaryDivideExpression($1, $3);
                         }
                     |   mult_expression TOKEN_MODULUS cast_expression
                         {
-
+                            //$$ = new tree::BinaryModulusExpression($1, $3);
                         }
                     ;
 
 cast_expression     :   unary_expression
                     |   type TOKEN_CAST expression_atom
                         {
-
+                            //$$ = new tree::CastExpression($1, $3);
                         }
                     ;
 
 unary_expression    :   access_expression
                     |   TOKEN_SUBTRACT access_expression
                         {
-
+                            //$$ = new tree::UnaryMinusExpression($2);
                         }
                     |   TOKEN_LOGICAL_NOT access_expression
                         {
-
+                            //$$ = new tree::UnaryLogicalNotExpression($2);
                         }
                     |   TOKEN_NOT access_expression
                         {
-
+                            //$$ = new tree::UnaryNotExpression($2);
                         }
                     ;
 
 access_expression   :   postfix_expression ///////////////////////////////////////////////////////////////////////////////////////////////////
                     |   postfix_expression TOKEN_DIRECT_ACCESS postfix_expression
                         {
-
+                            //$$ = new tree::DirectAccessExpression($1, $3);
                         }
                     |   postfix_expression TOKEN_MESSAGE_ACCESS postfix_expression
                         {
-
+                            //$$ = new tree::MessageAccessExpression($1, $3);
                         }
                     ;
 
@@ -447,27 +458,28 @@ postfix_expression  :   expression_atom
 
 array_expression    :   postfix_expression TOKEN_BRACKETS_OPEN expression TOKEN_BRACKETS_CLOSE
                         {
-
+                            //$$ = new tree::ArrayExpression($1, $3);
                         }
                     ;
 
 call_expression     :   postfix_expression TOKEN_PARENTHESIS_OPEN TOKEN_PARENTHESIS_CLOSE
                         {
-
+                            //$$ = new tree::FunctionCall($1);
                         }
                     |   postfix_expression TOKEN_PARENTHESIS_OPEN argument_expressions TOKEN_PARENTHESIS_CLOSE
                         {
-
+                            //$$ = new tree::FunctionCall($1, $3);
                         }
                     ;
 
 argument_expressions:   expression
                         {
-                            
+                            //$$ = $1;
                         }
                     |   argument_expressions TOKEN_COMMA expression
                         {
-                            
+                            //$$ = $1;
+                            //$$->setSibling($3);
                         }
                     ;
 
