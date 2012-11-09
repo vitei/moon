@@ -11,7 +11,7 @@ CXX_FLAGS =
 FLEX = flex
 FLEX_FLAGS = 
 
-.INTERMEDIATE: parser parser.cpp parser.h lexer lexer.cpp lexer.h
+.INTERMEDIATE: parser lexer
 
 all: compiler
 
