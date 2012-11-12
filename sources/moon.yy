@@ -510,15 +510,15 @@ expression_atom     :   TOKEN_NAME /* Constant */
                         }
                     |   TOKEN_INTEGER
                         {
-                            //$$ = new tree::LiteralInteger($1);
+                            //$$ = new tree::Literal(new tree::Type(tree::TYPE_INT), $1);
                         }
                     |   TOKEN_FLOAT
                         {
-                            //$$ = new tree::LiteralFloat($1);
+                            //$$ = new tree::Literal(new tree::Type(tree::TYPE_FLOAT), $1);
                         }
                     |   TOKEN_STRING
                         {
-                            //$$ = new tree::LiteralString($1);
+                            //$$ = new tree::Literal(new tree::Type(tree::TYPE_STRING), $1);
                         }
                     |   TOKEN_ID
                         {
