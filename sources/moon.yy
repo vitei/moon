@@ -33,6 +33,7 @@
 %union {
     tree::Expression *expression;
     tree::Statement *statement;
+    tree::Type *type;
 
     /* The lexer returns these... */
     int integer;
@@ -100,8 +101,12 @@
 %token TOKEN_TYPE_STRING
 
 /* Identifiers */
-%token TOKEN_NAME
-%token TOKEN_ID
+%token<string> TOKEN_NAME
+%token<string> TOKEN_ID
+
+/* Return types */
+%type<expression> expression_atom
+%type<type> type
 
 /* Start symbol */
 %start start
@@ -198,6 +203,7 @@ program_functions   :   program_function
                             //$1->setSibling($2);
                         }
                     ;
+
 program_function    :   function_prototype statement_block
                         {
                             //$$ = new Function($1, $2);
@@ -506,23 +512,23 @@ argument_expressions:   expression
 
 expression_atom     :   TOKEN_NAME /* Constant */
                         {
-                            //$$ = new tree::Identifier($1);
+                            $$ = new tree::Identifier($1);
                         }
                     |   TOKEN_INTEGER
                         {
-                            //$$ = new tree::Literal(new tree::Type(tree::TYPE_INT), $1);
+                            $$ = new tree::IntLiteral($1);
                         }
                     |   TOKEN_FLOAT
                         {
-                            //$$ = new tree::Literal(new tree::Type(tree::TYPE_FLOAT), $1);
+                            $$ = new tree::FloatLiteral($1);
                         }
                     |   TOKEN_STRING
                         {
-                            //$$ = new tree::Literal(new tree::Type(tree::TYPE_STRING), $1);
+                            $$ = new tree::StringLiteral($1);
                         }
                     |   TOKEN_ID
                         {
-                            //$$ = new tree::Identifier($1);
+                            $$ = new tree::Identifier($1);
                         }
                     |   TOKEN_PARENTHESIS_OPEN expression TOKEN_PARENTHESIS_CLOSE
                         {
@@ -532,19 +538,19 @@ expression_atom     :   TOKEN_NAME /* Constant */
 
 type                :   TOKEN_TYPE_INT
                         {
-                            //$$ = new tree::Type(tree::TYPE_INT);
+                            $$ = new tree::Type(tree::Type::DATA_INT);
                         }
                     |   TOKEN_TYPE_FLOAT
                         {
-                            //$$ = new tree::Type(tree::TYPE_FLOAT);
+                            $$ = new tree::Type(tree::Type::DATA_FLOAT);
                         }
                     |   TOKEN_TYPE_STRING
                         {
-                            //$$ = new tree::Type(tree::TYPE_STRING);
+                            $$ = new tree::Type(tree::Type::DATA_STRING);
                         }
                     |   TOKEN_NAME
                         {
-                            //$$ = new tree::Type(tree::TYPE_UDT, $1);                              /* UDTs force this class to be needed?? FIXME */
+                            $$ = new tree::UDTType($1);                       /* UDTs force this class to be needed?? FIXME */
                         }
                     ;
 
