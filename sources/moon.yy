@@ -34,6 +34,7 @@
     tree::Expression *expression;
     tree::Statement *statement;
     tree::Type *type;
+    tree::Identifier *id;
 
     /* The lexer returns these... */
     int integer;
@@ -105,8 +106,13 @@
 %token<string> TOKEN_ID
 
 /* Return types */
+%type<expression> expression
+/*......*/
+%type<expression> call_expression
+%type<expression> argument_expressions
 %type<expression> expression_atom
 %type<type> type
+%type<id> identifier
 
 /* Start symbol */
 %start start
@@ -319,12 +325,12 @@ reference_statement :   TOKEN_REF id_type TOKEN_EOS
                         }
                     ;
 
-id_type             :   TOKEN_ID
+id_type             :   identifier
                         {
                             //tree::Type *type = new tree::Type(tree::TYPE_INT);
                             //$$ = new tree::Id($1, type);
                         }
-                    |   type TOKEN_CAST TOKEN_ID
+                    |   type TOKEN_CAST identifier
                         {
                             //$$ = new tree::Id($3, $1);
                         }
@@ -341,10 +347,9 @@ name_type           :   TOKEN_NAME
                         }
                     ;
 
-assignment_statement:   TOKEN_ID TOKEN_EQUALS expression TOKEN_EOS
+assignment_statement:   identifier TOKEN_EQUALS expression TOKEN_EOS
                         {
-                            //tree::Identifier *id = new tree::Identifier($1);
-                            //$$ = new tree::BinaryExpression(tree::Assign, id, $3);
+                            //$$ = new tree::BinaryExpression(tree::Assign, $1, $3);
                         }
                     ;
 
@@ -489,23 +494,23 @@ array_expression    :   postfix_expression TOKEN_BRACKETS_OPEN expression TOKEN_
                         }
                     ;
 
-call_expression     :   postfix_expression TOKEN_PARENTHESIS_OPEN TOKEN_PARENTHESIS_CLOSE
+call_expression     :   identifier TOKEN_PARENTHESIS_OPEN TOKEN_PARENTHESIS_CLOSE
                         {
-                            //$$ = new tree::FunctionCall($1);
+                            $$ = new tree::FunctionCall($1);
                         }
-                    |   postfix_expression TOKEN_PARENTHESIS_OPEN argument_expressions TOKEN_PARENTHESIS_CLOSE
+                    |   identifier TOKEN_PARENTHESIS_OPEN argument_expressions TOKEN_PARENTHESIS_CLOSE
                         {
-                            //$$ = new tree::FunctionCall($1, $3);
+                            $$ = new tree::FunctionCall($1, $3);
                         }
                     ;
 
 argument_expressions:   expression
                         {
-                            //$$ = $1;
+                            $$ = $1;
                         }
                     |   argument_expressions TOKEN_COMMA expression
                         {
-                            //$$ = $1;
+                            $$ = $1;
                             //$$->setSibling($3);
                         }
                     ;
@@ -526,9 +531,9 @@ expression_atom     :   TOKEN_NAME /* Constant */
                         {
                             $$ = new tree::StringLiteral($1);
                         }
-                    |   TOKEN_ID
+                    |   identifier
                         {
-                            $$ = new tree::Identifier($1);
+                            $$ = $1;
                         }
                     |   TOKEN_PARENTHESIS_OPEN expression TOKEN_PARENTHESIS_CLOSE
                         {
@@ -551,6 +556,12 @@ type                :   TOKEN_TYPE_INT
                     |   TOKEN_NAME
                         {
                             $$ = new tree::UDTType($1);                       /* UDTs force this class to be needed?? FIXME */
+                        }
+                    ;
+
+identifier          :   TOKEN_ID
+                        {
+                            $$ = new tree::Identifier($1);
                         }
                     ;
 
