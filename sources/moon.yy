@@ -295,23 +295,44 @@ variable_statement  :   TOKEN_VAR id_type TOKEN_EOS
                         }
                     |   TOKEN_VAR id_type TOKEN_EQUALS expression TOKEN_EOS
                         {
-                            //$$ = tree::Variable($2);
-                            //ASSIGNMENT GOES HERE
+                            //tree::Variable *var = tree::Variable($2);
+                            //$$ = new tree::BinaryExpression(tree::Assign, var, $4);
                         }
                     ;
 
 
 
 reference_statement :   TOKEN_REF id_type TOKEN_EOS
-                    |   TOKEN_REF id_type TOKEN_EQUALS expression TOKEN_EOS /* FIXME... */
+                        {
+                            //$$ = tree::Reference($2);
+                        }
+                    |   TOKEN_REF id_type TOKEN_EQUALS expression TOKEN_EOS
+                        {
+                            //tree::Reference *ref = tree::Reference($2);
+                            //$$ = new tree::BinaryExpression(tree::Assign, ref, $4);
+                        }
                     ;
 
 id_type             :   TOKEN_ID
+                        {
+                            //tree::Type *type = new tree::Type(tree::TYPE_INT);
+                            //$$ = new tree::Id($1, type);
+                        }
                     |   type TOKEN_CAST TOKEN_ID
+                        {
+                            //$$ = new tree::Id($3, $1);
+                        }
                     ;
 
 name_type           :   TOKEN_NAME
+                        {
+                            //tree::Type *type = new tree::Type(tree::TYPE_INT);
+                            //$$ = new tree::Name($1, type);
+                        }
                     |   type TOKEN_CAST TOKEN_NAME
+                        {
+                            //$$ = new tree::Name($3, $1);
+                        }
                     ;
 
 assignment_statement:   TOKEN_ID TOKEN_EQUALS expression TOKEN_EOS
