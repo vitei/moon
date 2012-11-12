@@ -5,10 +5,6 @@ namespace tree
 {
 	class Node
 	{
-		void setSibling(Node *node);
-
-	private:
-		Node *mSibling;
 	};
 }
 

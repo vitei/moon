@@ -121,8 +121,14 @@
 "string"                        return TOKEN_TYPE_STRING;
 
     /* Identifiers */
-[A-Z][a-zA-Z0-9_]*              return TOKEN_NAME;
-[a-z_][a-zA-Z0-9_]*             return TOKEN_ID;
+[A-Z][a-zA-Z0-9_]*              {
+                                    strcpy(yylval->string, yytext);
+                                    return TOKEN_NAME;
+                                }
+[a-z_][a-zA-Z0-9_]*             {
+                                    strcpy(yylval->string, yytext);
+                                    return TOKEN_ID;
+                                }
 
     /* Line Comments */
 "//"                            BEGIN LINE_COMMENT;                                                 /* One line comments... */
