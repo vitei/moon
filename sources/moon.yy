@@ -107,7 +107,7 @@
 
 /* Return types */
 %type<statement> expression_statement
-%type<expression> exp_or_ass
+%type<expression> assign_or_expression
 %type<expression> assignment
 %type<expression> expression
 %type<expression> l_or_expression
@@ -366,22 +366,23 @@ name_type           :   TOKEN_NAME
                         }
                     ;
 
-expression_statement:   exp_or_ass TOKEN_EOS
+expression_statement:   assign_or_expression TOKEN_EOS
                         {
                             $$ = new tree::ExpressionStatement($1);
                         }
                     ;
 
-exp_or_ass          :   expression
+assign_or_expression:   assignment
                         {
                             $$ = $1;
                         }
-                    |   assignment
+                    |   expression
                         {
                             $$ = $1;
                         }
+                    ;
 
-assignment          :   identifier TOKEN_EQUALS expression TOKEN_EOS
+assignment          :   identifier TOKEN_EQUALS expression
                         {
                             $$ = new tree::BinaryOperation(tree::Operation::OP_ASSIGN, $1, $3);
                         }
@@ -569,7 +570,7 @@ postfix_expression  :   expression_atom
 
 array_expression    :   postfix_expression TOKEN_BRACKETS_OPEN expression TOKEN_BRACKETS_CLOSE
                         {
-                            //$$ = new tree::ArrayExpression($1, $3);
+                            $$ = new tree::ArrayAccess($1, $3);
                         }
                     ;
 
@@ -614,7 +615,7 @@ expression_atom     :   TOKEN_NAME /* Constant */
                         {
                             $$ = $1;
                         }
-                    |   TOKEN_PARENTHESIS_OPEN expression_statement TOKEN_PARENTHESIS_CLOSE
+                    |   TOKEN_PARENTHESIS_OPEN expression TOKEN_PARENTHESIS_CLOSE
                         {
                             //$$ = $2;
                         }
