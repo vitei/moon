@@ -36,4 +36,4 @@ lexer.cpp: lexer parser.h
 compiler: ../bin/moon
 
 clean:
-	rm -rf parser.output *.o tree/*.o ../bin/moon
+	rm -rf lexer.* parser.* *.o tree/*.o ../bin/moon

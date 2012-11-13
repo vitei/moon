@@ -20,6 +20,16 @@ namespace tree
 		std::string mName;
 	};
 
+	class ArrayAccess : public Expression
+	{
+	public:
+		ArrayAccess(Expression *array, Expression *index)/* : mID(id), mInitialValue(initialValue)*/ {}
+
+	private:
+		//Identifier *mID;
+		//Expression *mInitialValue;
+	};
+
 	class FunctionCall : public Expression
 	{
 	public:
