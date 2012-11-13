@@ -106,8 +106,24 @@
 %token<string> TOKEN_ID
 
 /* Return types */
+%type<statement> expression_statement
+%type<expression> exp_or_ass
+%type<expression> assignment
 %type<expression> expression
-/*......*/
+%type<expression> l_or_expression
+%type<expression> l_and_expression
+%type<expression> or_expression
+%type<expression> xor_expression
+%type<expression> and_expression
+%type<expression> eq_expression
+%type<expression> rel_expression
+%type<expression> add_expression
+%type<expression> mult_expression
+%type<expression> cast_expression
+%type<expression> unary_expression
+%type<expression> access_expression
+%type<expression> postfix_expression
+%type<expression> array_expression
 %type<expression> call_expression
 %type<expression> argument_expressions
 %type<expression> expression_atom
@@ -264,15 +280,18 @@ state_name          :   /* Empty (default state) */
 
 
 statements          :   statement
+                        {
+                            //$$ = $1;
+                        }
                     |   statements statement
                         {
                             //$1->setSibling($2);
+                            //$$ = $1;
                         }
                     ;
 
 statement           :   variable_statement
                     |   reference_statement
-                    |   assignment_statement
                     |   expression_statement    /* statements types here... */
                     |   return_statement
                     |   state_statement
@@ -347,110 +366,155 @@ name_type           :   TOKEN_NAME
                         }
                     ;
 
-assignment_statement:   identifier TOKEN_EQUALS expression TOKEN_EOS
+expression_statement:   exp_or_ass TOKEN_EOS
                         {
-                            //$$ = new tree::BinaryExpression(tree::Assign, $1, $3);
+                            $$ = new tree::ExpressionStatement($1);
                         }
                     ;
 
-expression_statement:   expression TOKEN_EOS
+exp_or_ass          :   expression
+                        {
+                            $$ = $1;
+                        }
+                    |   assignment
+                        {
+                            $$ = $1;
+                        }
+
+assignment          :   identifier TOKEN_EQUALS expression TOKEN_EOS
+                        {
+                            $$ = new tree::BinaryOperation(tree::Operation::OP_ASSIGN, $1, $3);
+                        }
                     ;
 
 expression          :   l_or_expression
+                        {
+                            $$ = $1;
+                        }
                     ;
 
 l_or_expression     :   l_and_expression
+                        {
+                            $$ = $1;
+                        }
                     |   l_or_expression TOKEN_LOGICAL_OR l_and_expression
                         {
-                            //$$ = new tree::BinaryExpression(tree::LogicalOr, $1, $3);
+                            $$ = new tree::BinaryOperation(tree::Operation::OP_LOGICAL_OR, $1, $3);
                         }
                     ;
 
 l_and_expression    :   or_expression
+                        {
+                            $$ = $1;
+                        }
                     |   l_and_expression TOKEN_LOGICAL_AND or_expression
                         {
-                            //$$ = new tree::BinaryExpression(tree::LogicalAnd, $1, $3);
+                            $$ = new tree::BinaryOperation(tree::Operation::OP_LOGICAL_AND, $1, $3);
                         }
                     ;
 
 or_expression       :   xor_expression
+                        {
+                            $$ = $1;
+                        }
                     |   or_expression TOKEN_OR xor_expression
                         {
-                            //$$ = new tree::BinaryExpression(tree::Or, $1, $3);
+                            $$ = new tree::BinaryOperation(tree::Operation::OP_OR, $1, $3);
                         }
                     ;
 
 xor_expression      :   and_expression
+                        {
+                            $$ = $1;
+                        }
                     |   xor_expression TOKEN_XOR and_expression
                         {
-                            //$$ = new tree::BinaryExpression(tree::Xor, $1, $3);
+                            $$ = new tree::BinaryOperation(tree::Operation::OP_XOR, $1, $3);
                         }
                     ;
 
 and_expression      :   eq_expression
+                        {
+                            $$ = $1;
+                        }
                     |   and_expression TOKEN_AND eq_expression
                         {
-                            //$$ = new tree::BinaryExpression(tree::And, $1, $3);
+                            $$ = new tree::BinaryOperation(tree::Operation::OP_AND, $1, $3);
                         }
                     ;
 
 eq_expression       :   rel_expression
+                        {
+                            $$ = $1;
+                        }
                     |   eq_expression TOKEN_EQ rel_expression
                         {
-                            //$$ = new tree::BinaryExpression(tree::Equal, $1, $3);
+                            $$ = new tree::BinaryOperation(tree::Operation::OP_EQUAL, $1, $3);
                         }
                     |   eq_expression TOKEN_NE rel_expression
                         {
-                            //$$ = new tree::BinaryExpression(tree::Unequal, $1, $3);
+                            $$ = new tree::BinaryOperation(tree::Operation::OP_UNEQUAL, $1, $3);
                         }
                     ;
 
 rel_expression      :   add_expression
+                        {
+                            $$ = $1;
+                        }
                     |   rel_expression TOKEN_LT add_expression
                         {
-                            //$$ = new tree::BinaryExpression(tree::LessThan, $1, $3);
+                            $$ = new tree::BinaryOperation(tree::Operation::OP_LESS_THAN, $1, $3);
                         }
                     |   rel_expression TOKEN_LE add_expression
                         {
-                            //$$ = new tree::BinaryExpression(tree::LessEqual, $1, $3);
+                            $$ = new tree::BinaryOperation(tree::Operation::OP_LESS_EQUAL, $1, $3);
                         }
                     |   rel_expression TOKEN_GT add_expression
                         {
-                            //$$ = new tree::BinaryExpression(tree::GreaterThan, $1, $3);
+                            $$ = new tree::BinaryOperation(tree::Operation::OP_GREATER_THAN, $1, $3);
                         }
                     |   rel_expression TOKEN_GE add_expression
                         {
-                            //$$ = new tree::BinaryExpression(tree::GreaterEqual, $1, $3);
+                            $$ = new tree::BinaryOperation(tree::Operation::OP_GREATER_EQUAL, $1, $3);
                         }
                     ;
 
 add_expression      :   mult_expression
+                        {
+                            $$ = $1;
+                        }
                     |   add_expression TOKEN_ADD mult_expression
                         {
-                            //$$ = new tree::BinaryExpression(tree::Add, $1, $3);
+                            $$ = new tree::BinaryOperation(tree::Operation::OP_ADD, $1, $3);
                         }
                     |   add_expression TOKEN_SUBTRACT mult_expression
                         {
-                            //$$ = new tree::BinaryExpression(tree::Subtract, $1, $3);
+                            $$ = new tree::BinaryOperation(tree::Operation::OP_SUBTRACT, $1, $3);
                         }
                     ;
 
 mult_expression     :   cast_expression
+                        {
+                            $$ = $1;
+                        }
                     |   mult_expression TOKEN_MULTIPLY cast_expression
                         {
-                            //$$ = new tree::BinaryExpression(tree::Multiply, $1, $3);
+                            $$ = new tree::BinaryOperation(tree::Operation::OP_MULTIPLY, $1, $3);
                         }
                     |   mult_expression TOKEN_DIVIDE cast_expression
                         {
-                            //$$ = new tree::BinaryExpression(tree::Divide, $1, $3);
+                            $$ = new tree::BinaryOperation(tree::Operation::OP_DIVIDE, $1, $3);
                         }
                     |   mult_expression TOKEN_MODULUS cast_expression
                         {
-                            //$$ = new tree::BinaryExpression(tree::Modulus, $1, $3);
+                            $$ = new tree::BinaryOperation(tree::Operation::OP_MODULUS, $1, $3);
                         }
                     ;
 
 cast_expression     :   unary_expression
+                        {
+                            $$ = $1;
+                        }
                     |   type TOKEN_CAST expression_atom
                         {
                             //$$ = new tree::CastExpression($1, $3);
@@ -458,21 +522,27 @@ cast_expression     :   unary_expression
                     ;
 
 unary_expression    :   access_expression
+                        {
+                            $$ = $1;
+                        }
                     |   TOKEN_SUBTRACT access_expression
                         {
-                            //$$ = new tree::UnaryExpression(tree::Subtract, $2);
+                            $$ = new tree::UnaryOperation(tree::Operation::OP_SUBTRACT, $2);
                         }
                     |   TOKEN_LOGICAL_NOT access_expression
                         {
-                            //$$ = new tree::UnaryExpression(tree::LogicalNot, $2);
+                            $$ = new tree::UnaryOperation(tree::Operation::OP_LOGICAL_NOT, $2);
                         }
                     |   TOKEN_NOT access_expression
                         {
-                            //$$ = new tree::UnaryExpression(tree::Not, $2);
+                            $$ = new tree::UnaryOperation(tree::Operation::OP_NOT, $2);
                         }
                     ;
 
-access_expression   :   postfix_expression ///////////////////////////////////////////////////////////////////////////////////////////////////
+access_expression   :   postfix_expression
+                        {
+                            $$ = $1;
+                        }
                     |   postfix_expression TOKEN_DIRECT_ACCESS postfix_expression
                         {
                             //$$ = new tree::DirectAccessExpression($1, $3);
@@ -484,8 +554,17 @@ access_expression   :   postfix_expression /////////////////////////////////////
                     ;
 
 postfix_expression  :   expression_atom
+                        {
+                            $$ = $1;
+                        }
                     |   array_expression
+                        {
+                            $$ = $1;
+                        }
                     |   call_expression
+                        {
+                            $$ = $1;
+                        }
                     ;
 
 array_expression    :   postfix_expression TOKEN_BRACKETS_OPEN expression TOKEN_BRACKETS_CLOSE
@@ -535,7 +614,7 @@ expression_atom     :   TOKEN_NAME /* Constant */
                         {
                             $$ = $1;
                         }
-                    |   TOKEN_PARENTHESIS_OPEN expression TOKEN_PARENTHESIS_CLOSE
+                    |   TOKEN_PARENTHESIS_OPEN expression_statement TOKEN_PARENTHESIS_CLOSE
                         {
                             //$$ = $2;
                         }
