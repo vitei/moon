@@ -31,8 +31,10 @@
 
 /*  */
 %union {
-    tree::Expression *expression;
+    tree::StatementList *statementList;
     tree::Statement *statement;
+    tree::ExpressionList *expressionList;
+    tree::Expression *expression;
     tree::Type *type;
     tree::Identifier *id;
 
@@ -106,6 +108,12 @@
 %token<string> TOKEN_ID
 
 /* Return types */
+%type<statemenList> statement_block
+%type<statemenList> statements
+%type<statement> statement
+
+
+
 %type<statement> expression_statement
 %type<expression> assign_or_expression
 %type<expression> assignment
@@ -129,6 +137,8 @@
 %type<expression> expression_atom
 %type<type> type
 %type<id> identifier
+%type<statement> return_statement
+%type<statement> state_statement
 
 /* Start symbol */
 %start start
@@ -279,44 +289,56 @@ state_name          :   /* Empty (default state) */
 
 
 
+statement_block     :   TOKEN_BRACE_OPEN TOKEN_BRACE_CLOSE                                          /* Empty... */
+                        {
+                            $$ = 0;
+                        }
+                    |   TOKEN_BRACE_OPEN statements TOKEN_BRACE_CLOSE
+                        {
+                            $$ = $2;
+                        }
+                    ;
+
 statements          :   statement
                         {
-                            //$$ = $1;
+                            $$ = new StatementList();
+                            $$->add($1);
                         }
                     |   statements statement
                         {
-                            //$1->setSibling($2);
-                            //$$ = $1;
+                            $1->add($2);
+                            $$ = $1;
                         }
                     ;
 
 statement           :   variable_statement
+                        {
+                            $$ = $1;
+                        }
                     |   reference_statement
+                        {
+                            $$ = $1;
+                        }
                     |   expression_statement    /* statements types here... */
+                        {
+                            $$ = $1;
+                        }
                     |   return_statement
+                        {
+                            $$ = $1;
+                        }
                     |   state_statement
+                        {
+                            $$ = $1;
+                        }
                     |   statement_block
+                        {
+                            $$ = $1;
+                        }
 
                     |   error_statement                                                             /* Special case!! */
-                    ;
-
-statement_block     :   TOKEN_BRACE_OPEN TOKEN_BRACE_CLOSE                                          /* Empty... */
-                    |   TOKEN_BRACE_OPEN
                         {
-                            //tree::Block *block = new tree::Block();
-
-                            //tree::Block::getCurrentBlock()->addBlock(block);
-                            //tree::Block::setCurrentBlock(block);
-                        }
-                        statements
-                        {
-
-                        }
-                        TOKEN_BRACE_CLOSE
-                        {
-                            //tree::Block *block = tree::Block::getCurrentBlock();
-
-                            //tree::Block::setCurrentBlock(block->getParent());
+                            $$ = 0;
                         }
                     ;
 
