@@ -9,22 +9,39 @@ namespace tree
 {
 	class Statement : public Node
 	{
-		public:
-			Statement() : mSibling(0) {}
+	};
 
-			void setSibling(Statement *sibling)
-			{
-				mSibling = sibling;
-			}
+	class StatementList : public Node
+	{
+	public:
+		void add(Statement *statement)
+		{
+			mList.push_back(statement);
+		}
 
-		private:
-			Statement *mSibling;
+	private:
+		std::vector<Statement> mList;
 	};
 
 	class ExpressionStatement : public Statement
 	{
 	public:
 		ExpressionStatement(Expression *expression) {}
+	};
+
+	class ReturnStatement : public Statement
+	{
+	public:
+		ReturnStatement(Expression *expression) {}
+	};
+
+	class StateStatement : public Statement
+	{
+	public:
+		StateStatement(const char *name) : mName(std::string(name)) {}
+
+	private:
+		std::string mName;
 	};
 }
 
