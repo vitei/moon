@@ -686,5 +686,5 @@ error_statement     :   error TOKEN_EOS
 
 void yyerror(YYLTYPE *locp, void *scanner, const char *error)
 {
-    emitError(locp->first_line, error);
+    error::enqueue(locp->first_line, error);
 }

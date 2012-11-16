@@ -1,7 +1,10 @@
 #ifndef ERROR_H
 #define ERROR_H
 
-extern void emitError(const char *error);
-extern void emitError(unsigned int lineNum, const char *error);
+namespace error
+{
+	void enqueue(unsigned int lineNumber, const char *message);
+	void output();
+}
 
 #endif
