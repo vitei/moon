@@ -11,6 +11,18 @@ namespace tree
 	{
 	};
 
+	class ExpressionList : public Node
+	{
+	public:
+		void add(Expression *expression)
+		{
+			mList.push_back(expression);
+		}
+
+	private:
+		std::vector<Expression> mList;
+	};
+
 	class Identifier : public Expression
 	{
 	public:
