@@ -647,13 +647,13 @@ identifier          :   TOKEN_ID
 
 return_statement    :   TOKEN_RETURN expression TOKEN_EOS
                         {
-                            //$$ = new tree::ReturnStatement($2);
+                            $$ = new tree::ReturnStatement($2);
                         }
                     ;
 
 state_statement     :   TOKEN_STATE state_name TOKEN_EOS /* FIXME, blank state name to reset to default is best?? */
                         {
-                            //$$ = new tree::StateStatement($2);
+                            $$ = new tree::StateStatement($2);
                         }
                     ;
 
