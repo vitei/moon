@@ -1,0 +1,20 @@
+moon
+Version 0.0.1
+
+Abtract
+	Vitei's in-house compiler. Currently under construction.
+	Please feel free to use, but expect a lot of bugs whilst we iron out some of the features.
+
+	PLEASE READ THE NOTES FOR EVERY VERSION OF THIS COMPILER UNTIL WE HIT A STABLE RELEASE.
+
+Licence
+	Licenced under the MIT licence. Full text in LICENCE.
+
+Notes
+	* Ensure your .moon source files end with a new line!
+
+Overview
+	moonlang is not a film about the moon.
+
+Usage example
+	TBD
