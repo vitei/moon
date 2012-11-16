@@ -402,12 +402,19 @@ assign_or_expression:   assignment
                         {
                             $$ = $1;
                         }
+
+                    |   error                                                                       /* Special case!! Checking here will catch a lot of cases, should produce better error reports */
+                        {
+                            $$ = 0; // FIXME
+                        }
                     ;
 
 assignment          :   identifier TOKEN_EQUALS expression
                         {
                             $$ = new tree::BinaryOperation(tree::Operation::OP_ASSIGN, $1, $3);
                         }
+
+                    |   error                                                                       /* Special case!! Checking here will catch a lot of cases, should produce better error reports */
                     ;
 
 expression          :   l_or_expression
@@ -677,9 +684,6 @@ state_statement     :   TOKEN_STATE state_name TOKEN_EOS /* FIXME, blank state n
                         {
                             $$ = new tree::StateStatement($2);
                         }
-                    ;
-
-error_statement     :   error TOKEN_EOS
                     ;
 
 %%
