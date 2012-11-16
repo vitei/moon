@@ -646,7 +646,7 @@ expression_atom     :   TOKEN_NAME /* Constant */
                         }
                     |   TOKEN_PARENTHESIS_OPEN expression TOKEN_PARENTHESIS_CLOSE
                         {
-                            //$$ = $2;
+                            $$ = $2;
                         }
                     ;
 
