@@ -2,11 +2,12 @@
 #define TREE_STATE_H
 
 #include <string>
+#include "node.h"
 
 
 namespace tree
 {
-	class State
+	class State : public Node
 	{
 	public:
 		State(const char *name) : mName(name) {}
