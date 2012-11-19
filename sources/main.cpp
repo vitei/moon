@@ -1,5 +1,6 @@
 #include <iostream>
 #include <stdio.h>
+#include "error.h"
 #include "tree.h"
 
 /* Generated headers */
@@ -32,7 +33,7 @@ int main(int argc, char *argv[])
 
 
 			// Show the errors
-			error::output()
+			error::output();
 		}
 		else
 		{

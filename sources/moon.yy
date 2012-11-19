@@ -108,12 +108,13 @@
 %token<string> TOKEN_ID
 
 /* Return types */
-%type<statemenList> statement_block
-%type<statemenList> statements
+%type<statementList> statement_block
+%type<statementList> statements
 %type<statement> statement
-
-
-
+%type<statement> variable_statement
+%type<expression> variable
+%type<statement> reference_statement
+%type<expression> reference
 %type<statement> expression_statement
 %type<expression> assign_or_expression
 %type<expression> assignment
@@ -133,12 +134,13 @@
 %type<expression> postfix_expression
 %type<expression> array_expression
 %type<expression> call_expression
-%type<expression> argument_expressions
+%type<expressionList> argument_expressions
 %type<expression> expression_atom
 %type<type> type
 %type<id> identifier
 %type<statement> return_statement
 %type<statement> state_statement
+%type<string> state_name
 
 /* Start symbol */
 %start start
@@ -260,6 +262,17 @@ function_prototype  :   TOKEN_FUNCTION id_type TOKEN_PARENTHESIS_OPEN argument_d
                         }
                     ;
 
+id_type             :   identifier /* FIXME, rename this */
+                        {
+                            //tree::Type *type = new tree::Type(tree::TYPE_INT);
+                            //$$ = new tree::Id($1, type);
+                        }
+                    |   type TOKEN_CAST identifier
+                        {
+                            //$$ = new tree::Id($3, $1);
+                        }
+                    ;
+
 argument_definitions:   /* Empty */
                         {
                             //$$ = null;
@@ -277,18 +290,6 @@ argument_definitions:   /* Empty */
 
 
 
-state_name          :   /* Empty (default state) */
-                        {
-                            //
-                        }
-                    |   TOKEN_NAME
-                        {
-                            //
-                        }
-                    ;
-
-
-
 statement_block     :   TOKEN_BRACE_OPEN TOKEN_BRACE_CLOSE                                          /* Empty... */
                         {
                             $$ = 0;
@@ -301,7 +302,7 @@ statement_block     :   TOKEN_BRACE_OPEN TOKEN_BRACE_CLOSE                      
 
 statements          :   statement
                         {
-                            $$ = new StatementList();
+                            $$ = new tree::StatementList();
                             $$->add($1);
                         }
                     |   statements statement
@@ -335,51 +336,55 @@ statement           :   variable_statement
                         {
                             $$ = $1;
                         }
+                    ;
 
-                    |   error_statement                                                             /* Special case!! */
+variable_statement  :   variable TOKEN_EOS
                         {
-                            $$ = 0;
+                            $$ = new tree::ExpressionStatement($1);
+                        }
+                    |   variable TOKEN_EQUALS expression TOKEN_EOS
+                        {
+                            tree::BinaryOperation *assignment = new tree::BinaryOperation(tree::Operation::OP_ASSIGN, $1, $3);
+                            $$ = new tree::ExpressionStatement(assignment);
                         }
                     ;
 
-variable_statement  :   TOKEN_VAR id_type TOKEN_EOS
+variable            :   TOKEN_VAR identifier
                         {
-                            //$$ = tree::Variable($2);
+                            tree::Type *type = new tree::Type(tree::Type::DATA_INT);
+                            $$ = new tree::Variable(type, $2);
                         }
-                    |   TOKEN_VAR id_type TOKEN_EQUALS expression TOKEN_EOS
+                    |   TOKEN_VAR type TOKEN_CAST identifier
                         {
-                            //tree::Variable *var = tree::Variable($2);
-                            //$$ = new tree::BinaryExpression(tree::Assign, var, $4);
-                        }
-                    ;
-
-
-
-reference_statement :   TOKEN_REF id_type TOKEN_EOS
-                        {
-                            //$$ = tree::Reference($2);
-                        }
-                    |   TOKEN_REF id_type TOKEN_EQUALS expression TOKEN_EOS
-                        {
-                            //tree::Reference *ref = tree::Reference($2);
-                            //$$ = new tree::BinaryExpression(tree::Assign, ref, $4);
+                            $$ = new tree::Variable($2, $4);
                         }
                     ;
 
-id_type             :   identifier
+reference_statement :   reference TOKEN_EOS
                         {
-                            //tree::Type *type = new tree::Type(tree::TYPE_INT);
-                            //$$ = new tree::Id($1, type);
+                            $$ = new tree::ExpressionStatement($1);
                         }
-                    |   type TOKEN_CAST identifier
+                    |   reference TOKEN_EQUALS expression TOKEN_EOS
                         {
-                            //$$ = new tree::Id($3, $1);
+                            tree::BinaryOperation *assignment = new tree::BinaryOperation(tree::Operation::OP_ASSIGN, $1, $3);
+                            $$ = new tree::ExpressionStatement(assignment);
+                        }
+                    ;
+
+reference           :   TOKEN_REF identifier
+                        {
+                            tree::Type *type = new tree::Type(tree::Type::DATA_INT);
+                            $$ = new tree::Reference(type, $2);
+                        }
+                    |   TOKEN_REF type TOKEN_CAST identifier
+                        {
+                            $$ = new tree::Reference($2, $4);
                         }
                     ;
 
 name_type           :   TOKEN_NAME
                         {
-                            //tree::Type *type = new tree::Type(tree::TYPE_INT);
+                            //tree::Type *type = new tree::Type(tree::type::DATA_INT);
                             //$$ = new tree::Name($1, type);
                         }
                     |   type TOKEN_CAST TOKEN_NAME
@@ -413,8 +418,6 @@ assignment          :   identifier TOKEN_EQUALS expression
                         {
                             $$ = new tree::BinaryOperation(tree::Operation::OP_ASSIGN, $1, $3);
                         }
-
-                    |   error                                                                       /* Special case!! Checking here will catch a lot of cases, should produce better error reports */
                     ;
 
 expression          :   l_or_expression
@@ -615,12 +618,13 @@ call_expression     :   identifier TOKEN_PARENTHESIS_OPEN TOKEN_PARENTHESIS_CLOS
 
 argument_expressions:   expression
                         {
-                            $$ = $1;
+                            $$ = new tree::ExpressionList();
+                            $$->add($1);
                         }
                     |   argument_expressions TOKEN_COMMA expression
                         {
                             $$ = $1;
-                            //$$->setSibling($3);
+                            $$->add($3);
                         }
                     ;
 
@@ -683,6 +687,16 @@ return_statement    :   TOKEN_RETURN expression TOKEN_EOS
 state_statement     :   TOKEN_STATE state_name TOKEN_EOS /* FIXME, blank state name to reset to default is best?? */
                         {
                             $$ = new tree::StateStatement($2);
+                        }
+                    ;
+
+state_name          :   /* Empty (default state) */
+                        {
+                            *$$ = 0; /* FIXME */
+                        }
+                    |   TOKEN_NAME
+                        {
+                            //$$ = $1;
                         }
                     ;
 

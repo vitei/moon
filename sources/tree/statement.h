@@ -1,6 +1,7 @@
 #ifndef TREE_STATEMENT_H
 #define TREE_STATEMENT_H
 
+#include <vector>
 #include "node.h"
 #include "expression.h"
 
@@ -11,7 +12,7 @@ namespace tree
 	{
 	};
 
-	class StatementList : public Node
+	class StatementList : public Statement /* FIXME, should this inherit off statement?? */
 	{
 	public:
 		void add(Statement *statement)
@@ -20,7 +21,7 @@ namespace tree
 		}
 
 	private:
-		std::vector<Statement> mList;
+		std::vector<Statement *> mList;
 	};
 
 	class ExpressionStatement : public Statement
