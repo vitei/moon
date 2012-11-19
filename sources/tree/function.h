@@ -10,22 +10,22 @@ namespace tree
 	class FunctionPrototype : public Expression
 	{
 	public:
-		FunctionPrototype(Type *type, Identifier *name, ExpressionList *arguments) : mType(type), mName(name), mArguments(arguments) {}
+		FunctionPrototype(Type *type, Identifier *name, NodeList *arguments) : mType(type), mName(name), mArguments(arguments) {}
 
 	private:
 		Type *mType;
 		Identifier *mName;
-		ExpressionList *mArguments;
+		NodeList *mArguments;
 	};
 
 	class Function : public Statement
 	{
 	public:
-		Function(FunctionPrototype *prototype, StatementList *statements) : mPrototype(prototype), mStatements(statements) {}
+		Function(FunctionPrototype *prototype, NodeList *statements) : mPrototype(prototype), mStatements(statements) {}
 
 	private:
 		FunctionPrototype *mPrototype;
-		StatementList *mStatements;
+		NodeList *mStatements;
 	};
 }
 
