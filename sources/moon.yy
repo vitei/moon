@@ -31,6 +31,7 @@
 
 /*  */
 %union {
+    tree::FunctionPrototype *prototype;
     tree::StatementList *statementList;
     tree::Statement *statement;
     tree::ExpressionList *expressionList;
@@ -109,6 +110,12 @@
 %token<string> TOKEN_ID
 
 /* Return types */
+%type<statement> program_function
+%type<prototype> function_prototype
+%type<expressionList> o_arguments
+%type<expressionList> arguments
+%type<expression> argument
+%type<state> function_state
 %type<statementList> statement_block
 %type<statementList> statements
 %type<statement> statement
@@ -252,57 +259,75 @@ program_functions   :   program_function
                         }
                     ;
 
-program_function    :   function_prototype statement_block
+
+
+program_function    :   function_prototype function_state statement_block /* FIXME, support states */
                         {
-                            //$$ = new Function($1, $2);
+                            $$ = new tree::Function($1, $3);
                         }
                     ;
 
-
-
-
-
-
-
-
-
-function_prototype  :   TOKEN_FUNCTION id_type TOKEN_PARENTHESIS_OPEN argument_definitions TOKEN_PARENTHESIS_CLOSE
+function_prototype  :   TOKEN_FUNCTION identifier TOKEN_PARENTHESIS_OPEN o_arguments TOKEN_PARENTHESIS_CLOSE
                         {
-                            //$$ = new tree::FunctionPrototype($2, $4);
+                            tree::Type *type = new tree::Type(tree::Type::DATA_INT);
+                            $$ = new tree::FunctionPrototype(type, $2, $4);
                         }
-                    |   TOKEN_FUNCTION id_type TOKEN_PARENTHESIS_OPEN argument_definitions TOKEN_PARENTHESIS_CLOSE TOKEN_LT state TOKEN_GT
+                    |   TOKEN_FUNCTION type TOKEN_CAST identifier TOKEN_PARENTHESIS_OPEN o_arguments TOKEN_PARENTHESIS_CLOSE
                         {
-                            //$$ = new tree::FunctionPrototype($2, $4, $7);
+                            $$ = new tree::FunctionPrototype($2, $4, $6);
                         }
                     ;
 
-id_type             :   identifier /* FIXME, rename this */
+o_arguments         :   /* Empty */
                         {
-                            //tree::Type *type = new tree::Type(tree::TYPE_INT);
-                            //$$ = new tree::Id($1, type);
+                            $$ = 0;
+                        }
+                    |   arguments
+                        {
+                            $$ = $1;
+                        }
+                    ;
+
+arguments           :   argument
+                        {
+                            $$ = new tree::ExpressionList();
+                            $$->add($1);
+                        }
+                    |   arguments TOKEN_COMMA argument
+                        {
+                            $$ = $1;
+                            $$->add($3);
+                        }
+                    ;
+
+argument            :   identifier
+                        {
+                            tree::Type *type = new tree::Type(tree::Type::DATA_INT);
+                            $$ = new tree::Variable(type, $1);
                         }
                     |   type TOKEN_CAST identifier
                         {
-                            //$$ = new tree::Id($3, $1);
+                            $$ = new tree::Variable($1, $3);
+                        }
+                    |   variable
+                        {
+                            $$ = $1;
+                        }
+                    |   reference
+                        {
+                            $$ = $1;
                         }
                     ;
 
-argument_definitions:   /* Empty */
+function_state      :   /* No state */
                         {
-                            //$$ = null;
+                            $$ = 0;
                         }
-                    |   id_type
+                    |   TOKEN_LT state TOKEN_GT
                         {
-                            //$$ = new tree::IdList();
-                            //$$->push($1);
-                        }
-                    |   argument_definitions TOKEN_COMMA id_type
-                        {
-                            //$1->push($3);
+                            $$ = $2;
                         }
                     ;
-
-
 
 statement_block     :   TOKEN_BRACE_OPEN TOKEN_BRACE_CLOSE                                          /* Empty... */
                         {
