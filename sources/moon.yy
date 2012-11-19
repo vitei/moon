@@ -37,6 +37,7 @@
     tree::Expression *expression;
     tree::Type *type;
     tree::Identifier *id;
+    tree::State *state;
 
     /* The lexer returns these... */
     int integer;
@@ -140,7 +141,7 @@
 %type<id> identifier
 %type<statement> return_statement
 %type<statement> state_statement
-%type<string> state_name
+%type<state> state
 
 /* Start symbol */
 %start start
@@ -256,7 +257,7 @@ function_prototype  :   TOKEN_FUNCTION id_type TOKEN_PARENTHESIS_OPEN argument_d
                         {
                             //$$ = new tree::FunctionPrototype($2, $4);
                         }
-                    |   TOKEN_FUNCTION id_type TOKEN_PARENTHESIS_OPEN argument_definitions TOKEN_PARENTHESIS_CLOSE TOKEN_LT state_name TOKEN_GT
+                    |   TOKEN_FUNCTION id_type TOKEN_PARENTHESIS_OPEN argument_definitions TOKEN_PARENTHESIS_CLOSE TOKEN_LT state TOKEN_GT
                         {
                             //$$ = new tree::FunctionPrototype($2, $4, $7);
                         }
@@ -684,19 +685,19 @@ return_statement    :   TOKEN_RETURN expression TOKEN_EOS
                         }
                     ;
 
-state_statement     :   TOKEN_STATE state_name TOKEN_EOS /* FIXME, blank state name to reset to default is best?? */
+state_statement     :   TOKEN_STATE state TOKEN_EOS /* FIXME, blank state name to reset to default is best?? */
                         {
                             $$ = new tree::StateStatement($2);
                         }
                     ;
 
-state_name          :   /* Empty (default state) */
+state               :   /* Empty (default state) */
                         {
-                            *$$ = 0; /* FIXME */
+                            $$ = 0; /* FIXME */
                         }
                     |   TOKEN_NAME
                         {
-                            //$$ = $1;
+                            $$ = new tree::State($1);
                         }
                     ;
 

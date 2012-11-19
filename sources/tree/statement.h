@@ -4,6 +4,7 @@
 #include <vector>
 #include "node.h"
 #include "expression.h"
+#include "state.h"
 
 
 namespace tree
@@ -39,10 +40,10 @@ namespace tree
 	class StateStatement : public Statement
 	{
 	public:
-		StateStatement(const char *name) : mName(std::string(name)) {}
+		StateStatement(State *state) : mState(state) {}
 
 	private:
-		std::string mName;
+		State *mState;
 	};
 }
 

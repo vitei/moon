@@ -3,6 +3,7 @@
 
 #include "tree/expression.h"
 #include "tree/operation.h"
+#include "tree/state.h"
 #include "tree/statement.h"
 #include "tree/type.h"
 
