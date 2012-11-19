@@ -113,8 +113,10 @@
 %type<statementList> statements
 %type<statement> statement
 %type<statement> variable_statement
+%type<expression> variable_assignment
 %type<expression> variable
 %type<statement> reference_statement
+%type<expression> reference_assignment
 %type<expression> reference
 %type<statement> expression_statement
 %type<expression> assign_or_expression
@@ -332,7 +334,7 @@ statement           :   variable_statement
                         {
                             $$ = $1;
                         }
-                    |   expression_statement    /* statements types here... */
+                    |   expression_statement
                         {
                             $$ = $1;
                         }
@@ -350,14 +352,19 @@ statement           :   variable_statement
                         }
                     ;
 
-variable_statement  :   variable TOKEN_EOS
+variable_statement  :   variable_assignment TOKEN_EOS
                         {
                             $$ = new tree::ExpressionStatement($1);
                         }
-                    |   variable TOKEN_EQUALS expression TOKEN_EOS
+                    ;
+
+variable_assignment :   variable
                         {
-                            tree::BinaryOperation *assignment = new tree::BinaryOperation(tree::Operation::OP_ASSIGN, $1, $3);
-                            $$ = new tree::ExpressionStatement(assignment);
+                            $$ = $1;
+                        }
+                    |   variable TOKEN_EQUALS expression
+                        {
+                            $$ = new tree::BinaryOperation(tree::Operation::OP_ASSIGN, $1, $3);
                         }
                     ;
 
@@ -372,14 +379,19 @@ variable            :   TOKEN_VAR identifier
                         }
                     ;
 
-reference_statement :   reference TOKEN_EOS
+reference_statement :   reference_assignment TOKEN_EOS
                         {
                             $$ = new tree::ExpressionStatement($1);
                         }
-                    |   reference TOKEN_EQUALS expression TOKEN_EOS
+                    ;
+
+reference_assignment:   reference
                         {
-                            tree::BinaryOperation *assignment = new tree::BinaryOperation(tree::Operation::OP_ASSIGN, $1, $3);
-                            $$ = new tree::ExpressionStatement(assignment);
+                            $$ = $1;
+                        }
+                    |   reference TOKEN_EQUALS expression
+                        {
+                            $$ = new tree::BinaryOperation(tree::Operation::OP_ASSIGN, $1, $3);
                         }
                     ;
 
