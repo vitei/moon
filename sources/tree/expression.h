@@ -12,18 +12,6 @@ namespace tree
 	{
 	};
 
-	class ExpressionList : public Node
-	{
-	public:
-		void add(Expression *expression)
-		{
-			mList.push_back(expression);
-		}
-
-	private:
-		std::vector<Expression *> mList;
-	};
-
 	class Identifier : public Expression
 	{
 	public:
@@ -96,11 +84,11 @@ namespace tree
 	class FunctionCall : public Expression
 	{
 	public:
-		FunctionCall(Identifier *id, ExpressionList *arguments = 0) : mID(id), mArguments(arguments) {}
+		FunctionCall(Identifier *id, NodeList *arguments = 0) : mID(id), mArguments(arguments) {}
 
 	private:
 		Identifier *mID;
-		ExpressionList *mArguments;
+		NodeList *mArguments;
 	};
 
 	template<Type::Data TYPE, class STORAGE>

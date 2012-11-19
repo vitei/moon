@@ -32,9 +32,8 @@
 /*  */
 %union {
     tree::FunctionPrototype *prototype;
-    tree::StatementList *statementList;
+    tree::NodeList *list;
     tree::Statement *statement;
-    tree::ExpressionList *expressionList;
     tree::Expression *expression;
     tree::Type *type;
     tree::Identifier *id;
@@ -112,12 +111,12 @@
 /* Return types */
 %type<statement> program_function
 %type<prototype> function_prototype
-%type<expressionList> o_arguments
-%type<expressionList> arguments
+%type<list> o_arguments
+%type<list> arguments
 %type<expression> argument
 %type<state> function_state
-%type<statementList> statement_block
-%type<statementList> statements
+%type<list> statement_block
+%type<list> statements
 %type<statement> statement
 %type<statement> variable_statement
 %type<expression> variable_assignment
@@ -144,7 +143,7 @@
 %type<expression> postfix_expression
 %type<expression> array_expression
 %type<expression> call_expression
-%type<expressionList> argument_expressions
+%type<list> argument_expressions
 %type<expression> expression_atom
 %type<type> type
 %type<id> identifier
@@ -290,7 +289,7 @@ o_arguments         :   /* Empty */
 
 arguments           :   argument
                         {
-                            $$ = new tree::ExpressionList();
+                            $$ = new tree::NodeList();
                             $$->add($1);
                         }
                     |   arguments TOKEN_COMMA argument
@@ -341,7 +340,7 @@ statement_block     :   TOKEN_BRACE_OPEN TOKEN_BRACE_CLOSE                      
 
 statements          :   statement
                         {
-                            $$ = new tree::StatementList();
+                            $$ = new tree::NodeList();
                             $$->add($1);
                         }
                     |   statements statement
@@ -371,10 +370,10 @@ statement           :   variable_statement
                         {
                             $$ = $1;
                         }
-                    |   statement_block
+                    /*|   statement_block       FIXME, do we want to support this??
                         {
                             $$ = $1;
-                        }
+                        }*/
                     ;
 
 variable_statement  :   variable_assignment TOKEN_EOS
@@ -656,7 +655,7 @@ call_expression     :   identifier TOKEN_PARENTHESIS_OPEN TOKEN_PARENTHESIS_CLOS
 
 argument_expressions:   expression
                         {
-                            $$ = new tree::ExpressionList();
+                            $$ = new tree::NodeList();
                             $$->add($1);
                         }
                     |   argument_expressions TOKEN_COMMA expression

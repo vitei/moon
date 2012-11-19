@@ -13,18 +13,6 @@ namespace tree
 	{
 	};
 
-	class StatementList : public Statement /* FIXME, should this inherit off statement?? */
-	{
-	public:
-		void add(Statement *statement)
-		{
-			mList.push_back(statement);
-		}
-
-	private:
-		std::vector<Statement *> mList;
-	};
-
 	class ExpressionStatement : public Statement
 	{
 	public:
