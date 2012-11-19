@@ -705,7 +705,7 @@ state_statement     :   TOKEN_STATE state TOKEN_EOS /* FIXME, blank state name t
 
 state               :   /* Empty (default state) */
                         {
-                            $$ = 0; /* FIXME */
+                            $$ = new tree::State(""); // FIXME
                         }
                     |   TOKEN_NAME
                         {
