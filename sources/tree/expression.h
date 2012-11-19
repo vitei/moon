@@ -1,6 +1,7 @@
 #ifndef TREE_EXPRESSION_H
 #define TREE_EXPRESSION_H
 
+#include <vector>
 #include "node.h"
 #include "type.h"
 
@@ -20,7 +21,7 @@ namespace tree
 		}
 
 	private:
-		std::vector<Expression> mList;
+		std::vector<Expression *> mList;
 	};
 
 	class Identifier : public Expression
@@ -30,6 +31,28 @@ namespace tree
 
 	private:
 		std::string mName;
+	};
+
+	class StorageExpression : public Expression
+	{
+	public:
+		StorageExpression(Type *type, Identifier *name) : mType(type), mName(name) {}
+
+	private:
+		Type *mType;
+		Identifier *mName;
+	};
+
+	class Variable : public StorageExpression
+	{
+	public:
+		Variable(Type *type, Identifier *name) : StorageExpression(type, name) {}
+	};
+
+	class Reference : public StorageExpression
+	{
+	public:
+		Reference(Type *type, Identifier *name) : StorageExpression(type, name) {}
 	};
 
 	class AccessExpression : public Expression
@@ -63,7 +86,7 @@ namespace tree
 	class FunctionCall : public Expression
 	{
 	public:
-		FunctionCall(Identifier *id, Expression *arguments = 0) : mID(id), mArguments(arguments) {}
+		FunctionCall(Identifier *id, ExpressionList *arguments = 0) : mID(id), mArguments(arguments) {}
 
 	private:
 		Identifier *mID;
@@ -71,18 +94,19 @@ namespace tree
 	};
 
 	template<Type::Data TYPE, class STORAGE>
-	class TypeLiteral : public Literal
+	class Literal : public Expression
 	{
 	public:
-		TypeLiteral(STORAGE value) : Literal(new Type(TYPE)), mValue(value) {}
+		Literal(STORAGE value) : mType(new Type(TYPE)), mValue(value) {}
 
 	private:
+		Type *mType;
 		STORAGE mValue;
 	};
 
-	typedef TypeLiteral<Type::DATA_INT, int> IntLiteral;
-	typedef TypeLiteral<Type::DATA_FLOAT, float> FloatLiteral;
-	typedef TypeLiteral<Type::DATA_STRING, std::string> StringLiteral;
+	typedef Literal<Type::DATA_INT, int> IntLiteral;
+	typedef Literal<Type::DATA_FLOAT, float> FloatLiteral;
+	typedef Literal<Type::DATA_STRING, std::string> StringLiteral;
 }
 
 #endif
