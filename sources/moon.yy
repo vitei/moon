@@ -215,7 +215,18 @@ program_cvr         :   constant_statement
                     |   program_reference
                     ;
 
-constant_statement  :   TOKEN_CONST name_type TOKEN_EQUALS expression TOKEN_EOS
+constant_statement  :   TOKEN_CONST constant TOKEN_EQUALS expression TOKEN_EOS
+                    ;
+
+constant            :   TOKEN_NAME
+                        {
+                            //tree::Type *type = new tree::Type(tree::type::DATA_INT);
+                            //$$ = new tree::Name($1, type);
+                        }
+                    |   type TOKEN_CAST TOKEN_NAME
+                        {
+                            //$$ = new tree::Name($3, $1);
+                        }
                     ;
 
 program_variable    :   TOKEN_GLOBAL variable_statement
@@ -380,17 +391,6 @@ reference           :   TOKEN_REF identifier
                     |   TOKEN_REF type TOKEN_CAST identifier
                         {
                             $$ = new tree::Reference($2, $4);
-                        }
-                    ;
-
-name_type           :   TOKEN_NAME
-                        {
-                            //tree::Type *type = new tree::Type(tree::type::DATA_INT);
-                            //$$ = new tree::Name($1, type);
-                        }
-                    |   type TOKEN_CAST TOKEN_NAME
-                        {
-                            //$$ = new tree::Name($3, $1);
                         }
                     ;
 
