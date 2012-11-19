@@ -32,33 +32,42 @@ namespace tree
 		std::string mName;
 	};
 
-	class ArrayAccess : public Expression
+	class AccessExpression : public Expression
 	{
 	public:
-		ArrayAccess(Expression *array, Expression *index)/* : mID(id), mInitialValue(initialValue)*/ {}
+		AccessExpression(Expression *container, Expression *target) {}
 
-	private:
+	protected:
 		//Identifier *mID;
 		//Expression *mInitialValue;
+	};
+
+	class DirectAccess : public AccessExpression
+	{
+	public:
+		DirectAccess(Expression *container, Expression *target) : AccessExpression(container, target) {}
+	};
+
+	class MessageAccess : public AccessExpression
+	{
+	public:
+		MessageAccess(Expression *container, Expression *target) : AccessExpression(container, target) {}
+	};
+
+	class ArrayAccess : public AccessExpression
+	{
+	public:
+		ArrayAccess(Expression *array, Expression *index) : AccessExpression(array, index) {}
 	};
 
 	class FunctionCall : public Expression
 	{
 	public:
-		FunctionCall(Identifier *id, Expression *initialValue = 0) : mID(id), mInitialValue(initialValue) {}
+		FunctionCall(Identifier *id, Expression *arguments = 0) : mID(id), mArguments(arguments) {}
 
 	private:
 		Identifier *mID;
-		Expression *mInitialValue;
-	};
-
-	class Literal : public Expression
-	{
-	public:
-		Literal(Type *dataType) : mDataType(dataType) {}
-
-	private:
-		Type *mDataType;
+		ExpressionList *mArguments;
 	};
 
 	template<Type::Data TYPE, class STORAGE>

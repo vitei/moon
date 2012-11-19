@@ -575,11 +575,11 @@ access_expression   :   postfix_expression
                         }
                     |   postfix_expression TOKEN_DIRECT_ACCESS postfix_expression
                         {
-                            //$$ = new tree::DirectAccessExpression($1, $3);
+                            $$ = new tree::DirectAccess($1, $3);
                         }
                     |   postfix_expression TOKEN_MESSAGE_ACCESS postfix_expression
                         {
-                            //$$ = new tree::MessageAccessExpression($1, $3);
+                            $$ = new tree::MessageAccess($1, $3);
                         }
                     ;
 
