@@ -109,6 +109,21 @@
 %token<string> TOKEN_ID
 
 /* Return types */
+
+
+
+
+%type<list> o_program_cvrs
+%type<list> program_cvrs
+
+program_cvr
+constant_statement
+constant
+program_variable
+program_reference
+
+%type<list> o_program_functions
+%type<list> program_functions
 %type<statement> program_function
 %type<prototype> function_prototype
 %type<list> o_arguments
@@ -207,20 +222,42 @@ program_uses        :   use_statement
 use_statement       :   TOKEN_USE TOKEN_NAME TOKEN_EOS
                     ;
 
+
+
 o_program_cvrs      :   /* Empty */
+                        {
+                            $$ = 0;
+                        }
                     |   program_cvrs
+                        {
+                            $$ = $1;
+                        }
                     ;
 
 program_cvrs        :   program_cvr                                                                 /* CVRs = constants + variables + references */
+                        {
+                            $$ = new tree::NodeList();
+                            $$->add($1);
+                        }
                     |   program_cvrs program_cvr
                         {
-                            //$1->setSibling($2);
+                            $$ = $1;
+                            $$->add($2);
                         }
                     ;
 
 program_cvr         :   constant_statement
+                        {
+                            $$ = $1;
+                        }
                     |   program_variable
+                        {
+                            $$ = $1;
+                        }
                     |   program_reference
+                        {
+                            $$ = $1;
+                        }
                     ;
 
 constant_statement  :   TOKEN_CONST constant TOKEN_EQUALS expression TOKEN_EOS
@@ -248,13 +285,24 @@ program_reference   :   TOKEN_GLOBAL reference_statement
                     ;
 
 o_program_functions :   /* Empty */
+                        {
+                            $$ = 0;
+                        }
                     |   program_functions
+                        {
+                            $$ = $1;
+                        }
                     ;
 
 program_functions   :   program_function
+                        {
+                            $$ = new tree::NodeList();
+                            $$->add($1);
+                        }
                     |   program_functions program_function
                         {
-                            //$1->setSibling($2);
+                            $$ = $1;
+                            $$->add($2);
                         }
                     ;
 
