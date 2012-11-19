@@ -55,6 +55,16 @@ namespace tree
 		Reference(Type *type, Identifier *name) : StorageExpression(type, name) {}
 	};
 
+	class CastExpression : public Expression
+	{
+	public:
+		CastExpression(Type *type, Expression *expression) : mType(type), mExpression(expression) {}
+
+	private:
+		Type *mType;
+		Expression *mExpression;
+	};
+
 	class AccessExpression : public Expression
 	{
 	public:

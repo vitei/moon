@@ -551,7 +551,7 @@ cast_expression     :   unary_expression
                         }
                     |   type TOKEN_CAST expression_atom
                         {
-                            //$$ = new tree::CastExpression($1, $3);
+                            $$ = new tree::CastExpression($1, $3);
                         }
                     ;
 
