@@ -16,13 +16,17 @@
     #include "parser.h"
     #include "lexer.h"
 
-    void yyerror(YYLTYPE *locp, void *scanner, const char *error);
+    #include "parser_data.h"
+
+    #define scanner data->lexer
+
+    void yyerror(YYLTYPE *locp, void *lexer, const char *error);
 %}
 
 /* Re-entrant */
 %pure-parser
+%parse-param {ParserData *data}
 %lex-param {void *scanner}
-%parse-param {void *scanner}
 
 /* Program locations */
 %locations
@@ -192,14 +196,14 @@ include_statement   :   TOKEN_INCLUDE TOKEN_STRING TOKEN_EOS
 
                             if((input = loader::includeFile($2)))
                             {
-                                yyscan_t newScanner;
+                                ParserData parserData;
 
-                                yylex_init(&newScanner);
-                                yyset_in(input, newScanner);
+                                yylex_init(&parserData.lexer);
+                                yyset_in(input, parserData.lexer);
 
-                                yyparse(newScanner);
+                                yyparse(&parserData);
 
-                                yylex_destroy(newScanner);
+                                yylex_destroy(parserData.lexer);
                                 fclose(input);
                             }
                             else
@@ -228,14 +232,14 @@ use_statement       :   TOKEN_USE TOKEN_NAME TOKEN_EOS
 
                             if((input = loader::useFile(tmp)))
                             {
-                                yyscan_t newScanner;
+                                ParserData parserData;
 
-                                yylex_init(&newScanner);
-                                yyset_in(input, newScanner);
+                                yylex_init(&parserData.lexer);
+                                yyset_in(input, parserData.lexer);
 
-                                yyparse(newScanner);
+                                yyparse(&parserData);
 
-                                yylex_destroy(newScanner);
+                                yylex_destroy(parserData.lexer);
                                 fclose(input);
                             }
                             else
@@ -845,7 +849,7 @@ state               :   /* Empty (default state) */
 
 %%
 
-void yyerror(YYLTYPE *locp, void *scanner, const char *error)
+void yyerror(YYLTYPE *locp, void *lexer, const char *error)
 {
     error::enqueue(locp->first_line, error);
 }

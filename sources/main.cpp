@@ -2,6 +2,7 @@
 #include <libgen.h>
 #include <unistd.h>
 #include <iostream>
+#include "parser_data.h"
 #include "error.h"
 #include "loader.h"
 #include "tree.h"
@@ -11,7 +12,7 @@
 #include "lexer.h"
 
 
-extern void yyparse(void *scanner);
+extern void yyparse(ParserData *parserData);
 
 const char *DIRECTORY_SEPARATORS = " ,:";
 
@@ -80,16 +81,16 @@ int main(int argc, char *argv[])
 
 			if((input = loader::useFile(argv[optind])))
 			{
-				yyscan_t scanner;
+				ParserData parserData;
 
 				// Setup??
 				//tree::Block::setCurrentBlock(new tree::Block());
-				yylex_init(&scanner);
-				yyset_in(input, scanner);
+				yylex_init(&parserData.lexer);
+				yyset_in(input, parserData.lexer);
 
-				yyparse(scanner);
+				yyparse(&parserData);
 
-				yylex_destroy(scanner);
+				yylex_destroy(parserData.lexer);
 				fclose(input);
 
 				// ...
