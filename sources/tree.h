@@ -4,6 +4,7 @@
 #include "tree/expression.h"
 #include "tree/function.h"
 #include "tree/operation.h"
+#include "tree/scope.h"
 #include "tree/state.h"
 #include "tree/statement.h"
 #include "tree/type.h"
