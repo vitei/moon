@@ -30,7 +30,7 @@ lexer.cpp: lexer parser.h
 %.o: %.cpp %.cpp
 	$(CXX) -c $(CPP_FLAGS) $(CXX_FLAGS) -o $@ $<
 
-../bin/moon: error.o lexer.o main.o parser.o
+../bin/moon: error.o lexer.o loader.o main.o parser.o
 	$(CXX) $(CPP_FLAGS) $(CXX_FLAGS) -o $@ $^
 
 compiler: ../bin/moon

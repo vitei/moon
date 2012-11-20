@@ -3,13 +3,17 @@
 #include <stdio.h>
 #include <libgen.h>
 #include "error.h"
+#include "loader.h"
 #include "tree.h"
 
 /* Generated headers */
 #include "parser.h"
 #include "lexer.h"
 
+
 extern void yyparse(void *scanner);
+
+const char *DIRECTORY_SEPARATORS = " ,:";
 
 int main(int argc, char *argv[])
 {
@@ -23,9 +27,19 @@ int main(int argc, char *argv[])
 		switch(opt)
 		{
 		case 'C':
+			for(char *directory = strtok(optarg, DIRECTORY_SEPARATORS); directory != 0; directory = strtok(0, DIRECTORY_SEPARATORS))
+			{
+				loader::addClassDirectory(directory);
+			}
+
 			break;
 
 		case 'I':
+			for(char *directory = strtok(optarg, DIRECTORY_SEPARATORS); directory != 0; directory = strtok(0, DIRECTORY_SEPARATORS))
+			{
+				loader::addIncludeDirectory(directory);
+			}
+
 			break;
 
 		case ':':
@@ -44,7 +58,7 @@ int main(int argc, char *argv[])
 		}
 	}
 
-	if(error)
+	if(error) // I'm doing this backwards so that the usage text is near the command line option parser
 	{
 		std::cerr << "Usage: " << basename(argv[0]) << " [-C<directories>] [-I<directories>] [-h] <classes>" << std::endl
 			<< "\t-C Scan directories for class files"<< std::endl
@@ -53,6 +67,13 @@ int main(int argc, char *argv[])
 	}
 	else
 	{
+		char cwd[1024];
+
+		// The current working directory must also be used...
+		getcwd(cwd, 1024);
+		loader::addClassDirectory(cwd);
+		loader::addIncludeDirectory(cwd);
+
 		for(; optind < argc; optind++)
 		{
 			FILE *input;
