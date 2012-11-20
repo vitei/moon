@@ -1,14 +1,17 @@
 #ifndef LOADER_H
 #define LOADER_H
 
+#include <cstdio>
+
+
 namespace loader
 {
-	void addClassDirectory(const char *directory);
+	void addUseDirectory(const char *directory);
 	void addIncludeDirectory(const char *directory);
 
-	void classNameToFilename(char *filename, const char *className);
+	void useNameToFilename(char *filename, const char *name);
 
-	FILE *classFile(const char *filename);
+	FILE *useFile(const char *filename);
 	FILE *includeFile(const char *filename);
 }
 
