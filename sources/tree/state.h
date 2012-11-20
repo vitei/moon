@@ -9,8 +9,16 @@ namespace tree
 {
 	class State : public Node
 	{
+	};
+
+	class DefaultState : public State
+	{
+	};
+
+	class NamedState : public State
+	{
 	public:
-		State(const char *name) : mName(name) {}
+		NamedState(const char *name) : mName(name) {}
 
 	private:
 		std::string mName;
