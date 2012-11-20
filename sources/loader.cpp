@@ -1,9 +1,15 @@
+#include <cctype>
+#include <string>
+#include <vector>
 #include "loader.h"
 
 
-void loader::addClassDirectory(const char *directory)
-{
+static std::vector<std::string> sUseDirectories;
+static std::vector<std::string> sIncludeDirectories;
 
+void loader::addUseDirectory(const char *directory)
+{
+	sUseDirectories.push_back(std::string(directory));
 }
 
 void loader::addIncludeDirectory(const char *directory)
@@ -11,12 +17,12 @@ void loader::addIncludeDirectory(const char *directory)
 	sIncludeDirectories.push_back(std::string(directory));
 }
 
-void loader::classNameToFilename(char *filename, const char *className)
+void loader::useNameToFilename(char *filename, const char *name)
 {
 	// First character is always upper case
-	*filename++ = tolower(*className);
+	*filename++ = tolower(*name++);
 
-	for(const char *name = className + 1; *name; name++)
+	for(; *name; name++)
 	{
 		if(isupper(*name))
 		{
@@ -32,11 +38,11 @@ void loader::classNameToFilename(char *filename, const char *className)
 	strcpy(filename, ".moon");
 }
 
-FILE *loader::classFile(const char *filename)
+FILE *loader::useFile(const char *filename)
 {
 	FILE *r = 0;
 
-	for(std::vector<std::string>::iterator i = sClassDirectories.begin(), end = sClassDirectories.end(); !r && i != end; ++i)
+	for(std::vector<std::string>::iterator i = sUseDirectories.begin(), end = sUseDirectories.end(); !r && i != end; ++i)
 	{
 		std::string str = *i + "/" + filename;
 

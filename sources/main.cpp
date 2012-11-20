@@ -1,7 +1,7 @@
-#include <iostream>
-#include <unistd.h>
-#include <stdio.h>
+#include <cstdio>
 #include <libgen.h>
+#include <unistd.h>
+#include <iostream>
 #include "error.h"
 #include "loader.h"
 #include "tree.h"
@@ -22,14 +22,14 @@ int main(int argc, char *argv[])
 
 	// Parse options
 	opterr = 0;
-	while((opt = getopt(argc, argv, "C:I:h")) != -1)
+	while((opt = getopt(argc, argv, "U:I:h")) != -1)
 	{
 		switch(opt)
 		{
-		case 'C':
+		case 'U':
 			for(char *directory = strtok(optarg, DIRECTORY_SEPARATORS); directory != 0; directory = strtok(0, DIRECTORY_SEPARATORS))
 			{
-				loader::addClassDirectory(directory);
+				loader::addUseDirectory(directory);
 			}
 
 			break;
@@ -61,24 +61,24 @@ int main(int argc, char *argv[])
 	if(error) // I'm doing this backwards so that the usage text is near the command line option parser
 	{
 		std::cerr << "Usage: " << basename(argv[0]) << " [-C<directories>] [-I<directories>] [-h] <classes>" << std::endl
-			<< "\t-C Scan directories for class files"<< std::endl
+			<< "\t-U Scan directories for use files"<< std::endl
 			<< "\t-I Scan directories for include files" << std::endl
 			<< "\t-h Show this message" << std::endl;
 	}
 	else
 	{
-		char cwd[1024];
+		char tmp[1024];
 
 		// The current working directory must also be used...
-		getcwd(cwd, 1024);
-		loader::addClassDirectory(cwd);
-		loader::addIncludeDirectory(cwd);
+		getcwd(tmp, 1024);
+		loader::addUseDirectory(tmp);
+		loader::addIncludeDirectory(tmp);
 
 		for(; optind < argc; optind++)
 		{
 			FILE *input;
 
-			if((input = fopen(argv[optind], "r")))
+			if((input = loader::useFile(argv[optind])))
 			{
 				yyscan_t scanner;
 
@@ -100,7 +100,7 @@ int main(int argc, char *argv[])
 			}
 			else
 			{
-				std::cerr << "Could not process file " << argv[optind] << std::endl;
+				std::cerr << "Could not load file " << argv[optind] << std::endl;
 			}
 		}
 	}
