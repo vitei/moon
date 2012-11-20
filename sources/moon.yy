@@ -809,10 +809,10 @@ type                :   TOKEN_TYPE_INT
                         {
                             $$ = new tree::Type(tree::Type::DATA_STRING);
                         }
-                    |   TOKEN_NAME
+                    /*|   TOKEN_NAME
                         {
-                            $$ = new tree::UDTType($1);                       /* UDTs force this class to be needed?? FIXME */
-                        }
+                            $$ = new tree::UDTType($1);                       // UDTs force this class to be needed?? FIXME
+                        }*/
                     ;
 
 identifier          :   TOKEN_ID
