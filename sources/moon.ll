@@ -7,6 +7,9 @@
  */
 
 %{
+
+    #include "lexer_data.h"
+    #include "parser_data.h"
     #include "error.h"
     #include "tree.h"
 
@@ -19,9 +22,13 @@
     static unsigned int sStringLength;
 %}
 
+/* Extra data */
+%option extra-type="LexerData *"
+
 /* Re-entrant */
 %option reentrant
 
+%option never-interactive
 %option noyywrap
 %option bison-bridge
 
@@ -37,11 +44,9 @@
 %%
 
 %{
-    static bool startSymbolIssued = false;
-
-    if(!startSymbolIssued)
+    if(!yyextra->startSymbolIssued)
     {
-        startSymbolIssued = true;
+        yyextra->startSymbolIssued = true;
         return START_PROGRAM;
     }
 %}

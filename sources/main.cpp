@@ -2,6 +2,7 @@
 #include <libgen.h>
 #include <unistd.h>
 #include <iostream>
+#include "lexer_data.h"
 #include "parser_data.h"
 #include "error.h"
 #include "loader.h"
@@ -82,10 +83,11 @@ int main(int argc, char *argv[])
 			if((input = loader::useFile(argv[optind])))
 			{
 				ParserData parserData;
+				LexerData lexerData;
 
 				// Setup??
 				//tree::Block::setCurrentBlock(new tree::Block());
-				yylex_init(&parserData.lexer);
+				yylex_init_extra(&lexerData, &parserData.lexer);
 				yyset_in(input, parserData.lexer);
 
 				yyparse(&parserData);

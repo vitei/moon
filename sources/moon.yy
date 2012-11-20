@@ -8,6 +8,8 @@
 
 %{
     #include <cstdio>
+    #include "lexer_data.h"
+    #include "parser_data.h"
     #include "error.h"
     #include "loader.h"
     #include "tree.h"
@@ -15,8 +17,6 @@
     /* Generated headers */
     #include "parser.h"
     #include "lexer.h"
-
-    #include "parser_data.h"
 
     #define scanner data->lexer
 
@@ -197,8 +197,9 @@ include_statement   :   TOKEN_INCLUDE TOKEN_STRING TOKEN_EOS
                             if((input = loader::includeFile($2)))
                             {
                                 ParserData parserData;
+                                LexerData lexerData;
 
-                                yylex_init(&parserData.lexer);
+                                yylex_init_extra(&lexerData, &parserData.lexer);
                                 yyset_in(input, parserData.lexer);
 
                                 yyparse(&parserData);
@@ -233,8 +234,9 @@ use_statement       :   TOKEN_USE TOKEN_NAME TOKEN_EOS
                             if((input = loader::useFile(tmp)))
                             {
                                 ParserData parserData;
+                                LexerData lexerData;
 
-                                yylex_init(&parserData.lexer);
+                                yylex_init_extra(&lexerData, &parserData.lexer);
                                 yyset_in(input, parserData.lexer);
 
                                 yyparse(&parserData);
