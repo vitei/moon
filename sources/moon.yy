@@ -713,9 +713,9 @@ argument_expressions:   expression
                         }
                     ;
 
-expression_atom     :   TOKEN_NAME /* Constant */
+expression_atom     :   name /* Constant */
                         {
-                            $$ = new tree::Identifier($1);
+                            $$ = $1;
                         }
                     |   TOKEN_INTEGER
                         {
@@ -758,6 +758,12 @@ type                :   TOKEN_TYPE_INT
                     ;
 
 identifier          :   TOKEN_ID
+                        {
+                            $$ = new tree::Identifier($1);
+                        }
+                    ;
+
+name                :   TOKEN_NAME
                         {
                             $$ = new tree::Identifier($1);
                         }
