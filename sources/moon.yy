@@ -841,11 +841,11 @@ state_statement     :   TOKEN_STATE state TOKEN_EOS /* FIXME, blank state name t
 
 state               :   /* Empty (default state) */
                         {
-                            $$ = new tree::State(""); // FIXME
+                            $$ = new tree::DefaultState();
                         }
                     |   TOKEN_NAME
                         {
-                            $$ = new tree::State($1);
+                            $$ = new tree::NamedState($1);
                         }
                     ;
 
