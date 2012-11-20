@@ -9,6 +9,7 @@
 %{
     #include <cstdio>
     #include "error.h"
+    #include "loader.h"
     #include "tree.h"
 
     /* Generated headers */
@@ -189,7 +190,7 @@ include_statement   :   TOKEN_INCLUDE TOKEN_STRING TOKEN_EOS
                         {
                             FILE *input;
 
-                            if((input = fopen($2, "r")))
+                            if((input = loader::includeFile($2)))
                             {
                                 yyscan_t newScanner;
 
@@ -203,7 +204,9 @@ include_statement   :   TOKEN_INCLUDE TOKEN_STRING TOKEN_EOS
                             }
                             else
                             {
-                                //emitError(locp->first_line, "Could not find include file ...");
+                                std::string error("Could not find include file ");
+                                error += $2;
+                                error::enqueue(0, error.c_str()); // FIXME
                             }
                         }
                     ;
@@ -217,9 +220,32 @@ program_uses        :   use_statement
                     ;
 
 use_statement       :   TOKEN_USE TOKEN_NAME TOKEN_EOS
+                        {
+                            char tmp[1024];
+                            FILE *input;
+
+                            loader::useNameToFilename(tmp, $2);
+
+                            if((input = loader::useFile(tmp)))
+                            {
+                                yyscan_t newScanner;
+
+                                yylex_init(&newScanner);
+                                yyset_in(input, newScanner);
+
+                                yyparse(newScanner);
+
+                                yylex_destroy(newScanner);
+                                fclose(input);
+                            }
+                            else
+                            {
+                                std::string error("Could not find file ");
+                                error += tmp;
+                                error::enqueue(0, error.c_str()); // FIXME
+                            }
+                        }
                     ;
-
-
 
 o_program_cvrs      :   /* Empty */
                         {
