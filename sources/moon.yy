@@ -109,19 +109,15 @@
 %token<string> TOKEN_ID
 
 /* Return types */
-
-
-
-
+/*program*/
 %type<list> o_program_cvrs
 %type<list> program_cvrs
-
-program_cvr
-constant_statement
-constant
-program_variable
-program_reference
-
+%type<statement> program_cvr
+%type<statement> constant_statement
+%type<expression> constant_assignment
+%type<expression> constant
+%type<statement> scoped_var_statement
+%type<statement> scoped_ref_statement
 %type<list> o_program_functions
 %type<list> program_functions
 %type<statement> program_function
@@ -162,6 +158,7 @@ program_reference
 %type<expression> expression_atom
 %type<type> type
 %type<id> identifier
+%type<id> name
 %type<statement> return_statement
 %type<statement> state_statement
 %type<state> state
@@ -250,38 +247,69 @@ program_cvr         :   constant_statement
                         {
                             $$ = $1;
                         }
-                    |   program_variable
+                    |   scoped_var_statement
                         {
                             $$ = $1;
                         }
-                    |   program_reference
+                    |   scoped_ref_statement
                         {
                             $$ = $1;
                         }
                     ;
 
-constant_statement  :   TOKEN_CONST constant TOKEN_EQUALS expression TOKEN_EOS
-                    ;
-
-constant            :   TOKEN_NAME
+constant_statement  :   constant_assignment TOKEN_EOS
                         {
-                            //tree::Type *type = new tree::Type(tree::type::DATA_INT);
-                            //$$ = new tree::Name($1, type);
-                        }
-                    |   type TOKEN_CAST TOKEN_NAME
-                        {
-                            //$$ = new tree::Name($3, $1);
+                            $$ = new tree::ExpressionStatement($1);
                         }
                     ;
 
-program_variable    :   TOKEN_GLOBAL variable_statement
-                    |   TOKEN_SHARED variable_statement
-                    |   variable_statement
+constant_assignment :   constant TOKEN_EQUALS expression
+                        {
+                            $$ = new tree::BinaryOperation(tree::Operation::OP_ASSIGN, $1, $3);
+                        }
                     ;
 
-program_reference   :   TOKEN_GLOBAL reference_statement
-                    |   TOKEN_SHARED reference_statement
-                    |   reference_statement
+constant            :   TOKEN_CONST name
+                        {
+                            tree::Type *type = new tree::Type(tree::Type::DATA_INT);
+                            $$ = new tree::Constant(type, $2);
+                        }
+                    |   TOKEN_CONST type TOKEN_CAST name
+                        {
+                            $$ = new tree::Constant($2, $4);
+                        }
+                    ;
+
+scoped_var_statement:   variable_assignment TOKEN_EOS
+                        {
+                            $$ = new tree::ExpressionStatement($1);
+                        }
+                    |   TOKEN_GLOBAL variable_assignment TOKEN_EOS
+                        {
+                            tree::GlobalScope *scope = new tree::GlobalScope($2);
+                            $$ = new tree::ExpressionStatement(scope);
+                        }
+                    |   TOKEN_SHARED variable_assignment TOKEN_EOS
+                        {
+                            tree::SharedScope *scope = new tree::SharedScope($2);
+                            $$ = new tree::ExpressionStatement(scope);
+                        }
+                    ;
+
+scoped_ref_statement:   reference_assignment TOKEN_EOS
+                        {
+                            $$ = new tree::ExpressionStatement($1);
+                        }
+                    |   TOKEN_GLOBAL reference_assignment TOKEN_EOS
+                        {
+                            tree::GlobalScope *scope = new tree::GlobalScope($2);
+                            $$ = new tree::ExpressionStatement(scope);
+                        }
+                    |   TOKEN_SHARED reference_assignment TOKEN_EOS
+                        {
+                            tree::SharedScope *scope = new tree::SharedScope($2);
+                            $$ = new tree::ExpressionStatement(scope);
+                        }
                     ;
 
 o_program_functions :   /* Empty */
@@ -305,8 +333,6 @@ program_functions   :   program_function
                             $$->add($2);
                         }
                     ;
-
-
 
 program_function    :   function_prototype function_state statement_block /* FIXME, support states */
                         {

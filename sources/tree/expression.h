@@ -31,6 +31,12 @@ namespace tree
 		Identifier *mName;
 	};
 
+	class Constant : public StorageExpression
+	{
+	public:
+		Constant(Type *type, Identifier *name) : StorageExpression(type, name) {}
+	};
+
 	class Variable : public StorageExpression
 	{
 	public:
