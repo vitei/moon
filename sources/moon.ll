@@ -14,7 +14,7 @@
     #include "tree.h"
 
     /* Generated headers */
-    #include "parser.h"
+    #include "_parser.h"
 
     /* This should let us have line numbers... */
     #define YY_USER_ACTION yylloc->first_line = yylineno;

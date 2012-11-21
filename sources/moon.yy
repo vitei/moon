@@ -15,8 +15,8 @@
     #include "tree.h"
 
     /* Generated headers */
-    #include "parser.h"
-    #include "lexer.h"
+    #include "_parser.h"
+    #include "_lexer.h"
 
     #define scanner data->lexer
 
