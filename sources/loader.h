@@ -1,9 +1,6 @@
 #ifndef LOADER_H
 #define LOADER_H
 
-#include <cstdio>
-
-
 namespace loader
 {
 	void addUseDirectory(const char *directory);
@@ -15,8 +12,8 @@ namespace loader
 	void useNameToFilename(char *filename, const char *name);
 	void includeNameToFilename(char *filename, const char *name);
 
-	FILE *useFile(const char *filename, char *usedFilename = 0);
-	FILE *includeFile(const char *filename, char *usedFilename = 0);
+	bool useFile(const char *filename, char *usedFilename = 0);
+	bool includeFile(const char *filename, char *usedFilename = 0);
 }
 
 #endif

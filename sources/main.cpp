@@ -79,7 +79,7 @@ int main(int argc, char *argv[])
 		{
 			FILE *input;
 
-			if((input = loader::useFile(argv[optind], tmp)))
+			if(loader::useFile(argv[optind], tmp) && true && (input = fopen(tmp, "r")))
 			{
 				parser::Data parserData;
 				lexer::Data lexerData;

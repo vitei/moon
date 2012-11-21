@@ -190,7 +190,7 @@ include_statement   :   TOKEN_INCLUDE TOKEN_ID TOKEN_EOS
 
                             loader::includeNameToFilename(tmp, $2);
 
-                            if((input = loader::includeFile(tmp, tmp)))
+                            if(loader::includeFile(tmp, tmp) && true && (input = fopen(tmp, "r")))
                             {
                                 lexer::Data lexerData;
                                 void *currentLexer = data->lexer;
@@ -236,7 +236,7 @@ use_statement       :   TOKEN_USE TOKEN_NAME TOKEN_EOS
 
                             loader::useNameToFilename(tmp, $2);
 
-                            if((input = loader::useFile(tmp, tmp)))
+                            if(loader::useFile(tmp, tmp) && true && (input = fopen(tmp, "r")))
                             {
                                 lexer::Data lexerData;
                                 void *currentLexer = data->lexer;
