@@ -11,6 +11,12 @@ CXX_FLAGS =
 FLEX = flex
 FLEX_FLAGS = 
 
+DEBUG ?= 0
+
+ifeq ($(DEBUG), 1)
+	CPP_FLAGS += -g
+endif
+
 .INTERMEDIATE: _parser _lexer
 
 all: compiler

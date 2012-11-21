@@ -114,17 +114,12 @@
 %token<string> TOKEN_ID
 
 /* Return types */
-/*program*/
-%type<list> o_program_cvrs
-%type<list> program_cvrs
 %type<statement> program_cvr
 %type<statement> constant_statement
 %type<expression> constant_assignment
 %type<expression> constant
 %type<statement> scoped_var_statement
 %type<statement> scoped_ref_statement
-%type<list> o_program_functions
-%type<list> program_functions
 %type<statement> program_function
 %type<prototype> function_prototype
 %type<list> o_arguments
@@ -177,9 +172,6 @@ start               :   START_PROGRAM program
                     ;
 
 program             :   o_program_includes o_program_uses o_program_cvrs o_program_functions
-                        {
-                            //yyerror("Test");
-                        }
                     ;
 
 o_program_includes  :   /* Empty */
@@ -267,24 +259,16 @@ use_statement       :   TOKEN_USE TOKEN_NAME TOKEN_EOS
                     ;
 
 o_program_cvrs      :   /* Empty */
-                        {
-                            $$ = 0;
-                        }
                     |   program_cvrs
-                        {
-                            $$ = $1;
-                        }
                     ;
 
 program_cvrs        :   program_cvr                                                                 /* CVRs = constants + variables + references */
                         {
-                            $$ = new tree::NodeList();
-                            $$->add($1);
+                            data->getProgram().add($1);
                         }
                     |   program_cvrs program_cvr
                         {
-                            $$ = $1;
-                            $$->add($2);
+                            data->getProgram().add($2);
                         }
                     ;
 
@@ -358,24 +342,16 @@ scoped_ref_statement:   reference_assignment TOKEN_EOS
                     ;
 
 o_program_functions :   /* Empty */
-                        {
-                            $$ = 0;
-                        }
                     |   program_functions
-                        {
-                            $$ = $1;
-                        }
                     ;
 
 program_functions   :   program_function
                         {
-                            $$ = new tree::NodeList();
-                            $$->add($1);
+                            data->getProgram().add($1);
                         }
                     |   program_functions program_function
                         {
-                            $$ = $1;
-                            $$->add($2);
+                            data->getProgram().add($2);
                         }
                     ;
 
