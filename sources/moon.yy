@@ -53,6 +53,7 @@
 
 /* Start tokens */
 %token START_PROGRAM
+%token START_INCLUDE
 
 /* Language structure */
 %token TOKEN_EOS
@@ -170,6 +171,7 @@
 %%
 
 start               :   START_PROGRAM program
+                    |   START_INCLUDE program /* FIXME */
                     ;
 
 program             :   o_program_includes o_program_uses o_program_cvrs o_program_functions

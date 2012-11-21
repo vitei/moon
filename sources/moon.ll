@@ -44,7 +44,15 @@
     if(!yyextra->startSymbolIssued)
     {
         yyextra->startSymbolIssued = true;
-        return START_PROGRAM;
+
+        switch(yyextra->type)
+        {
+        case lexer::Data::TYPE_USE:
+            return START_PROGRAM;
+
+        case lexer::Data::TYPE_INCLUDE:
+            return START_INCLUDE;
+        }
     }
 %}
 
