@@ -1,9 +1,10 @@
 #ifndef PARSER_DATA_H
 #define PARSER_DATA_H
 
-typedef struct
+class ParserData
 {
+public:
 	void *lexer;
-} ParserData;
+};
 
 #endif

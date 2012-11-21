@@ -196,16 +196,21 @@ include_statement   :   TOKEN_INCLUDE TOKEN_STRING TOKEN_EOS
 
                             if((input = loader::includeFile($2)))
                             {
-                                ParserData parserData;
                                 LexerData lexerData;
+                                void *currentLexer = data->lexer;
 
-                                yylex_init_extra(&lexerData, &parserData.lexer);
-                                yyset_in(input, parserData.lexer);
+                                lexerData.type = LexerData::TYPE_INCLUDE;
+                                lexerData.startSymbolIssued = false;
 
-                                yyparse(&parserData);
+                                yylex_init_extra(&lexerData, &data->lexer);
+                                yyset_in(input, data->lexer);
 
-                                yylex_destroy(parserData.lexer);
+                                yyparse(data);
+
+                                yylex_destroy(data->lexer);
                                 fclose(input);
+
+                                data->lexer = currentLexer;
                             }
                             else
                             {
@@ -233,16 +238,21 @@ use_statement       :   TOKEN_USE TOKEN_NAME TOKEN_EOS
 
                             if((input = loader::useFile(tmp)))
                             {
-                                ParserData parserData;
                                 LexerData lexerData;
+                                void *currentLexer = data->lexer;
 
-                                yylex_init_extra(&lexerData, &parserData.lexer);
-                                yyset_in(input, parserData.lexer);
+                                lexerData.type = LexerData::TYPE_USE;
+                                lexerData.startSymbolIssued = false;
 
-                                yyparse(&parserData);
+                                yylex_init_extra(&lexerData, &data->lexer);
+                                yyset_in(input, data->lexer);
 
-                                yylex_destroy(parserData.lexer);
+                                yyparse(data);
+
+                                yylex_destroy(data->lexer);
                                 fclose(input);
+
+                                data->lexer = currentLexer;
                             }
                             else
                             {
