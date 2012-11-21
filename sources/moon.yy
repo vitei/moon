@@ -190,11 +190,14 @@ program_includes    :   include_statement
                     |   program_includes include_statement
                     ;
 
-include_statement   :   TOKEN_INCLUDE TOKEN_STRING TOKEN_EOS
+include_statement   :   TOKEN_INCLUDE TOKEN_ID TOKEN_EOS
                         {
+                            char tmp[1024];
                             FILE *input;
 
-                            if((input = loader::includeFile($2)))
+                            loader::includeNameToFilename(tmp, $2);
+
+                            if((input = loader::includeFile(tmp)))
                             {
                                 lexer::Data lexerData;
                                 void *currentLexer = data->lexer;
@@ -215,7 +218,7 @@ include_statement   :   TOKEN_INCLUDE TOKEN_STRING TOKEN_EOS
                             else
                             {
                                 std::string error("Could not find include file ");
-                                error += $2;
+                                error += tmp;
                                 error::enqueue(0, error.c_str()); // FIXME
                             }
                         }

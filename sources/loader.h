@@ -10,6 +10,7 @@ namespace loader
 	void addIncludeDirectory(const char *directory);
 
 	void useNameToFilename(char *filename, const char *name);
+	void includeNameToFilename(char *filename, const char *name);
 
 	FILE *useFile(const char *filename);
 	FILE *includeFile(const char *filename);

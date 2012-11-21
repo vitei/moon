@@ -38,6 +38,12 @@ void loader::useNameToFilename(char *filename, const char *name)
 	strcpy(filename, ".moon");
 }
 
+void loader::includeNameToFilename(char *filename, const char *name)
+{
+	for(; *name; *filename++ = *name++);
+	strcpy(filename, ".minc");
+}
+
 FILE *loader::useFile(const char *filename)
 {
 	FILE *r = 0;
