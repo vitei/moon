@@ -2,6 +2,7 @@
 #include <stack>
 #include <string>
 #include <vector>
+#include <unistd.h>
 #include "loader.h"
 
 
@@ -56,15 +57,15 @@ void loader::includeNameToFilename(char *filename, const char *name)
 	strcpy(filename, ".minc");
 }
 
-FILE *loader::useFile(const char *filename, char *usedFilename)
+bool loader::useFile(const char *filename, char *usedFilename)
 {
 	std::string resolvedFilename = sCurrentWorkingDirectory.top() + "/" + filename;
-	FILE *r = fopen(resolvedFilename.c_str(), "r");
+	bool r = access(resolvedFilename.c_str(), R_OK) == 0;
 
 	for(std::vector<std::string>::iterator i = sUseDirectories.begin(), end = sUseDirectories.end(); !r && i != end; ++i)
 	{
 		resolvedFilename = *i + "/" + filename;
-		r = fopen(resolvedFilename.c_str(), "r");
+		r = access(resolvedFilename.c_str(), R_OK) == 0;
 	}
 
 	if(r && usedFilename)
@@ -75,15 +76,15 @@ FILE *loader::useFile(const char *filename, char *usedFilename)
 	return r;
 }
 
-FILE *loader::includeFile(const char *filename, char *usedFilename)
+bool loader::includeFile(const char *filename, char *usedFilename)
 {
 	std::string resolvedFilename = sCurrentWorkingDirectory.top() + "/" + filename;
-	FILE *r = fopen(resolvedFilename.c_str(), "r");
+	bool r = access(resolvedFilename.c_str(), R_OK) == 0;
 
 	for(std::vector<std::string>::iterator i = sIncludeDirectories.begin(), end = sIncludeDirectories.end(); !r && i != end; ++i)
 	{
 		resolvedFilename = *i + "/" + filename;
-		r = fopen(resolvedFilename.c_str(), "r");
+		r = access(resolvedFilename.c_str(), R_OK) == 0;
 	}
 
 	if(r && usedFilename)
