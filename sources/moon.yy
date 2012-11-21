@@ -186,31 +186,35 @@ program_includes    :   include_statement
 include_statement   :   TOKEN_INCLUDE TOKEN_ID TOKEN_EOS
                         {
                             char tmp[1024];
-                            FILE *input;
 
                             loader::includeNameToFilename(tmp, $2);
 
-                            if(loader::includeFile(tmp, tmp) && true && (input = fopen(tmp, "r")))
+                            if(loader::includeFile(tmp, tmp))
                             {
-                                lexer::Data lexerData;
-                                void *currentLexer = data->lexer;
+                                if(!data->isParsedFile(tmp))
+                                {
+                                    FILE *input = fopen(tmp, "r");
+                                    lexer::Data lexerData;
+                                    void *currentLexer = data->lexer;
 
-                                lexerData.type = lexer::Data::TYPE_INCLUDE;
-                                lexerData.startSymbolIssued = false;
+                                    lexerData.type = lexer::Data::TYPE_INCLUDE;
+                                    lexerData.startSymbolIssued = false;
 
-                                yylex_init_extra(&lexerData, &data->lexer);
-                                yyset_in(input, data->lexer);
+                                    yylex_init_extra(&lexerData, &data->lexer);
+                                    yyset_in(input, data->lexer);
 
-                                loader::pushCWD(dirname(tmp));
+                                    data->addParsedFile(tmp);
+                                    loader::pushCWD(dirname(tmp));
 
-                                yyparse(data);
+                                    yyparse(data);
 
-                                loader::popCWD();
+                                    loader::popCWD();
 
-                                yylex_destroy(data->lexer);
-                                fclose(input);
+                                    yylex_destroy(data->lexer);
+                                    fclose(input);
 
-                                data->lexer = currentLexer;
+                                    data->lexer = currentLexer;
+                                }
                             }
                             else
                             {
@@ -232,35 +236,39 @@ program_uses        :   use_statement
 use_statement       :   TOKEN_USE TOKEN_NAME TOKEN_EOS
                         {
                             char tmp[1024];
-                            FILE *input;
 
                             loader::useNameToFilename(tmp, $2);
 
-                            if(loader::useFile(tmp, tmp) && true && (input = fopen(tmp, "r")))
+                            if(loader::useFile(tmp, tmp))
                             {
-                                lexer::Data lexerData;
-                                void *currentLexer = data->lexer;
+                                if(!data->isParsedFile(tmp))
+                                {
+                                    FILE *input = fopen(tmp, "r");
+                                    lexer::Data lexerData;
+                                    void *currentLexer = data->lexer;
 
-                                lexerData.type = lexer::Data::TYPE_USE;
-                                lexerData.startSymbolIssued = false;
+                                    lexerData.type = lexer::Data::TYPE_USE;
+                                    lexerData.startSymbolIssued = false;
 
-                                yylex_init_extra(&lexerData, &data->lexer);
-                                yyset_in(input, data->lexer);
+                                    yylex_init_extra(&lexerData, &data->lexer);
+                                    yyset_in(input, data->lexer);
 
-                                loader::pushCWD(dirname(tmp));
+                                    data->addParsedFile(tmp);
+                                    loader::pushCWD(dirname(tmp));
 
-                                yyparse(data);
+                                    yyparse(data);
 
-                                loader::popCWD();
+                                    loader::popCWD();
 
-                                yylex_destroy(data->lexer);
-                                fclose(input);
+                                    yylex_destroy(data->lexer);
+                                    fclose(input);
 
-                                data->lexer = currentLexer;
+                                    data->lexer = currentLexer;
+                                }
                             }
                             else
                             {
-                                std::string error("Could not find file ");
+                                std::string error("Could not find include file ");
                                 error += tmp;
                                 error::enqueue(0, error.c_str()); // FIXME
                             }
