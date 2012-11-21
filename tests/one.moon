@@ -1,4 +1,4 @@
-//include "vector.inc";
+include output;
 use Base;
 
 global var positionX;
