@@ -77,10 +77,9 @@ int main(int argc, char *argv[])
 
 		for(; optind < argc; optind++)
 		{
-			FILE *input;
-
-			if(loader::useFile(argv[optind], tmp) && true && (input = fopen(tmp, "r")))
+			if(loader::useFile(argv[optind], tmp))
 			{
+				FILE *input = fopen(tmp, "r");
 				parser::Data parserData;
 				lexer::Data lexerData;
 
@@ -91,6 +90,7 @@ int main(int argc, char *argv[])
 				yylex_init_extra(&lexerData, &parserData.lexer);
 				yyset_in(input, parserData.lexer);
 
+				parserData.addParsedFile(tmp);
 				loader::pushCWD(dirname(tmp));
 
 				yyparse(&parserData);
