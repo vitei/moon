@@ -1,4 +1,5 @@
 #include <cctype>
+#include <stack>
 #include <string>
 #include <vector>
 #include "loader.h"
@@ -6,6 +7,7 @@
 
 static std::vector<std::string> sUseDirectories;
 static std::vector<std::string> sIncludeDirectories;
+static std::stack<std::string> sCurrentWorkingDirectory;
 
 void loader::addUseDirectory(const char *directory)
 {
@@ -15,6 +17,16 @@ void loader::addUseDirectory(const char *directory)
 void loader::addIncludeDirectory(const char *directory)
 {
 	sIncludeDirectories.push_back(std::string(directory));
+}
+
+void loader::pushCWD(const char *directory)
+{
+	sCurrentWorkingDirectory.push(std::string(directory));
+}
+
+void loader::popCWD()
+{
+	sCurrentWorkingDirectory.pop();
 }
 
 void loader::useNameToFilename(char *filename, const char *name)
@@ -44,29 +56,39 @@ void loader::includeNameToFilename(char *filename, const char *name)
 	strcpy(filename, ".minc");
 }
 
-FILE *loader::useFile(const char *filename)
+FILE *loader::useFile(const char *filename, char *usedFilename)
 {
-	FILE *r = 0;
+	std::string resolvedFilename = sCurrentWorkingDirectory.top() + "/" + filename;
+	FILE *r = fopen(resolvedFilename.c_str(), "r");
 
 	for(std::vector<std::string>::iterator i = sUseDirectories.begin(), end = sUseDirectories.end(); !r && i != end; ++i)
 	{
-		std::string str = *i + "/" + filename;
+		resolvedFilename = *i + "/" + filename;
+		r = fopen(resolvedFilename.c_str(), "r");
+	}
 
-		r = fopen(str.c_str(), "r");
+	if(r && usedFilename)
+	{
+		strcpy(usedFilename, resolvedFilename.c_str());
 	}
 
 	return r;
 }
 
-FILE *loader::includeFile(const char *filename)
+FILE *loader::includeFile(const char *filename, char *usedFilename)
 {
-	FILE *r = 0;
+	std::string resolvedFilename = sCurrentWorkingDirectory.top() + "/" + filename;
+	FILE *r = fopen(resolvedFilename.c_str(), "r");
 
 	for(std::vector<std::string>::iterator i = sIncludeDirectories.begin(), end = sIncludeDirectories.end(); !r && i != end; ++i)
 	{
-		std::string str = *i + "/" + filename;
+		resolvedFilename = *i + "/" + filename;
+		r = fopen(resolvedFilename.c_str(), "r");
+	}
 
-		r = fopen(str.c_str(), "r");
+	if(r && usedFilename)
+	{
+		strcpy(usedFilename, resolvedFilename.c_str());
 	}
 
 	return r;

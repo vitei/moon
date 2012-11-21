@@ -73,14 +73,13 @@ int main(int argc, char *argv[])
 
 		// The current working directory must also be used...
 		getcwd(tmp, 1024);
-		loader::addUseDirectory(tmp);
-		loader::addIncludeDirectory(tmp);
+		loader::pushCWD(tmp);
 
 		for(; optind < argc; optind++)
 		{
 			FILE *input;
 
-			if((input = loader::useFile(argv[optind])))
+			if((input = loader::useFile(argv[optind], tmp)))
 			{
 				parser::Data parserData;
 				lexer::Data lexerData;
@@ -92,7 +91,11 @@ int main(int argc, char *argv[])
 				yylex_init_extra(&lexerData, &parserData.lexer);
 				yyset_in(input, parserData.lexer);
 
+				loader::pushCWD(dirname(tmp));
+
 				yyparse(&parserData);
+
+				loader::popCWD();
 
 				yylex_destroy(parserData.lexer);
 				fclose(input);

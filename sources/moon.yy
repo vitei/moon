@@ -8,6 +8,7 @@
 
 %{
     #include <cstdio>
+    #include <libgen.h>
     #include "error.h"
     #include "lexer.h"
     #include "loader.h"
@@ -189,7 +190,7 @@ include_statement   :   TOKEN_INCLUDE TOKEN_ID TOKEN_EOS
 
                             loader::includeNameToFilename(tmp, $2);
 
-                            if((input = loader::includeFile(tmp)))
+                            if((input = loader::includeFile(tmp, tmp)))
                             {
                                 lexer::Data lexerData;
                                 void *currentLexer = data->lexer;
@@ -200,7 +201,11 @@ include_statement   :   TOKEN_INCLUDE TOKEN_ID TOKEN_EOS
                                 yylex_init_extra(&lexerData, &data->lexer);
                                 yyset_in(input, data->lexer);
 
+                                loader::pushCWD(dirname(tmp));
+
                                 yyparse(data);
+
+                                loader::popCWD();
 
                                 yylex_destroy(data->lexer);
                                 fclose(input);
@@ -231,7 +236,7 @@ use_statement       :   TOKEN_USE TOKEN_NAME TOKEN_EOS
 
                             loader::useNameToFilename(tmp, $2);
 
-                            if((input = loader::useFile(tmp)))
+                            if((input = loader::useFile(tmp, tmp)))
                             {
                                 lexer::Data lexerData;
                                 void *currentLexer = data->lexer;
@@ -242,7 +247,11 @@ use_statement       :   TOKEN_USE TOKEN_NAME TOKEN_EOS
                                 yylex_init_extra(&lexerData, &data->lexer);
                                 yyset_in(input, data->lexer);
 
+                                loader::pushCWD(dirname(tmp));
+
                                 yyparse(data);
+
+                                loader::popCWD();
 
                                 yylex_destroy(data->lexer);
                                 fclose(input);
