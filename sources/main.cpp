@@ -2,10 +2,10 @@
 #include <libgen.h>
 #include <unistd.h>
 #include <iostream>
-#include "lexer_data.h"
-#include "parser_data.h"
 #include "error.h"
+#include "lexer.h"
 #include "loader.h"
+#include "parser.h"
 #include "tree.h"
 
 /* Generated headers */
@@ -13,7 +13,7 @@
 #include "_lexer.h"
 
 
-extern void yyparse(ParserData *parserData);
+extern void yyparse(parser::Data *parserData);
 
 const char *DIRECTORY_SEPARATORS = " ,:";
 
@@ -82,11 +82,13 @@ int main(int argc, char *argv[])
 
 			if((input = loader::useFile(argv[optind])))
 			{
-				ParserData parserData;
-				LexerData lexerData;
+				parser::Data parserData;
+				lexer::Data lexerData;
+
+				lexerData.type = lexer::Data::TYPE_USE;
+				lexerData.startSymbolIssued = false;
 
 				// Setup??
-				//tree::Block::setCurrentBlock(new tree::Block());
 				yylex_init_extra(&lexerData, &parserData.lexer);
 				yyset_in(input, parserData.lexer);
 

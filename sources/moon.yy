@@ -8,10 +8,10 @@
 
 %{
     #include <cstdio>
-    #include "lexer_data.h"
-    #include "parser_data.h"
     #include "error.h"
+    #include "lexer.h"
     #include "loader.h"
+    #include "parser.h"
     #include "tree.h"
 
     /* Generated headers */
@@ -25,7 +25,7 @@
 
 /* Re-entrant */
 %pure-parser
-%parse-param {ParserData *data}
+%parse-param {parser::Data *data}
 %lex-param {void *scanner}
 
 /* Program locations */
@@ -196,10 +196,10 @@ include_statement   :   TOKEN_INCLUDE TOKEN_STRING TOKEN_EOS
 
                             if((input = loader::includeFile($2)))
                             {
-                                LexerData lexerData;
+                                lexer::Data lexerData;
                                 void *currentLexer = data->lexer;
 
-                                lexerData.type = LexerData::TYPE_INCLUDE;
+                                lexerData.type = lexer::Data::TYPE_INCLUDE;
                                 lexerData.startSymbolIssued = false;
 
                                 yylex_init_extra(&lexerData, &data->lexer);
@@ -238,10 +238,10 @@ use_statement       :   TOKEN_USE TOKEN_NAME TOKEN_EOS
 
                             if((input = loader::useFile(tmp)))
                             {
-                                LexerData lexerData;
+                                lexer::Data lexerData;
                                 void *currentLexer = data->lexer;
 
-                                lexerData.type = LexerData::TYPE_USE;
+                                lexerData.type = lexer::Data::TYPE_USE;
                                 lexerData.startSymbolIssued = false;
 
                                 yylex_init_extra(&lexerData, &data->lexer);
