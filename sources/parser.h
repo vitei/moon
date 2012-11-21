@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include "tree/program.h"
 
 
 namespace parser
@@ -30,8 +31,14 @@ namespace parser
 
 		void *lexer;
 
+		tree::Program &getProgram()
+		{
+			return mProgram;
+		}
+
 	private:
 		std::vector<std::string> mParsedFiles;
+		tree::Program mProgram;
 	};
 }
 
