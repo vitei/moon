@@ -283,11 +283,11 @@ o_program_cvrs      :   /* Empty */
 
 program_cvrs        :   program_cvr                                                                 /* CVRs = constants + variables + references */
                         {
-                            data->getProgram().add($1);
+                            data->getProgram().getStatements().add($1);
                         }
                     |   program_cvrs program_cvr
                         {
-                            data->getProgram().add($2);
+                            data->getProgram().getStatements().add($2);
                         }
                     ;
 
@@ -366,11 +366,11 @@ o_program_functions :   /* Empty */
 
 program_functions   :   program_function
                         {
-                            data->getProgram().add($1);
+                            data->getProgram().getStatements().add($1);
                         }
                     |   program_functions program_function
                         {
-                            data->getProgram().add($2);
+                            data->getProgram().getStatements().add($2);
                         }
                     ;
 
