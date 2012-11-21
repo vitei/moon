@@ -11,29 +11,29 @@ CXX_FLAGS =
 FLEX = flex
 FLEX_FLAGS = 
 
-.INTERMEDIATE: parser lexer
+.INTERMEDIATE: _parser _lexer
 
 all: compiler
 
-parser: moon.yy
-	$(BISON) $(BISON_FLAGS) --defines=parser.h -o parser.cpp $<
+_parser: moon.yy
+	$(BISON) $(BISON_FLAGS) --defines=_parser.h -o _parser.cpp $<
 
-parser.h: parser
-parser.cpp: parser lexer.h
+_parser.h: _parser
+_parser.cpp: _parser _lexer.h
 
-lexer: moon.ll
-	$(FLEX) $(FLEX_FLAGS) --header-file=lexer.h -o lexer.cpp $<
+_lexer: moon.ll
+	$(FLEX) $(FLEX_FLAGS) --header-file=_lexer.h -o _lexer.cpp $<
 
-lexer.h: lexer
-lexer.cpp: lexer parser.h
+_lexer.h: _lexer
+_lexer.cpp: _lexer _parser.h
 
 %.o: %.cpp %.cpp
 	$(CXX) -c $(CPP_FLAGS) $(CXX_FLAGS) -o $@ $<
 
-../bin/moon: error.o lexer.o loader.o main.o parser.o
+../bin/moon: _lexer.o _parser.o error.o loader.o main.o
 	$(CXX) $(CPP_FLAGS) $(CXX_FLAGS) -o $@ $^
 
 compiler: ../bin/moon
 
 clean:
-	rm -rf lexer.* parser.* *.o tree/*.o ../bin/moon
+	rm -rf _lexer.* _parser.* *.o tree/*.o ../bin/moon
