@@ -6,8 +6,16 @@
 
 namespace tree
 {
-	class Program : public NodeList
+	class Program : public Node
 	{
+	public:
+		NodeList &getStatements()
+		{
+			return mStatements;
+		}
+
+	private:
+		NodeList mStatements;
 	};
 }
 
