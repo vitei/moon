@@ -7,10 +7,7 @@
  */
 
 %{
-
-    #include "lexer_data.h"
-    #include "parser_data.h"
-    #include "error.h"
+    #include "lexer.h"
     #include "tree.h"
 
     /* Generated headers */
@@ -23,7 +20,7 @@
 %}
 
 /* Extra data */
-%option extra-type="LexerData *"
+%option extra-type="lexer::Data *"
 
 /* Re-entrant */
 %option reentrant
