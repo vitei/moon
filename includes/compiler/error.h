@@ -1,5 +1,5 @@
-#ifndef ERROR_H
-#define ERROR_H
+#ifndef COMPILER_ERROR_H
+#define COMPILER_ERROR_H
 
 namespace error
 {

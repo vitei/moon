@@ -9,15 +9,15 @@
 %{
     #include <cstdio>
     #include <libgen.h>
-    #include "error.h"
-    #include "lexer.h"
-    #include "loader.h"
-    #include "parser.h"
+    #include "compiler/error.h"
+    #include "compiler/lexer.h"
+    #include "compiler/loader.h"
+    #include "compiler/parser.h"
     #include "tree.h"
 
     /* Generated headers */
-    #include "_parser.h"
-    #include "_lexer.h"
+    #include "__parser.h"
+    #include "__lexer.h"
 
     #define scanner data->lexer
 

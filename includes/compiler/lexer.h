@@ -1,5 +1,5 @@
-#ifndef LEXER_H
-#define LEXER_H
+#ifndef COMPILER_LEXER_H
+#define COMPILER_LEXER_H
 
 namespace lexer
 {

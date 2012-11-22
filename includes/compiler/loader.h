@@ -1,5 +1,5 @@
-#ifndef LOADER_H
-#define LOADER_H
+#ifndef COMPILER_LOADER_H
+#define COMPILER_LOADER_H
 
 namespace loader
 {

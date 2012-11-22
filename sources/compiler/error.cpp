@@ -1,6 +1,6 @@
 #include <iostream>
 #include <vector>
-#include "error.h"
+#include "compiler/error.h"
 
 
 class Error
