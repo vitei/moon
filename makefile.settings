@@ -1,0 +1,23 @@
+MOON_ROOT_DIR:=$(shell DIRECTORY="$(dir $(realpath $(lastword $(MAKEFILE_LIST))))"; echo $${DIRECTORY%/})
+
+BIN_DIR = $(MOON_ROOT_DIR)/bin
+INC_DIR = $(MOON_ROOT_DIR)/includes
+
+BISON = bison
+BISON_FLAGS = --verbose
+
+C = clang
+C_FLAGS = 
+CPP_FLAGS = -I"$(INC_DIR)"
+
+CXX = clang++
+CXX_FLAGS = 
+
+FLEX = flex
+FLEX_FLAGS = 
+
+DEBUG ?= 0
+
+ifeq ($(DEBUG), 1)
+	CPP_FLAGS += -g
+endif

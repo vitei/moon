@@ -7,11 +7,11 @@
  */
 
 %{
-    #include "lexer.h"
+    #include "compiler/lexer.h"
     #include "tree.h"
 
     /* Generated headers */
-    #include "_parser.h"
+    #include "__parser.h"
 
     /* This should let us have line numbers... */
     #define YY_USER_ACTION yylloc->first_line = yylineno;

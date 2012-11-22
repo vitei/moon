@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 #include <unistd.h>
-#include "loader.h"
+#include "compiler/loader.h"
 
 
 static std::vector<std::string> sUseDirectories;

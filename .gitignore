@@ -3,8 +3,7 @@ bin/*
 
 # Intermediate files
 *.o
-sources/_lexer.*
-sources/_parser.*
+__*
 
 # IDE files
 *.sublime-*
