@@ -101,16 +101,17 @@ int main(int argc, char *argv[])
 				fclose(input);
 
 				// ...
-
-
-				// Show the errors
-				error::output();
 			}
 			else
 			{
-				std::cerr << "Could not load file " << argv[optind] << std::endl;
+				std::string error = "Could not load file ";
+				error += argv[optind];
+				error::enqueue(error.c_str());
 			}
 		}
+
+		// Show the errors
+		error::output();
 	}
 
 	return error ? 1 : 0;
