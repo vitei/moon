@@ -9,7 +9,7 @@ namespace tree
 	class Operation : public Expression
 	{
 	public:
-		enum OperationType
+		enum Type
 		{
 			OP_ASSIGN,
 			OP_LOGICAL_OR,
@@ -32,18 +32,50 @@ namespace tree
 			OP_LOGICAL_NOT,
 			OP_NOT
 		};
+
+		Operation(Type type) : mType(type) {}
+
+		Type getType()
+		{
+			return mType;
+		}
+
+	private:
+		Type mType;
 	};
 
 	class UnaryOperation : public Operation
 	{
 	public:
-		UnaryOperation(Operation::OperationType type, Expression *rhs) {}
+		UnaryOperation(Operation::Type type, Expression *expression) : Operation(type), mExpression(expression) {}
+
+		Expression *getExpression()
+		{
+			return mExpression;
+		}
+
+	private:
+		Expression *mExpression;
 	};
 
 	class BinaryOperation : public Operation
 	{
 	public:
-		BinaryOperation(Operation::OperationType type, Expression *lhs, Expression *rhs) {}
+		BinaryOperation(Operation::Type type, Expression *lhs, Expression *rhs) : Operation(type), mLHS(lhs), mRHS(rhs) {}
+
+		Expression *getLHS()
+		{
+			return mLHS;
+		}
+
+		Expression *getRHS()
+		{
+			return mRHS;
+		}
+
+	private:
+		Expression *mLHS;
+		Expression *mRHS;
 	};
 }
 

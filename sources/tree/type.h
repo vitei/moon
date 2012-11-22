@@ -19,6 +19,11 @@ namespace tree
 
 		Type(Data dataType) : mDataType(dataType) {}
 
+		Data getDataType()
+		{
+			return mDataType;
+		}
+
 	private:
 		Data mDataType;
 	};

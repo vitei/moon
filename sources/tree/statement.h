@@ -16,19 +16,40 @@ namespace tree
 	class ExpressionStatement : public Statement
 	{
 	public:
-		ExpressionStatement(Expression *expression) {}
+		ExpressionStatement(Expression *expression) : mExpression(expression) {}
+
+		Expression *getExpression()
+		{
+			return mExpression;
+		}
+
+	private:
+		Expression *mExpression;
 	};
 
 	class ReturnStatement : public Statement
 	{
 	public:
-		ReturnStatement(Expression *expression) {}
+		ReturnStatement(Expression *expression) : mReturn(expression) {}
+
+		Expression *getReturn()
+		{
+			return mReturn;
+		}
+
+	private:
+		Expression *mReturn;
 	};
 
 	class StateStatement : public Statement
 	{
 	public:
 		StateStatement(State *state) : mState(state) {}
+
+		State *getState()
+		{
+			return mState;
+		}
 
 	private:
 		State *mState;
