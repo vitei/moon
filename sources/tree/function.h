@@ -12,6 +12,21 @@ namespace tree
 	public:
 		FunctionPrototype(Type *type, Identifier *name, NodeList *arguments) : mType(type), mName(name), mArguments(arguments) {}
 
+		Type *getType()
+		{
+			return mType;
+		}
+
+		Identifier *getName()
+		{
+			return mName;
+		}
+
+		NodeList *getArguments()
+		{
+			return mArguments;
+		}
+
 	private:
 		Type *mType;
 		Identifier *mName;
@@ -22,6 +37,16 @@ namespace tree
 	{
 	public:
 		Function(FunctionPrototype *prototype, NodeList *statements) : mPrototype(prototype), mStatements(statements) {}
+
+		FunctionPrototype *getPrototype()
+		{
+			return mPrototype;
+		}
+
+		NodeList *getStatements()
+		{
+			return mStatements;
+		}
 
 	private:
 		FunctionPrototype *mPrototype;

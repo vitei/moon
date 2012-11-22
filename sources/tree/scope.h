@@ -12,6 +12,11 @@ namespace tree
 	public:
 		Scope(Node *node) : mNode(node) {}
 
+		Node *getScopedNode()
+		{
+			return mNode;
+		}
+
 	private:
 		Node *mNode;
 	};

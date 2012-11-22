@@ -15,6 +15,11 @@ namespace tree
 			mList.push_back(node);
 		}
 
+		const std::vector<Node *> &getList()
+		{
+			return mList;
+		}
+
 	private:
 		std::vector<Node *> mList;
 	};

@@ -20,6 +20,11 @@ namespace tree
 	public:
 		NamedState(const char *name) : mName(name) {}
 
+		const std::string &getName()
+		{
+			return mName;
+		}
+
 	private:
 		std::string mName;
 	};

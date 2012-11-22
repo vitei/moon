@@ -17,6 +17,11 @@ namespace tree
 	public:
 		Identifier(const char *name) : mName(std::string(name)) {}
 
+		const std::string &getName()
+		{
+			return mName;
+		}
+
 	private:
 		std::string mName;
 	};
@@ -25,6 +30,16 @@ namespace tree
 	{
 	public:
 		StorageExpression(Type *type, Identifier *name) : mType(type), mName(name) {}
+
+		Type *getType()
+		{
+			return mType;
+		}
+
+		Identifier *getName()
+		{
+			return mName;
+		}
 
 	private:
 		Type *mType;
@@ -54,6 +69,16 @@ namespace tree
 	public:
 		CastExpression(Type *type, Expression *expression) : mType(type), mExpression(expression) {}
 
+		Type *getType()
+		{
+			return mType;
+		}
+
+		Expression *getExpression()
+		{
+			return mExpression;
+		}
+
 	private:
 		Type *mType;
 		Expression *mExpression;
@@ -62,11 +87,21 @@ namespace tree
 	class AccessExpression : public Expression
 	{
 	public:
-		AccessExpression(Expression *container, Expression *target) {}
+		AccessExpression(Expression *container, Expression *target) : mContainer(container), mTarget(target) {}
+
+		Expression *getContainer()
+		{
+			return mContainer;
+		}
+
+		Expression *getTarget()
+		{
+			return mTarget;
+		}
 
 	protected:
-		//Identifier *mID;
-		//Expression *mInitialValue;
+		Expression *mContainer;
+		Expression *mTarget;
 	};
 
 	class DirectAccess : public AccessExpression
@@ -92,6 +127,16 @@ namespace tree
 	public:
 		FunctionCall(Identifier *id, NodeList *arguments = 0) : mID(id), mArguments(arguments) {}
 
+		Identifier *getID()
+		{
+			return mID;
+		}
+
+		NodeList *getArguments()
+		{
+			return mArguments;
+		}
+
 	private:
 		Identifier *mID;
 		NodeList *mArguments;
@@ -102,6 +147,16 @@ namespace tree
 	{
 	public:
 		Literal(STORAGE value) : mType(new Type(TYPE)), mValue(value) {}
+
+		Type *getType()
+		{
+			return mType;
+		}
+
+		STORAGE getValue()
+		{
+			return mValue;
+		}
 
 	private:
 		Type *mType;
