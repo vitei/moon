@@ -3,7 +3,7 @@
 
 #include <string>
 #include <vector>
-#include "tree/program.h"
+#include "tree.h"
 
 
 namespace parser
@@ -29,7 +29,10 @@ namespace parser
 			return false;
 		}
 
+		// FIXME, these three need to be nicer...
 		void *lexer;
+		tree::Statement *includeHead;
+		tree::Statement *includeTail;
 
 		tree::Program &getProgram()
 		{
