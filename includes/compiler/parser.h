@@ -33,15 +33,10 @@ namespace parser
 		void *lexer;
 		tree::Statement *includeHead;
 		tree::Statement *includeTail;
-
-		tree::Program &getProgram()
-		{
-			return mProgram;
-		}
+		tree::Scope *scope;
 
 	private:
 		std::vector<std::string> mParsedFiles;
-		tree::Program mProgram;
 	};
 }
 

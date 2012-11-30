@@ -274,15 +274,18 @@ program_includes    :   include_statements
                         {
                             $$ = $1;
 
-                            if($1.head)
+                            if($2.head)
                             {
-                                $$ = $1;
-                                $$.tail->setNext($2.head);
-                                $$.tail = $2.tail;
-                            }
-                            else
-                            {
-                                $$ = $2;
+                                if($1.head)
+                                {
+                                    $$ = $1;
+                                    $$.tail->setNext($2.head);
+                                    $$.tail = $2.tail;
+                                }
+                                else
+                                {
+                                    $$ = $2;
+                                }
                             }
                         }
                     ;
@@ -290,6 +293,9 @@ program_includes    :   include_statements
 include_statements  :   TOKEN_INCLUDE TOKEN_ID TOKEN_EOS
                         {
                             char tmp[1024];
+
+                            $$.head = NULL;
+                            $$.tail = NULL;
 
                             loader::includeNameToFilename(tmp, $2);
 
@@ -331,9 +337,6 @@ include_statements  :   TOKEN_INCLUDE TOKEN_ID TOKEN_EOS
                                 std::string error("Could not find include file ");
                                 error += tmp;
                                 error::enqueue(0, error.c_str()); // FIXME
-
-                                $$.head = NULL;
-                                $$.tail = NULL;
                             }
                         }
                     ;
@@ -356,14 +359,20 @@ program_uses        :   use_statement
                     |   program_uses use_statement
                         {
                             $$ = $1;
-                            $$.tail->setNext($2);
-                            $$.tail = $2;
+
+                            if($2)
+                            {
+                                $$.tail->setNext($2);
+                                $$.tail = $2;
+                            }
                         }
                     ;
 
 use_statement       :   TOKEN_USE TOKEN_NAME TOKEN_EOS
                         {
                             char tmp[1024];
+
+                            $$ = NULL;
 
                             loader::useNameToFilename(tmp, $2);
 
@@ -374,6 +383,7 @@ use_statement       :   TOKEN_USE TOKEN_NAME TOKEN_EOS
                                     FILE *input = fopen(tmp, "r");
                                     lexer::Data lexerData;
                                     void *currentLexer = data->lexer;
+                                    tree::Scope *currentScope = data->scope;
 
                                     lexerData.type = lexer::Data::TYPE_USE;
                                     lexerData.startSymbolIssued = false;
@@ -384,6 +394,8 @@ use_statement       :   TOKEN_USE TOKEN_NAME TOKEN_EOS
                                     data->addParsedFile(tmp);
                                     loader::pushCWD(dirname(tmp));
 
+                                    data->scope = new tree::Scope();
+
                                     yyparse(data);
 
                                     loader::popCWD();
@@ -392,6 +404,9 @@ use_statement       :   TOKEN_USE TOKEN_NAME TOKEN_EOS
                                     fclose(input);
 
                                     data->lexer = currentLexer;
+
+                                    $$ = data->scope;
+                                    data->scope = currentScope;
                                 }
                             }
                             else
@@ -469,12 +484,12 @@ scoped_var_statement:   variable_assignment TOKEN_EOS
                         }
                     |   TOKEN_GLOBAL variable_assignment TOKEN_EOS
                         {
-                            tree::GlobalScope *scope = new tree::GlobalScope($2);
+                            tree::GlobalNodeScope *scope = new tree::GlobalNodeScope($2);
                             $$ = new tree::ExpressionStatement(scope);
                         }
                     |   TOKEN_SHARED variable_assignment TOKEN_EOS
                         {
-                            tree::SharedScope *scope = new tree::SharedScope($2);
+                            tree::SharedNodeScope *scope = new tree::SharedNodeScope($2);
                             $$ = new tree::ExpressionStatement(scope);
                         }
                     ;
@@ -485,12 +500,12 @@ scoped_ref_statement:   reference_assignment TOKEN_EOS
                         }
                     |   TOKEN_GLOBAL reference_assignment TOKEN_EOS
                         {
-                            tree::GlobalScope *scope = new tree::GlobalScope($2);
+                            tree::GlobalNodeScope *scope = new tree::GlobalNodeScope($2);
                             $$ = new tree::ExpressionStatement(scope);
                         }
                     |   TOKEN_SHARED reference_assignment TOKEN_EOS
                         {
-                            tree::SharedScope *scope = new tree::SharedScope($2);
+                            tree::SharedNodeScope *scope = new tree::SharedNodeScope($2);
                             $$ = new tree::ExpressionStatement(scope);
                         }
                     ;
