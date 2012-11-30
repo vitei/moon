@@ -1,36 +1,13 @@
 #ifndef TREE_SCOPE_H
 #define TREE_SCOPE_H
 
-#include "expression.h"
-#include "node.h"
+#include "statement.h"
 
 
 namespace tree
 {
-	class Scope : public Expression
+	class Scope : public Statement
 	{
-	public:
-		Scope(Node *node) : mNode(node) {}
-
-		Node *getScopedNode()
-		{
-			return mNode;
-		}
-
-	private:
-		Node *mNode;
-	};
-
-	class GlobalScope : public Scope
-	{
-	public:
-		GlobalScope(Node *node) : Scope(node) {}
-	};
-
-	class SharedScope : public Scope
-	{
-	public:
-		SharedScope(Node *node) : Scope(node) {}
 	};
 }
 
