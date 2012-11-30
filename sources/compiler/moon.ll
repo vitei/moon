@@ -8,6 +8,7 @@
 
 %{
     #include "compiler/lexer.h"
+    #include "compiler/parser.h"
     #include "tree.h"
 
     /* Generated headers */
