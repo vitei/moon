@@ -13,7 +13,7 @@
 #include "__lexer.h"
 
 
-extern void yyparse(parser::Data *parserData);
+extern int yyparse(parser::Data *parserData);
 
 const char *DIRECTORY_SEPARATORS = " ,:";
 
