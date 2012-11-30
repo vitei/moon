@@ -1,7 +1,6 @@
 #ifndef TREE_STATEMENT_H
 #define TREE_STATEMENT_H
 
-#include <vector>
 #include "node.h"
 #include "expression.h"
 #include "state.h"
@@ -11,6 +10,20 @@ namespace tree
 {
 	class Statement : public Node
 	{
+	public:
+		Statement(Statement *next = NULL) : mNext(next) {}
+
+		const Statement *getNext() const
+		{
+			return mNext;
+		}
+
+		void setNext(Statement *next)
+		{
+			mNext = next;
+		}
+	private:
+		Statement *mNext;
 	};
 
 	class ExpressionStatement : public Statement

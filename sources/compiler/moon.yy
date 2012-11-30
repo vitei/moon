@@ -37,8 +37,13 @@
 
 /*  */
 %union {
+    struct StatementList
+    {
+        tree::Statement *head;
+        tree::Statement *tail;
+    } list;
+
     tree::FunctionPrototype *prototype;
-    tree::NodeList *list;
     tree::Statement *statement;
     tree::Expression *expression;
     tree::Type *type;
@@ -116,17 +121,28 @@
 %token<string> TOKEN_ID
 
 /* Return types */
+%type<list> program
+%type<list> o_program_includes
+%type<list> program_includes
+%type<list> include_statements
+%type<list> o_program_uses
+%type<list> program_uses
+%type<statement> use_statement 
+%type<list> o_program_cvrs
+%type<list> program_cvrs
 %type<statement> program_cvr
 %type<statement> constant_statement
 %type<expression> constant_assignment
 %type<expression> constant
 %type<statement> scoped_var_statement
 %type<statement> scoped_ref_statement
+%type<list> o_program_functions
+%type<list> program_functions
 %type<statement> program_function
 %type<prototype> function_prototype
 %type<list> o_arguments
 %type<list> arguments
-%type<expression> argument
+%type<statement> argument
 %type<state> function_state
 %type<list> statement_block
 %type<list> statements
@@ -137,8 +153,9 @@
 %type<statement> reference_statement
 %type<expression> reference_assignment
 %type<expression> reference
-%type<statement> expression_statement
+%type<statement> a_or_e_statement
 %type<expression> assign_or_expression
+%type<statement> expression_statement
 %type<expression> assignment
 %type<expression> expression
 %type<expression> l_or_expression
@@ -172,20 +189,105 @@
 
 start               :   START_PROGRAM program
                     |   START_INCLUDE program /* FIXME */
+                        {
+                            data->includeHead = $2.head;
+                            data->includeTail = $2.tail;
+                        }
                     ;
 
 program             :   o_program_includes o_program_uses o_program_cvrs o_program_functions
+                        {
+                            tree::Statement *headStatement = NULL;
+                            tree::Statement *tailStatement = NULL;
+
+                            if($1.head)
+                            {
+                                headStatement = $1.head;
+                                tailStatement = $1.tail;
+                            }
+
+                            if($2.head)
+                            {
+                                if(tailStatement)
+                                {
+                                    tailStatement->setNext($2.head);
+                                    tailStatement = $2.tail;
+                                }
+                                else
+                                {
+                                    headStatement = $2.head;
+                                }
+
+                                tailStatement = $2.tail;
+                            }
+
+                            if($3.head)
+                            {
+                                if(tailStatement)
+                                {
+                                    tailStatement->setNext($3.head);
+                                    tailStatement = $3.tail;
+                                }
+                                else
+                                {
+                                    headStatement = $3.head;
+                                }
+
+                                tailStatement = $3.tail;
+                            }
+
+                            if($4.head)
+                            {
+                                if(tailStatement)
+                                {
+                                    tailStatement->setNext($4.head);
+                                    tailStatement = $4.tail;
+                                }
+                                else
+                                {
+                                    headStatement = $4.head;
+                                }
+
+                                tailStatement = $4.tail;
+                            }
+
+                            $$.head = headStatement;
+                            $$.tail = tailStatement;
+                        }
                     ;
 
 o_program_includes  :   /* Empty */
+                        {
+                            $$.head = NULL;
+                        }
                     |   program_includes
+                        {
+                            $$ = $1;
+                        }
                     ;
 
-program_includes    :   include_statement
-                    |   program_includes include_statement
+program_includes    :   include_statements
+                        {
+                            $$ = $1;
+                        }
+                    |   program_includes include_statements
+                        {
+                            $$ = $1;
+
+                            if($1.head)
+                            {
+                                $$ = $1;
+                                $$.tail->setNext($2.head);
+                                $$.tail = $2.tail;
+                            }
+                            else
+                            {
+                                $$ = $2;
+                            }
+                        }
                     ;
 
-include_statement   :   TOKEN_INCLUDE TOKEN_ID TOKEN_EOS
+include_statements  :   TOKEN_INCLUDE TOKEN_ID TOKEN_EOS
                         {
                             char tmp[1024];
 
@@ -208,6 +310,9 @@ include_statement   :   TOKEN_INCLUDE TOKEN_ID TOKEN_EOS
                                     data->addParsedFile(tmp);
                                     loader::pushCWD(dirname(tmp));
 
+                                    data->includeHead = NULL;
+                                    data->includeTail = NULL;
+
                                     yyparse(data);
 
                                     loader::popCWD();
@@ -216,6 +321,9 @@ include_statement   :   TOKEN_INCLUDE TOKEN_ID TOKEN_EOS
                                     fclose(input);
 
                                     data->lexer = currentLexer;
+
+                                    $$.head = data->includeHead;
+                                    $$.tail = data->includeTail;
                                 }
                             }
                             else
@@ -223,16 +331,34 @@ include_statement   :   TOKEN_INCLUDE TOKEN_ID TOKEN_EOS
                                 std::string error("Could not find include file ");
                                 error += tmp;
                                 error::enqueue(0, error.c_str()); // FIXME
+
+                                $$.head = NULL;
+                                $$.tail = NULL;
                             }
                         }
                     ;
 
 o_program_uses      :   /* Empty */
+                        {
+                            $$.head = NULL;
+                        }
                     |   program_uses
+                        {
+                            $$ = $1;
+                        }
                     ;
 
 program_uses        :   use_statement
+                        {
+                            $$.head = $1;
+                            $$.tail = $1;
+                        }
                     |   program_uses use_statement
+                        {
+                            $$ = $1;
+                            $$.tail->setNext($2);
+                            $$.tail = $2;
+                        }
                     ;
 
 use_statement       :   TOKEN_USE TOKEN_NAME TOKEN_EOS
@@ -278,16 +404,25 @@ use_statement       :   TOKEN_USE TOKEN_NAME TOKEN_EOS
                     ;
 
 o_program_cvrs      :   /* Empty */
+                        {
+                            $$.head = NULL;
+                        }
                     |   program_cvrs
+                        {
+                            $$ = $1;
+                        }
                     ;
 
 program_cvrs        :   program_cvr                                                                 /* CVRs = constants + variables + references */
                         {
-                            data->getProgram().getStatements().add($1);
+                            $$.head = $1;
+                            $$.tail = $1;
                         }
                     |   program_cvrs program_cvr
                         {
-                            data->getProgram().getStatements().add($2);
+                            $$ = $1;
+                            $$.tail->setNext($2);
+                            $$.tail = $2;
                         }
                     ;
 
@@ -361,39 +496,48 @@ scoped_ref_statement:   reference_assignment TOKEN_EOS
                     ;
 
 o_program_functions :   /* Empty */
+                        {
+                            $$.head = NULL;
+                        }
                     |   program_functions
+                        {
+                            $$ = $1;
+                        }
                     ;
 
 program_functions   :   program_function
                         {
-                            data->getProgram().getStatements().add($1);
+                            $$.head = $1;
+                            $$.tail = $1;
                         }
                     |   program_functions program_function
                         {
-                            data->getProgram().getStatements().add($2);
+                            $$ = $1;
+                            $$.tail->setNext($2);
+                            $$.tail = $2;
                         }
                     ;
 
 program_function    :   function_prototype function_state statement_block /* FIXME, support states */
                         {
-                            $$ = new tree::Function($1, $3);
+                            $$ = new tree::Function($1, $3.head);
                         }
                     ;
 
 function_prototype  :   TOKEN_FUNCTION identifier TOKEN_PARENTHESIS_OPEN o_arguments TOKEN_PARENTHESIS_CLOSE
                         {
                             tree::Type *type = new tree::Type(tree::Type::DATA_INT);
-                            $$ = new tree::FunctionPrototype(type, $2, $4);
+                            $$ = new tree::FunctionPrototype(type, $2, $4.head);
                         }
                     |   TOKEN_FUNCTION type TOKEN_CAST identifier TOKEN_PARENTHESIS_OPEN o_arguments TOKEN_PARENTHESIS_CLOSE
                         {
-                            $$ = new tree::FunctionPrototype($2, $4, $6);
+                            $$ = new tree::FunctionPrototype($2, $4, $6.head);
                         }
                     ;
 
 o_arguments         :   /* Empty */
                         {
-                            $$ = 0;
+                            $$.head = NULL;
                         }
                     |   arguments
                         {
@@ -403,38 +547,43 @@ o_arguments         :   /* Empty */
 
 arguments           :   argument
                         {
-                            $$ = new tree::NodeList();
-                            $$->add($1);
+                            $$.head = $1;
+                            $$.tail = $1;
                         }
                     |   arguments TOKEN_COMMA argument
                         {
                             $$ = $1;
-                            $$->add($3);
+                            $$.tail->setNext($3);
+                            $$.tail = $3;
                         }
                     ;
 
 argument            :   identifier
                         {
                             tree::Type *type = new tree::Type(tree::Type::DATA_INT);
-                            $$ = new tree::Variable(type, $1);
+                            tree::Expression *expression = new tree::Variable(type, $1);
+                            $$ = new tree::ExpressionStatement(expression);
                         }
                     |   type TOKEN_CAST identifier
                         {
-                            $$ = new tree::Variable($1, $3);
+                            tree::Expression *expression = new tree::Variable($1, $3);
+                            $$ = new tree::ExpressionStatement(expression);
                         }
                     |   variable
                         {
-                            $$ = $1;
+                            tree::Expression *expression = $1;
+                            $$ = new tree::ExpressionStatement(expression);
                         }
                     |   reference
                         {
-                            $$ = $1;
+                            tree::Expression *expression = $1;
+                            $$ = new tree::ExpressionStatement(expression);
                         }
                     ;
 
 function_state      :   /* No state */
                         {
-                            $$ = 0;
+                            $$ = NULL;
                         }
                     |   TOKEN_LT state TOKEN_GT
                         {
@@ -444,7 +593,7 @@ function_state      :   /* No state */
 
 statement_block     :   TOKEN_BRACE_OPEN TOKEN_BRACE_CLOSE                                          /* Empty... */
                         {
-                            $$ = 0;
+                            $$.head = NULL;
                         }
                     |   TOKEN_BRACE_OPEN statements TOKEN_BRACE_CLOSE
                         {
@@ -454,13 +603,14 @@ statement_block     :   TOKEN_BRACE_OPEN TOKEN_BRACE_CLOSE                      
 
 statements          :   statement
                         {
-                            $$ = new tree::NodeList();
-                            $$->add($1);
+                            $$.head = $1;
+                            $$.tail = $1;
                         }
                     |   statements statement
                         {
-                            $1->add($2);
                             $$ = $1;
+                            $$.tail->setNext($2);
+                            $$.tail = $2;
                         }
                     ;
 
@@ -472,7 +622,7 @@ statement           :   variable_statement
                         {
                             $$ = $1;
                         }
-                    |   expression_statement
+                    |   a_or_e_statement
                         {
                             $$ = $1;
                         }
@@ -544,7 +694,7 @@ reference           :   TOKEN_REF identifier
                         }
                     ;
 
-expression_statement:   assign_or_expression TOKEN_EOS
+a_or_e_statement    :   assign_or_expression TOKEN_EOS
                         {
                             $$ = new tree::ExpressionStatement($1);
                         }
@@ -561,13 +711,19 @@ assign_or_expression:   assignment
 
                     |   error                                                                       /* Special case!! Checking here will catch a lot of cases, should produce better error reports */
                         {
-                            $$ = 0; // FIXME
+                            $$ = NULL; // FIXME
                         }
                     ;
 
 assignment          :   identifier TOKEN_EQUALS expression
                         {
                             $$ = new tree::BinaryOperation(tree::Operation::OP_ASSIGN, $1, $3);
+                        }
+                    ;
+
+expression_statement:   expression
+                        {
+                            $$ = new tree::ExpressionStatement($1);
                         }
                     ;
 
@@ -763,19 +919,20 @@ call_expression     :   identifier TOKEN_PARENTHESIS_OPEN TOKEN_PARENTHESIS_CLOS
                         }
                     |   identifier TOKEN_PARENTHESIS_OPEN argument_expressions TOKEN_PARENTHESIS_CLOSE
                         {
-                            $$ = new tree::FunctionCall($1, $3);
+                            $$ = new tree::FunctionCall($1, $3.head);
                         }
                     ;
 
-argument_expressions:   expression
+argument_expressions:   expression_statement
                         {
-                            $$ = new tree::NodeList();
-                            $$->add($1);
+                            $$.head = $1;
+                            $$.tail = $1;
                         }
-                    |   argument_expressions TOKEN_COMMA expression
+                    |   argument_expressions TOKEN_COMMA expression_statement
                         {
                             $$ = $1;
-                            $$->add($3);
+                            $$.tail->setNext($3);
+                            $$.tail = $3;
                         }
                     ;
 

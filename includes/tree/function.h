@@ -10,7 +10,7 @@ namespace tree
 	class FunctionPrototype : public Expression
 	{
 	public:
-		FunctionPrototype(Type *type, Identifier *name, NodeList *arguments) : mType(type), mName(name), mArguments(arguments) {}
+		FunctionPrototype(Type *type, Identifier *name, Statement *firstArgument) : mType(type), mName(name), mFirstArgument(firstArgument) {}
 
 		Type *getType()
 		{
@@ -22,35 +22,35 @@ namespace tree
 			return mName;
 		}
 
-		NodeList *getArguments()
+		Statement *getFirstArgument()
 		{
-			return mArguments;
+			return mFirstArgument;
 		}
 
 	private:
 		Type *mType;
 		Identifier *mName;
-		NodeList *mArguments;
+		Statement *mFirstArgument;
 	};
 
 	class Function : public Statement
 	{
 	public:
-		Function(FunctionPrototype *prototype, NodeList *statements) : mPrototype(prototype), mStatements(statements) {}
+		Function(FunctionPrototype *prototype, Statement *firstStatement) : mPrototype(prototype), mFirstStatement(firstStatement) {}
 
 		FunctionPrototype *getPrototype()
 		{
 			return mPrototype;
 		}
 
-		NodeList *getStatements()
+		Statement *getFirstStatement()
 		{
-			return mStatements;
+			return mFirstStatement;
 		}
 
 	private:
 		FunctionPrototype *mPrototype;
-		NodeList *mStatements;
+		Statement *mFirstStatement;
 	};
 }
 

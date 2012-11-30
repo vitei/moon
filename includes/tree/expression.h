@@ -1,13 +1,14 @@
 #ifndef TREE_EXPRESSION_H
 #define TREE_EXPRESSION_H
 
-#include <vector>
 #include "node.h"
 #include "type.h"
 
 
 namespace tree
 {
+	class Statement;
+
 	class Expression : public Node
 	{
 	};
@@ -125,21 +126,21 @@ namespace tree
 	class FunctionCall : public Expression
 	{
 	public:
-		FunctionCall(Identifier *id, NodeList *arguments = 0) : mID(id), mArguments(arguments) {}
+		FunctionCall(Identifier *id, Statement *firstArgument = 0) : mID(id), mFirstArgument(firstArgument) {}
 
 		Identifier *getID()
 		{
 			return mID;
 		}
 
-		NodeList *getArguments()
+		Statement *getFirstArgument()
 		{
-			return mArguments;
+			return mFirstArgument;
 		}
 
 	private:
 		Identifier *mID;
-		NodeList *mArguments;
+		Statement *mFirstArgument;
 	};
 
 	template<Type::Data TYPE, class STORAGE>
