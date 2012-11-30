@@ -5,17 +5,14 @@ include $(THIS_MAKEFILE_DIR)/../../makefile.settings
 
 all: compiler
 
-__parser: moon.yy
+__parser.cpp: moon.yy moon.ll
 	$(BISON) $(BISON_FLAGS) --defines=__parser.h -o __parser.cpp $<
 
-__parser.h: __parser
-__parser.cpp: __parser __lexer.h
-
-__lexer: moon.ll
+__lexer.cpp: moon.ll moon.yy
 	$(FLEX) $(FLEX_FLAGS) --header-file=__lexer.h -o __lexer.cpp $<
 
-__lexer.h: __lexer
-__lexer.cpp: __lexer __parser.h
+__lexer.o: __parser.cpp
+__parser.o: __lexer.cpp
 
 %.o: %.cpp
 	$(CXX) -c $(CPP_FLAGS) $(CXX_FLAGS) -o $@ $<
