@@ -1,4 +1,5 @@
 #include <cctype>
+#include <cstring>
 #include <stack>
 #include <string>
 #include <vector>
