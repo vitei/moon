@@ -37,11 +37,7 @@
 
 /*  */
 %union {
-    struct StatementList
-    {
-        tree::Statement *head;
-        tree::Statement *tail;
-    } list;
+    parser::StatementList list;
 
     tree::FunctionPrototype *prototype;
     tree::Statement *statement;
@@ -122,12 +118,13 @@
 
 /* Return types */
 %type<list> program
+%type<list> include
 %type<list> o_program_includes
 %type<list> program_includes
 %type<list> include_statements
 %type<list> o_program_uses
 %type<list> program_uses
-%type<statement> use_statement 
+%type<list> use_statement 
 %type<list> o_program_cvrs
 %type<list> program_cvrs
 %type<statement> program_cvr
@@ -188,71 +185,107 @@
 %%
 
 start               :   START_PROGRAM program
-                    |   START_INCLUDE program /* FIXME */
                         {
-                            data->includeHead = $2.head;
-                            data->includeTail = $2.tail;
+                            data->list.head = $2.head;
+                            data->list.tail = $2.tail;
+                        }
+                    |   START_INCLUDE include
+                        {
+                            data->list.head = $2.head;
+                            data->list.tail = $2.tail;
                         }
                     ;
 
 program             :   o_program_includes o_program_uses o_program_cvrs o_program_functions
                         {
-                            tree::Statement *headStatement = NULL;
-                            tree::Statement *tailStatement = NULL;
+                            $$.head = NULL;
+                            $$.tail = NULL;
+
+                            // Check there is actually something in this scope...
+                            if($1.head || $3.head || $4.head)
+                            {
+                                tree::Statement *lastStatement;
+
+                                if($1.head)
+                                {
+                                    $$.head = new tree::Scope($1.head);
+                                    $$.tail = $$.head;
+
+                                    lastStatement = $1.tail;
+                                }
+
+                                if($3.head)
+                                {
+                                    if(!$$.head)
+                                    {
+                                        $$.head = new tree::Scope($3.head);
+                                        $$.tail = $$.head;
+                                    }
+                                    else
+                                    {
+                                        lastStatement->setNext($3.head);
+                                    }
+
+                                    lastStatement = $3.tail;
+                                }
+
+                                if($4.head)
+                                {
+                                    if(!$$.head)
+                                    {
+                                        $$.head = new tree::Scope($4.head);
+                                        $$.tail = $$.head;
+                                    }
+                                    else
+                                    {
+                                        lastStatement->setNext($4.head);
+                                    }
+
+                                    lastStatement = $4.tail;
+                                }
+                            }
+
+                            // Uses are special because they should be on the same level of scope as this
+                            if($2.head)
+                            {
+                                if($$.head)
+                                {
+                                    $$.head->setNext($2.head);
+                                    $$.tail = $2.tail;
+                                }
+                                else
+                                {
+                                    $$ = $2;
+                                }
+                            }
+                        }
+                    ;
+
+include             :   o_program_includes o_program_cvrs /* FIXME */
+                        {
+                            parser::StatementList list;
 
                             if($1.head)
                             {
-                                headStatement = $1.head;
-                                tailStatement = $1.tail;
+                                list = $1;
                             }
 
                             if($2.head)
                             {
-                                if(tailStatement)
+                                if(list.tail)
                                 {
-                                    tailStatement->setNext($2.head);
-                                    tailStatement = $2.tail;
+                                    list.tail->setNext($2.head);
+                                    list.tail = $2.tail;
                                 }
                                 else
                                 {
-                                    headStatement = $2.head;
+                                    list.head = $2.head;
                                 }
 
-                                tailStatement = $2.tail;
+                                list.tail = $2.tail;
                             }
 
-                            if($3.head)
-                            {
-                                if(tailStatement)
-                                {
-                                    tailStatement->setNext($3.head);
-                                    tailStatement = $3.tail;
-                                }
-                                else
-                                {
-                                    headStatement = $3.head;
-                                }
-
-                                tailStatement = $3.tail;
-                            }
-
-                            if($4.head)
-                            {
-                                if(tailStatement)
-                                {
-                                    tailStatement->setNext($4.head);
-                                    tailStatement = $4.tail;
-                                }
-                                else
-                                {
-                                    headStatement = $4.head;
-                                }
-
-                                tailStatement = $4.tail;
-                            }
-
-                            $$.head = headStatement;
-                            $$.tail = tailStatement;
+                            $$ = list;
                         }
                     ;
 
@@ -316,8 +349,8 @@ include_statements  :   TOKEN_INCLUDE TOKEN_ID TOKEN_EOS
                                     data->addParsedFile(tmp);
                                     loader::pushCWD(dirname(tmp));
 
-                                    data->includeHead = NULL;
-                                    data->includeTail = NULL;
+                                    data->list.head = NULL;
+                                    data->list.tail = NULL;
 
                                     yyparse(data);
 
@@ -328,8 +361,8 @@ include_statements  :   TOKEN_INCLUDE TOKEN_ID TOKEN_EOS
 
                                     data->lexer = currentLexer;
 
-                                    $$.head = data->includeHead;
-                                    $$.tail = data->includeTail;
+                                    $$.head = data->list.head;
+                                    $$.tail = data->list.tail;
                                 }
                             }
                             else
@@ -353,17 +386,16 @@ o_program_uses      :   /* Empty */
 
 program_uses        :   use_statement
                         {
-                            $$.head = $1;
-                            $$.tail = $1;
+                            $$ = $1;
                         }
                     |   program_uses use_statement
                         {
                             $$ = $1;
 
-                            if($2)
+                            if($2.head)
                             {
-                                $$.tail->setNext($2);
-                                $$.tail = $2;
+                                $$.tail->setNext($2.head);
+                                $$.tail = $2.tail;
                             }
                         }
                     ;
@@ -372,7 +404,8 @@ use_statement       :   TOKEN_USE TOKEN_NAME TOKEN_EOS
                         {
                             char tmp[1024];
 
-                            $$ = NULL;
+                            $$.head = NULL;
+                            $$.tail = NULL;
 
                             loader::useNameToFilename(tmp, $2);
 
@@ -383,7 +416,6 @@ use_statement       :   TOKEN_USE TOKEN_NAME TOKEN_EOS
                                     FILE *input = fopen(tmp, "r");
                                     lexer::Data lexerData;
                                     void *currentLexer = data->lexer;
-                                    tree::Scope *currentScope = data->scope;
 
                                     lexerData.type = lexer::Data::TYPE_USE;
                                     lexerData.startSymbolIssued = false;
@@ -394,7 +426,8 @@ use_statement       :   TOKEN_USE TOKEN_NAME TOKEN_EOS
                                     data->addParsedFile(tmp);
                                     loader::pushCWD(dirname(tmp));
 
-                                    data->scope = new tree::Scope();
+                                    data->list.head = NULL;
+                                    data->list.tail = NULL;
 
                                     yyparse(data);
 
@@ -405,8 +438,7 @@ use_statement       :   TOKEN_USE TOKEN_NAME TOKEN_EOS
 
                                     data->lexer = currentLexer;
 
-                                    $$ = data->scope;
-                                    data->scope = currentScope;
+                                    $$ = data->list;
                                 }
                             }
                             else

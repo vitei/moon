@@ -8,6 +8,11 @@ namespace tree
 {
 	class Scope : public Statement
 	{
+	public:
+		Scope(Statement *firstStatement) : mFirstStatement(firstStatement) {}
+
+	private:
+		Statement *mFirstStatement;
 	};
 }
 
