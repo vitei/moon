@@ -3,7 +3,7 @@ bin/*
 
 # Intermediate files
 *.o
-__*
+generated_*
 
 # IDE files
 *.sublime-*
