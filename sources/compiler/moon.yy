@@ -292,6 +292,7 @@ include             :   o_program_includes o_program_cvrs /* FIXME */
 o_program_includes  :   /* Empty */
                         {
                             $$.head = NULL;
+                            $$.tail = NULL;
                         }
                     |   program_includes
                         {
@@ -377,6 +378,7 @@ include_statements  :   TOKEN_INCLUDE TOKEN_ID TOKEN_EOS
 o_program_uses      :   /* Empty */
                         {
                             $$.head = NULL;
+                            $$.tail = NULL;
                         }
                     |   program_uses
                         {
@@ -453,6 +455,7 @@ use_statement       :   TOKEN_USE TOKEN_NAME TOKEN_EOS
 o_program_cvrs      :   /* Empty */
                         {
                             $$.head = NULL;
+                            $$.tail = NULL;
                         }
                     |   program_cvrs
                         {
@@ -545,6 +548,7 @@ scoped_ref_statement:   reference_assignment TOKEN_EOS
 o_program_functions :   /* Empty */
                         {
                             $$.head = NULL;
+                            $$.tail = NULL;
                         }
                     |   program_functions
                         {
@@ -585,6 +589,7 @@ function_prototype  :   TOKEN_FUNCTION identifier TOKEN_PARENTHESIS_OPEN o_argum
 o_arguments         :   /* Empty */
                         {
                             $$.head = NULL;
+                            $$.tail = NULL;
                         }
                     |   arguments
                         {
@@ -641,6 +646,7 @@ function_state      :   /* No state */
 statement_block     :   TOKEN_BRACE_OPEN TOKEN_BRACE_CLOSE                                          /* Empty... */
                         {
                             $$.head = NULL;
+                            $$.tail = NULL;
                         }
                     |   TOKEN_BRACE_OPEN statements TOKEN_BRACE_CLOSE
                         {
