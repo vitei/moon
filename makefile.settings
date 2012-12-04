@@ -6,8 +6,8 @@ INC_DIR = $(MOON_ROOT_DIR)/includes
 BISON = bison
 BISON_FLAGS = --verbose
 
-C = clang
-C_FLAGS = 
+CC = clang
+CC_FLAGS = 
 CPP_FLAGS = -I"$(INC_DIR)"
 
 CXX = clang++
