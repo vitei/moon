@@ -58,7 +58,7 @@
 %}
 
     /* Language structure */
-[ \t\n]                         ;                                                                   /* Skip whitespace... */
+[ \t\n\r]                       ;                                                                   /* Skip whitespace... */
 ";"                             return TOKEN_EOS;
 "["                             return TOKEN_BRACKETS_OPEN;
 "]"                             return TOKEN_BRACKETS_CLOSE;
