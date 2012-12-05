@@ -149,6 +149,7 @@
 
     /* Block Comments */
 "/*"                            BEGIN BLOCK_COMMENT;                                                /* Block comments... */
+<BLOCK_COMMENT>"\n"             ;
 <BLOCK_COMMENT>.                ;
 <BLOCK_COMMENT>"*/"             BEGIN INITIAL;
 
