@@ -1,8 +1,8 @@
 # Binaries
 bin/*
+obj/*
 
 # Intermediate files
-*.o
 generated_*
 
 # IDE files
