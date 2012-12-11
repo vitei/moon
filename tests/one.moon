@@ -13,6 +13,7 @@ ref test = x;
 
 const string:STR_ONE = "One";
 const string:STR_TWO = "Two";
+const string<40>:STR_THREE = "Three";
 
 function float:test_add(float:one, int:two)
 {

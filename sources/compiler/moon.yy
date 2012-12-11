@@ -939,6 +939,12 @@ type                :   TOKEN_TYPE_INT
                         {
                             $$ = new tree::String();
                         }
+                    |   TOKEN_TYPE_STRING TOKEN_LT TOKEN_INTEGER TOKEN_GT
+                        {
+                            $$ = new tree::String($3);
+                        }
+
+                        
                     /*|   TOKEN_NAME
                         {
                             $$ = new tree::UDT($1);                       // UDTs force this class to be needed?? FIXME
