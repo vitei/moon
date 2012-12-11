@@ -11,21 +11,28 @@ DEPS := $(OBJECTS:.o=.deps)
 all: compiler
 
 generated_parser.cpp: moon.yy moon.ll
-	$(BISON) $(BISON_FLAGS) --defines=generated_parser.h -o generated_parser.cpp $<
+	@echo $@: $<
+	@$(BISON) $(BISON_FLAGS) --defines=generated_parser.h -o generated_parser.cpp $<
 
 generated_lexer.cpp: moon.ll moon.yy
-	$(FLEX) $(FLEX_FLAGS) --header-file=generated_lexer.h -o generated_lexer.cpp $<
+	@echo $@: $<
+	@$(FLEX) $(FLEX_FLAGS) --header-file=generated_lexer.h -o generated_lexer.cpp $<
 
 $(OBJ_DIR)/generated_lexer.o: generated_parser.cpp
 $(OBJ_DIR)/generated_parser.o: generated_lexer.cpp
 
 $(OBJ_DIR)/%.o: %.cpp
-	$(CXX) -c $(CPP_FLAGS) $(CXX_FLAGS) -MD -MF $(@:.o=.deps) -o $@ $<
+	@echo $(shell basename $@): $<
+	@$(CXX) -c $(CPP_FLAGS) $(CXX_FLAGS) -MD -MF $(@:.o=.deps) -o $@ $<
+
+$(OBJ_DIR)/%.o: %.c
+	@echo $(shell basename $@): $<
+	@$(CC) -c $(CPP_FLAGS) $(CC_FLAGS) -MD -MF $(@:.o=.deps) -o $@ $<
 
 $(BIN_DIR)/moon: $(OBJECTS)
-	$(CXX) $(CPP_FLAGS) $(CXX_FLAGS) -o $@ $^
+	@$(CXX) $(CPP_FLAGS) $(CXX_FLAGS) -o $@ $^
 
 compiler: $(BIN_DIR)/moon
 
 clean:
-	rm -rf generated_* $(DEPS) $(OBJECTS) $(BIN_DIR)/moon
+	@rm -rf generated_* $(DEPS) $(OBJECTS) $(BIN_DIR)/moon
