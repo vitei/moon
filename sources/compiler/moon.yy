@@ -153,7 +153,6 @@
 %type<expression> reference
 %type<statement> a_or_e_statement
 %type<expression> assign_or_expression
-%type<statement> expression_statement
 %type<expression> assignment
 %type<expression> expression
 %type<expression> l_or_expression
@@ -690,12 +689,6 @@ assign_or_expression:   assignment
 assignment          :   identifier TOKEN_EQUALS expression
                         {
                             $$ = new tree::Assign($1, $3);
-                        }
-                    ;
-
-expression_statement:   expression
-                        {
-                            $$ = new tree::Execute($1);
                         }
                     ;
 
