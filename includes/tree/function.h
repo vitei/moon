@@ -9,20 +9,10 @@
 
 namespace tree
 {
-	class FunctionPrototype : public Expression
+	class FunctionPrototype : public TypedIdentity
 	{
 	public:
-		FunctionPrototype(Type *type, Identifier *name, ExpressionList *arguments) : mType(type), mName(name), mArguments(arguments) {}
-
-		Type *getType()
-		{
-			return mType;
-		}
-
-		Identifier *getName()
-		{
-			return mName;
-		}
+		FunctionPrototype(Type *type, Identifier *name, ExpressionList *arguments) : TypedIdentity(type, name), mArguments(arguments) {}
 
 		ExpressionList *getArguments()
 		{
@@ -30,8 +20,6 @@ namespace tree
 		}
 
 	private:
-		Type *mType;
-		Identifier *mName;
 		ExpressionList *mArguments;
 	};
 

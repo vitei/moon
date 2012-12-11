@@ -28,15 +28,10 @@ namespace tree
 		std::string mName;
 	};
 
-	class Storage : public Expression
+	class Identity : public Expression
 	{
 	public:
-		Storage(Type *type, Identifier *name) : mType(type), mName(name) {}
-
-		Type *getType()
-		{
-			return mType;
-		}
+		Identity(Identifier *name) : mName(name) {}
 
 		Identifier *getName()
 		{
@@ -44,8 +39,21 @@ namespace tree
 		}
 
 	private:
-		Type *mType;
 		Identifier *mName;
+	};
+
+	class TypedIdentity : public Identity
+	{
+	public:
+		TypedIdentity(Type *type, Identifier *name) : Identity(name), mType(type) {}
+
+		Type *getType()
+		{
+			return mType;
+		}
+
+	private:
+		Type *mType;
 	};
 
 	class Access : public Expression
@@ -68,22 +76,22 @@ namespace tree
 		Expression *mTarget;
 	};
 
-	class Constant : public Storage
+	class Constant : public TypedIdentity
 	{
 	public:
-		Constant(Type *type, Identifier *name) : Storage(type, name) {}
+		Constant(Type *type, Identifier *name) : TypedIdentity(type, name) {}
 	};
 
-	class Variable : public Storage
+	class Variable : public TypedIdentity
 	{
 	public:
-		Variable(Type *type, Identifier *name) : Storage(type, name) {}
+		Variable(Type *type, Identifier *name) : TypedIdentity(type, name) {}
 	};
 
-	class Reference : public Storage
+	class Reference : public TypedIdentity
 	{
 	public:
-		Reference(Type *type, Identifier *name) : Storage(type, name) {}
+		Reference(Type *type, Identifier *name) : TypedIdentity(type, name) {}
 	};
 
 	class Cast : public Expression
