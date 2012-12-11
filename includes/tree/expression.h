@@ -1,6 +1,7 @@
 #ifndef TREE_EXPRESSION_H
 #define TREE_EXPRESSION_H
 
+#include <string>
 #include <vector>
 #include "node.h"
 #include "type.h"
