@@ -20,6 +20,13 @@ namespace tree
 
 	class String : public Type
 	{
+	public:
+		static const unsigned int STRING_DEFAULT_MAX_SIZE = 256;
+
+		String(unsigned int maxSize = STRING_DEFAULT_MAX_SIZE) : mMaxSize(maxSize) {}
+
+	private:
+		unsigned int mMaxSize;
 	};
 }
 
