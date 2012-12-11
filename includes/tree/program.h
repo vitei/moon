@@ -11,6 +11,8 @@ namespace tree
 	{
 	public:
 
+		Program(Uses *uses) : Scope(NULL), mUses(uses) {}
+
 	private:
 		Uses *mUses;
 	};
