@@ -49,7 +49,7 @@
         switch(yyextra->type)
         {
         case lexer::Data::TYPE_USE:
-            return START_PROGRAM;
+            return START_USE;
 
         case lexer::Data::TYPE_INCLUDE:
             return START_INCLUDE;

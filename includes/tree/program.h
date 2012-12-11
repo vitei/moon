@@ -1,13 +1,18 @@
 #ifndef TREE_PROGRAM_H
 #define TREE_PROGRAM_H
 
-#include "node.h"
+#include "scope.h"
+#include "use.h"
 
 
 namespace tree
 {
-	class Program : public Node
+	class Program : public Scope
 	{
+	public:
+
+	private:
+		Uses *mUses;
 	};
 }
 

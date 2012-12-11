@@ -1,22 +1,23 @@
 #ifndef TREE_EXPRESSION_H
 #define TREE_EXPRESSION_H
 
+#include <vector>
 #include "node.h"
 #include "type.h"
 
 
 namespace tree
 {
-	class Statement;
-
 	class Expression : public Node
 	{
 	};
 
+	typedef std::vector<Expression *> ExpressionList;
+
 	class Identifier : public Expression
 	{
 	public:
-		Identifier(const char *name) : mName(std::string(name)) {}
+		Identifier(std::string name) : mName(name) {}
 
 		const std::string &getName()
 		{
@@ -27,10 +28,10 @@ namespace tree
 		std::string mName;
 	};
 
-	class StorageExpression : public Expression
+	class Storage : public Expression
 	{
 	public:
-		StorageExpression(Type *type, Identifier *name) : mType(type), mName(name) {}
+		Storage(Type *type, Identifier *name) : mType(type), mName(name) {}
 
 		Type *getType()
 		{
@@ -47,28 +48,48 @@ namespace tree
 		Identifier *mName;
 	};
 
-	class Constant : public StorageExpression
+	class Access : public Expression
 	{
 	public:
-		Constant(Type *type, Identifier *name) : StorageExpression(type, name) {}
+		Access(Expression *container, Expression *target) : mContainer(container), mTarget(target) {}
+
+		Expression *getContainer()
+		{
+			return mContainer;
+		}
+
+		Expression *getTarget()
+		{
+			return mTarget;
+		}
+
+	private:
+		Expression *mContainer;
+		Expression *mTarget;
 	};
 
-	class Variable : public StorageExpression
+	class Constant : public Storage
 	{
 	public:
-		Variable(Type *type, Identifier *name) : StorageExpression(type, name) {}
+		Constant(Type *type, Identifier *name) : Storage(type, name) {}
 	};
 
-	class Reference : public StorageExpression
+	class Variable : public Storage
 	{
 	public:
-		Reference(Type *type, Identifier *name) : StorageExpression(type, name) {}
+		Variable(Type *type, Identifier *name) : Storage(type, name) {}
 	};
 
-	class CastExpression : public Expression
+	class Reference : public Storage
 	{
 	public:
-		CastExpression(Type *type, Expression *expression) : mType(type), mExpression(expression) {}
+		Reference(Type *type, Identifier *name) : Storage(type, name) {}
+	};
+
+	class Cast : public Expression
+	{
+	public:
+		Cast(Type *type, Expression *expression) : mType(type), mExpression(expression) {}
 
 		Type *getType()
 		{
@@ -85,69 +106,49 @@ namespace tree
 		Expression *mExpression;
 	};
 
-	class AccessExpression : public Expression
+	class DirectAccess : public Access
 	{
 	public:
-		AccessExpression(Expression *container, Expression *target) : mContainer(container), mTarget(target) {}
-
-		Expression *getContainer()
-		{
-			return mContainer;
-		}
-
-		Expression *getTarget()
-		{
-			return mTarget;
-		}
-
-	protected:
-		Expression *mContainer;
-		Expression *mTarget;
+		DirectAccess(Expression *container, Expression *target) : Access(container, target) {}
 	};
 
-	class DirectAccess : public AccessExpression
+	class MessageAccess : public Access
 	{
 	public:
-		DirectAccess(Expression *container, Expression *target) : AccessExpression(container, target) {}
+		MessageAccess(Expression *container, Expression *target) : Access(container, target) {}
 	};
 
-	class MessageAccess : public AccessExpression
+	class ArrayAccess : public Access
 	{
 	public:
-		MessageAccess(Expression *container, Expression *target) : AccessExpression(container, target) {}
-	};
-
-	class ArrayAccess : public AccessExpression
-	{
-	public:
-		ArrayAccess(Expression *array, Expression *index) : AccessExpression(array, index) {}
+		ArrayAccess(Expression *array, Expression *index) : Access(array, index) {}
 	};
 
 	class FunctionCall : public Expression
 	{
 	public:
-		FunctionCall(Identifier *id, Statement *firstArgument = 0) : mID(id), mFirstArgument(firstArgument) {}
+		FunctionCall(Identifier *id, ExpressionList *arguments = NULL) : mID(id), mArguments(arguments) {}
 
 		Identifier *getID()
 		{
 			return mID;
 		}
 
-		Statement *getFirstArgument()
+		ExpressionList *getArguments()
 		{
-			return mFirstArgument;
+			return mArguments;
 		}
 
 	private:
 		Identifier *mID;
-		Statement *mFirstArgument;
+		ExpressionList *mArguments;
 	};
 
-	template<Type::Data TYPE, class STORAGE>
+	template<class TYPE, class STORAGE>
 	class Literal : public Expression
 	{
 	public:
-		Literal(STORAGE value) : mType(new Type(TYPE)), mValue(value) {}
+		Literal(STORAGE value) : mType(new TYPE()), mValue(value) {}
 
 		Type *getType()
 		{
@@ -164,9 +165,163 @@ namespace tree
 		STORAGE mValue;
 	};
 
-	typedef Literal<Type::DATA_INT, int> IntLiteral;
-	typedef Literal<Type::DATA_FLOAT, float> FloatLiteral;
-	typedef Literal<Type::DATA_STRING, std::string> StringLiteral;
+	typedef Literal<Int, int> IntLiteral;
+	typedef Literal<Float, float> FloatLiteral;
+	typedef Literal<String, std::string> StringLiteral;
+
+	class UnaryExpression : public Expression
+	{
+	public:
+		UnaryExpression(Expression *expression) : mExpression(expression) {}
+
+		Expression *getExpression()
+		{
+			return mExpression;
+		}
+
+	private:
+		Expression *mExpression;
+	};
+
+	class BinaryExpression : public Expression
+	{
+	public:
+		BinaryExpression(Expression *lhs, Expression *rhs) : mLHS(lhs), mRHS(rhs) {}
+
+		Expression *getLHS()
+		{
+			return mLHS;
+		}
+
+		Expression *getRHS()
+		{
+			return mRHS;
+		}
+
+	private:
+		Expression *mLHS;
+		Expression *mRHS;
+	};
+
+	class Assign : public BinaryExpression
+	{
+	public:
+		Assign(Expression *lhs, Expression *rhs) : BinaryExpression(lhs, rhs) {}
+	};
+
+	class LogicalOr : public BinaryExpression
+	{
+	public:
+		LogicalOr(Expression *lhs, Expression *rhs) : BinaryExpression(lhs, rhs) {}
+	};
+
+	class LogicalAnd : public BinaryExpression
+	{
+	public:
+		LogicalAnd(Expression *lhs, Expression *rhs) : BinaryExpression(lhs, rhs) {}
+	};
+
+	class Or : public BinaryExpression
+	{
+	public:
+		Or(Expression *lhs, Expression *rhs) : BinaryExpression(lhs, rhs) {}
+	};
+
+	class Xor : public BinaryExpression
+	{
+	public:
+		Xor(Expression *lhs, Expression *rhs) : BinaryExpression(lhs, rhs) {}
+	};
+
+	class And : public BinaryExpression
+	{
+	public:
+		And(Expression *lhs, Expression *rhs) : BinaryExpression(lhs, rhs) {}
+	};
+
+	class Equal : public BinaryExpression
+	{
+	public:
+		Equal(Expression *lhs, Expression *rhs) : BinaryExpression(lhs, rhs) {}
+	};
+
+	class Unequal : public BinaryExpression
+	{
+	public:
+		Unequal(Expression *lhs, Expression *rhs) : BinaryExpression(lhs, rhs) {}
+	};
+
+	class LessThan : public BinaryExpression
+	{
+	public:
+		LessThan(Expression *lhs, Expression *rhs) : BinaryExpression(lhs, rhs) {}
+	};
+
+	class LessEqual : public BinaryExpression
+	{
+	public:
+		LessEqual(Expression *lhs, Expression *rhs) : BinaryExpression(lhs, rhs) {}
+	};
+
+	class GreaterThan : public BinaryExpression
+	{
+	public:
+		GreaterThan(Expression *lhs, Expression *rhs) : BinaryExpression(lhs, rhs) {}
+	};
+
+	class GreaterEqual : public BinaryExpression
+	{
+	public:
+		GreaterEqual(Expression *lhs, Expression *rhs) : BinaryExpression(lhs, rhs) {}
+	};
+
+	class Add : public BinaryExpression
+	{
+	public:
+		Add(Expression *lhs, Expression *rhs) : BinaryExpression(lhs, rhs) {}
+	};
+
+	class Subtract : public BinaryExpression
+	{
+	public:
+		Subtract(Expression *lhs, Expression *rhs) : BinaryExpression(lhs, rhs) {}
+	};
+
+	class Multiply : public BinaryExpression
+	{
+	public:
+		Multiply(Expression *lhs, Expression *rhs) : BinaryExpression(lhs, rhs) {}
+	};
+
+	class Divide : public BinaryExpression
+	{
+	public:
+		Divide(Expression *lhs, Expression *rhs) : BinaryExpression(lhs, rhs) {}
+	};
+
+	class Modulus : public BinaryExpression
+	{
+	public:
+		Modulus(Expression *lhs, Expression *rhs) : BinaryExpression(lhs, rhs) {}
+	};
+
+	class LogicalNot : public UnaryExpression
+	{
+	public:
+		LogicalNot(Expression *expression) : UnaryExpression(expression) {}
+	};
+
+	class Not : public UnaryExpression
+	{
+	public:
+		Not(Expression *expression) : UnaryExpression(expression) {}
+	};
+
+	class Minus : public UnaryExpression
+	{
+	public:
+		Minus(Expression *expression) : UnaryExpression(expression) {}
+	};
 }
 
 #endif

@@ -2,6 +2,7 @@ MOON_ROOT_DIR:=$(shell DIRECTORY="$(dir $(realpath $(lastword $(MAKEFILE_LIST)))
 
 BIN_DIR = $(MOON_ROOT_DIR)/bin
 INC_DIR = $(MOON_ROOT_DIR)/includes
+OBJ_DIR = $(MOON_ROOT_DIR)/obj
 
 BISON = bison
 BISON_FLAGS = --verbose

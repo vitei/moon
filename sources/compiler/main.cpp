@@ -93,6 +93,8 @@ int main(int argc, char *argv[])
 				parserData.addParsedFile(tmp);
 				loader::pushCWD(dirname(tmp));
 
+				parserData.uses = new tree::Uses();
+
 				yyparse(&parserData);
 
 				loader::popCWD();

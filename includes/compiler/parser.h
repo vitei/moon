@@ -8,13 +8,6 @@
 
 namespace parser
 {
-	class StatementList
-	{
-	public:
-		tree::Statement *head;
-		tree::Statement *tail;
-	};
-
 	class Data
 	{
 	public:
@@ -38,7 +31,8 @@ namespace parser
 
 		// FIXME, these three need to be nicer...
 		void *lexer;
-		StatementList list;
+		tree::Uses *uses;
+		tree::StatementList *statements;
 
 	private:
 		std::vector<std::string> mParsedFiles;
