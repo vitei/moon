@@ -125,6 +125,7 @@
 "function"                      return TOKEN_FUNCTION;
 "return"                        return TOKEN_RETURN;
 "state"                         return TOKEN_STATE;
+"reset"                         return TOKEN_RESET;
 
     /* Built-In Types */
 "int"                           return TOKEN_TYPE_INT;

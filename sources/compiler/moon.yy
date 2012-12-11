@@ -110,6 +110,7 @@
 %token TOKEN_FUNCTION
 %token TOKEN_RETURN
 %token TOKEN_STATE
+%token TOKEN_RESET
 
 /* Built-In Types */
 %token TOKEN_TYPE_INT
@@ -962,13 +963,13 @@ return_statement    :   TOKEN_RETURN expression TOKEN_EOS
                         }
                     ;
 
-state_statement     :   TOKEN_STATE state TOKEN_EOS /* FIXME, blank state name to reset to default is best?? */
+state_statement     :   TOKEN_STATE state TOKEN_EOS
                         {
                             $$ = new tree::SetState($2);
                         }
                     ;
 
-state               :   /* Empty (default state) */
+state               :   TOKEN_RESET
                         {
                             $$ = new tree::DefaultState();
                         }
