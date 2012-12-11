@@ -1,6 +1,8 @@
 #ifndef TREE_FUNCTION_H
 #define TREE_FUNCTION_H
 
+#include "expression.h"
+#include "scope.h"
 #include "statement.h"
 #include "type.h"
 
@@ -10,7 +12,7 @@ namespace tree
 	class FunctionPrototype : public Expression
 	{
 	public:
-		FunctionPrototype(Type *type, Identifier *name, Statement *firstArgument) : mType(type), mName(name), mFirstArgument(firstArgument) {}
+		FunctionPrototype(Type *type, Identifier *name, ExpressionList *arguments) : mType(type), mName(name), mArguments(arguments) {}
 
 		Type *getType()
 		{
@@ -22,35 +24,29 @@ namespace tree
 			return mName;
 		}
 
-		Statement *getFirstArgument()
+		ExpressionList *getArguments()
 		{
-			return mFirstArgument;
+			return mArguments;
 		}
 
 	private:
 		Type *mType;
 		Identifier *mName;
-		Statement *mFirstArgument;
+		ExpressionList *mArguments;
 	};
 
-	class Function : public Statement
+	class Function : public Scope
 	{
 	public:
-		Function(FunctionPrototype *prototype, Statement *firstStatement) : mPrototype(prototype), mFirstStatement(firstStatement) {}
+		Function(FunctionPrototype *prototype, StatementList *statements) : Scope(statements), mPrototype(prototype) {}
 
 		FunctionPrototype *getPrototype()
 		{
 			return mPrototype;
 		}
 
-		Statement *getFirstStatement()
-		{
-			return mFirstStatement;
-		}
-
 	private:
 		FunctionPrototype *mPrototype;
-		Statement *mFirstStatement;
 	};
 }
 

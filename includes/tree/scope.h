@@ -9,10 +9,10 @@ namespace tree
 	class Scope : public Statement
 	{
 	public:
-		Scope(Statement *firstStatement) : mFirstStatement(firstStatement) {}
+		Scope(StatementList *statements) : mStatements(statements) {}
 
 	private:
-		Statement *mFirstStatement;
+		StatementList *mStatements;
 	};
 }
 

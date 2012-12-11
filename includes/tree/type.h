@@ -2,39 +2,34 @@
 #define TREE_TYPE_H
 
 #include <string>
+#include "node.h"
 
 
 namespace tree
 {
-	class Type
+	class Type : public Node
 	{
-	public:
-		enum Data
-		{
-			DATA_INT,
-			DATA_FLOAT,
-			DATA_STRING,
-			DATA_UDT
-		};
-
-		Type(Data dataType) : mDataType(dataType) {}
-
-		Data getDataType()
-		{
-			return mDataType;
-		}
-
-	private:
-		Data mDataType;
 	};
 
-	class UDTType : public Type
+	class Int : public Type
+	{
+	};
+
+	class Float : public Type
+	{
+	};
+
+	class String : public Type
+	{
+	};
+
+	class UDT : public Type
 	{
 	public:
-		UDTType(const char *udtName) : Type(Type::DATA_UDT), mUDTName(udtName) {}
+		UDT(std::string &typeName) : mTypeName(typeName) {}
 
 	private:
-		std::string mUDTName;
+		std::string mTypeName;
 	};
 }
 
