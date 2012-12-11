@@ -102,6 +102,11 @@ int main(int argc, char *argv[])
 				yylex_destroy(parserData.lexer);
 				fclose(input);
 
+				// The program has been made...
+				tree::Program *program = new tree::Program(parserData.uses);
+
+				// We may now perform operations on it...
+
 				// ...
 			}
 			else
