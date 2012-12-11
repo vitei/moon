@@ -9,6 +9,7 @@
 #include "tree/state.h"
 #include "tree/statement.h"
 #include "tree/type.h"
+#include "tree/udt.h"
 #include "tree/use.h"
 
 #endif
