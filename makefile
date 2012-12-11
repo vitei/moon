@@ -6,7 +6,7 @@ include $(THIS_MAKEFILE_DIR)/makefile.settings
 all: compiler tests
 
 obj_dir:
-	mkdir -p $(OBJ_DIR)
+	@mkdir -p $(OBJ_DIR)
 
 compiler: obj_dir
 	@$(MAKE) -C sources/compiler
@@ -17,4 +17,4 @@ tests: obj_dir
 clean:
 	@$(MAKE) clean -C sources/compiler
 	@$(MAKE) clean -C tests
-	rm -rf $(OBJ_DIR)
+	@rm -rf $(OBJ_DIR)

@@ -9,4 +9,4 @@ all: one
 
 clean:
 #	rm -rf *.o ../bin/compiler
-	rm -rf one
+#	rm -rf one
