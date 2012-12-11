@@ -10,27 +10,27 @@ namespace tree
 	class Scoping : public Expression
 	{
 	public:
-		Scoping(Node *node) : mNode(node) {}
+		Scoping(Identity *scoped) : mScoped(scoped) {}
 
-		Node *getNode()
+		Identity *getScoped()
 		{
-			return mNode;
+			return mScoped;
 		}
 
 	private:
-		Node *mNode;
+		Identity *mScoped;
 	};
 
 	class GlobalScoping: public Scoping
 	{
 	public:
-		GlobalScoping(Node *node) : Scoping(node) {}
+		GlobalScoping(Identity *scoped) : Scoping(scoped) {}
 	};
 
 	class SharedScoping : public Scoping
 	{
 	public:
-		SharedScoping(Node *node) : Scoping(node) {}
+		SharedScoping(Identity *scoped) : Scoping(scoped) {}
 	};
 }
 

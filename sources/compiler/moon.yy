@@ -45,6 +45,8 @@
     tree::Expression *expression;
     tree::ExpressionList *expressionList;
 
+    tree::Identity *identity;
+
     tree::Type *type;
     tree::Identifier *id;
     tree::FunctionPrototype *prototype;
@@ -132,9 +134,13 @@
 %type<statement> program_cvr
 %type<statement> constant_statement
 %type<expression> constant_assignment
-%type<expression> constant
-%type<statement> scoped_var_statement
-%type<statement> scoped_ref_statement
+%type<identity> constant
+%type<statement> s_var_statement
+%type<expression> s_var_assignment
+%type<expression> s_variable
+%type<statement> s_ref_statement
+%type<expression> s_ref_assignment
+%type<expression> s_reference
 %type<statementList> o_program_functions
 %type<statementList> program_functions
 %type<statement> program_function
@@ -148,10 +154,10 @@
 %type<statement> statement
 %type<statement> variable_statement
 %type<expression> variable_assignment
-%type<expression> variable
+%type<identity> variable
 %type<statement> reference_statement
 %type<expression> reference_assignment
-%type<expression> reference
+%type<identity> reference
 %type<statement> a_or_e_statement
 %type<expression> assign_or_expression
 %type<expression> assignment
@@ -409,11 +415,11 @@ program_cvr         :   constant_statement
                         {
                             $$ = $1;
                         }
-                    |   scoped_var_statement
+                    |   s_var_statement
                         {
                             $$ = $1;
                         }
-                    |   scoped_ref_statement
+                    |   s_ref_statement
                         {
                             $$ = $1;
                         }
@@ -442,35 +448,63 @@ constant            :   TOKEN_CONST name
                         }
                     ;
 
-scoped_var_statement:   variable_assignment TOKEN_EOS
+s_var_statement     :   s_var_assignment TOKEN_EOS
                         {
                             $$ = new tree::Execute($1);
-                        }
-                    |   TOKEN_GLOBAL variable_assignment TOKEN_EOS
-                        {
-                            tree::GlobalScoping *scope = new tree::GlobalScoping($2);
-                            $$ = new tree::Execute(scope);
-                        }
-                    |   TOKEN_SHARED variable_assignment TOKEN_EOS
-                        {
-                            tree::SharedScoping *scope = new tree::SharedScoping($2);
-                            $$ = new tree::Execute(scope);
                         }
                     ;
 
-scoped_ref_statement:   reference_assignment TOKEN_EOS
+s_var_assignment    :   s_variable
+                        {
+                            $$ = $1;
+                        }
+                    |   s_variable TOKEN_EQUALS expression
+                        {
+                            $$ = new tree::Assign($1, $3);
+                        }
+                    ;
+
+s_variable          :   variable
+                        {
+                            $$ = $1;
+                        }
+                    |   TOKEN_GLOBAL variable
+                        {
+                            $$ = new tree::GlobalScoping($2);
+                        }
+                    |   TOKEN_SHARED variable
+                        {
+                            $$ = new tree::SharedScoping($2);
+                        }
+                    ;
+
+s_ref_statement     :   s_ref_assignment TOKEN_EOS
                         {
                             $$ = new tree::Execute($1);
                         }
-                    |   TOKEN_GLOBAL reference_assignment TOKEN_EOS
+                    ;
+
+s_ref_assignment    :   s_reference
                         {
-                            tree::GlobalScoping *scope = new tree::GlobalScoping($2);
-                            $$ = new tree::Execute(scope);
+                            $$ = $1;
                         }
-                    |   TOKEN_SHARED reference_assignment TOKEN_EOS
+                    |   s_reference TOKEN_EQUALS expression
                         {
-                            tree::SharedScoping *scope = new tree::SharedScoping($2);
-                            $$ = new tree::Execute(scope);
+                            $$ = new tree::Assign($1, $3);
+                        }
+                    ;
+
+s_reference         :   reference
+                        {
+                            $$ = $1;
+                        }
+                    |   TOKEN_GLOBAL reference
+                        {
+                            $$ = new tree::GlobalScoping($2);
+                        }
+                    |   TOKEN_SHARED reference
+                        {
+                            $$ = new tree::SharedScoping($2);
                         }
                     ;
 
