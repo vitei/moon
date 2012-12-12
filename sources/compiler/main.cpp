@@ -107,8 +107,8 @@ int main(int argc, char *argv[])
 				tree::Program program(parserData.uses);
 
 				// We may now perform operations on it...
-				//operation::MapIdentities mapIdentities(&program);
-				//mapIdentities.run();
+				operation::MapIdentities mapIdentities(&program);
+				mapIdentities.run();
 				//operation::resolveIdentifiers(program);
 
 				// ...
