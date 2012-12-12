@@ -9,7 +9,7 @@
 %{
     #include "compiler/lexer.h"
     #include "compiler/parser.h"
-    #include "tree.h"
+    #include "compiler/tree.h"
 
     /* Generated headers */
     #include "generated_parser.h"

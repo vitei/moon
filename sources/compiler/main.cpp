@@ -5,8 +5,9 @@
 #include "compiler/error.h"
 #include "compiler/lexer.h"
 #include "compiler/loader.h"
+#include "compiler/operation.h"
 #include "compiler/parser.h"
-#include "tree.h"
+#include "compiler/tree.h"
 
 /* Generated headers */
 #include "generated_parser.h"
@@ -103,9 +104,12 @@ int main(int argc, char *argv[])
 				fclose(input);
 
 				// The program has been made...
-				tree::Program *program = new tree::Program(parserData.uses);
+				tree::Program program(parserData.uses);
 
 				// We may now perform operations on it...
+				//operation::MapIdentities mapIdentities(&program);
+				//mapIdentities.run();
+				//operation::resolveIdentifiers(program);
 
 				// ...
 			}
