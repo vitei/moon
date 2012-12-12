@@ -18,6 +18,11 @@ namespace tree
 			return mIdentities;
 		}
 
+		StatementList *getStatements()
+		{
+			return mStatements;
+		}
+
 	private:
 		std::map<std::string, Identity *> mIdentities;
 		StatementList *mStatements;

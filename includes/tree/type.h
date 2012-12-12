@@ -25,6 +25,11 @@ namespace tree
 
 		String(unsigned int maxSize = STRING_DEFAULT_MAX_SIZE) : mMaxSize(maxSize) {}
 
+		unsigned int getMaxSize()
+		{
+			return mMaxSize;
+		}
+
 	private:
 		unsigned int mMaxSize;
 	};
