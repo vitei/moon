@@ -22,11 +22,13 @@ $(OBJ_DIR)/generated_lexer.o: generated_parser.cpp
 $(OBJ_DIR)/generated_parser.o: generated_lexer.cpp
 
 $(OBJ_DIR)/%.o: %.cpp
-	@echo $(shell basename $@): $<
+	@echo $(<:.cpp=.o): $<
+	@mkdir -p $(shell dirname $@)
 	@$(CXX) -c $(CPP_FLAGS) $(CXX_FLAGS) -MD -MF $(@:.o=.deps) -o $@ $<
 
 $(OBJ_DIR)/%.o: %.c
-	@echo $(shell basename $@): $<
+	@echo $(<:.c=.o): $<
+	@mkdir -p $(shell dirname $@)
 	@$(CC) -c $(CPP_FLAGS) $(CC_FLAGS) -MD -MF $(@:.o=.deps) -o $@ $<
 
 $(BIN_DIR)/moon: $(OBJECTS)
