@@ -13,6 +13,11 @@ namespace tree
 
 		Program(Uses *uses) : Scope(NULL), mUses(uses) {}
 
+		Uses *getUses()
+		{
+			return mUses;
+		}
+
 	private:
 		Uses *mUses;
 	};

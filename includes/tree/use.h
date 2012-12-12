@@ -11,9 +11,6 @@ namespace tree
 	{
 	public:
 		Use(StatementList *statements) : Scope(statements) {}
-
-	private:
-		//ScopeList *mScopeList;
 	};
 
 	typedef std::vector<Use *> Uses;
