@@ -9,7 +9,7 @@ BISON_FLAGS = --verbose
 
 CC = clang
 CC_FLAGS = 
-CPP_FLAGS = -I"$(INC_DIR)"
+CPP_FLAGS = -I"$(INC_DIR)" -include"common.h"
 
 CXX = clang++
 CXX_FLAGS = 

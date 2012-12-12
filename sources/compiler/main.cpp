@@ -23,9 +23,7 @@ int main(int argc, char *argv[])
 	char opt;
 	bool error = false;
 
-#ifdef DEBUG
-	std::cerr << "DEBUG OUTPUT IS ON!" << std::endl;
-#endif
+	LOG("DEBUG OUTPUT IS ON!");
 
 	// Parse options
 	opterr = 0;
