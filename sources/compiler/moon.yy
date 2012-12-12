@@ -64,6 +64,7 @@
 
 /* Language structure */
 %token TOKEN_EOS
+%token TOKEN_SEMICOLON
 %token TOKEN_BRACKETS_OPEN
 %token TOKEN_BRACKETS_CLOSE
 %token TOKEN_PARENTHESIS_OPEN
@@ -102,6 +103,7 @@
 %token<string> TOKEN_STRING
 
 /* Keywords */
+%token TOKEN_END
 %token TOKEN_INCLUDE
 %token TOKEN_USE
 %token TOKEN_GLOBAL
@@ -149,7 +151,6 @@
 %type<expressionList> arguments
 %type<expression> argument
 %type<state> function_state
-%type<statementList> statement_block
 %type<statementList> statements
 %type<statement> statement
 %type<statement> variable_statement
@@ -530,9 +531,9 @@ program_functions   :   program_function
                         }
                     ;
 
-program_function    :   function_prototype function_state statement_block /* FIXME, support states */
+program_function    :   function_prototype function_state TOKEN_EOS statements TOKEN_END TOKEN_EOS /* FIXME, support states */
                         {
-                            $$ = new tree::Function($1, $3);
+                            $$ = new tree::Function($1, $4);
                         }
                     ;
 
@@ -598,16 +599,6 @@ function_state      :   /* No state */
                         }
                     ;
 
-statement_block     :   TOKEN_BRACE_OPEN TOKEN_BRACE_CLOSE                                          /* Empty... */
-                        {
-                            $$ = NULL;
-                        }
-                    |   TOKEN_BRACE_OPEN statements TOKEN_BRACE_CLOSE
-                        {
-                            $$ = $2;
-                        }
-                    ;
-
 statements          :   statement
                         {
                             $$ = new tree::StatementList();
@@ -640,10 +631,6 @@ statement           :   variable_statement
                         {
                             $$ = $1;
                         }
-                    /*|   statement_block       FIXME, do we want to support this??
-                        {
-                            $$ = $1;
-                        }*/
                     ;
 
 variable_statement  :   variable_assignment TOKEN_EOS
