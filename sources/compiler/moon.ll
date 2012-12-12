@@ -35,6 +35,7 @@
 %option bison-locations
 
 /* States */
+%x PRIMED
 %x STRING_LITERAL
 %x LINE_COMMENT
 %x BLOCK_COMMENT
@@ -57,104 +58,141 @@
     }
 %}
 
+    /* Skip whitespace... */
+[ \t\n\r]               ;
+
+    /* Comments */
+"#"                     BEGIN LINE_COMMENT;
+"-#-"                   BEGIN BLOCK_COMMENT;
+
+    /* Anything else primes the lexer */
+.                       {
+                            BEGIN PRIMED;
+                            yyless(0);
+                        }
+
+<PRIMED>{
+    /* Skip whitespace... */
+    [ \t]               ;
+
     /* Language structure */
-[ \t\n\r]                       ;                                                                   /* Skip whitespace... */
-";"                             return TOKEN_EOS;
-"["                             return TOKEN_BRACKETS_OPEN;
-"]"                             return TOKEN_BRACKETS_CLOSE;
-"("                             return TOKEN_PARENTHESIS_OPEN;
-")"                             return TOKEN_PARENTHESIS_CLOSE;
-"{"                             return TOKEN_BRACE_OPEN;
-"}"                             return TOKEN_BRACE_CLOSE;
-","                             return TOKEN_COMMA;
-"."                             return TOKEN_DIRECT_ACCESS;
-"->"                            return TOKEN_MESSAGE_ACCESS;
+    [\n\r]              {
+                            BEGIN INITIAL;
+                            return TOKEN_EOS;
+                        }
+    <<EOF>>             {
+                            BEGIN INITIAL;
+                            return TOKEN_EOS;
+                        }
+    ";"                 return TOKEN_SEMICOLON;
+    "["                 return TOKEN_BRACKETS_OPEN;
+    "]"                 return TOKEN_BRACKETS_CLOSE;
+    "("                 return TOKEN_PARENTHESIS_OPEN;
+    ")"                 return TOKEN_PARENTHESIS_CLOSE;
+    "{"                 return TOKEN_BRACE_OPEN;
+    "}"                 return TOKEN_BRACE_CLOSE;
+    ","                 return TOKEN_COMMA;
+    "."                 return TOKEN_DIRECT_ACCESS;
+    "->"                return TOKEN_MESSAGE_ACCESS;
 
     /* Operators */
-"||"                            return TOKEN_LOGICAL_OR;
-"&&"                            return TOKEN_LOGICAL_AND;
-"|"                             return TOKEN_OR;
-"^"                             return TOKEN_XOR;
-"&"                             return TOKEN_AND;
-"=="                            return TOKEN_EQ;
-"!="                            return TOKEN_NE;
-"<="                            return TOKEN_LE;
-"<"                             return TOKEN_LT;
-">="                            return TOKEN_GE;
-">"                             return TOKEN_GT;
-"+"                             return TOKEN_ADD;
-"-"                             return TOKEN_SUBTRACT;
-"*"                             return TOKEN_MULTIPLY;
-"/"                             return TOKEN_DIVIDE;
-"%"                             return TOKEN_MODULUS;
-"!"                             return TOKEN_LOGICAL_NOT;
-"~"                             return TOKEN_NOT;
-":"                             return TOKEN_CAST;
-"="                             return TOKEN_EQUALS;
+    "||"                return TOKEN_LOGICAL_OR;
+    "&&"                return TOKEN_LOGICAL_AND;
+    "|"                 return TOKEN_OR;
+    "^"                 return TOKEN_XOR;
+    "&"                 return TOKEN_AND;
+    "=="                return TOKEN_EQ;
+    "!="                return TOKEN_NE;
+    "<="                return TOKEN_LE;
+    "<"                 return TOKEN_LT;
+    ">="                return TOKEN_GE;
+    ">"                 return TOKEN_GT;
+    "+"                 return TOKEN_ADD;
+    "-"                 return TOKEN_SUBTRACT;
+    "*"                 return TOKEN_MULTIPLY;
+    "/"                 return TOKEN_DIVIDE;
+    "%"                 return TOKEN_MODULUS;
+    "!"                 return TOKEN_LOGICAL_NOT;
+    "~"                 return TOKEN_NOT;
+    ":"                 return TOKEN_CAST;
+    "="                 return TOKEN_EQUALS;
 
     /* Basic Types */
-[0-9]+                          {
-                                    yylval->integer = atoi(yytext);
-                                    return TOKEN_INTEGER;
-                                }
-[0-9]*\.[0-9]+                  {
-                                    yylval->real = (float)atof(yytext);
-                                    return TOKEN_FLOAT;
-                                }
+    [0-9]+              {
+                            yylval->integer = atoi(yytext);
+                            return TOKEN_INTEGER;
+                        }
+    [0-9]*\.[0-9]+      {
+                            yylval->real = (float)atof(yytext);
+                            return TOKEN_FLOAT;
+                        }
 
     /* Strings */
-"\""                            {
-                                    BEGIN STRING_LITERAL;
-                                    sStringLength = 0;
-                                }
-<STRING_LITERAL>"\""            {
-                                    BEGIN INITIAL;
-                                    yylval->string[sStringLength] = 0;
-                                    return TOKEN_STRING;
-                                }
-<STRING_LITERAL>.               yylval->string[sStringLength++] = *yytext;
+    "\""                {
+                            BEGIN STRING_LITERAL;
+                            sStringLength = 0;
+                        }
 
     /* Keywords */
-"include"                       return TOKEN_INCLUDE;
-"use"                           return TOKEN_USE;
-"global"                        return TOKEN_GLOBAL;
-"shared"                        return TOKEN_SHARED;
-"const"                         return TOKEN_CONST;
-"var"                           return TOKEN_VAR;
-"ref"                           return TOKEN_REF;
-"function"                      return TOKEN_FUNCTION;
-"return"                        return TOKEN_RETURN;
-"state"                         return TOKEN_STATE;
-"reset"                         return TOKEN_RESET;
+    "end"               return TOKEN_END;
+    "include"           return TOKEN_INCLUDE;
+    "use"               return TOKEN_USE;
+    "global"            return TOKEN_GLOBAL;
+    "shared"            return TOKEN_SHARED;
+    "const"             return TOKEN_CONST;
+    "var"               return TOKEN_VAR;
+    "ref"               return TOKEN_REF;
+    "function"          return TOKEN_FUNCTION;
+    "return"            return TOKEN_RETURN;
+    "state"             return TOKEN_STATE;
+    "reset"             return TOKEN_RESET;
 
     /* Built-In Types */
-"int"                           return TOKEN_TYPE_INT;
-"float"                         return TOKEN_TYPE_FLOAT;
-"string"                        return TOKEN_TYPE_STRING;
+    "int"               return TOKEN_TYPE_INT;
+    "float"             return TOKEN_TYPE_FLOAT;
+    "string"            return TOKEN_TYPE_STRING;
 
     /* Identifiers */
-[A-Z][a-zA-Z0-9_]*              {
-                                    strcpy(yylval->string, yytext);
-                                    return TOKEN_NAME;
-                                }
-[a-z_][a-zA-Z0-9_]*             {
-                                    strcpy(yylval->string, yytext);
-                                    return TOKEN_ID;
-                                }
+    [A-Z][a-zA-Z0-9_]*  {
+                            strcpy(yylval->string, yytext);
+                            return TOKEN_NAME;
+                        }
+    [a-z_][a-zA-Z0-9_]* {
+                            strcpy(yylval->string, yytext);
+                            return TOKEN_ID;
+                        }
 
-    /* Line Comments */
-"//"                            BEGIN LINE_COMMENT;                                                 /* One line comments... */
-<LINE_COMMENT>.                 ;
-<LINE_COMMENT>"\n"              BEGIN INITIAL;
-<LINE_COMMENT><<EOF>>           BEGIN INITIAL;
-
-    /* Block Comments */
-"/*"                            BEGIN BLOCK_COMMENT;                                                /* Block comments... */
-<BLOCK_COMMENT>"\n"             ;
-<BLOCK_COMMENT>.                ;
-<BLOCK_COMMENT>"*/"             BEGIN INITIAL;
+    /* Comments */
+    "#"                 {
+                            BEGIN LINE_COMMENT;
+                            return TOKEN_EOS;
+                        }
 
     /* Anything else...*/
-.                               return yytext[0];
+    .                   return yytext[0];
+}
+
+<STRING_LITERAL>{
+    /* Strings */
+    "\""                {
+                            BEGIN PRIMED;
+                            yylval->string[sStringLength] = 0;
+                            return TOKEN_STRING;
+                        }
+    .                   yylval->string[sStringLength++] = *yytext;
+}
+
+<LINE_COMMENT>{
+    /* Line Comments */
+    [\n\r]              BEGIN INITIAL;
+    <<EOF>>             BEGIN INITIAL;
+    .                   ;
+}
+
+<BLOCK_COMMENT>{
+    /* Block Comments */
+    "-#-"[ \t]*[\n\r]   BEGIN INITIAL;
+    .|\n                ;
+}
 
 %%
