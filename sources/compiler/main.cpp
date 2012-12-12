@@ -23,6 +23,10 @@ int main(int argc, char *argv[])
 	char opt;
 	bool error = false;
 
+#ifdef DEBUG
+	std::cerr << "DEBUG OUTPUT IS ON!" << std::endl;
+#endif
+
 	// Parse options
 	opterr = 0;
 	while((opt = getopt(argc, argv, "U:I:h")) != -1)
