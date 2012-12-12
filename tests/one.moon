@@ -19,7 +19,7 @@ function float:test_add(float:one, int:two)
 	return one + two
 end
 
-function main()
+global function main()
 	var float:localX = 0.0
 	var string:test = STR_ONE + STR_TWO
 

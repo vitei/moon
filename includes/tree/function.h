@@ -26,15 +26,15 @@ namespace tree
 	class Function : public Scope
 	{
 	public:
-		Function(FunctionPrototype *prototype, StatementList *statements) : Scope(statements), mPrototype(prototype) {}
+		Function(Expression *prototype, StatementList *statements) : Scope(statements), mPrototype(prototype) {}
 
-		FunctionPrototype *getPrototype()
+		Expression *getPrototype()
 		{
 			return mPrototype;
 		}
 
 	private:
-		FunctionPrototype *mPrototype;
+		Expression *mPrototype;
 	};
 }
 

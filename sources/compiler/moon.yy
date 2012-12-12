@@ -146,6 +146,7 @@
 %type<statementList> o_program_functions
 %type<statementList> program_functions
 %type<statement> program_function
+%type<expression> s_function_prototype
 %type<prototype> function_prototype
 %type<expressionList> o_arguments
 %type<expressionList> arguments
@@ -531,9 +532,23 @@ program_functions   :   program_function
                         }
                     ;
 
-program_function    :   function_prototype function_state TOKEN_EOS statements TOKEN_END TOKEN_EOS /* FIXME, support states */
+program_function    :   s_function_prototype function_state TOKEN_EOS statements TOKEN_END TOKEN_EOS /* FIXME, support states */
                         {
                             $$ = new tree::Function($1, $4);
+                        }
+                    ;
+
+s_function_prototype:   function_prototype
+                        {
+                            $$ = $1;
+                        }
+                    |   TOKEN_GLOBAL function_prototype
+                        {
+                            $$ = new tree::GlobalScoping($2);
+                        }
+                    |   TOKEN_SHARED function_prototype
+                        {
+                            $$ = new tree::SharedScoping($2);
                         }
                     ;
 

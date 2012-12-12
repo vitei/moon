@@ -1,6 +1,8 @@
 #ifndef TREE_SCOPE_H
 #define TREE_SCOPE_H
 
+#include <map>
+#include <string>
 #include "statement.h"
 
 
@@ -11,7 +13,13 @@ namespace tree
 	public:
 		Scope(StatementList *statements) : mStatements(statements) {}
 
+		std::map<std::string, Identity *> &getIdentities()
+		{
+			return mIdentities;
+		}
+
 	private:
+		std::map<std::string, Identity *> mIdentities;
 		StatementList *mStatements;
 	};
 }
