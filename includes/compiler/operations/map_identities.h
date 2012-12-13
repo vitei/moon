@@ -12,7 +12,6 @@ namespace operation
 	public:
 		static void run(tree::Program *program);
 
-		virtual void process(tree::Program *program);
 		virtual void process(tree::Scope *scope);
 		virtual void process(tree::Identity *identity);
 

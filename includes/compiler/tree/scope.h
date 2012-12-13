@@ -16,7 +16,17 @@ namespace tree
 	class Scope : public Statement
 	{
 	public:
-		Scope(Statements *statements) : mStatements(statements) {}
+		Scope(Statements *statements) : mParent(NULL), mStatements(statements) {}
+
+		Scope *getParent()
+		{
+			return mParent;
+		}
+
+		void setParent(Scope *parent)
+		{
+			mParent = parent;
+		}
 
 		std::map<std::string, Identity *> &getIdentities()
 		{
@@ -29,6 +39,7 @@ namespace tree
 		}
 
 	private:
+		Scope *mParent;
 		std::map<std::string, Identity *> mIdentities;
 		Statements *mStatements;
 	};

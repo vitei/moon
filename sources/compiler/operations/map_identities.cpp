@@ -8,18 +8,6 @@ void operation::MapIdentities::run(tree::Program *program)
 	program->dispatch(&operation);
 }
 
-void operation::MapIdentities::process(tree::Program *program)
-{
-	LOG("MapIdentities::process::Program");
-
-	tree::Uses *uses = program->getUses();
-
-	for(tree::Uses::iterator i = uses->begin(), end = uses->end(); i != end; ++i)
-	{
-		(*i)->dispatch(this);
-	}
-}
-
 void operation::MapIdentities::process(tree::Scope *scope)
 {
 	LOG("MapIdentities::process::Scope");
