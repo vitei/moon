@@ -297,8 +297,7 @@ namespace operation
 
 		virtual void process(tree::UDT *udt)
 		{
-			process(static_cast<tree::Type *>(udt));
-			process(static_cast<tree::Identity *>(udt)); // FIXME
+			process(static_cast<tree::Type *>(udt)); // FIXME
 		}
 
 		virtual void process(tree::Use *use)
