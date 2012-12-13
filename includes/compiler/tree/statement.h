@@ -9,11 +9,15 @@
 
 namespace tree
 {
+	/* ---- ONLY ABSTRACT CLASSES BELOW HERE ---- */
+
 	class Statement : public Node
 	{
 	};
 
 	typedef std::vector<Statement *> Statements;
+
+	/* ---- ONLY CONCRETE CLASSES BELOW HERE ---- */
 
 	class Execute : public Statement
 	{

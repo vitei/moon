@@ -9,25 +9,15 @@
 
 namespace tree
 {
+	/* ---- ONLY ABSTRACT CLASSES BELOW HERE ---- */
+
 	class Expression : public Node
 	{
 	};
 
 	typedef std::vector<Expression *> Expressions;
 
-	class Identifier : public Expression
-	{
-	public:
-		Identifier(std::string name) : mName(name) {}
-
-		const std::string &getName()
-		{
-			return mName;
-		}
-
-	private:
-		std::string mName;
-	};
+	class Identifier;
 
 	class Identity : public Expression
 	{
@@ -75,6 +65,77 @@ namespace tree
 	private:
 		Expression *mContainer;
 		Expression *mTarget;
+	};
+
+	template<class TYPE, class STORAGE>
+	class Literal : public Expression
+	{
+	public:
+		Literal(STORAGE value) : mType(new TYPE()), mValue(value) {}
+
+		Type *getType()
+		{
+			return mType;
+		}
+
+		STORAGE getValue()
+		{
+			return mValue;
+		}
+
+	private:
+		Type *mType;
+		STORAGE mValue;
+	};
+
+	class UnaryExpression : public Expression
+	{
+	public:
+		UnaryExpression(Expression *expression) : mExpression(expression) {}
+
+		Expression *getExpression()
+		{
+			return mExpression;
+		}
+
+	private:
+		Expression *mExpression;
+	};
+
+	class BinaryExpression : public Expression
+	{
+	public:
+		BinaryExpression(Expression *lhs, Expression *rhs) : mLHS(lhs), mRHS(rhs) {}
+
+		Expression *getLHS()
+		{
+			return mLHS;
+		}
+
+		Expression *getRHS()
+		{
+			return mRHS;
+		}
+
+	private:
+		Expression *mLHS;
+		Expression *mRHS;
+	};
+
+	/* ---- ONLY CONCRETE CLASSES BELOW HERE ---- */
+
+	class Identifier : public Expression
+	{
+	public:
+		Identifier(std::string name) : mName(name) {}
+
+		const std::string &getName()
+		{
+			return mName;
+		}
+
+	private:
+		std::string mName;
 	};
 
 	class Constant : public TypedIdentity
@@ -153,63 +214,22 @@ namespace tree
 		Expressions *mArguments;
 	};
 
-	template<class TYPE, class STORAGE>
-	class Literal : public Expression
+	class IntLiteral : public Literal<Int, int>
 	{
 	public:
-		Literal(STORAGE value) : mType(new TYPE()), mValue(value) {}
-
-		Type *getType()
-		{
-			return mType;
-		}
-
-		STORAGE getValue()
-		{
-			return mValue;
-		}
-
-	private:
-		Type *mType;
-		STORAGE mValue;
+		IntLiteral(int value) : Literal(value) {}
 	};
 
-	typedef Literal<Int, int> IntLiteral;
-	typedef Literal<Float, float> FloatLiteral;
-	typedef Literal<String, std::string> StringLiteral;
-
-	class UnaryExpression : public Expression
+	class FloatLiteral : public Literal<Float, float>
 	{
 	public:
-		UnaryExpression(Expression *expression) : mExpression(expression) {}
-
-		Expression *getExpression()
-		{
-			return mExpression;
-		}
-
-	private:
-		Expression *mExpression;
+		FloatLiteral(float value) : Literal(value) {}
 	};
 
-	class BinaryExpression : public Expression
+	class StringLiteral : public Literal<String, std::string>
 	{
 	public:
-		BinaryExpression(Expression *lhs, Expression *rhs) : mLHS(lhs), mRHS(rhs) {}
-
-		Expression *getLHS()
-		{
-			return mLHS;
-		}
-
-		Expression *getRHS()
-		{
-			return mRHS;
-		}
-
-	private:
-		Expression *mLHS;
-		Expression *mRHS;
+		StringLiteral(std::string value) : Literal(value) {}
 	};
 
 	class Assign : public BinaryExpression

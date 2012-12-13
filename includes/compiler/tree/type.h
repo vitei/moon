@@ -6,9 +6,13 @@
 
 namespace tree
 {
+	/* ---- ONLY ABSTRACT CLASSES BELOW HERE ---- */
+
 	class Type : public Node
 	{
 	};
+
+	/* ---- ONLY CONCRETE CLASSES BELOW HERE ---- */
 
 	class Int : public Type
 	{
