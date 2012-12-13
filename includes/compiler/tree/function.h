@@ -38,6 +38,12 @@ namespace tree
 			return mPrototype;
 		}
 
+		virtual void dispatch(operation::Operation *operation)
+		{
+			mPrototype->dispatch(operation);
+			Scope::dispatch(operation);
+		}
+
 	private:
 		Expression *mPrototype;
 	};

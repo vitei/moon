@@ -29,6 +29,12 @@ namespace tree
 			return mExpression;
 		}
 
+		virtual void dispatch(operation::Operation *operation)
+		{
+			mExpression->dispatch(operation);
+			Statement::dispatch(operation);
+		}
+
 	private:
 		Expression *mExpression;
 	};
@@ -43,6 +49,12 @@ namespace tree
 			return mReturn;
 		}
 
+		virtual void dispatch(operation::Operation *operation)
+		{
+			mReturn->dispatch(operation);
+			Statement::dispatch(operation);
+		}
+
 	private:
 		Expression *mReturn;
 	};
@@ -55,6 +67,12 @@ namespace tree
 		State *getState()
 		{
 			return mState;
+		}
+
+		virtual void dispatch(operation::Operation *operation)
+		{
+			mState->dispatch(operation);
+			Statement::dispatch(operation);
 		}
 
 	private:

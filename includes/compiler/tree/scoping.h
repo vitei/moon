@@ -19,6 +19,12 @@ namespace tree
 			return mScoped;
 		}
 
+		virtual void dispatch(operation::Operation *operation)
+		{
+			mScoped->dispatch(operation);
+			Expression::dispatch(operation);
+		}
+
 	private:
 		Identity *mScoped;
 	};

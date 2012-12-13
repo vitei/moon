@@ -17,7 +17,23 @@ namespace tree
 
 	typedef std::vector<Expression *> Expressions;
 
-	class Identifier;
+	/* ---- THE "Identifier" CLASS IS A SPECIAL CASE ---- */
+
+	class Identifier : public Expression
+	{
+	public:
+		Identifier(std::string name) : mName(name) {}
+
+		const std::string &getName()
+		{
+			return mName;
+		}
+
+	private:
+		std::string mName;
+	};
+
+	/* ---- ONLY ABSTRACT CLASSES BELOW HERE ---- */
 
 	class Identity : public Expression
 	{
@@ -27,6 +43,12 @@ namespace tree
 		Identifier *getName()
 		{
 			return mName;
+		}
+
+		virtual void dispatch(operation::Operation *operation)
+		{
+			mName->dispatch(operation);
+			Expression::dispatch(operation);
 		}
 
 	private:
@@ -41,6 +63,12 @@ namespace tree
 		Type *getType()
 		{
 			return mType;
+		}
+
+		virtual void dispatch(operation::Operation *operation)
+		{
+			mType->dispatch(operation);
+			Identity::dispatch(operation);
 		}
 
 	private:
@@ -60,6 +88,13 @@ namespace tree
 		Expression *getTarget()
 		{
 			return mTarget;
+		}
+
+		virtual void dispatch(operation::Operation *operation)
+		{
+			mContainer->dispatch(operation);
+			mTarget->dispatch(operation);
+			Expression::dispatch(operation);
 		}
 
 	private:
@@ -83,6 +118,12 @@ namespace tree
 			return mValue;
 		}
 
+		virtual void dispatch(operation::Operation *operation)
+		{
+			mType->dispatch(operation);
+			Expression::dispatch(operation);
+		}
+
 	private:
 		Type *mType;
 		STORAGE mValue;
@@ -96,6 +137,12 @@ namespace tree
 		Expression *getExpression()
 		{
 			return mExpression;
+		}
+
+		virtual void dispatch(operation::Operation *operation)
+		{
+			mExpression->dispatch(operation);
+			Expression::dispatch(operation);
 		}
 
 	private:
@@ -117,26 +164,19 @@ namespace tree
 			return mRHS;
 		}
 
+		virtual void dispatch(operation::Operation *operation)
+		{
+			mLHS->dispatch(operation);
+			mRHS->dispatch(operation);
+			Expression::dispatch(operation);
+		}
+
 	private:
 		Expression *mLHS;
 		Expression *mRHS;
 	};
 
 	/* ---- ONLY CONCRETE CLASSES BELOW HERE ---- */
-
-	class Identifier : public Expression
-	{
-	public:
-		Identifier(std::string name) : mName(name) {}
-
-		const std::string &getName()
-		{
-			return mName;
-		}
-
-	private:
-		std::string mName;
-	};
 
 	class Constant : public TypedIdentity
 	{
@@ -169,6 +209,13 @@ namespace tree
 		Expression *getExpression()
 		{
 			return mExpression;
+		}
+
+		virtual void dispatch(operation::Operation *operation)
+		{
+			mType->dispatch(operation);
+			mExpression->dispatch(operation);
+			Expression::dispatch(operation);
 		}
 
 	private:
@@ -207,6 +254,12 @@ namespace tree
 		Expressions *getArguments()
 		{
 			return mArguments;
+		}
+
+		virtual void dispatch(operation::Operation *operation)
+		{
+			mID->dispatch(operation);
+			Expression::dispatch(operation);
 		}
 
 	private:
