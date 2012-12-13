@@ -280,6 +280,11 @@ namespace operation
 			process(static_cast<tree::State *>(namedState));
 		}
 
+		virtual void process(tree::Bool *nBool)
+		{
+			process(static_cast<tree::Type *>(nBool));
+		}
+
 		virtual void process(tree::Int *nInt)
 		{
 			process(static_cast<tree::Type *>(nInt));
@@ -290,9 +295,9 @@ namespace operation
 			process(static_cast<tree::Type *>(nFloat));
 		}
 
-		virtual void process(tree::String *nString)
+		virtual void process(tree::String *string)
 		{
-			process(static_cast<tree::Type *>(nString));
+			process(static_cast<tree::Type *>(string));
 		}
 
 		virtual void process(tree::UDT *udt)

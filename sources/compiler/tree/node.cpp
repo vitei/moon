@@ -174,6 +174,10 @@ void tree::Node::dispatch(operation::Operation *operation)
 	{
 		operation->process(static_cast<tree::NamedState *>(this));
 	}
+	else if(dynamic_cast<tree::Bool *>(this))
+	{
+		operation->process(static_cast<tree::Bool *>(this));
+	}
 	else if(dynamic_cast<tree::Int *>(this))
 	{
 		operation->process(static_cast<tree::Int *>(this));

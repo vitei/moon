@@ -14,6 +14,10 @@ namespace tree
 
 	/* ---- ONLY CONCRETE CLASSES BELOW HERE ---- */
 
+	class Bool : public Type
+	{
+	};
+
 	class Int : public Type
 	{
 	};

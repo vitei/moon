@@ -117,6 +117,7 @@
 %token TOKEN_RESET
 
 /* Built-In Types */
+%token TOKEN_TYPE_BOOL
 %token TOKEN_TYPE_INT
 %token TOKEN_TYPE_FLOAT
 %token TOKEN_TYPE_STRING
@@ -1039,7 +1040,11 @@ expression_atom     :   name /* Constant */
                         }
                     ;
 
-type                :   TOKEN_TYPE_INT
+type                :   TOKEN_TYPE_BOOL
+                        {
+                            $$ = new tree::Bool();
+                        }
+                    |   TOKEN_TYPE_INT
                         {
                             $$ = new tree::Int();
                         }
