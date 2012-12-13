@@ -12,10 +12,10 @@ namespace tree
 
 	/* ---- ONLY CONCRETE CLASSES BELOW HERE ---- */
 
-	class UDT : public Type, public Identity
+	class UDT : public Type
 	{
 	public:
-		UDT(Identifier *name) : Identity(name) {}
+		UDT(Identifier *name) : Type() {}
 	};
 }
 
