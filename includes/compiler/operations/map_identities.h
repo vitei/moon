@@ -10,12 +10,10 @@ namespace operation
 	class MapIdentities : public Operation
 	{
 	public:
-		MapIdentities(tree::Program *program) : mProgram(program) {}
-
-		virtual void run();
+		static void run(tree::Program *program);
 
 	private:
-		tree::Program *mProgram;
+		MapIdentities() {}
 	};
 }
 

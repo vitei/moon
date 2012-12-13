@@ -2,7 +2,8 @@
 #include "compiler/operations/map_identities.h"
 
 
-void operation::MapIdentities::run()
+void operation::MapIdentities::run(tree::Program *program)
 {
-
+	operation::MapIdentities mapper;
+	program->dispatch(&mapper);
 }
