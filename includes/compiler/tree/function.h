@@ -12,21 +12,21 @@ namespace tree
 	class FunctionPrototype : public TypedIdentity
 	{
 	public:
-		FunctionPrototype(Type *type, Identifier *name, ExpressionList *arguments) : TypedIdentity(type, name), mArguments(arguments) {}
+		FunctionPrototype(Type *type, Identifier *name, Expressions *arguments) : TypedIdentity(type, name), mArguments(arguments) {}
 
-		ExpressionList *getArguments()
+		Expressions *getArguments()
 		{
 			return mArguments;
 		}
 
 	private:
-		ExpressionList *mArguments;
+		Expressions *mArguments;
 	};
 
 	class Function : public Scope
 	{
 	public:
-		Function(Expression *prototype, StatementList *statements) : Scope(statements), mPrototype(prototype) {}
+		Function(Expression *prototype, Statements *statements) : Scope(statements), mPrototype(prototype) {}
 
 		Expression *getPrototype()
 		{

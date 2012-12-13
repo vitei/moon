@@ -10,7 +10,7 @@ namespace tree
 	class Use : public Scope
 	{
 	public:
-		Use(StatementList *statements) : Scope(statements) {}
+		Use(Statements *statements) : Scope(statements) {}
 	};
 
 	typedef std::vector<Use *> Uses;

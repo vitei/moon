@@ -11,21 +11,21 @@ namespace tree
 	class Scope : public Statement
 	{
 	public:
-		Scope(StatementList *statements) : mStatements(statements) {}
+		Scope(Statements *statements) : mStatements(statements) {}
 
 		std::map<std::string, Identity *> &getIdentities()
 		{
 			return mIdentities;
 		}
 
-		StatementList *getStatements()
+		Statements *getStatements()
 		{
 			return mStatements;
 		}
 
 	private:
 		std::map<std::string, Identity *> mIdentities;
-		StatementList *mStatements;
+		Statements *mStatements;
 	};
 }
 
