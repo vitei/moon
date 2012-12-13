@@ -148,6 +148,7 @@
     "reset"             return TOKEN_RESET;
 
     /* Built-In Types */
+    "bool"              return TOKEN_TYPE_BOOL;
     "int"               return TOKEN_TYPE_INT;
     "float"             return TOKEN_TYPE_FLOAT;
     "string"            return TOKEN_TYPE_STRING;
