@@ -2,6 +2,7 @@
 #define COMPILER_TREE_USE_H
 
 #include <vector>
+#include "node.h"
 #include "scope.h"
 
 

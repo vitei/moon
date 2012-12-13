@@ -1,6 +1,7 @@
 #ifndef COMPILER_TREE_PROGRAM_H
 #define COMPILER_TREE_PROGRAM_H
 
+#include "node.h"
 #include "scope.h"
 #include "use.h"
 
@@ -20,8 +21,6 @@ namespace tree
 		{
 			return mUses;
 		}
-
-		void mapIdentities();
 
 	private:
 		Uses *mUses;
