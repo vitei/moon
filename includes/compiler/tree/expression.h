@@ -214,6 +214,16 @@ namespace tree
 		Expressions *mArguments;
 	};
 
+	class NullReference : public Expression
+	{
+	};
+
+	class BoolLiteral : public Literal<Bool, bool>
+	{
+	public:
+		BoolLiteral(bool value) : Literal(value) {}
+	};
+
 	class IntLiteral : public Literal<Int, int>
 	{
 	public:

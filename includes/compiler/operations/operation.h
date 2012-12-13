@@ -115,6 +115,16 @@ namespace operation
 			process(static_cast<tree::Expression *>(functionCall));
 		}
 
+		virtual void process(tree::NullReference *nullReference)
+		{
+			process(static_cast<tree::Expression *>(nullReference));
+		}
+
+		virtual void process(tree::BoolLiteral *boolLiteral)
+		{
+			process(static_cast<tree::Expression *>(boolLiteral)); // FIXME
+		}
+
 		virtual void process(tree::IntLiteral *intLiteral)
 		{
 			process(static_cast<tree::Expression *>(intLiteral)); // FIXME

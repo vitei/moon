@@ -103,6 +103,9 @@
 %token<string> TOKEN_STRING
 
 /* Keywords */
+%token TOKEN_NULL
+%token TOKEN_TRUE
+%token TOKEN_FALSE
 %token TOKEN_END
 %token TOKEN_INCLUDE
 %token TOKEN_USE
@@ -1017,6 +1020,18 @@ argument_expressions:   expression
 expression_atom     :   name /* Constant */
                         {
                             $$ = $1;
+                        }
+                    |   TOKEN_NULL
+                        {
+                            $$ = new tree::NullReference();
+                        }
+                    |   TOKEN_TRUE
+                        {
+                            $$ = new tree::BoolLiteral(true);
+                        }
+                    |   TOKEN_FALSE
+                        {
+                            $$ = new tree::BoolLiteral(false);
                         }
                     |   TOKEN_INTEGER
                         {
