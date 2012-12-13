@@ -12,6 +12,11 @@ namespace operation
 	public:
 		static void run(tree::Program *program);
 
+		virtual void process(tree::Program *program);
+		virtual void process(tree::Scope *scope);
+		virtual void process(tree::FunctionPrototype *functionPrototype);
+		virtual void process(tree::Variable *variable);
+
 	private:
 		MapIdentities() {}
 	};
