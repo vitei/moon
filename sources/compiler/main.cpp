@@ -96,7 +96,7 @@ int main(int argc, char *argv[])
 				parserData.addParsedFile(tmp);
 				loader::pushCWD(dirname(tmp));
 
-				parserData.uses = new tree::Uses();
+				parserData.uses = new tree::Statements();
 
 				yyparse(&parserData);
 
@@ -109,6 +109,7 @@ int main(int argc, char *argv[])
 				tree::Program program(parserData.uses);
 
 				// We may now perform operations on it...
+				operation::ScopeParents::run(&program);
 				operation::MapIdentities::run(&program);
 				//operation::resolveIdentifiers(program);
 

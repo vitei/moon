@@ -17,8 +17,6 @@ namespace tree
 	public:
 		Use(Statements *statements) : Scope(statements) {}
 	};
-
-	typedef std::vector<Use *> Uses;
 }
 
 #endif

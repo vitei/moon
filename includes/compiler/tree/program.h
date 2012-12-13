@@ -15,15 +15,7 @@ namespace tree
 	class Program : public Scope
 	{
 	public:
-		Program(Uses *uses) : Scope(NULL), mUses(uses) {}
-
-		Uses *getUses()
-		{
-			return mUses;
-		}
-
-	private:
-		Uses *mUses;
+		Program(Statements *uses) : Scope(uses) {}
 	};
 }
 

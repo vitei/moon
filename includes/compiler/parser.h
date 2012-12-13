@@ -31,7 +31,7 @@ namespace parser
 
 		// FIXME, these three need to be nicer...
 		void *lexer;
-		tree::Uses *uses;
+		tree::Statements *uses;
 		tree::Statements *statements;
 
 	private:
