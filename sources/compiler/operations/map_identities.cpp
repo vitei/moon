@@ -4,8 +4,8 @@
 
 void operation::MapIdentities::run(tree::Program *program)
 {
-	operation::MapIdentities mapper;
-	program->dispatch(&mapper);
+	operation::MapIdentities operation;
+	program->dispatch(&operation);
 }
 
 void operation::MapIdentities::process(tree::Program *program)
@@ -35,16 +35,9 @@ void operation::MapIdentities::process(tree::Scope *scope)
 	}
 }
 
-void operation::MapIdentities::process(tree::FunctionPrototype *functionPrototype)
+void operation::MapIdentities::process(tree::Identity *identity)
 {
-	LOG("MapIdentities::process::FunctionPrototype");
+	LOG("MapIdentities::process::Identity");
 
-	LOG("%s", functionPrototype->getName()->getName().c_str());
-}
-
-void operation::MapIdentities::process(tree::Variable *variable)
-{
-	LOG("MapIdentities::process::Variable");
-
-	LOG("%s", variable->getName()->getName().c_str());
+	LOG("%s", identity->getName()->getName().c_str());
 }

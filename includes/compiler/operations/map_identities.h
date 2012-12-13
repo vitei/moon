@@ -14,8 +14,7 @@ namespace operation
 
 		virtual void process(tree::Program *program);
 		virtual void process(tree::Scope *scope);
-		virtual void process(tree::FunctionPrototype *functionPrototype);
-		virtual void process(tree::Variable *variable);
+		virtual void process(tree::Identity *identity);
 
 	private:
 		MapIdentities() {}
