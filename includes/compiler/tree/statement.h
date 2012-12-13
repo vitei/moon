@@ -13,7 +13,7 @@ namespace tree
 	{
 	};
 
-	typedef std::vector<Statement *> StatementList;
+	typedef std::vector<Statement *> Statements;
 
 	class Execute : public Statement
 	{

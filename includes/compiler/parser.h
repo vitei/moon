@@ -32,7 +32,7 @@ namespace parser
 		// FIXME, these three need to be nicer...
 		void *lexer;
 		tree::Uses *uses;
-		tree::StatementList *statements;
+		tree::Statements *statements;
 
 	private:
 		std::vector<std::string> mParsedFiles;

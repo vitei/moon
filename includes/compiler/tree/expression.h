@@ -13,7 +13,7 @@ namespace tree
 	{
 	};
 
-	typedef std::vector<Expression *> ExpressionList;
+	typedef std::vector<Expression *> Expressions;
 
 	class Identifier : public Expression
 	{
@@ -136,21 +136,21 @@ namespace tree
 	class FunctionCall : public Expression
 	{
 	public:
-		FunctionCall(Identifier *id, ExpressionList *arguments = NULL) : mID(id), mArguments(arguments) {}
+		FunctionCall(Identifier *id, Expressions *arguments = NULL) : mID(id), mArguments(arguments) {}
 
 		Identifier *getID()
 		{
 			return mID;
 		}
 
-		ExpressionList *getArguments()
+		Expressions *getArguments()
 		{
 			return mArguments;
 		}
 
 	private:
 		Identifier *mID;
-		ExpressionList *mArguments;
+		Expressions *mArguments;
 	};
 
 	template<class TYPE, class STORAGE>

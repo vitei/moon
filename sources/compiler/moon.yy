@@ -40,10 +40,10 @@
     tree::Use *use;
 
     tree::Statement *statement;
-    tree::StatementList *statementList;
+    tree::Statements *statements;
 
     tree::Expression *expression;
-    tree::ExpressionList *expressionList;
+    tree::Expressions *expressions;
 
     tree::Identity *identity;
 
@@ -127,12 +127,12 @@
 
 /* Return types */
 %type<use> use
-%type<statementList> include
-%type<statementList> o_program_includes
-%type<statementList> program_includes
-%type<statementList> include_statement
-%type<statementList> o_program_cvrs
-%type<statementList> program_cvrs
+%type<statements> include
+%type<statements> o_program_includes
+%type<statements> program_includes
+%type<statements> include_statement
+%type<statements> o_program_cvrs
+%type<statements> program_cvrs
 %type<statement> program_cvr
 %type<statement> constant_statement
 %type<expression> constant_assignment
@@ -143,16 +143,16 @@
 %type<statement> s_ref_statement
 %type<expression> s_ref_assignment
 %type<expression> s_reference
-%type<statementList> o_program_functions
-%type<statementList> program_functions
+%type<statements> o_program_functions
+%type<statements> program_functions
 %type<statement> program_function
 %type<expression> s_function_prototype
 %type<prototype> function_prototype
-%type<expressionList> o_arguments
-%type<expressionList> arguments
+%type<expressions> o_arguments
+%type<expressions> arguments
 %type<expression> argument
 %type<state> function_state
-%type<statementList> statements
+%type<statements> statements
 %type<statement> statement
 %type<statement> variable_statement
 %type<expression> variable_assignment
@@ -179,7 +179,7 @@
 %type<expression> postfix_expression
 %type<expression> array_expression
 %type<expression> call_expression
-%type<expressionList> argument_expressions
+%type<expressions> argument_expressions
 %type<expression> expression_atom
 %type<type> type
 %type<id> identifier
@@ -208,7 +208,7 @@ start               :   START_USE use
 
 use                 :   o_program_includes o_program_uses o_program_cvrs o_program_functions
                         {
-                            tree::StatementList *useStatements = NULL;
+                            tree::Statements *useStatements = NULL;
 
                             // Check there is actually something in this scope...
                             // (Uses are not nested so we don't count them here...)
@@ -403,13 +403,28 @@ o_program_cvrs      :   /* Empty */
 
 program_cvrs        :   program_cvr                                                                 /* CVRs = constants + variables + references */
                         {
-                            $$ = new tree::StatementList();
-                            $$->push_back($1);
+                            if($1)
+                            {
+                                $$ = new tree::Statements();
+                                $$->push_back($1);
+                            }
+                            else
+                            {
+                                $$ = NULL;
+                            }
                         }
                     |   program_cvrs program_cvr
                         {
                             $$ = $1;
-                            $$->push_back($2);
+
+                            if($2)
+                            {
+                                if(!$$)
+                                {
+                                    $$ = new tree::Statements();
+                                }
+                                $$->push_back($2);
+                            }
                         }
                     ;
 
@@ -522,13 +537,28 @@ o_program_functions :   /* Empty */
 
 program_functions   :   program_function
                         {
-                            $$ = new tree::StatementList();
-                            $$->push_back($1);
+                            if($1)
+                            {
+                                $$ = new tree::Statements();
+                                $$->push_back($1);
+                            }
+                            else
+                            {
+                                $$ = NULL;
+                            }
                         }
                     |   program_functions program_function
                         {
                             $$ = $1;
-                            $$->push_back($2);
+
+                            if($2)
+                            {
+                                if(!$$)
+                                {
+                                    $$ = new tree::Statements();
+                                }
+                                $$->push_back($2);
+                            }
                         }
                     ;
 
@@ -575,13 +605,28 @@ o_arguments         :   /* Empty */
 
 arguments           :   argument
                         {
-                            $$ = new tree::ExpressionList();
-                            $$->push_back($1);
+                            if($1)
+                            {
+                                $$ = new tree::Expressions();
+                                $$->push_back($1);
+                            }
+                            else
+                            {
+                                $$ = NULL;
+                            }
                         }
                     |   arguments TOKEN_COMMA argument
                         {
                             $$ = $1;
-                            $$->push_back($3);
+
+                            if($3)
+                            {
+                                if(!$$)
+                                {
+                                    $$ = new tree::Expressions();
+                                }
+                                $$->push_back($3);
+                            }
                         }
                     ;
 
@@ -616,13 +661,28 @@ function_state      :   /* No state */
 
 statements          :   statement
                         {
-                            $$ = new tree::StatementList();
-                            $$->push_back($1);
+                            if($1)
+                            {
+                                $$ = new tree::Statements();
+                                $$->push_back($1);
+                            }
+                            else
+                            {
+                                $$ = NULL;
+                            }
                         }
                     |   statements statement
                         {
                             $$ = $1;
-                            $$->push_back($2);
+
+                            if($2)
+                            {
+                                if(!$$)
+                                {
+                                    $$ = new tree::Statements();
+                                }
+                                $$->push_back($2);
+                            }
                         }
                     ;
 
@@ -704,7 +764,7 @@ reference           :   TOKEN_REF identifier
 
 a_or_e_statement    :   assign_or_expression TOKEN_EOS
                         {
-                            $$ = new tree::Execute($1);
+                            $$ = $1 ? new tree::Execute($1) : NULL;
                         }
                     ;
 
@@ -927,13 +987,28 @@ call_expression     :   identifier TOKEN_PARENTHESIS_OPEN TOKEN_PARENTHESIS_CLOS
 
 argument_expressions:   expression
                         {
-                            $$ = new tree::ExpressionList();
-                            $$->push_back($1);
+                            if($1)
+                            {
+                                $$ = new tree::Expressions();
+                                $$->push_back($1);
+                            }
+                            else
+                            {
+                                $$ = NULL;
+                            }
                         }
                     |   argument_expressions TOKEN_COMMA expression
                         {
                             $$ = $1;
-                            $$->push_back($3);
+
+                            if($3)
+                            {
+                                if(!$$)
+                                {
+                                    $$ = new tree::Expressions();
+                                }
+                                $$->push_back($3);
+                            }
                         }
                     ;
 
