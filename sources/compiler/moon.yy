@@ -195,10 +195,7 @@
 
 start               :   START_USE use
                         {
-                            if($2)
-                            {
-                                data->uses->push_back($2);
-                            }
+                            data->uses->push_back($2);
                         }
                     |   START_INCLUDE include
                         {
