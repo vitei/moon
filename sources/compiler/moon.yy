@@ -279,21 +279,27 @@ program_includes    :   include_statement
                         }
                     |   program_includes include_statement
                         {
-                            if($1)
+                            $$ = $1;
+
+                            if($2)
                             {
-                                $$ = $1;
-                                $$->insert($$->end(), $2->begin(), $2->end());
-                                delete $2;
-                            }
-                            else
-                            {
-                                $$ = $2;
+                                if($$)
+                                {
+                                    $$->insert($$->end(), $2->begin(), $2->end());
+                                    delete $2;
+                                }
+                                else
+                                {
+                                    $$ = $2;
+                                }
                             }
                         }
                     ;
 
 include_statement   :   TOKEN_INCLUDE TOKEN_ID TOKEN_EOS
                         {
+                            $$ = NULL;
+
                             char tmp[1024];
 
                             loader::includeNameToFilename(tmp, $2);
@@ -332,8 +338,6 @@ include_statement   :   TOKEN_INCLUDE TOKEN_ID TOKEN_EOS
                                 std::string error("Could not find include file ");
                                 error += tmp;
                                 error::enqueue(0, error.c_str()); // FIXME
-
-                                $$ = NULL;
                             }
                         }
                     ;
