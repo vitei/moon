@@ -2,212 +2,69 @@
 #include "compiler/tree.h"
 
 
+// This is rather ugly but it saves a LOT of typing...
+#define DISPATCH_ACTIONS(class, function) \
+	if(dynamic_cast<class *>(this)) \
+	{ \
+		return function(static_cast<class *>(this)); \
+	}
+
+#define GENERATE_DISPATCH(function) \
+	DISPATCH_ACTIONS(tree::Add, function) \
+	DISPATCH_ACTIONS(tree::And, function) \
+	DISPATCH_ACTIONS(tree::ArrayAccess, function) \
+	DISPATCH_ACTIONS(tree::Assign, function) \
+	DISPATCH_ACTIONS(tree::Bool, function) \
+	DISPATCH_ACTIONS(tree::BoolLiteral, function) \
+	DISPATCH_ACTIONS(tree::Cast, function) \
+	DISPATCH_ACTIONS(tree::Constant, function) \
+	DISPATCH_ACTIONS(tree::DefaultState, function) \
+	DISPATCH_ACTIONS(tree::DirectAccess, function) \
+	DISPATCH_ACTIONS(tree::Divide, function) \
+	DISPATCH_ACTIONS(tree::Equal, function) \
+	DISPATCH_ACTIONS(tree::Execute, function) \
+	DISPATCH_ACTIONS(tree::Float, function) \
+	DISPATCH_ACTIONS(tree::FloatLiteral, function) \
+	DISPATCH_ACTIONS(tree::Function, function) \
+	DISPATCH_ACTIONS(tree::FunctionCall, function) \
+	DISPATCH_ACTIONS(tree::FunctionPrototype, function) \
+	DISPATCH_ACTIONS(tree::GlobalScoping, function) \
+	DISPATCH_ACTIONS(tree::GreaterEqual, function) \
+	DISPATCH_ACTIONS(tree::GreaterThan, function) \
+	DISPATCH_ACTIONS(tree::Identifier, function) \
+	DISPATCH_ACTIONS(tree::Int, function) \
+	DISPATCH_ACTIONS(tree::IntLiteral, function) \
+	DISPATCH_ACTIONS(tree::LessEqual, function) \
+	DISPATCH_ACTIONS(tree::LessThan, function) \
+	DISPATCH_ACTIONS(tree::LogicalAnd, function) \
+	DISPATCH_ACTIONS(tree::LogicalNot, function) \
+	DISPATCH_ACTIONS(tree::LogicalOr, function) \
+	DISPATCH_ACTIONS(tree::MessageAccess, function) \
+	DISPATCH_ACTIONS(tree::Minus, function) \
+	DISPATCH_ACTIONS(tree::Modulus, function) \
+	DISPATCH_ACTIONS(tree::Multiply, function) \
+	DISPATCH_ACTIONS(tree::NamedState, function) \
+	DISPATCH_ACTIONS(tree::Not, function) \
+	DISPATCH_ACTIONS(tree::NullReference, function) \
+	DISPATCH_ACTIONS(tree::Or, function) \
+	DISPATCH_ACTIONS(tree::Program, function) \
+	DISPATCH_ACTIONS(tree::Reference, function) \
+	DISPATCH_ACTIONS(tree::Return, function) \
+	DISPATCH_ACTIONS(tree::SetState, function) \
+	DISPATCH_ACTIONS(tree::SharedScoping, function) \
+	DISPATCH_ACTIONS(tree::String, function) \
+	DISPATCH_ACTIONS(tree::StringLiteral, function) \
+	DISPATCH_ACTIONS(tree::Subtract, function) \
+	DISPATCH_ACTIONS(tree::UDT, function) \
+	DISPATCH_ACTIONS(tree::Unequal, function) \
+	DISPATCH_ACTIONS(tree::Use, function) \
+	DISPATCH_ACTIONS(tree::Variable, function) \
+	DISPATCH_ACTIONS(tree::Xor, function)
+
 void tree::Node::dispatch(operation::Operation *operation)
 {
 	// We only need to call these on the concrete classes!
 
-	if(dynamic_cast<tree::Identifier *>(this))
-	{
-		operation->process(static_cast<tree::Identifier *>(this));
-	}
-	else if(dynamic_cast<tree::Constant *>(this))
-	{
-		operation->process(static_cast<tree::Constant *>(this));
-	}
-	else if(dynamic_cast<tree::Variable *>(this))
-	{
-		operation->process(static_cast<tree::Variable *>(this));
-	}
-	else if(dynamic_cast<tree::Reference *>(this))
-	{
-		operation->process(static_cast<tree::Reference *>(this));
-	}
-	else if(dynamic_cast<tree::Cast *>(this))
-	{
-		operation->process(static_cast<tree::Cast *>(this));
-	}
-	else if(dynamic_cast<tree::DirectAccess *>(this))
-	{
-		operation->process(static_cast<tree::DirectAccess *>(this));
-	}
-	else if(dynamic_cast<tree::MessageAccess *>(this))
-	{
-		operation->process(static_cast<tree::MessageAccess *>(this));
-	}
-	else if(dynamic_cast<tree::ArrayAccess *>(this))
-	{
-		operation->process(static_cast<tree::ArrayAccess *>(this));
-	}
-	else if(dynamic_cast<tree::FunctionCall *>(this))
-	{
-		operation->process(static_cast<tree::FunctionCall *>(this));
-	}
-	else if(dynamic_cast<tree::NullReference *>(this))
-	{
-		operation->process(static_cast<tree::NullReference *>(this));
-	}
-	else if(dynamic_cast<tree::BoolLiteral *>(this))
-	{
-		operation->process(static_cast<tree::BoolLiteral *>(this));
-	}
-	else if(dynamic_cast<tree::IntLiteral *>(this))
-	{
-		operation->process(static_cast<tree::IntLiteral *>(this));
-	}
-	else if(dynamic_cast<tree::FloatLiteral *>(this))
-	{
-		operation->process(static_cast<tree::FloatLiteral *>(this));
-	}
-	else if(dynamic_cast<tree::StringLiteral *>(this))
-	{
-		operation->process(static_cast<tree::StringLiteral *>(this));
-	}
-	else if(dynamic_cast<tree::Assign *>(this))
-	{
-		operation->process(static_cast<tree::Assign *>(this));
-	}
-	else if(dynamic_cast<tree::LogicalOr *>(this))
-	{
-		operation->process(static_cast<tree::LogicalOr *>(this));
-	}
-	else if(dynamic_cast<tree::LogicalAnd *>(this))
-	{
-		operation->process(static_cast<tree::LogicalAnd *>(this));
-	}
-	else if(dynamic_cast<tree::Or *>(this))
-	{
-		operation->process(static_cast<tree::Or *>(this));
-	}
-	else if(dynamic_cast<tree::Xor *>(this))
-	{
-		operation->process(static_cast<tree::Xor *>(this));
-	}
-	else if(dynamic_cast<tree::And *>(this))
-	{
-		operation->process(static_cast<tree::And *>(this));
-	}
-	else if(dynamic_cast<tree::Equal *>(this))
-	{
-		operation->process(static_cast<tree::Equal *>(this));
-	}
-	else if(dynamic_cast<tree::Unequal *>(this))
-	{
-		operation->process(static_cast<tree::Unequal *>(this));
-	}
-	else if(dynamic_cast<tree::LessThan *>(this))
-	{
-		operation->process(static_cast<tree::LessThan *>(this));
-	}
-	else if(dynamic_cast<tree::LessEqual *>(this))
-	{
-		operation->process(static_cast<tree::LessEqual *>(this));
-	}
-	else if(dynamic_cast<tree::GreaterThan *>(this))
-	{
-		operation->process(static_cast<tree::GreaterThan *>(this));
-	}
-	else if(dynamic_cast<tree::GreaterEqual *>(this))
-	{
-		operation->process(static_cast<tree::GreaterEqual *>(this));
-	}
-	else if(dynamic_cast<tree::Add *>(this))
-	{
-		operation->process(static_cast<tree::Add *>(this));
-	}
-	else if(dynamic_cast<tree::Subtract *>(this))
-	{
-		operation->process(static_cast<tree::Subtract *>(this));
-	}
-	else if(dynamic_cast<tree::Multiply *>(this))
-	{
-		operation->process(static_cast<tree::Multiply *>(this));
-	}
-	else if(dynamic_cast<tree::Divide *>(this))
-	{
-		operation->process(static_cast<tree::Divide *>(this));
-	}
-	else if(dynamic_cast<tree::Modulus *>(this))
-	{
-		operation->process(static_cast<tree::Modulus *>(this));
-	}
-	else if(dynamic_cast<tree::LogicalNot *>(this))
-	{
-		operation->process(static_cast<tree::LogicalNot *>(this));
-	}
-	else if(dynamic_cast<tree::Not *>(this))
-	{
-		operation->process(static_cast<tree::Not *>(this));
-	}
-	else if(dynamic_cast<tree::Minus *>(this))
-	{
-		operation->process(static_cast<tree::Minus *>(this));
-	}
-	else if(dynamic_cast<tree::Execute *>(this))
-	{
-		operation->process(static_cast<tree::Execute *>(this));
-	}
-	else if(dynamic_cast<tree::Return *>(this))
-	{
-		operation->process(static_cast<tree::Return *>(this));
-	}
-	else if(dynamic_cast<tree::SetState *>(this))
-	{
-		operation->process(static_cast<tree::SetState *>(this));
-	}
-	else if(dynamic_cast<tree::FunctionPrototype *>(this))
-	{
-		operation->process(static_cast<tree::FunctionPrototype *>(this));
-	}
-	else if(dynamic_cast<tree::Function *>(this))
-	{
-		operation->process(static_cast<tree::Function *>(this));
-	}
-	else if(dynamic_cast<tree::Program *>(this))
-	{
-		operation->process(static_cast<tree::Program *>(this));
-	}
-	else if(dynamic_cast<tree::GlobalScoping *>(this))
-	{
-		operation->process(static_cast<tree::GlobalScoping *>(this));
-	}
-	else if(dynamic_cast<tree::SharedScoping *>(this))
-	{
-		operation->process(static_cast<tree::SharedScoping *>(this));
-	}
-	else if(dynamic_cast<tree::DefaultState *>(this))
-	{
-		operation->process(static_cast<tree::DefaultState *>(this));
-	}
-	else if(dynamic_cast<tree::NamedState *>(this))
-	{
-		operation->process(static_cast<tree::NamedState *>(this));
-	}
-	else if(dynamic_cast<tree::Bool *>(this))
-	{
-		operation->process(static_cast<tree::Bool *>(this));
-	}
-	else if(dynamic_cast<tree::Int *>(this))
-	{
-		operation->process(static_cast<tree::Int *>(this));
-	}
-	else if(dynamic_cast<tree::Float *>(this))
-	{
-		operation->process(static_cast<tree::Float *>(this));
-	}
-	else if(dynamic_cast<tree::String *>(this))
-	{
-		operation->process(static_cast<tree::String *>(this));
-	}
-	else if(dynamic_cast<tree::UDT *>(this))
-	{
-		operation->process(static_cast<tree::UDT *>(this));
-	}
-	else if(dynamic_cast<tree::Use *>(this))
-	{
-		operation->process(static_cast<tree::Use *>(this));
-	}
-	else
-	{
-		ERROR("Unknown concrete class!");
-	}
+	GENERATE_DISPATCH(operation->process)
+	ERROR("Unknown concrete class");
 }
