@@ -42,6 +42,14 @@ void tree::Node::dispatch(operation::Operation *operation)
 	{
 		operation->process(static_cast<tree::FunctionCall *>(this));
 	}
+	else if(dynamic_cast<tree::NullReference *>(this))
+	{
+		operation->process(static_cast<tree::NullReference *>(this));
+	}
+	else if(dynamic_cast<tree::BoolLiteral *>(this))
+	{
+		operation->process(static_cast<tree::BoolLiteral *>(this));
+	}
 	else if(dynamic_cast<tree::IntLiteral *>(this))
 	{
 		operation->process(static_cast<tree::IntLiteral *>(this));

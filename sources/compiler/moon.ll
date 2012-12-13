@@ -134,6 +134,9 @@
                         }
 
     /* Keywords */
+    "null"              return TOKEN_NULL;
+    "true"              return TOKEN_TRUE;
+    "false"             return TOKEN_FALSE;
     "end"               return TOKEN_END;
     "include"           return TOKEN_INCLUDE;
     "use"               return TOKEN_USE;
