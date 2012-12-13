@@ -7,6 +7,10 @@
 
 namespace tree
 {
+	/* ---- ONLY ABSTRACT CLASSES BELOW HERE ---- */
+
+	/* ---- ONLY CONCRETE CLASSES BELOW HERE ---- */
+
 	class Use : public Scope
 	{
 	public:

@@ -7,10 +7,13 @@
 
 namespace tree
 {
+	/* ---- ONLY ABSTRACT CLASSES BELOW HERE ---- */
+
+	/* ---- ONLY CONCRETE CLASSES BELOW HERE ---- */
+
 	class Program : public Scope
 	{
 	public:
-
 		Program(Uses *uses) : Scope(NULL), mUses(uses) {}
 
 		Uses *getUses()

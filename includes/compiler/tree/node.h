@@ -4,9 +4,14 @@
 
 namespace tree
 {
+	/* ---- ONLY ABSTRACT CLASSES BELOW HERE ---- */
+
 	class Node
 	{
 	};
+
+	/* ---- ONLY CONCRETE CLASSES BELOW HERE ---- */
+
 }
 
 #endif

@@ -8,6 +8,10 @@
 
 namespace tree
 {
+	/* ---- ONLY ABSTRACT CLASSES BELOW HERE ---- */
+
+	/* ---- ONLY CONCRETE CLASSES BELOW HERE ---- */
+
 	class Scope : public Statement
 	{
 	public:

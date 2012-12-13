@@ -7,9 +7,13 @@
 
 namespace tree
 {
+	/* ---- ONLY ABSTRACT CLASSES BELOW HERE ---- */
+
 	class State : public Node
 	{
 	};
+
+	/* ---- ONLY CONCRETE CLASSES BELOW HERE ---- */
 
 	class DefaultState : public State
 	{

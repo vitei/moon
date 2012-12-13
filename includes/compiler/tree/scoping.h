@@ -7,6 +7,8 @@
 
 namespace tree
 {
+	/* ---- ONLY ABSTRACT CLASSES BELOW HERE ---- */
+
 	class Scoping : public Expression
 	{
 	public:
@@ -20,6 +22,8 @@ namespace tree
 	private:
 		Identity *mScoped;
 	};
+
+	/* ---- ONLY CONCRETE CLASSES BELOW HERE ---- */
 
 	class GlobalScoping: public Scoping
 	{
