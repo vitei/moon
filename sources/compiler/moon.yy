@@ -484,15 +484,15 @@ s_var_assignment    :   s_variable
                         {
                             $$ = new tree::Assign($1, $3);
                         }
+                    |   TOKEN_GLOBAL variable
+                        {
+                            $$ = new tree::GlobalScoping($2);
+                        }
                     ;
 
 s_variable          :   variable
                         {
                             $$ = $1;
-                        }
-                    |   TOKEN_GLOBAL variable
-                        {
-                            $$ = new tree::GlobalScoping($2);
                         }
                     |   TOKEN_SHARED variable
                         {
@@ -514,15 +514,15 @@ s_ref_assignment    :   s_reference
                         {
                             $$ = new tree::Assign($1, $3);
                         }
+                    |   TOKEN_GLOBAL reference
+                        {
+                            $$ = new tree::GlobalScoping($2);
+                        }
                     ;
 
 s_reference         :   reference
                         {
                             $$ = $1;
-                        }
-                    |   TOKEN_GLOBAL reference
-                        {
-                            $$ = new tree::GlobalScoping($2);
                         }
                     |   TOKEN_SHARED reference
                         {
