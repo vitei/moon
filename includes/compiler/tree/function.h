@@ -38,10 +38,11 @@ namespace tree
 			return mPrototype;
 		}
 
-		virtual void dispatch(operation::Operation *operation)
+		virtual void accept(operation::Operation *operation)
 		{
-			mPrototype->dispatch(operation);
-			Scope::dispatch(operation);
+			setup(operation);
+			mPrototype->accept(operation);
+			visit(operation);
 		}
 
 	private:

@@ -14,7 +14,14 @@ namespace tree
 	class Node
 	{
 	public:
-		virtual void dispatch(operation::Operation *operation);
+		virtual void accept(operation::Operation *operation)
+		{
+			setup(operation);
+			visit(operation);
+		}
+
+		void setup(operation::Operation *operation);
+		void visit(operation::Operation *operation);
 	};
 
 	/* ---- ONLY CONCRETE CLASSES BELOW HERE ---- */

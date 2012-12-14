@@ -8,9 +8,9 @@
 	{ \
 		setup(static_cast<base_class *>(node)); \
 	} \
-	virtual void process(class *node) \
+	virtual void visit(class *node) \
 	{ \
-		process(static_cast<base_class *>(node)); \
+		visit(static_cast<base_class *>(node)); \
 	}
 
 namespace operation
@@ -19,7 +19,7 @@ namespace operation
 	{
 	public:
 		virtual void setup(tree::Node *node) {}
-		virtual void process(tree::Node *node) {}
+		virtual void visit(tree::Node *node) {}
 
 		/* ---- ONLY ABSTRACT CLASSES BELOW HERE ---- */
 

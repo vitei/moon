@@ -12,7 +12,7 @@ namespace operation
 	public:
 		static void run(tree::Program *program);
 
-		virtual void process(tree::Scope *scope);
+		virtual void visit(tree::Scope *scope);
 
 	private:
 		ScopeParents() : mScope(NULL) {}

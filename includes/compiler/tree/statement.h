@@ -29,10 +29,11 @@ namespace tree
 			return mExpression;
 		}
 
-		virtual void dispatch(operation::Operation *operation)
+		virtual void accept(operation::Operation *operation)
 		{
-			mExpression->dispatch(operation);
-			Statement::dispatch(operation);
+			setup(operation);
+			mExpression->accept(operation);
+			visit(operation);
 		}
 
 	private:
@@ -49,10 +50,11 @@ namespace tree
 			return mReturn;
 		}
 
-		virtual void dispatch(operation::Operation *operation)
+		virtual void accept(operation::Operation *operation)
 		{
-			mReturn->dispatch(operation);
-			Statement::dispatch(operation);
+			setup(operation);
+			mReturn->accept(operation);
+			visit(operation);
 		}
 
 	private:
@@ -69,10 +71,11 @@ namespace tree
 			return mState;
 		}
 
-		virtual void dispatch(operation::Operation *operation)
+		virtual void accept(operation::Operation *operation)
 		{
-			mState->dispatch(operation);
-			Statement::dispatch(operation);
+			setup(operation);
+			mState->accept(operation);
+			visit(operation);
 		}
 
 	private:
