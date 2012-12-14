@@ -59,12 +59,15 @@
 	DISPATCH_ACTIONS(tree::Unequal, function) \
 	DISPATCH_ACTIONS(tree::Use, function) \
 	DISPATCH_ACTIONS(tree::Variable, function) \
-	DISPATCH_ACTIONS(tree::Xor, function)
-
-void tree::Node::dispatch(operation::Operation *operation)
-{
-	// We only need to call these on the concrete classes!
-
-	GENERATE_DISPATCH(operation->process)
+	DISPATCH_ACTIONS(tree::Xor, function) \
 	ERROR("Unknown concrete class");
+
+void tree::Node::setup(operation::Operation *operation)
+{
+	GENERATE_DISPATCH(operation->setup)
+}
+
+void tree::Node::visit(operation::Operation *operation)
+{
+	GENERATE_DISPATCH(operation->visit)
 }

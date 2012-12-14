@@ -45,10 +45,11 @@ namespace tree
 			return mName;
 		}
 
-		virtual void dispatch(operation::Operation *operation)
+		virtual void accept(operation::Operation *operation)
 		{
-			mName->dispatch(operation);
-			Expression::dispatch(operation);
+			setup(operation);
+			mName->accept(operation);
+			visit(operation);
 		}
 
 	private:
@@ -65,10 +66,11 @@ namespace tree
 			return mType;
 		}
 
-		virtual void dispatch(operation::Operation *operation)
+		virtual void accept(operation::Operation *operation)
 		{
-			mType->dispatch(operation);
-			Identity::dispatch(operation);
+			setup(operation);
+			mType->accept(operation);
+			visit(operation);
 		}
 
 	private:
@@ -90,11 +92,12 @@ namespace tree
 			return mTarget;
 		}
 
-		virtual void dispatch(operation::Operation *operation)
+		virtual void accept(operation::Operation *operation)
 		{
-			mContainer->dispatch(operation);
-			mTarget->dispatch(operation);
-			Expression::dispatch(operation);
+			setup(operation);
+			mContainer->accept(operation);
+			mTarget->accept(operation);
+			visit(operation);
 		}
 
 	private:
@@ -118,10 +121,11 @@ namespace tree
 			return mValue;
 		}
 
-		virtual void dispatch(operation::Operation *operation)
+		virtual void accept(operation::Operation *operation)
 		{
-			mType->dispatch(operation);
-			Expression::dispatch(operation);
+			setup(operation);
+			mType->accept(operation);
+			visit(operation);
 		}
 
 	private:
@@ -139,10 +143,11 @@ namespace tree
 			return mExpression;
 		}
 
-		virtual void dispatch(operation::Operation *operation)
+		virtual void accept(operation::Operation *operation)
 		{
-			mExpression->dispatch(operation);
-			Expression::dispatch(operation);
+			setup(operation);
+			mExpression->accept(operation);
+			visit(operation);
 		}
 
 	private:
@@ -164,11 +169,12 @@ namespace tree
 			return mRHS;
 		}
 
-		virtual void dispatch(operation::Operation *operation)
+		virtual void accept(operation::Operation *operation)
 		{
-			mLHS->dispatch(operation);
-			mRHS->dispatch(operation);
-			Expression::dispatch(operation);
+			setup(operation);
+			mLHS->accept(operation);
+			mRHS->accept(operation);
+			visit(operation);
 		}
 
 	private:
@@ -211,11 +217,12 @@ namespace tree
 			return mExpression;
 		}
 
-		virtual void dispatch(operation::Operation *operation)
+		virtual void accept(operation::Operation *operation)
 		{
-			mType->dispatch(operation);
-			mExpression->dispatch(operation);
-			Expression::dispatch(operation);
+			setup(operation);
+			mType->accept(operation);
+			mExpression->accept(operation);
+			visit(operation);
 		}
 
 	private:
@@ -256,10 +263,11 @@ namespace tree
 			return mArguments;
 		}
 
-		virtual void dispatch(operation::Operation *operation)
+		virtual void accept(operation::Operation *operation)
 		{
-			mID->dispatch(operation);
-			Expression::dispatch(operation);
+			setup(operation);
+			mID->accept(operation);
+			visit(operation);
 		}
 
 	private:

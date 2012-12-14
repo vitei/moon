@@ -19,10 +19,11 @@ namespace tree
 			return mScoped;
 		}
 
-		virtual void dispatch(operation::Operation *operation)
+		virtual void accept(operation::Operation *operation)
 		{
-			mScoped->dispatch(operation);
-			Expression::dispatch(operation);
+			setup(operation);
+			mScoped->accept(operation);
+			visit(operation);
 		}
 
 	private:

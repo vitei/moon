@@ -5,12 +5,12 @@
 void operation::MapIdentities::run(tree::Program *program)
 {
 	operation::MapIdentities operation;
-	program->dispatch(&operation);
+	program->accept(&operation);
 }
 
-void operation::MapIdentities::process(tree::Scope *scope)
+void operation::MapIdentities::visit(tree::Scope *scope)
 {
-	LOG("MapIdentities::process::Scope");
+	LOG("MapIdentities::visit::Scope");
 
 	tree::Statements *statements = scope->getStatements();
 
@@ -18,14 +18,14 @@ void operation::MapIdentities::process(tree::Scope *scope)
 	{
 		for(tree::Statements::iterator i = statements->begin(), end = statements->end(); i != end; ++i)
 		{
-			(*i)->dispatch(this);
+			(*i)->accept(this);
 		}
 	}
 }
 
-void operation::MapIdentities::process(tree::Identity *identity)
+void operation::MapIdentities::visit(tree::Identity *identity)
 {
-	LOG("MapIdentities::process::Identity");
+	LOG("MapIdentities::visit::Identity");
 
 	LOG("%s", identity->getName()->getName().c_str());
 }

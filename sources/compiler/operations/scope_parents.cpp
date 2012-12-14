@@ -5,12 +5,12 @@
 void operation::ScopeParents::run(tree::Program *program)
 {
 	operation::ScopeParents operation;
-	program->dispatch(&operation);
+	program->accept(&operation);
 }
 
-void operation::ScopeParents::process(tree::Scope *scope)
+void operation::ScopeParents::visit(tree::Scope *scope)
 {
-	LOG("ScopeParents::process::Scope");
+	LOG("ScopeParents::visit::Scope");
 
 	scope->setParent(mScope);
 
@@ -22,7 +22,7 @@ void operation::ScopeParents::process(tree::Scope *scope)
 
 		for(tree::Statements::iterator i = statements->begin(), end = statements->end(); i != end; ++i)
 		{
-			(*i)->dispatch(this);
+			(*i)->accept(this);
 		}
 
 		mScope = scope->getParent();
