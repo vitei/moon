@@ -1,6 +1,7 @@
 #ifndef COMPILER_TREE_H
 #define COMPILER_TREE_H
 
+#include "compiler/tree/aggregate.h"
 #include "compiler/tree/expression.h"
 #include "compiler/tree/function.h"
 #include "compiler/tree/program.h"

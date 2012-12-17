@@ -1,9 +1,9 @@
-#ifndef COMPILER_TREE_PROGRAM_H
-#define COMPILER_TREE_PROGRAM_H
+#ifndef COMPILER_TREE_AGGREGATE_H
+#define COMPILER_TREE_AGGREGATE_H
 
 #include "node.h"
 #include "scope.h"
-#include "aggregate.h"
+#include "use.h"
 
 
 namespace tree
@@ -12,10 +12,10 @@ namespace tree
 
 	/* ---- ONLY CONCRETE CLASSES BELOW HERE ---- */
 
-	class Program : public Scope
+	class Aggregate : public Scope
 	{
 	public:
-		Program(Statements *aggregates) : Scope(aggregates) {}
+		Aggregate(Statements *uses) : Scope(uses) {}
 	};
 }
 

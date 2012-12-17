@@ -63,6 +63,7 @@ namespace operation
 		PROCESS_ACTION(tree::Literal, tree::FloatLiteral, return_type, name) \
 		PROCESS_ACTION(tree::Literal, tree::StringLiteral, return_type, name) \
 		 \
+		PROCESS_ACTION(tree::Scope, tree::Aggregate, return_type, name) \
 		PROCESS_ACTION(tree::Scope, tree::Function, return_type, name) \
 		PROCESS_ACTION(tree::Scope, tree::Program, return_type, name) \
 		PROCESS_ACTION(tree::Scope, tree::Use, return_type, name) \
