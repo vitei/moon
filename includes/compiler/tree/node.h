@@ -5,6 +5,7 @@
 namespace operation
 {
 	class Operation;
+	class Restructure;
 }
 
 namespace tree
@@ -22,6 +23,7 @@ namespace tree
 
 		void setup(operation::Operation *operation);
 		void visit(operation::Operation *operation);
+		Node *restructure(operation::Restructure *operation);
 
 	protected:
 		Node() { /* Abstract class */ }

@@ -71,3 +71,9 @@ void tree::Node::visit(operation::Operation *operation)
 {
 	GENERATE_DISPATCH(operation->visit)
 }
+
+tree::Node *tree::Node::restructure(operation::Restructure *operation)
+{
+	GENERATE_DISPATCH(operation->restructure)
+	return NULL;
+}
