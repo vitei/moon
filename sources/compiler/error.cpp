@@ -49,6 +49,11 @@ protected:
 
 static std::vector<Error *> sErrorList;
 
+unsigned int error::count()
+{
+	return sErrorList.size();
+}
+
 void error::enqueue(const char *message)
 {
 	sErrorList.push_back(new Error(message));

@@ -105,15 +105,18 @@ int main(int argc, char *argv[])
 				yylex_destroy(parserData.lexer);
 				fclose(input);
 
-				// The program has been made...
-				tree::Program program(parserData.uses);
+				if(error::count() == 0)
+				{
+					// The program has been made...
+					tree::Program program(parserData.uses);
 
-				// We may now perform operations on it...
-				operation::ScopeParents::run(&program);
-				operation::MapIdentities::run(&program);
-				//operation::resolveIdentifiers(program);
+					// We may now perform operations on it...
+					operation::ScopeParents::run(&program);
+					operation::MapIdentities::run(&program);
+					//operation::resolveIdentifiers(program);
 
-				// ...
+					// ...
+				}
 			}
 			else
 			{
