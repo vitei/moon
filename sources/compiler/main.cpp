@@ -73,6 +73,7 @@ int main(int argc, char *argv[])
 	else
 	{
 		char tmp[1024];
+		tree::Statements aggregates;
 
 		// The current working directory must also be used...
 		getcwd(tmp, 1024);
@@ -107,15 +108,7 @@ int main(int argc, char *argv[])
 
 				if(error::count() == 0)
 				{
-					// The program has been made...
-					tree::Program program(parserData.uses);
-
-					// We may now perform operations on it...
-					operation::ScopeParents::run(&program);
-					operation::MapIdentities::run(&program);
-					//operation::resolveIdentifiers(program);
-
-					// ...
+					aggregates.push_back(new tree::Aggregate(parserData.uses));
 				}
 			}
 			else
@@ -124,6 +117,17 @@ int main(int argc, char *argv[])
 				error += argv[optind];
 				error::enqueue(error.c_str());
 			}
+		}
+
+		if(error::count() == 0)
+		{
+			// The program has been made...
+			tree::Program program(&aggregates);
+
+			// We may now perform operations on it...
+			operation::ScopeParents::run(&program);
+			operation::MapIdentities::run(&program);
+			//operation::resolveIdentifiers(program);
 		}
 
 		// Show the errors

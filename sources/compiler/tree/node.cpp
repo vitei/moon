@@ -11,6 +11,7 @@
 
 #define GENERATE_DISPATCH(function) \
 	DISPATCH_ACTIONS(tree::Add, function) \
+	DISPATCH_ACTIONS(tree::Aggregate, function) \
 	DISPATCH_ACTIONS(tree::And, function) \
 	DISPATCH_ACTIONS(tree::ArrayAccess, function) \
 	DISPATCH_ACTIONS(tree::Assign, function) \
