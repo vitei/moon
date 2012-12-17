@@ -10,6 +10,8 @@ namespace tree
 
 	class Type : public Node
 	{
+	protected:
+		Type() { /* Abstract class */ }
 	};
 
 	/* ---- ONLY CONCRETE CLASSES BELOW HERE ---- */

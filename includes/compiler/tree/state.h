@@ -11,6 +11,8 @@ namespace tree
 
 	class State : public Node
 	{
+	protected:
+		State() { /* Abstract class */ }
 	};
 
 	/* ---- ONLY CONCRETE CLASSES BELOW HERE ---- */
