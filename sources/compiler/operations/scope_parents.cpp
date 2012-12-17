@@ -28,3 +28,13 @@ void operation::ScopeParents::visit(tree::Scope *scope)
 		mScope = scope->getParent();
 	}
 }
+
+void operation::ScopeParents::visit(tree::GlobalScoping *globalScoping)
+{
+	LOG("ScopeParents::visit::Global");
+}
+
+void operation::ScopeParents::visit(tree::SharedScoping *sharedScoping)
+{
+	LOG("ScopeParents::visit::Shared");
+}

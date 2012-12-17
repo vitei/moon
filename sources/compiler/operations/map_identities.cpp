@@ -8,7 +8,7 @@ void operation::MapIdentities::run(tree::Program *program)
 	program->accept(&operation);
 }
 
-void operation::MapIdentities::visit(tree::Scope *scope)
+/*void operation::MapIdentities::visit(tree::Scope *scope)
 {
 	LOG("MapIdentities::visit::Scope");
 
@@ -27,5 +27,5 @@ void operation::MapIdentities::visit(tree::Identity *identity)
 {
 	LOG("MapIdentities::visit::Identity");
 
-	LOG("%s", identity->getName()->getName().c_str());
-}
+	//LOG("%s", identity->getName()->getName().c_str());
+}*/

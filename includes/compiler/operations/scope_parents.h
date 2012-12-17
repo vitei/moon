@@ -13,6 +13,8 @@ namespace operation
 		static void run(tree::Program *program);
 
 		virtual void visit(tree::Scope *scope);
+		virtual void visit(tree::GlobalScoping *globalScoping);
+		virtual void visit(tree::SharedScoping *sharedScoping);
 
 	private:
 		ScopeParents() : mScope(NULL) {}
