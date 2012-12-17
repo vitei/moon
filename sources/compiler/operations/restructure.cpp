@@ -147,7 +147,7 @@ void operation::Restructure::visit(tree::Scope *scope)
 
 			tree::Statement *statement = static_cast<tree::Statement *>(mNodeMap.top());
 			mNodeMap.pop();
-			
+
 			*i = statement;
 		}
 	}

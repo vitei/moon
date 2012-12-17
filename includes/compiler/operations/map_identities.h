@@ -2,18 +2,18 @@
 #define COMPILER_OPERATIONS_MAP_IDENTITIES_H
 
 #include "compiler/tree.h"
-#include "operation.h"
+#include "restructure.h"
 
 
 namespace operation
 {
-	class MapIdentities : public Operation
+	class MapIdentities : public Restructure
 	{
 	public:
 		static void run(tree::Program *program);
 
-		virtual void visit(tree::Scope *scope);
-		virtual void visit(tree::Identity *identity);
+		/*virtual void visit(tree::Scope *scope);
+		virtual void visit(tree::Identity *identity);*/
 
 	private:
 		MapIdentities() {}
