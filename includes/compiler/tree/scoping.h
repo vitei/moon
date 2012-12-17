@@ -12,11 +12,14 @@ namespace tree
 	class Scoping : public Expression
 	{
 	public:
-		Scoping(Identity *scoped) : mScoped(scoped) {}
-
 		Identity *getScoped()
 		{
 			return mScoped;
+		}
+
+		void setScoped(Identity *scoped)
+		{
+			mScoped = scoped;
 		}
 
 		virtual void accept(operation::Operation *operation)
@@ -25,6 +28,9 @@ namespace tree
 			mScoped->accept(operation);
 			visit(operation);
 		}
+
+	protected:
+		Scoping(Identity *scoped) : mScoped(scoped) { /* Abstract class */ }
 
 	private:
 		Identity *mScoped;

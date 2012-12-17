@@ -31,11 +31,16 @@ namespace tree
 	class Function : public Scope
 	{
 	public:
-		Function(Expression *prototype, Statements *statements) : Scope(statements), mPrototype(prototype) {}
+		Function(FunctionPrototype *prototype, Statements *statements) : Scope(statements), mPrototype(prototype) {}
 
-		Expression *getPrototype()
+		FunctionPrototype *getPrototype()
 		{
 			return mPrototype;
+		}
+
+		void setPrototype(FunctionPrototype *prototype)
+		{
+			mPrototype = prototype;
 		}
 
 		virtual void accept(operation::Operation *operation)
@@ -46,7 +51,7 @@ namespace tree
 		}
 
 	private:
-		Expression *mPrototype;
+		FunctionPrototype *mPrototype;
 	};
 }
 

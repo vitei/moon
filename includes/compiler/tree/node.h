@@ -22,6 +22,9 @@ namespace tree
 
 		void setup(operation::Operation *operation);
 		void visit(operation::Operation *operation);
+
+	protected:
+		Node() { /* Abstract class */ }
 	};
 
 	/* ---- ONLY CONCRETE CLASSES BELOW HERE ---- */

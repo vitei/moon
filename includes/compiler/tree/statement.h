@@ -13,6 +13,8 @@ namespace tree
 
 	class Statement : public Node
 	{
+	protected:
+		Statement() { /* Abstract class */ }
 	};
 
 	typedef std::vector<Statement *> Statements;
@@ -27,6 +29,11 @@ namespace tree
 		Expression *getExpression()
 		{
 			return mExpression;
+		}
+
+		void setExpression(Expression *expression)
+		{
+			mExpression = expression;
 		}
 
 		virtual void accept(operation::Operation *operation)
@@ -50,6 +57,11 @@ namespace tree
 			return mReturn;
 		}
 
+		void setReturn(Expression *expression)
+		{
+			mReturn = expression;
+		}
+
 		virtual void accept(operation::Operation *operation)
 		{
 			setup(operation);
@@ -69,6 +81,11 @@ namespace tree
 		State *getState()
 		{
 			return mState;
+		}
+
+		void setState(State *state)
+		{
+			mState = state;
 		}
 
 		virtual void accept(operation::Operation *operation)

@@ -13,6 +13,8 @@ namespace tree
 
 	class Expression : public Node
 	{
+	protected:
+		Expression() { /* Abstract class */ }
 	};
 
 	typedef std::vector<Expression *> Expressions;
@@ -38,11 +40,14 @@ namespace tree
 	class Identity : public Expression
 	{
 	public:
-		Identity(Identifier *name) : mName(name) {}
-
 		Identifier *getName()
 		{
 			return mName;
+		}
+
+		void setName(Identifier *name)
+		{
+			mName = name;
 		}
 
 		virtual void accept(operation::Operation *operation)
@@ -52,6 +57,9 @@ namespace tree
 			visit(operation);
 		}
 
+	protected:
+		Identity(Identifier *name) : mName(name) { /* Abstract class */ }
+
 	private:
 		Identifier *mName;
 	};
@@ -59,11 +67,14 @@ namespace tree
 	class TypedIdentity : public Identity
 	{
 	public:
-		TypedIdentity(Type *type, Identifier *name) : Identity(name), mType(type) {}
-
 		Type *getType()
 		{
 			return mType;
+		}
+
+		void setType(Type *type)
+		{
+			mType = type;
 		}
 
 		virtual void accept(operation::Operation *operation)
@@ -73,6 +84,9 @@ namespace tree
 			visit(operation);
 		}
 
+	protected:
+		TypedIdentity(Type *type, Identifier *name) : Identity(name), mType(type) { /* Abstract class */ }
+
 	private:
 		Type *mType;
 	};
@@ -80,16 +94,24 @@ namespace tree
 	class Access : public Expression
 	{
 	public:
-		Access(Expression *container, Expression *target) : mContainer(container), mTarget(target) {}
-
 		Expression *getContainer()
 		{
 			return mContainer;
 		}
 
+		void setContainer(Expression *container)
+		{
+			mContainer = container;
+		}
+
 		Expression *getTarget()
 		{
 			return mTarget;
+		}
+
+		void setTarget(Expression *target)
+		{
+			mTarget = target;
 		}
 
 		virtual void accept(operation::Operation *operation)
@@ -100,6 +122,9 @@ namespace tree
 			visit(operation);
 		}
 
+	protected:
+		Access(Expression *container, Expression *target) : mContainer(container), mTarget(target) { /* Abstract class */ }
+
 	private:
 		Expression *mContainer;
 		Expression *mTarget;
@@ -109,11 +134,14 @@ namespace tree
 	class Literal : public Expression
 	{
 	public:
-		Literal(STORAGE value) : mType(new TYPE()), mValue(value) {}
-
 		Type *getType()
 		{
 			return mType;
+		}
+
+		void setType(Type *type)
+		{
+			mType = type;
 		}
 
 		STORAGE getValue()
@@ -128,6 +156,9 @@ namespace tree
 			visit(operation);
 		}
 
+	protected:
+		Literal(STORAGE value) : mType(new TYPE()), mValue(value) { /* Abstract class */ }
+
 	private:
 		Type *mType;
 		STORAGE mValue;
@@ -136,11 +167,14 @@ namespace tree
 	class UnaryExpression : public Expression
 	{
 	public:
-		UnaryExpression(Expression *expression) : mExpression(expression) {}
-
 		Expression *getExpression()
 		{
 			return mExpression;
+		}
+
+		void setExpression(Expression *expression)
+		{
+			mExpression = expression;
 		}
 
 		virtual void accept(operation::Operation *operation)
@@ -150,6 +184,9 @@ namespace tree
 			visit(operation);
 		}
 
+	protected:
+		UnaryExpression(Expression *expression) : mExpression(expression) { /* Abstract class */ }
+
 	private:
 		Expression *mExpression;
 	};
@@ -157,16 +194,24 @@ namespace tree
 	class BinaryExpression : public Expression
 	{
 	public:
-		BinaryExpression(Expression *lhs, Expression *rhs) : mLHS(lhs), mRHS(rhs) {}
-
 		Expression *getLHS()
 		{
 			return mLHS;
 		}
 
+		void setLHS(Expression *lhs)
+		{
+			mLHS = lhs;
+		}
+
 		Expression *getRHS()
 		{
 			return mRHS;
+		}
+
+		void setRHS(Expression *rhs)
+		{
+			mRHS = rhs;
 		}
 
 		virtual void accept(operation::Operation *operation)
@@ -176,6 +221,9 @@ namespace tree
 			mRHS->accept(operation);
 			visit(operation);
 		}
+
+	protected:
+		BinaryExpression(Expression *lhs, Expression *rhs) : mLHS(lhs), mRHS(rhs) { /* Abstract class */ }
 
 	private:
 		Expression *mLHS;
@@ -212,9 +260,19 @@ namespace tree
 			return mType;
 		}
 
+		void setType(Type *type)
+		{
+			mType = type;
+		}
+
 		Expression *getExpression()
 		{
 			return mExpression;
+		}
+
+		void setExpression(Expression *expression)
+		{
+			mExpression = expression;
 		}
 
 		virtual void accept(operation::Operation *operation)
@@ -258,6 +316,11 @@ namespace tree
 			return mID;
 		}
 
+		void setID(Identifier *id)
+		{
+			mID = id;
+		}
+
 		Expressions *getArguments()
 		{
 			return mArguments;
@@ -282,25 +345,25 @@ namespace tree
 	class BoolLiteral : public Literal<Bool, bool>
 	{
 	public:
-		BoolLiteral(bool value) : Literal(value) {}
+		BoolLiteral(bool value) : Literal<Bool, bool>(value) {}
 	};
 
 	class IntLiteral : public Literal<Int, int>
 	{
 	public:
-		IntLiteral(int value) : Literal(value) {}
+		IntLiteral(int value) : Literal<Int, int>(value) {}
 	};
 
 	class FloatLiteral : public Literal<Float, float>
 	{
 	public:
-		FloatLiteral(float value) : Literal(value) {}
+		FloatLiteral(float value) : Literal<Float, float>(value) {}
 	};
 
 	class StringLiteral : public Literal<String, std::string>
 	{
 	public:
-		StringLiteral(std::string value) : Literal(value) {}
+		StringLiteral(std::string value) : Literal<String, std::string>(value) {}
 	};
 
 	class Assign : public BinaryExpression
