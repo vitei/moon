@@ -130,7 +130,6 @@ namespace tree
 		Expression *mTarget;
 	};
 
-	template<class TYPE, class STORAGE>
 	class Literal : public Expression
 	{
 	public:
@@ -144,11 +143,6 @@ namespace tree
 			mType = type;
 		}
 
-		STORAGE getValue()
-		{
-			return mValue;
-		}
-
 		virtual void accept(operation::Operation *operation)
 		{
 			setup(operation);
@@ -157,11 +151,10 @@ namespace tree
 		}
 
 	protected:
-		Literal(STORAGE value) : mType(new TYPE()), mValue(value) { /* Abstract class */ }
+		Literal(Type *type) : mType(type) { /* Abstract class */ }
 
 	private:
 		Type *mType;
-		STORAGE mValue;
 	};
 
 	class UnaryExpression : public Expression
@@ -342,28 +335,60 @@ namespace tree
 	{
 	};
 
-	class BoolLiteral : public Literal<Bool, bool>
+	class BoolLiteral : public Literal
 	{
 	public:
-		BoolLiteral(bool value) : Literal<Bool, bool>(value) {}
+		BoolLiteral(bool value) : Literal(new Bool()), mValue(value) {}
+
+		bool getValue()
+		{
+			return mValue;
+		}
+
+	private:
+		bool mValue;
 	};
 
-	class IntLiteral : public Literal<Int, int>
+	class IntLiteral : public Literal
 	{
 	public:
-		IntLiteral(int value) : Literal<Int, int>(value) {}
+		IntLiteral(int value) : Literal(new Int()), mValue(value) {}
+
+		int getValue()
+		{
+			return mValue;
+		}
+
+	private:
+		int mValue;
 	};
 
-	class FloatLiteral : public Literal<Float, float>
+	class FloatLiteral : public Literal
 	{
 	public:
-		FloatLiteral(float value) : Literal<Float, float>(value) {}
+		FloatLiteral(float value) : Literal(new Float()), mValue(value) {}
+
+		float getValue()
+		{
+			return mValue;
+		}
+
+	private:
+		float mValue;
 	};
 
-	class StringLiteral : public Literal<String, std::string>
+	class StringLiteral : public Literal
 	{
 	public:
-		StringLiteral(std::string value) : Literal<String, std::string>(value) {}
+		StringLiteral(std::string value) : Literal(new String()), mValue(value) {}
+
+		std::string getValue()
+		{
+			return mValue;
+		}
+
+	private:
+		std::string mValue;
 	};
 
 	class Assign : public BinaryExpression

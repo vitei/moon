@@ -23,6 +23,7 @@ namespace operation
 		PROCESS_ACTION(tree::Expression, tree::Access, return_type, name) \
 		PROCESS_ACTION(tree::Expression, tree::BinaryExpression, return_type, name) \
 		PROCESS_ACTION(tree::Expression, tree::Identity, return_type, name) \
+		PROCESS_ACTION(tree::Expression, tree::Literal, return_type, name) \
 		PROCESS_ACTION(tree::Expression, tree::Scoping, return_type, name) \
 		PROCESS_ACTION(tree::Expression, tree::UnaryExpression, return_type, name) \
 		 \
@@ -52,15 +53,15 @@ namespace operation
 		PROCESS_ACTION(tree::BinaryExpression, tree::Unequal, return_type, name) \
 		PROCESS_ACTION(tree::BinaryExpression, tree::Xor, return_type, name) \
 		 \
-		PROCESS_ACTION(tree::Expression, tree::BoolLiteral, return_type, name) \
-		PROCESS_ACTION(tree::Expression, tree::IntLiteral, return_type, name) \
-		PROCESS_ACTION(tree::Expression, tree::FloatLiteral, return_type, name) \
-		PROCESS_ACTION(tree::Expression, tree::StringLiteral, return_type, name) \
-		 \
 		PROCESS_ACTION(tree::Expression, tree::Cast, return_type, name) \
 		PROCESS_ACTION(tree::Expression, tree::FunctionCall, return_type, name) \
 		PROCESS_ACTION(tree::Expression, tree::Identifier, return_type, name) \
 		PROCESS_ACTION(tree::Expression, tree::NullReference, return_type, name) \
+		 \
+		PROCESS_ACTION(tree::Literal, tree::BoolLiteral, return_type, name) \
+		PROCESS_ACTION(tree::Literal, tree::IntLiteral, return_type, name) \
+		PROCESS_ACTION(tree::Literal, tree::FloatLiteral, return_type, name) \
+		PROCESS_ACTION(tree::Literal, tree::StringLiteral, return_type, name) \
 		 \
 		PROCESS_ACTION(tree::Scope, tree::Function, return_type, name) \
 		PROCESS_ACTION(tree::Scope, tree::Program, return_type, name) \
