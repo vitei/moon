@@ -1,108 +1,107 @@
 #ifndef COMPILER_OPERATIONS_OPERATION_H
 #define COMPILER_OPERATIONS_OPERATION_H
 
-
-// This is rather ugly but it saves a LOT of typing...
-#define PROCESS_ACTIONS(base_class, class) \
-	virtual void setup(class *node) \
-	{ \
-		setup(static_cast<base_class *>(node)); \
-	} \
-	virtual void visit(class *node) \
-	{ \
-		visit(static_cast<base_class *>(node)); \
-	}
-
 namespace operation
 {
+	// This is rather ugly but it saves a LOT of typing...
+	#define PROCESS_ACTION(base_class, class, return_type, name) \
+		virtual return_type name(class *node) \
+		{ \
+			return name(static_cast<base_class *>(node)); \
+		}
+
+	#define PROCESS_ACTIONS(return_type, name) \
+		/* ---- ONLY ABSTRACT CLASSES BELOW HERE ---- */ \
+		 \
+		PROCESS_ACTION(tree::Node, tree::Expression, return_type, name) \
+		PROCESS_ACTION(tree::Node, tree::Statement, return_type, name) \
+		PROCESS_ACTION(tree::Node, tree::State, return_type, name) \
+		PROCESS_ACTION(tree::Node, tree::Type, return_type, name) \
+		 \
+		PROCESS_ACTION(tree::Statement, tree::Scope, return_type, name) \
+		 \
+		PROCESS_ACTION(tree::Expression, tree::Access, return_type, name) \
+		PROCESS_ACTION(tree::Expression, tree::BinaryExpression, return_type, name) \
+		PROCESS_ACTION(tree::Expression, tree::Identity, return_type, name) \
+		PROCESS_ACTION(tree::Expression, tree::Scoping, return_type, name) \
+		PROCESS_ACTION(tree::Expression, tree::UnaryExpression, return_type, name) \
+		 \
+		PROCESS_ACTION(tree::Identity, tree::TypedIdentity, return_type, name) \
+		 \
+		/* ---- ONLY CONCRETE CLASSES BELOW HERE ---- */ \
+		 \
+		PROCESS_ACTION(tree::Access, tree::ArrayAccess, return_type, name) \
+		PROCESS_ACTION(tree::Access, tree::DirectAccess, return_type, name) \
+		PROCESS_ACTION(tree::Access, tree::MessageAccess, return_type, name) \
+		 \
+		PROCESS_ACTION(tree::BinaryExpression, tree::Add, return_type, name) \
+		PROCESS_ACTION(tree::BinaryExpression, tree::And, return_type, name) \
+		PROCESS_ACTION(tree::BinaryExpression, tree::Assign, return_type, name) \
+		PROCESS_ACTION(tree::BinaryExpression, tree::Divide, return_type, name) \
+		PROCESS_ACTION(tree::BinaryExpression, tree::Equal, return_type, name) \
+		PROCESS_ACTION(tree::BinaryExpression, tree::GreaterEqual, return_type, name) \
+		PROCESS_ACTION(tree::BinaryExpression, tree::GreaterThan, return_type, name) \
+		PROCESS_ACTION(tree::BinaryExpression, tree::LessEqual, return_type, name) \
+		PROCESS_ACTION(tree::BinaryExpression, tree::LessThan, return_type, name) \
+		PROCESS_ACTION(tree::BinaryExpression, tree::LogicalAnd, return_type, name) \
+		PROCESS_ACTION(tree::BinaryExpression, tree::LogicalOr, return_type, name) \
+		PROCESS_ACTION(tree::BinaryExpression, tree::Modulus, return_type, name) \
+		PROCESS_ACTION(tree::BinaryExpression, tree::Multiply, return_type, name) \
+		PROCESS_ACTION(tree::BinaryExpression, tree::Or, return_type, name) \
+		PROCESS_ACTION(tree::BinaryExpression, tree::Subtract, return_type, name) \
+		PROCESS_ACTION(tree::BinaryExpression, tree::Unequal, return_type, name) \
+		PROCESS_ACTION(tree::BinaryExpression, tree::Xor, return_type, name) \
+		 \
+		PROCESS_ACTION(tree::Expression, tree::BoolLiteral, return_type, name) \
+		PROCESS_ACTION(tree::Expression, tree::IntLiteral, return_type, name) \
+		PROCESS_ACTION(tree::Expression, tree::FloatLiteral, return_type, name) \
+		PROCESS_ACTION(tree::Expression, tree::StringLiteral, return_type, name) \
+		 \
+		PROCESS_ACTION(tree::Expression, tree::Cast, return_type, name) \
+		PROCESS_ACTION(tree::Expression, tree::FunctionCall, return_type, name) \
+		PROCESS_ACTION(tree::Expression, tree::Identifier, return_type, name) \
+		PROCESS_ACTION(tree::Expression, tree::NullReference, return_type, name) \
+		 \
+		PROCESS_ACTION(tree::Scope, tree::Function, return_type, name) \
+		PROCESS_ACTION(tree::Scope, tree::Program, return_type, name) \
+		PROCESS_ACTION(tree::Scope, tree::Use, return_type, name) \
+		 \
+		PROCESS_ACTION(tree::Scoping, tree::GlobalScoping, return_type, name) \
+		PROCESS_ACTION(tree::Scoping, tree::SharedScoping, return_type, name) \
+		 \
+		PROCESS_ACTION(tree::State, tree::DefaultState, return_type, name) \
+		PROCESS_ACTION(tree::State, tree::NamedState, return_type, name) \
+		 \
+		PROCESS_ACTION(tree::Statement, tree::Execute, return_type, name) \
+		PROCESS_ACTION(tree::Statement, tree::Return, return_type, name) \
+		PROCESS_ACTION(tree::Statement, tree::SetState, return_type, name) \
+		 \
+		PROCESS_ACTION(tree::Type, tree::Bool, return_type, name) \
+		PROCESS_ACTION(tree::Type, tree::Float, return_type, name) \
+		PROCESS_ACTION(tree::Type, tree::Int, return_type, name) \
+		PROCESS_ACTION(tree::Type, tree::String, return_type, name) \
+		PROCESS_ACTION(tree::Type, tree::UDT, return_type, name) /* FIXME */ \
+		 \
+		PROCESS_ACTION(tree::TypedIdentity, tree::Constant, return_type, name) \
+		PROCESS_ACTION(tree::TypedIdentity, tree::FunctionPrototype, return_type, name) \
+		PROCESS_ACTION(tree::TypedIdentity, tree::Reference, return_type, name) \
+		PROCESS_ACTION(tree::TypedIdentity, tree::Variable, return_type, name) \
+		 \
+		PROCESS_ACTION(tree::UnaryExpression, tree::LogicalNot, return_type, name) \
+		PROCESS_ACTION(tree::UnaryExpression, tree::Not, return_type, name) \
+		PROCESS_ACTION(tree::UnaryExpression, tree::Minus, return_type, name)
+
 	class Operation
 	{
 	public:
 		virtual void setup(tree::Node *node) {}
+		PROCESS_ACTIONS(void, setup)
+
 		virtual void visit(tree::Node *node) {}
-
-		/* ---- ONLY ABSTRACT CLASSES BELOW HERE ---- */
-
-		PROCESS_ACTIONS(tree::Node, tree::Expression)
-		PROCESS_ACTIONS(tree::Node, tree::Statement)
-		PROCESS_ACTIONS(tree::Node, tree::State)
-		PROCESS_ACTIONS(tree::Node, tree::Type)
-
-		PROCESS_ACTIONS(tree::Statement, tree::Scope)
-
-		PROCESS_ACTIONS(tree::Expression, tree::Access)
-		PROCESS_ACTIONS(tree::Expression, tree::BinaryExpression)
-		PROCESS_ACTIONS(tree::Expression, tree::Identity)
-		PROCESS_ACTIONS(tree::Expression, tree::Scoping)
-		PROCESS_ACTIONS(tree::Expression, tree::UnaryExpression)
-
-		PROCESS_ACTIONS(tree::Identity, tree::TypedIdentity)
-
-		/* ---- ONLY CONCRETE CLASSES BELOW HERE ---- */
-
-		PROCESS_ACTIONS(tree::Access, tree::ArrayAccess)
-		PROCESS_ACTIONS(tree::Access, tree::DirectAccess)
-		PROCESS_ACTIONS(tree::Access, tree::MessageAccess)
-
-		PROCESS_ACTIONS(tree::BinaryExpression, tree::Add)
-		PROCESS_ACTIONS(tree::BinaryExpression, tree::And)
-		PROCESS_ACTIONS(tree::BinaryExpression, tree::Assign)
-		PROCESS_ACTIONS(tree::BinaryExpression, tree::Divide)
-		PROCESS_ACTIONS(tree::BinaryExpression, tree::Equal)
-		PROCESS_ACTIONS(tree::BinaryExpression, tree::GreaterEqual)
-		PROCESS_ACTIONS(tree::BinaryExpression, tree::GreaterThan)
-		PROCESS_ACTIONS(tree::BinaryExpression, tree::LessEqual)
-		PROCESS_ACTIONS(tree::BinaryExpression, tree::LessThan)
-		PROCESS_ACTIONS(tree::BinaryExpression, tree::LogicalAnd)
-		PROCESS_ACTIONS(tree::BinaryExpression, tree::LogicalOr)
-		PROCESS_ACTIONS(tree::BinaryExpression, tree::Modulus)
-		PROCESS_ACTIONS(tree::BinaryExpression, tree::Multiply)
-		PROCESS_ACTIONS(tree::BinaryExpression, tree::Or)
-		PROCESS_ACTIONS(tree::BinaryExpression, tree::Subtract)
-		PROCESS_ACTIONS(tree::BinaryExpression, tree::Unequal)
-		PROCESS_ACTIONS(tree::BinaryExpression, tree::Xor)
-
-		PROCESS_ACTIONS(tree::Expression, tree::BoolLiteral)
-		PROCESS_ACTIONS(tree::Expression, tree::IntLiteral)
-		PROCESS_ACTIONS(tree::Expression, tree::FloatLiteral)
-		PROCESS_ACTIONS(tree::Expression, tree::StringLiteral)
-
-		PROCESS_ACTIONS(tree::Expression, tree::Cast)
-		PROCESS_ACTIONS(tree::Expression, tree::FunctionCall)
-		PROCESS_ACTIONS(tree::Expression, tree::Identifier)
-		PROCESS_ACTIONS(tree::Expression, tree::NullReference)
-
-		PROCESS_ACTIONS(tree::Scope, tree::Function)
-		PROCESS_ACTIONS(tree::Scope, tree::Program)
-		PROCESS_ACTIONS(tree::Scope, tree::Use)
-
-		PROCESS_ACTIONS(tree::Scoping, tree::GlobalScoping)
-		PROCESS_ACTIONS(tree::Scoping, tree::SharedScoping)
-
-		PROCESS_ACTIONS(tree::State, tree::DefaultState)
-		PROCESS_ACTIONS(tree::State, tree::NamedState)
-
-		PROCESS_ACTIONS(tree::Statement, tree::Execute)
-		PROCESS_ACTIONS(tree::Statement, tree::Return)
-		PROCESS_ACTIONS(tree::Statement, tree::SetState)
-
-		PROCESS_ACTIONS(tree::Type, tree::Bool)
-		PROCESS_ACTIONS(tree::Type, tree::Float)
-		PROCESS_ACTIONS(tree::Type, tree::Int)
-		PROCESS_ACTIONS(tree::Type, tree::String)
-		PROCESS_ACTIONS(tree::Type, tree::UDT) // FIXME
-
-		PROCESS_ACTIONS(tree::TypedIdentity, tree::Constant)
-		PROCESS_ACTIONS(tree::TypedIdentity, tree::FunctionPrototype)
-		PROCESS_ACTIONS(tree::TypedIdentity, tree::Reference)
-		PROCESS_ACTIONS(tree::TypedIdentity, tree::Variable)
-
-		PROCESS_ACTIONS(tree::UnaryExpression, tree::LogicalNot)
-		PROCESS_ACTIONS(tree::UnaryExpression, tree::Not)
-		PROCESS_ACTIONS(tree::UnaryExpression, tree::Minus)
+		PROCESS_ACTIONS(void, visit)
 
 	protected:
-		Operation() { /* Can't directly instantiate */ }
+		Operation() { /* Abstract class */ }
 	};
 }
 
