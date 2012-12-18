@@ -1,6 +1,7 @@
 #ifndef COMPILER_TREE_SCOPE_H
 #define COMPILER_TREE_SCOPE_H
 
+#include <exception>
 #include <map>
 #include <string>
 #include "node.h"
@@ -16,6 +17,10 @@ namespace tree
 	class Scope : public Statement
 	{
 	public:
+		class ExistsException : public std::exception
+		{
+		};
+
 		Scope(Statements *statements) : mParent(NULL), mStatements(statements) {}
 
 		Scope *getParent()
@@ -37,6 +42,8 @@ namespace tree
 		{
 			return mStatements;
 		}
+
+		void mapIdentity(Identity *identity);
 
 	private:
 		Scope *mParent;
