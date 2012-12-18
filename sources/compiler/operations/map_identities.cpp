@@ -1,3 +1,4 @@
+#include "compiler/error.h"
 #include "compiler/tree.h"
 #include "compiler/operations/map_identities.h"
 
@@ -141,7 +142,15 @@ tree::Node *operation::MapIdentities::restructure(tree::Identity *identity)
 {
 	LOG("MapIdentities::restructure::Identity");
 
-	LOG("%s", identity->getName()->getName().c_str());
+	try
+	{
+		mCurrentScope->mapIdentity(identity);
+	}
+	catch(tree::Scope::ExistsException *e)
+	{
+		std::string error = "The identifier \"" + identity->getName()->getName() + "\" is already defined"; // FIXME
+		error::enqueue(error.c_str()); // FIXME
+	}
 
 	// ... mCurrentScope
 
