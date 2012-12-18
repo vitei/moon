@@ -133,6 +133,22 @@ void operation::Restructure::visit(tree::Function *function)
 	mNodeMap.pop();
 
 	function->setPrototype(functionPrototype);
+
+	tree::Statements *statements = function->getStatements();
+
+	if(statements)
+	{
+		for(tree::Statements::iterator i = statements->begin(), end = statements->end(); i != end; ++i)
+		{
+			(*i)->accept(this);
+
+			tree::Statement *statement = static_cast<tree::Statement *>(mNodeMap.top());
+			mNodeMap.pop();
+
+			*i = statement;
+		}
+	}
+
 	mNodeMap.push(function->restructure(this));
 }
 
