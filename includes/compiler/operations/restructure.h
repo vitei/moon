@@ -34,7 +34,6 @@ namespace operation
 	protected:
 		Restructure() { /* Abstract class */ }
 
-	private:
 		std::stack<tree::Node *> mNodeMap;
 	};
 }
