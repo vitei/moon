@@ -19,6 +19,10 @@ namespace tree
 	public:
 		class ExistsException : public std::exception
 		{
+		public:
+			ExistsException(tree::Identity *_identity) : identity(_identity) {}
+
+			tree::Identity *identity;
 		};
 
 		Scope(Statements *statements) : mParent(NULL), mStatements(statements) {}
