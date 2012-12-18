@@ -43,10 +43,16 @@ namespace tree
 			mPrototype = prototype;
 		}
 
+		virtual void childAccept(operation::Operation *operation)
+		{
+			Scope::childAccept(operation);
+			mPrototype->accept(operation);
+		}
+
 		virtual void accept(operation::Operation *operation)
 		{
 			setup(operation);
-			mPrototype->accept(operation);
+			childAccept(operation);
 			visit(operation);
 		}
 

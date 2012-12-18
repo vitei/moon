@@ -11,7 +11,7 @@ void operation::Restructure::visit(tree::Identity *identity)
 {
 	tree::Identifier *name = static_cast<tree::Identifier *>(mNodeMap.top());
 	mNodeMap.pop();
-	
+
 	identity->setName(name);
 	mNodeMap.push(identity->restructure(this));
 }
@@ -20,9 +20,11 @@ void operation::Restructure::visit(tree::TypedIdentity *typedIdentity)
 {
 	tree::Type *type = static_cast<tree::Type *>(mNodeMap.top());
 	mNodeMap.pop();
-	
+	tree::Identifier *name = static_cast<tree::Identifier *>(mNodeMap.top());
+	mNodeMap.pop();
+
+	typedIdentity->setName(name);
 	typedIdentity->setType(type);
-	visit(static_cast<tree::Identity *>(typedIdentity));
 	mNodeMap.push(typedIdentity->restructure(this));
 }
 
@@ -30,10 +32,9 @@ void operation::Restructure::visit(tree::Access *access)
 {
 	tree::Expression *target = static_cast<tree::Expression *>(mNodeMap.top());
 	mNodeMap.pop();
-
 	tree::Expression *container = static_cast<tree::Expression *>(mNodeMap.top());
 	mNodeMap.pop();
-	
+
 	access->setContainer(container);
 	access->setTarget(target);
 	mNodeMap.push(access->restructure(this));
@@ -43,7 +44,7 @@ void operation::Restructure::visit(tree::Literal *literal)
 {
 	tree::Type *type = static_cast<tree::Type *>(mNodeMap.top());
 	mNodeMap.pop();
-	
+
 	literal->setType(type);
 	mNodeMap.push(literal->restructure(this));
 }
@@ -52,7 +53,7 @@ void operation::Restructure::visit(tree::UnaryExpression *unaryExpression)
 {
 	tree::Expression *expression = static_cast<tree::Expression *>(mNodeMap.top());
 	mNodeMap.pop();
-	
+
 	unaryExpression->setExpression(expression);
 	mNodeMap.push(unaryExpression->restructure(this));
 }
@@ -63,7 +64,7 @@ void operation::Restructure::visit(tree::BinaryExpression *binaryExpression)
 	mNodeMap.pop();
 	tree::Expression *lhs = static_cast<tree::Expression *>(mNodeMap.top());
 	mNodeMap.pop();
-	
+
 	binaryExpression->setLHS(lhs);
 	binaryExpression->setRHS(rhs);
 	mNodeMap.push(binaryExpression->restructure(this));
@@ -75,7 +76,7 @@ void operation::Restructure::visit(tree::Cast *cast)
 	mNodeMap.pop();
 	tree::Type *type = static_cast<tree::Type *>(mNodeMap.top());
 	mNodeMap.pop();
-	
+
 	cast->setType(type);
 	cast->setExpression(expression);
 	mNodeMap.push(cast->restructure(this));
@@ -85,7 +86,7 @@ void operation::Restructure::visit(tree::FunctionCall *functionCall)
 {
 	tree::Identifier *id = static_cast<tree::Identifier *>(mNodeMap.top());
 	mNodeMap.pop();
-	
+
 	functionCall->setID(id);
 
 	tree::Expressions *expressions = functionCall->getArguments();
@@ -98,7 +99,7 @@ void operation::Restructure::visit(tree::FunctionCall *functionCall)
 
 			tree::Expression *expression = static_cast<tree::Expression *>(mNodeMap.top());
 			mNodeMap.pop();
-			
+
 			*i = expression;
 		}
 	}
@@ -118,7 +119,7 @@ void operation::Restructure::visit(tree::FunctionPrototype *functionPrototype)
 
 			tree::Expression *expression = static_cast<tree::Expression *>(mNodeMap.top());
 			mNodeMap.pop();
-			
+
 			*i = expression;
 		}
 	}
@@ -130,7 +131,7 @@ void operation::Restructure::visit(tree::Function *function)
 {
 	tree::FunctionPrototype *functionPrototype = static_cast<tree::FunctionPrototype *>(mNodeMap.top());
 	mNodeMap.pop();
-	
+
 	function->setPrototype(functionPrototype);
 	mNodeMap.push(function->restructure(this));
 }

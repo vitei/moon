@@ -22,10 +22,16 @@ namespace tree
 			mScoped = scoped;
 		}
 
+		virtual void childAccept(operation::Operation *operation)
+		{
+			Expression::childAccept(operation);
+			mScoped->accept(operation);
+		}
+
 		virtual void accept(operation::Operation *operation)
 		{
 			setup(operation);
-			mScoped->accept(operation);
+			childAccept(operation);
 			visit(operation);
 		}
 

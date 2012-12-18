@@ -50,10 +50,16 @@ namespace tree
 			mName = name;
 		}
 
+		virtual void childAccept(operation::Operation *operation)
+		{
+			Expression::childAccept(operation);
+			mName->accept(operation);
+		}
+
 		virtual void accept(operation::Operation *operation)
 		{
 			setup(operation);
-			mName->accept(operation);
+			childAccept(operation);
 			visit(operation);
 		}
 
@@ -77,10 +83,16 @@ namespace tree
 			mType = type;
 		}
 
+		virtual void childAccept(operation::Operation *operation)
+		{
+			Identity::childAccept(operation);
+			mType->accept(operation);
+		}
+
 		virtual void accept(operation::Operation *operation)
 		{
 			setup(operation);
-			mType->accept(operation);
+			childAccept(operation);
 			visit(operation);
 		}
 
@@ -114,11 +126,17 @@ namespace tree
 			mTarget = target;
 		}
 
+		virtual void childAccept(operation::Operation *operation)
+		{
+			Expression::childAccept(operation);
+			mContainer->accept(operation);
+			mTarget->accept(operation);
+		}
+
 		virtual void accept(operation::Operation *operation)
 		{
 			setup(operation);
-			mContainer->accept(operation);
-			mTarget->accept(operation);
+			childAccept(operation);
 			visit(operation);
 		}
 
@@ -143,10 +161,16 @@ namespace tree
 			mType = type;
 		}
 
+		virtual void childAccept(operation::Operation *operation)
+		{
+			Expression::childAccept(operation);
+			mType->accept(operation);
+		}
+
 		virtual void accept(operation::Operation *operation)
 		{
 			setup(operation);
-			mType->accept(operation);
+			childAccept(operation);
 			visit(operation);
 		}
 
@@ -170,10 +194,16 @@ namespace tree
 			mExpression = expression;
 		}
 
+		virtual void childAccept(operation::Operation *operation)
+		{
+			Expression::childAccept(operation);
+			mExpression->accept(operation);
+		}
+
 		virtual void accept(operation::Operation *operation)
 		{
 			setup(operation);
-			mExpression->accept(operation);
+			childAccept(operation);
 			visit(operation);
 		}
 
@@ -207,11 +237,17 @@ namespace tree
 			mRHS = rhs;
 		}
 
+		virtual void childAccept(operation::Operation *operation)
+		{
+			Expression::childAccept(operation);
+			mLHS->accept(operation);
+			mRHS->accept(operation);
+		}
+
 		virtual void accept(operation::Operation *operation)
 		{
 			setup(operation);
-			mLHS->accept(operation);
-			mRHS->accept(operation);
+			childAccept(operation);
 			visit(operation);
 		}
 
@@ -268,11 +304,17 @@ namespace tree
 			mExpression = expression;
 		}
 
+		virtual void childAccept(operation::Operation *operation)
+		{
+			Expression::childAccept(operation);
+			mType->accept(operation);
+			mExpression->accept(operation);
+		}
+
 		virtual void accept(operation::Operation *operation)
 		{
 			setup(operation);
-			mType->accept(operation);
-			mExpression->accept(operation);
+			childAccept(operation);
 			visit(operation);
 		}
 
@@ -319,10 +361,16 @@ namespace tree
 			return mArguments;
 		}
 
+		virtual void childAccept(operation::Operation *operation)
+		{
+			Expression::childAccept(operation);
+			mID->accept(operation);
+		}
+
 		virtual void accept(operation::Operation *operation)
 		{
 			setup(operation);
-			mID->accept(operation);
+			childAccept(operation);
 			visit(operation);
 		}
 
