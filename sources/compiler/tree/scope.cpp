@@ -10,7 +10,7 @@ void tree::Scope::mapIdentity(tree::Identity *identity)
 	{
 		if(s->mIdentities.find(name) != s->mIdentities.end())
 		{
-			 throw(new tree::Scope::ExistsException());
+			 throw(new tree::Scope::ExistsException(mIdentities[name]));
 		}
 	}
 
