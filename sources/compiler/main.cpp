@@ -22,20 +22,21 @@ int main(int argc, char *argv[])
 {
 	char opt;
 	bool error = false;
+	bool generateDefines = false;
 
 	LOG("DEBUG OUTPUT IS ON!");
 
 	// Parse options
 	opterr = 0;
-	while((opt = getopt(argc, argv, "U:I:h")) != -1)
+	while((opt = getopt(argc, argv, "D:dU:I:h")) != -1)
 	{
 		switch(opt)
 		{
-		case 'U':
-			for(char *directory = strtok(optarg, DIRECTORY_SEPARATORS); directory != 0; directory = strtok(0, DIRECTORY_SEPARATORS))
-			{
-				loader::addUseDirectory(directory);
-			}
+		case 'D':
+			break;
+
+		case 'd':
+			generateDefines = true;
 
 			break;
 
@@ -43,6 +44,14 @@ int main(int argc, char *argv[])
 			for(char *directory = strtok(optarg, DIRECTORY_SEPARATORS); directory != 0; directory = strtok(0, DIRECTORY_SEPARATORS))
 			{
 				loader::addIncludeDirectory(directory);
+			}
+
+			break;
+
+		case 'U':
+			for(char *directory = strtok(optarg, DIRECTORY_SEPARATORS); directory != 0; directory = strtok(0, DIRECTORY_SEPARATORS))
+			{
+				loader::addUseDirectory(directory);
 			}
 
 			break;
@@ -65,10 +74,16 @@ int main(int argc, char *argv[])
 
 	if(error) // I'm doing this backwards so that the usage text is near the command line option parser
 	{
-		std::cerr << "Usage: " << basename(argv[0]) << " [-C<directories>] [-I<directories>] [-h] <classes>" << std::endl
-			<< "\t-U Scan directories for use files"<< std::endl
+		std::cerr << "Usage:" << std::endl
+			<< "\t" << basename(argv[0]) << " [-D<dirs>] [-d] [-I<dirs>] [-U<dirs>] [-h] <input>" << std::endl << std::endl
+			<< "Options:" << std::endl
+			<< "\t-D Scan directories for define files" << std::endl
+			<< "\t-d Generate define file(s) for each input file" << std::endl
 			<< "\t-I Scan directories for include files" << std::endl
-			<< "\t-h Show this message" << std::endl;
+			<< "\t-U Scan directories for use files"<< std::endl
+			<< "\t-h Show this message" << std::endl << std::endl
+			<< "Notes:" << std::endl
+			<< "\tDirectories may be separated by spaces, commas or colons." << std::endl;
 	}
 	else
 	{
@@ -127,8 +142,15 @@ int main(int argc, char *argv[])
 			// We may now perform operations on it...
 			operation::ScopeParents::run(&program);
 			operation::MapIdentities::run(&program);
-	//	operation::MapIdentities::run(&program);
-			//operation::resolveIdentifiers(program);
+
+			if(generateDefines)
+			{
+
+			}
+			else
+			{
+
+			}
 		}
 
 		// Show the errors
