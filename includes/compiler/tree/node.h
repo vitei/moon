@@ -15,9 +15,12 @@ namespace tree
 	class Node
 	{
 	public:
+		virtual void childAccept(operation::Operation *operation) {}
+
 		virtual void accept(operation::Operation *operation)
 		{
 			setup(operation);
+			childAccept(operation);
 			visit(operation);
 		}
 

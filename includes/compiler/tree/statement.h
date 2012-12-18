@@ -36,10 +36,16 @@ namespace tree
 			mExpression = expression;
 		}
 
+		virtual void childAccept(operation::Operation *operation)
+		{
+			Statement::childAccept(operation);
+			mExpression->accept(operation);
+		}
+
 		virtual void accept(operation::Operation *operation)
 		{
 			setup(operation);
-			mExpression->accept(operation);
+			childAccept(operation);
 			visit(operation);
 		}
 
@@ -62,10 +68,16 @@ namespace tree
 			mReturn = expression;
 		}
 
+		virtual void childAccept(operation::Operation *operation)
+		{
+			Statement::childAccept(operation);
+			mReturn->accept(operation);
+		}
+
 		virtual void accept(operation::Operation *operation)
 		{
 			setup(operation);
-			mReturn->accept(operation);
+			childAccept(operation);
 			visit(operation);
 		}
 
@@ -88,10 +100,16 @@ namespace tree
 			mState = state;
 		}
 
+		virtual void childAccept(operation::Operation *operation)
+		{
+			Statement::childAccept(operation);
+			mState->accept(operation);
+		}
+
 		virtual void accept(operation::Operation *operation)
 		{
 			setup(operation);
-			mState->accept(operation);
+			childAccept(operation);
 			visit(operation);
 		}
 
