@@ -16,12 +16,28 @@
     #include "compiler/tree.h"
 
     /* Generated headers */
-    #include "generated_parser.h"
-    #include "generated_lexer.h"
+    #include "generated/parser.h"
+    #include "generated/lexer.h"
 
+    #define YYLTYPE tree::Node::Location
     #define scanner data->lexer
 
     void yyerror(YYLTYPE *locp, void *lexer, const char *error);
+
+    #define YYLLOC_DEFAULT(Current, Rhs, N) \
+        do \
+        { \
+            if(YYID(N)) \
+            { \
+                (Current).start = YYRHSLOC(Rhs, 1).start; \
+                (Current).end = YYRHSLOC(Rhs, N).end; \
+            } \
+            else \
+            { \
+                (Current).start = (Current).end = YYRHSLOC(Rhs, 0).end; \
+            } \
+        } \
+        while(YYID(0));
 %}
 
 /* Re-entrant */
@@ -31,6 +47,11 @@
 
 /* Program locations */
 %locations
+
+%initial-action
+{
+    @$.filename = data->currentFilename;
+};
 
 /* Better errors!! */
 %error-verbose
@@ -310,29 +331,13 @@ include_statement   :   TOKEN_INCLUDE TOKEN_ID TOKEN_EOS
 
                             if(loader::includeFile(tmp, tmp))
                             {
-                                if(!data->isParsedFile(tmp))
+                                std::string filename = tmp;
+
+                                if(!data->isParsedFile(filename))
                                 {
-                                    FILE *input = fopen(tmp, "r");
-                                    lexer::Data lexerData;
-                                    void *currentLexer = data->lexer;
-
-                                    lexerData.type = lexer::Data::TYPE_INCLUDE;
-                                    lexerData.startSymbolIssued = false;
-
-                                    yylex_init_extra(&lexerData, &data->lexer);
-                                    yyset_in(input, data->lexer);
-
-                                    data->addParsedFile(tmp);
                                     loader::pushCWD(dirname(tmp));
-
-                                    yyparse(data);
-
+                                    data->parse(lexer::Data::TYPE_INCLUDE, filename);
                                     loader::popCWD();
-
-                                    yylex_destroy(data->lexer);
-                                    fclose(input);
-
-                                    data->lexer = currentLexer;
 
                                     $$ = data->statements;
                                 }
@@ -362,29 +367,13 @@ use_statement       :   TOKEN_USE TOKEN_NAME TOKEN_EOS
 
                             if(loader::useFile(tmp, tmp))
                             {
-                                if(!data->isParsedFile(tmp))
+                                std::string filename = tmp;
+
+                                if(!data->isParsedFile(filename))
                                 {
-                                    FILE *input = fopen(tmp, "r");
-                                    lexer::Data lexerData;
-                                    void *currentLexer = data->lexer;
-
-                                    lexerData.type = lexer::Data::TYPE_USE;
-                                    lexerData.startSymbolIssued = false;
-
-                                    yylex_init_extra(&lexerData, &data->lexer);
-                                    yyset_in(input, data->lexer);
-
-                                    data->addParsedFile(tmp);
                                     loader::pushCWD(dirname(tmp));
-
-                                    yyparse(data);
-
+                                    data->parse(lexer::Data::TYPE_USE, filename);
                                     loader::popCWD();
-
-                                    yylex_destroy(data->lexer);
-                                    fclose(input);
-
-                                    data->lexer = currentLexer;
                                 }
                             }
                             else
@@ -1121,5 +1110,5 @@ state               :   TOKEN_RESET
 
 void yyerror(YYLTYPE *locp, void *lexer, const char *error)
 {
-    error::enqueue(locp->first_line, error);
+    error::enqueue(locp->start.line, error);
 }

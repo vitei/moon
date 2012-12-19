@@ -12,10 +12,9 @@
     #include "compiler/tree.h"
 
     /* Generated headers */
-    #include "generated_parser.h"
+    #include "generated/parser.h"
 
-    /* This should let us have line numbers... */
-    #define YY_USER_ACTION yylloc->first_line = yylineno;
+    #define YY_USER_ACTION yylloc->advanceCharacter(yyleng);
 
     static unsigned int sStringLength;
 %}
@@ -31,7 +30,6 @@
 %option bison-bridge
 
 /* Program locations */
-%option yylineno
 %option bison-locations
 
 /* States */
@@ -59,7 +57,7 @@
 %}
 
     /* Skip whitespace... */
-[ \t\n\r]               ;
+[ \t\n\r]               yylloc->advance();
 
     /* Comments */
 "#"                     BEGIN LINE_COMMENT;
@@ -73,10 +71,13 @@
 
 <PRIMED>{
     /* Skip whitespace... */
-    [ \t]               ;
+    [ \t]               yylloc->advance();
 
     /* Language structure */
     [\n\r]              {
+                            yylloc->advanceLine(yyleng);
+                            yylloc->advance();
+
                             BEGIN INITIAL;
                             return TOKEN_EOS;
                         }
@@ -188,15 +189,25 @@
 
 <LINE_COMMENT>{
     /* Line Comments */
-    [\n\r]              BEGIN INITIAL;
-    <<EOF>>             BEGIN INITIAL;
+    [\n\r]              {
+                            yylloc->advanceLine(yyleng);
+                            BEGIN INITIAL;
+                        }
+    <<EOF>>             {
+                            yylloc->advanceLine(yyleng);
+                            BEGIN INITIAL;
+                        }
     .                   ;
 }
 
 <BLOCK_COMMENT>{
     /* Block Comments */
-    "-#-"[ \t]*[\n\r]   BEGIN INITIAL;
-    .|\n                ;
+    "-#-"[ \t]*[\n\r]   {
+                            yylloc->advanceLine(yyleng);
+                            BEGIN INITIAL;
+                        }
+    [\n\r]              yylloc->advanceLine(yyleng);
+    .                   ;
 }
 
 %%
