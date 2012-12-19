@@ -3,6 +3,7 @@ bin/*
 obj/*
 
 # Intermediate files
+includes/generated
 generated_*
 
 # IDE files
