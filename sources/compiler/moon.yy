@@ -346,7 +346,7 @@ include_statement   :   TOKEN_INCLUDE TOKEN_ID TOKEN_EOS
                             {
                                 std::string error("Could not find include file ");
                                 error += tmp;
-                                error::enqueue(0, error.c_str()); // FIXME
+                                error::enqueue(@1, error.c_str());
                             }
                         }
                     ;
@@ -380,7 +380,7 @@ use_statement       :   TOKEN_USE TOKEN_NAME TOKEN_EOS
                             {
                                 std::string error("Could not find include file ");
                                 error += tmp;
-                                error::enqueue(0, error.c_str()); // FIXME
+                                error::enqueue(@1, error.c_str());
                             }
                         }
                     ;
@@ -439,12 +439,14 @@ program_cvr         :   constant_statement
 constant_statement  :   constant_assignment TOKEN_EOS
                         {
                             $$ = new tree::Execute($1);
+                            $$->setLocation(@1);
                         }
                     ;
 
 constant_assignment :   constant TOKEN_EQUALS expression
                         {
                             $$ = new tree::Assign($1, $3);
+                            $$->setLocation(@1);
                         }
                     ;
 
@@ -452,16 +454,19 @@ constant            :   TOKEN_CONST name
                         {
                             tree::Type *type = new tree::Int();
                             $$ = new tree::Constant(type, $2);
+                            $$->setLocation(@1);
                         }
                     |   TOKEN_CONST type TOKEN_CAST name
                         {
                             $$ = new tree::Constant($2, $4);
+                            $$->setLocation(@1);
                         }
                     ;
 
 s_var_statement     :   s_var_assignment TOKEN_EOS
                         {
                             $$ = new tree::Execute($1);
+                            $$->setLocation(@1);
                         }
                     ;
 
@@ -472,10 +477,12 @@ s_var_assignment    :   s_variable
                     |   s_variable TOKEN_EQUALS expression
                         {
                             $$ = new tree::Assign($1, $3);
+                            $$->setLocation(@1);
                         }
                     |   TOKEN_GLOBAL variable
                         {
                             $$ = new tree::GlobalScoping($2);
+                            $$->setLocation(@1);
                         }
                     ;
 
@@ -486,12 +493,14 @@ s_variable          :   variable
                     |   TOKEN_SHARED variable
                         {
                             $$ = new tree::SharedScoping($2);
+                            $$->setLocation(@1);
                         }
                     ;
 
 s_ref_statement     :   s_ref_assignment TOKEN_EOS
                         {
                             $$ = new tree::Execute($1);
+                            $$->setLocation(@1);
                         }
                     ;
 
@@ -502,10 +511,12 @@ s_ref_assignment    :   s_reference
                     |   s_reference TOKEN_EQUALS expression
                         {
                             $$ = new tree::Assign($1, $3);
+                            $$->setLocation(@1);
                         }
                     |   TOKEN_GLOBAL reference
                         {
                             $$ = new tree::GlobalScoping($2);
+                            $$->setLocation(@1);
                         }
                     ;
 
@@ -516,6 +527,7 @@ s_reference         :   reference
                     |   TOKEN_SHARED reference
                         {
                             $$ = new tree::SharedScoping($2);
+                            $$->setLocation(@1);
                         }
                     ;
 
@@ -563,16 +575,19 @@ program_functions   :   program_function
                     |   TOKEN_GLOBAL program_function
                         {
                             $$ = new tree::GlobalScoping($2);
+                            $$->setLocation(@1);
                         }
                     |   TOKEN_SHARED program_function
                         {
                             $$ = new tree::SharedScoping($2);
+                            $$->setLocation(@1);
                         }
                     ;*/
 
 program_function    :   function_prototype function_state TOKEN_EOS statements TOKEN_END TOKEN_EOS /* FIXME, support states */
                         {
                             $$ = new tree::Function($1, $4);
+                            $$->setLocation(@1);
                         }
                     ;
 
@@ -580,10 +595,12 @@ function_prototype  :   TOKEN_FUNCTION identifier TOKEN_PARENTHESIS_OPEN o_argum
                         {
                             tree::Type *type = new tree::Int();
                             $$ = new tree::FunctionPrototype(type, $2, $4);
+                            $$->setLocation(@1);
                         }
                     |   TOKEN_FUNCTION type TOKEN_CAST identifier TOKEN_PARENTHESIS_OPEN o_arguments TOKEN_PARENTHESIS_CLOSE
                         {
                             $$ = new tree::FunctionPrototype($2, $4, $6);
+                            $$->setLocation(@1);
                         }
                     ;
 
@@ -628,10 +645,12 @@ argument            :   identifier
                         {
                             tree::Type *type = new tree::Int();
                             $$ = new tree::Variable(type, $1);
+                            $$->setLocation(@1);
                         }
                     |   type TOKEN_CAST identifier
                         {
                             $$ = new tree::Variable($1, $3);
+                            $$->setLocation(@1);
                         }
                     |   variable
                         {
@@ -705,6 +724,7 @@ statement           :   variable_statement
 variable_statement  :   variable_assignment TOKEN_EOS
                         {
                             $$ = new tree::Execute($1);
+                            $$->setLocation(@1);
                         }
                     ;
 
@@ -715,6 +735,7 @@ variable_assignment :   variable
                     |   variable TOKEN_EQUALS expression
                         {
                             $$ = new tree::Assign($1, $3);
+                            $$->setLocation(@1);
                         }
                     ;
 
@@ -722,16 +743,19 @@ variable            :   TOKEN_VAR identifier
                         {
                             tree::Type *type = new tree::Int();
                             $$ = new tree::Variable(type, $2);
+                            $$->setLocation(@1);
                         }
                     |   TOKEN_VAR type TOKEN_CAST identifier
                         {
                             $$ = new tree::Variable($2, $4);
+                            $$->setLocation(@1);
                         }
                     ;
 
 reference_statement :   reference_assignment TOKEN_EOS
                         {
                             $$ = new tree::Execute($1);
+                            $$->setLocation(@1);
                         }
                     ;
 
@@ -742,6 +766,7 @@ reference_assignment:   reference
                     |   reference TOKEN_EQUALS expression
                         {
                             $$ = new tree::Assign($1, $3);
+                            $$->setLocation(@1);
                         }
                     ;
 
@@ -749,16 +774,26 @@ reference           :   TOKEN_REF identifier
                         {
                             tree::Type *type = new tree::Int();
                             $$ = new tree::Reference(type, $2);
+                            $$->setLocation(@1);
                         }
                     |   TOKEN_REF type TOKEN_CAST identifier
                         {
                             $$ = new tree::Reference($2, $4);
+                            $$->setLocation(@1);
                         }
                     ;
 
 a_or_e_statement    :   assign_or_expression TOKEN_EOS
                         {
-                            $$ = $1 ? new tree::Execute($1) : NULL;
+                            if($1)
+                            {
+                                $$ = new tree::Execute($1);
+                                $$->setLocation(@1);
+                            }
+                            else
+                            {
+                                $$ = NULL;
+                            }
                         }
                     ;
 
@@ -780,6 +815,7 @@ assign_or_expression:   assignment
 assignment          :   identifier TOKEN_EQUALS expression
                         {
                             $$ = new tree::Assign($1, $3);
+                            $$->setLocation(@1);
                         }
                     ;
 
@@ -796,6 +832,7 @@ l_or_expression     :   l_and_expression
                     |   l_or_expression TOKEN_LOGICAL_OR l_and_expression
                         {
                             $$ = new tree::LogicalOr($1, $3);
+                            $$->setLocation(@1);
                         }
                     ;
 
@@ -806,6 +843,7 @@ l_and_expression    :   or_expression
                     |   l_and_expression TOKEN_LOGICAL_AND or_expression
                         {
                             $$ = new tree::LogicalAnd($1, $3);
+                            $$->setLocation(@1);
                         }
                     ;
 
@@ -816,6 +854,7 @@ or_expression       :   xor_expression
                     |   or_expression TOKEN_OR xor_expression
                         {
                             $$ = new tree::Or($1, $3);
+                            $$->setLocation(@1);
                         }
                     ;
 
@@ -826,6 +865,7 @@ xor_expression      :   and_expression
                     |   xor_expression TOKEN_XOR and_expression
                         {
                             $$ = new tree::Xor($1, $3);
+                            $$->setLocation(@1);
                         }
                     ;
 
@@ -836,6 +876,7 @@ and_expression      :   eq_expression
                     |   and_expression TOKEN_AND eq_expression
                         {
                             $$ = new tree::And($1, $3);
+                            $$->setLocation(@1);
                         }
                     ;
 
@@ -846,10 +887,12 @@ eq_expression       :   rel_expression
                     |   eq_expression TOKEN_EQ rel_expression
                         {
                             $$ = new tree::Equal($1, $3);
+                            $$->setLocation(@1);
                         }
                     |   eq_expression TOKEN_NE rel_expression
                         {
                             $$ = new tree::Unequal($1, $3);
+                            $$->setLocation(@1);
                         }
                     ;
 
@@ -860,18 +903,22 @@ rel_expression      :   add_expression
                     |   rel_expression TOKEN_LT add_expression
                         {
                             $$ = new tree::LessThan($1, $3);
+                            $$->setLocation(@1);
                         }
                     |   rel_expression TOKEN_LE add_expression
                         {
                             $$ = new tree::LessEqual($1, $3);
+                            $$->setLocation(@1);
                         }
                     |   rel_expression TOKEN_GT add_expression
                         {
                             $$ = new tree::GreaterThan($1, $3);
+                            $$->setLocation(@1);
                         }
                     |   rel_expression TOKEN_GE add_expression
                         {
                             $$ = new tree::GreaterEqual($1, $3);
+                            $$->setLocation(@1);
                         }
                     ;
 
@@ -882,10 +929,12 @@ add_expression      :   mult_expression
                     |   add_expression TOKEN_ADD mult_expression
                         {
                             $$ = new tree::Add($1, $3);
+                            $$->setLocation(@1);
                         }
                     |   add_expression TOKEN_SUBTRACT mult_expression
                         {
                             $$ = new tree::Subtract($1, $3);
+                            $$->setLocation(@1);
                         }
                     ;
 
@@ -896,14 +945,17 @@ mult_expression     :   cast_expression
                     |   mult_expression TOKEN_MULTIPLY cast_expression
                         {
                             $$ = new tree::Multiply($1, $3);
+                            $$->setLocation(@1);
                         }
                     |   mult_expression TOKEN_DIVIDE cast_expression
                         {
                             $$ = new tree::Divide($1, $3);
+                            $$->setLocation(@1);
                         }
                     |   mult_expression TOKEN_MODULUS cast_expression
                         {
                             $$ = new tree::Modulus($1, $3);
+                            $$->setLocation(@1);
                         }
                     ;
 
@@ -914,6 +966,7 @@ cast_expression     :   unary_expression
                     |   type TOKEN_CAST expression_atom
                         {
                             $$ = new tree::Cast($1, $3);
+                            $$->setLocation(@1);
                         }
                     ;
 
@@ -924,14 +977,17 @@ unary_expression    :   access_expression
                     |   TOKEN_SUBTRACT access_expression
                         {
                             $$ = new tree::Minus($2);
+                            $$->setLocation(@1);
                         }
                     |   TOKEN_LOGICAL_NOT access_expression
                         {
                             $$ = new tree::LogicalNot($2);
+                            $$->setLocation(@1);
                         }
                     |   TOKEN_NOT access_expression
                         {
                             $$ = new tree::Not($2);
+                            $$->setLocation(@1);
                         }
                     ;
 
@@ -942,10 +998,12 @@ access_expression   :   postfix_expression
                     |   postfix_expression TOKEN_DIRECT_ACCESS postfix_expression
                         {
                             $$ = new tree::DirectAccess($1, $3);
+                            $$->setLocation(@1);
                         }
                     |   postfix_expression TOKEN_MESSAGE_ACCESS postfix_expression
                         {
                             $$ = new tree::MessageAccess($1, $3);
+                            $$->setLocation(@1);
                         }
                     ;
 
@@ -966,16 +1024,19 @@ postfix_expression  :   expression_atom
 array_expression    :   postfix_expression TOKEN_BRACKETS_OPEN expression TOKEN_BRACKETS_CLOSE
                         {
                             $$ = new tree::ArrayAccess($1, $3);
+                            $$->setLocation(@1);
                         }
                     ;
 
 call_expression     :   identifier TOKEN_PARENTHESIS_OPEN TOKEN_PARENTHESIS_CLOSE
                         {
                             $$ = new tree::FunctionCall($1);
+                            $$->setLocation(@1);
                         }
                     |   identifier TOKEN_PARENTHESIS_OPEN argument_expressions TOKEN_PARENTHESIS_CLOSE
                         {
                             $$ = new tree::FunctionCall($1, $3);
+                            $$->setLocation(@1);
                         }
                     ;
 
@@ -1013,26 +1074,32 @@ expression_atom     :   name /* Constant */
                     |   TOKEN_NULL
                         {
                             $$ = new tree::NullReference();
+                            $$->setLocation(@1);
                         }
                     |   TOKEN_TRUE
                         {
                             $$ = new tree::BoolLiteral(true);
+                            $$->setLocation(@1);
                         }
                     |   TOKEN_FALSE
                         {
                             $$ = new tree::BoolLiteral(false);
+                            $$->setLocation(@1);
                         }
                     |   TOKEN_INTEGER
                         {
                             $$ = new tree::IntLiteral($1);
+                            $$->setLocation(@1);
                         }
                     |   TOKEN_FLOAT
                         {
                             $$ = new tree::FloatLiteral($1);
+                            $$->setLocation(@1);
                         }
                     |   TOKEN_STRING
                         {
                             $$ = new tree::StringLiteral(std::string($1));
+                            $$->setLocation(@1);
                         }
                     |   identifier
                         {
@@ -1047,62 +1114,74 @@ expression_atom     :   name /* Constant */
 type                :   TOKEN_TYPE_BOOL
                         {
                             $$ = new tree::Bool();
+                            $$->setLocation(@1);
                         }
                     |   TOKEN_TYPE_INT
                         {
                             $$ = new tree::Int();
+                            $$->setLocation(@1);
                         }
                     |   TOKEN_TYPE_FLOAT
                         {
                             $$ = new tree::Float();
+                            $$->setLocation(@1);
                         }
                     |   TOKEN_TYPE_STRING
                         {
                             $$ = new tree::String();
+                            $$->setLocation(@1);
                         }
                     |   TOKEN_TYPE_STRING TOKEN_LT TOKEN_INTEGER TOKEN_GT
                         {
                             $$ = new tree::String($3);
+                            $$->setLocation(@1);
                         }
 
 
                     /*|   TOKEN_NAME
                         {
                             $$ = new tree::UDT($1);                       // UDTs force this class to be needed?? FIXME
+                            $$->setLocation(@1);
                         }*/
                     ;
 
 identifier          :   TOKEN_ID
                         {
                             $$ = new tree::Identifier(std::string($1));
+                            $$->setLocation(@1);
                         }
                     ;
 
 name                :   TOKEN_NAME
                         {
                             $$ = new tree::Identifier(std::string($1));
+                            $$->setLocation(@1);
                         }
                     ;
 
 return_statement    :   TOKEN_RETURN expression TOKEN_EOS
                         {
                             $$ = new tree::Return($2);
+                            $$->setLocation(@1);
                         }
                     ;
 
 state_statement     :   TOKEN_STATE state TOKEN_EOS
                         {
                             $$ = new tree::SetState($2);
+                            $$->setLocation(@1);
                         }
                     ;
 
 state               :   TOKEN_RESET
                         {
                             $$ = new tree::DefaultState();
+                            $$->setLocation(@1);
                         }
                     |   TOKEN_NAME
                         {
                             $$ = new tree::NamedState($1);
+                            $$->setLocation(@1);
                         }
                     ;
 
@@ -1110,5 +1189,5 @@ state               :   TOKEN_RESET
 
 void yyerror(YYLTYPE *locp, void *lexer, const char *error)
 {
-    error::enqueue(locp->start.line, error);
+    error::enqueue(*locp, error);
 }

@@ -6,7 +6,7 @@
 class Error
 {
 public:
-	Error(const char *message) : mMessage(std::string(message)) {}
+	Error(const std::string &message) : mMessage(message) {}
 
 	virtual void output()
 	{
@@ -20,7 +20,7 @@ protected:
 class FileError : public Error
 {
 public:
-	FileError(const char *filename, const char *message) : Error(message), mFilename(std::string(filename)) {}
+	FileError(const tree::Node::Location &location, const std::string &message) : Error(message), mFilename(*location.filename) {}
 
 	virtual void output()
 	{
@@ -35,7 +35,7 @@ protected:
 class SyntaxError : public FileError
 {
 public:
-	SyntaxError(unsigned int lineNumber, const char *filename, const char *message) : FileError(filename, message), mLineNumber(lineNumber) {}
+	SyntaxError(const tree::Node::Location &location, const std::string &message) : FileError(location, message), mLineNumber(location.start.line) {}
 
 	virtual void output()
 	{
@@ -54,14 +54,14 @@ unsigned int error::count()
 	return sErrorList.size();
 }
 
-void error::enqueue(const char *message)
+void error::enqueue(const std::string &message)
 {
 	sErrorList.push_back(new Error(message));
 }
 
-void error::enqueue(unsigned int lineNumber, const char *message)
+void error::enqueue(tree::Node::Location &location, const std::string &message)
 {
-	sErrorList.push_back(new SyntaxError(lineNumber, "", message));
+	sErrorList.push_back(new SyntaxError(location, message));
 }
 
 void error::output()

@@ -57,7 +57,11 @@
 %}
 
     /* Skip whitespace... */
-[ \t\n\r]               yylloc->advance();
+[ \t]+                  yylloc->advance();
+[\n\r]+                 {
+                            yylloc->advanceLine(yyleng);
+                            yylloc->advance();
+                        }
 
     /* Comments */
 "#"                     BEGIN LINE_COMMENT;
@@ -71,10 +75,10 @@
 
 <PRIMED>{
     /* Skip whitespace... */
-    [ \t]               yylloc->advance();
+    [ \t]+              yylloc->advance();
 
     /* Language structure */
-    [\n\r]              {
+    [\n\r]+             {
                             yylloc->advanceLine(yyleng);
                             yylloc->advance();
 
@@ -189,7 +193,7 @@
 
 <LINE_COMMENT>{
     /* Line Comments */
-    [\n\r]              {
+    [\n\r]+             {
                             yylloc->advanceLine(yyleng);
                             BEGIN INITIAL;
                         }
@@ -203,10 +207,10 @@
 <BLOCK_COMMENT>{
     /* Block Comments */
     "-#-"[ \t]*[\n\r]   {
-                            yylloc->advanceLine(yyleng);
+                            yylloc->advanceLine(1);
                             BEGIN INITIAL;
                         }
-    [\n\r]              yylloc->advanceLine(yyleng);
+    [\n\r]+             yylloc->advanceLine(yyleng);
     .                   ;
 }
 

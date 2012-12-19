@@ -1,6 +1,8 @@
 #ifndef COMPILER_TREE_NODE_H
 #define COMPILER_TREE_NODE_H
 
+#include <string>
+
 
 namespace operation
 {
@@ -21,11 +23,13 @@ namespace tree
 			class Position
 			{
 			public:
-				Position() : line(0), character(0) {}
+				Position() : line(1), character(1) {}
 
 				unsigned int line;
 				unsigned int character;
 			};
+
+			Location() : filename(NULL) {}
 
 			void advance()
 			{
@@ -39,7 +43,7 @@ namespace tree
 
 			void advanceLine(unsigned int num)
 			{
-				end.character = 0;
+				end.character = 1;
 				end.line += num;
 			}
 
@@ -60,6 +64,16 @@ namespace tree
 		void setup(operation::Operation *operation);
 		void visit(operation::Operation *operation);
 		Node *restructure(operation::Restructure *operation);
+
+		Location &getLocation()
+		{
+			return mLocation;
+		}
+
+		void setLocation(const Location &location)
+		{
+			mLocation = location;
+		}
 
 	protected:
 		Node() { /* Abstract class */ }
