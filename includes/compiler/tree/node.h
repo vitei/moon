@@ -15,6 +15,39 @@ namespace tree
 	class Node
 	{
 	public:
+		class Location
+		{
+		public:
+			class Position
+			{
+			public:
+				Position() : line(0), character(0) {}
+
+				unsigned int line;
+				unsigned int character;
+			};
+
+			void advance()
+			{
+				start = end;
+			}
+
+			void advanceCharacter(unsigned int num)
+			{
+				end.character += num;
+			}
+
+			void advanceLine(unsigned int num)
+			{
+				end.character = 0;
+				end.line += num;
+			}
+
+			std::string *filename;
+			Position start;
+			Position end;
+		};
+
 		virtual void childAccept(operation::Operation *operation) {}
 
 		virtual void accept(operation::Operation *operation)
@@ -30,6 +63,9 @@ namespace tree
 
 	protected:
 		Node() { /* Abstract class */ }
+
+	private:
+		Location mLocation;
 	};
 
 	/* ---- ONLY CONCRETE CLASSES BELOW HERE ---- */
