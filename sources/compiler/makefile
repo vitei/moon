@@ -12,11 +12,13 @@ all: compiler
 
 generated_parser.cpp: moon.yy moon.ll
 	@echo $@: $<
-	@$(BISON) $(BISON_FLAGS) --defines=generated_parser.h -o generated_parser.cpp $<
+	@mkdir -p $(INC_DIR)/generated
+	@$(BISON) $(BISON_FLAGS) --defines=$(INC_DIR)/generated/parser.h -o generated_parser.cpp $<
 
 generated_lexer.cpp: moon.ll moon.yy
 	@echo $@: $<
-	@$(FLEX) $(FLEX_FLAGS) --header-file=generated_lexer.h -o generated_lexer.cpp $<
+	@mkdir -p $(INC_DIR)/generated
+	@$(FLEX) $(FLEX_FLAGS) --header-file=$(INC_DIR)/generated/lexer.h -o generated_lexer.cpp $<
 
 $(OBJ_DIR)/generated_lexer.o: generated_parser.cpp
 $(OBJ_DIR)/generated_parser.o: generated_lexer.cpp
@@ -37,4 +39,4 @@ $(BIN_DIR)/moon: $(OBJECTS)
 compiler: $(BIN_DIR)/moon
 
 clean:
-	@rm -rf generated_* $(DEPS) $(OBJECTS) $(BIN_DIR)/moon
+	@rm -rf generated_* $(INC_DIR)/generated $(DEPS) $(OBJECTS) $(BIN_DIR)/moon
