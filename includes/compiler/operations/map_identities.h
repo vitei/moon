@@ -3,40 +3,33 @@
 
 #include <queue>
 #include "compiler/tree.h"
-#include "restructure.h"
+#include "breadth_restructure.h"
 
 
 namespace operation
 {
-	class MapIdentities : public Restructure
+	class MapIdentities : public BreadthRestructure
 	{
 	public:
 		static void run(tree::Program *program);
 
-		void add(tree::Scope *scope);
-		void process();
+		virtual void beginScope(tree::Scope *scope);
 
 		virtual void setup(tree::Function *function);
 		virtual void setup(tree::GlobalScoping *globalScoping);
 		virtual void setup(tree::SharedScoping *sharedScoping);
 
 		virtual void visit(tree::Function *function);
-		virtual void visit(tree::Scope *scope);
 
-		virtual tree::Node *restructure(tree::Scope *scope);
 		virtual tree::Node *restructure(tree::GlobalScoping *globalScoping);
 		virtual tree::Node *restructure(tree::SharedScoping *sharedScoping);
-
-		tree::Node *restructure(tree::Identity *identity);
+		virtual tree::Node *restructure(tree::Identity *identity);
 
 	private:
 		MapIdentities() {}
 
-		std::queue<tree::Scope *> mVisitNext;
-
-		tree::Scope *mProgramScope;
-		tree::Scope *mAggregateScope;
-		tree::Scope *mScope;
+		tree::Program *mProgramScope;
+		tree::Aggregate *mAggregateScope;
 		tree::Scope *mCurrentScope;
 	};
 }
