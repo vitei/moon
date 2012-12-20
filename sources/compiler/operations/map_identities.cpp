@@ -146,10 +146,10 @@ tree::Node *operation::MapIdentities::restructure(tree::Identity *identity)
 	{
 		mCurrentScope->mapIdentity(identity);
 	}
-	catch(tree::Scope::ExistsException *e)
+	catch(tree::Scope::ExistsException &e)
 	{
-		std::string error = "The identifier \"" + identity->getName()->getName() + "\" is already defined"; // FIXME
-		error::enqueue(error.c_str()); // FIXME
+		std::string error = "The identifier \"" + identity->getName()->getName() + "\" is already defined";
+		error::enqueue(e.identity->getLocation(), identity->getLocation(), error);
 	}
 
 	// ... mCurrentScope
