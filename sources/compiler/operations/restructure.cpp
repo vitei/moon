@@ -7,23 +7,11 @@ void operation::Restructure::visit(tree::Node *node)
 	mNodeMap.push(node->restructure(this));
 }
 
-void operation::Restructure::visit(tree::Identity *identity)
-{
-	tree::Identifier *name = static_cast<tree::Identifier *>(mNodeMap.top());
-	mNodeMap.pop();
-
-	identity->setName(name);
-	mNodeMap.push(identity->restructure(this));
-}
-
 void operation::Restructure::visit(tree::TypedIdentity *typedIdentity)
 {
 	tree::Type *type = static_cast<tree::Type *>(mNodeMap.top());
 	mNodeMap.pop();
-	tree::Identifier *name = static_cast<tree::Identifier *>(mNodeMap.top());
-	mNodeMap.pop();
 
-	typedIdentity->setName(name);
 	typedIdentity->setType(type);
 	mNodeMap.push(typedIdentity->restructure(this));
 }

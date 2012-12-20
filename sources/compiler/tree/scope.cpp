@@ -4,7 +4,7 @@
 
 void tree::Scope::mapIdentity(tree::Identity *identity)
 {
-	const std::string &name = identity->getName()->getName();
+	const std::string &name = identity->getName();
 
 	for(Scope *s = this; s; s = s->mParent)
 	{

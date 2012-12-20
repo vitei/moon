@@ -95,7 +95,7 @@ tree::Node *operation::MapIdentities::restructure(tree::Identity *identity)
 	}
 	catch(tree::Scope::ExistsException &e)
 	{
-		std::string error = "The identifier \"" + identity->getName()->getName() + "\" is already defined";
+		std::string error = "The identifier \"" + identity->getName() + "\" is already defined";
 		error::enqueue(e.identity->getLocation(), identity->getLocation(), error);
 	}
 

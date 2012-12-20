@@ -19,41 +19,17 @@ namespace tree
 
 	typedef std::vector<Expression *> Expressions;
 
-	/* ---- THE "Identifier" CLASS IS A SPECIAL CASE ---- */
-
-	class Identifier : public Expression
+	class Identity : public Expression
 	{
 	public:
-		Identifier(std::string name) : mName(name) {}
-
 		const std::string &getName()
 		{
 			return mName;
 		}
 
-	private:
-		std::string mName;
-	};
-
-	/* ---- ONLY ABSTRACT CLASSES BELOW HERE ---- */
-
-	class Identity : public Expression
-	{
-	public:
-		Identifier *getName()
-		{
-			return mName;
-		}
-
-		void setName(Identifier *name)
+		void setName(std::string &name)
 		{
 			mName = name;
-		}
-
-		virtual void childAccept(operation::Operation *operation)
-		{
-			Expression::childAccept(operation);
-			mName->accept(operation);
 		}
 
 		virtual void accept(operation::Operation *operation)
@@ -64,10 +40,10 @@ namespace tree
 		}
 
 	protected:
-		Identity(Identifier *name) : mName(name) { /* Abstract class */ }
+		Identity(std::string name) : mName(name) { /* Abstract class */ }
 
 	private:
-		Identifier *mName;
+		std::string mName;
 	};
 
 	class TypedIdentity : public Identity
@@ -97,7 +73,7 @@ namespace tree
 		}
 
 	protected:
-		TypedIdentity(Type *type, Identifier *name) : Identity(name), mType(type) { /* Abstract class */ }
+		TypedIdentity(Type *type, std::string name) : Identity(name), mType(type) { /* Abstract class */ }
 
 	private:
 		Type *mType;
@@ -261,22 +237,36 @@ namespace tree
 
 	/* ---- ONLY CONCRETE CLASSES BELOW HERE ---- */
 
+	class Identifier : public Expression
+	{
+	public:
+		Identifier(std::string name) : mName(name) {}
+
+		const std::string &getName()
+		{
+			return mName;
+		}
+
+	private:
+		std::string mName;
+	};
+
 	class Constant : public TypedIdentity
 	{
 	public:
-		Constant(Type *type, Identifier *name) : TypedIdentity(type, name) {}
+		Constant(Type *type, std::string name) : TypedIdentity(type, name) {}
 	};
 
 	class Variable : public TypedIdentity
 	{
 	public:
-		Variable(Type *type, Identifier *name) : TypedIdentity(type, name) {}
+		Variable(Type *type, std::string name) : TypedIdentity(type, name) {}
 	};
 
 	class Reference : public TypedIdentity
 	{
 	public:
-		Reference(Type *type, Identifier *name) : TypedIdentity(type, name) {}
+		Reference(Type *type, std::string name) : TypedIdentity(type, name) {}
 	};
 
 	class Cast : public Expression
