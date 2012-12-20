@@ -20,31 +20,49 @@ protected:
 class FileError : public Error
 {
 public:
-	FileError(const tree::Node::Location &location, const std::string &message) : Error(message), mFilename(*location.filename) {}
+	FileError(const tree::Node::Location &location, const std::string &message) : Error(message), mLocation(location) {}
 
 	virtual void output()
 	{
 		Error::output();
-		std::cerr << "\tFile: " << mFilename << std::endl;
+		std::cerr << "\tFile: " << *mLocation.filename << std::endl;
 	}
 
 protected:
-	std::string mFilename;
+	tree::Node::Location mLocation;
 };
 
 class SyntaxError : public FileError
 {
 public:
-	SyntaxError(const tree::Node::Location &location, const std::string &message) : FileError(location, message), mLineNumber(location.start.line) {}
+	SyntaxError(const tree::Node::Location &location, const std::string &message) : FileError(location, message) {}
 
 	virtual void output()
 	{
 		FileError::output();
-		std::cerr << "\tLine #" << mLineNumber << std::endl;
+		std::cerr << "\tLine: #" << mLocation.start.line << std::endl;
+	}
+};
+
+class ConflictError : public SyntaxError
+{
+public:
+	ConflictError(const tree::Node::Location &conflictLocation, const tree::Node::Location &location, const std::string &message) : SyntaxError(location, message), mConflictLocation(conflictLocation) {}
+
+	virtual void output()
+	{
+		SyntaxError::output();
+
+		if(*mConflictLocation.filename != *mLocation.filename)
+		{
+			std::cerr << "\tConflicting File: " << *mConflictLocation.filename << std::endl;
+		}
+
+		std::cerr << "\tConflicting Line: #" << mConflictLocation.start.line << std::endl;
 	}
 
 protected:
-	unsigned int mLineNumber;
+	tree::Node::Location mConflictLocation;
 };
 
 static std::vector<Error *> sErrorList;
@@ -62,6 +80,11 @@ void error::enqueue(const std::string &message)
 void error::enqueue(tree::Node::Location &location, const std::string &message)
 {
 	sErrorList.push_back(new SyntaxError(location, message));
+}
+
+void error::enqueue(tree::Node::Location &conflictLocation, tree::Node::Location &location, const std::string &message)
+{
+	sErrorList.push_back(new ConflictError(conflictLocation, location, message));
 }
 
 void error::output()
