@@ -1,6 +1,7 @@
 #ifndef COMPILER_TREE_FUNCTION_H
 #define COMPILER_TREE_FUNCTION_H
 
+#include <string>
 #include "expression.h"
 #include "node.h"
 #include "scope.h"
@@ -17,7 +18,7 @@ namespace tree
 	class FunctionPrototype : public TypedIdentity
 	{
 	public:
-		FunctionPrototype(Type *type, Identifier *name, Expressions *arguments) : TypedIdentity(type, name), mArguments(arguments) {}
+		FunctionPrototype(Type *type, std::string name, Expressions *arguments) : TypedIdentity(type, name), mArguments(arguments) {}
 
 		Expressions *getArguments()
 		{

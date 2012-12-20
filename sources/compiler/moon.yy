@@ -450,15 +450,15 @@ constant_assignment :   constant TOKEN_EQUALS expression
                         }
                     ;
 
-constant            :   TOKEN_CONST name
+constant            :   TOKEN_CONST TOKEN_NAME
                         {
                             tree::Type *type = new tree::Int();
-                            $$ = new tree::Constant(type, $2);
+                            $$ = new tree::Constant(type, std::string($2));
                             $$->setLocation(@1);
                         }
-                    |   TOKEN_CONST type TOKEN_CAST name
+                    |   TOKEN_CONST type TOKEN_CAST TOKEN_NAME
                         {
-                            $$ = new tree::Constant($2, $4);
+                            $$ = new tree::Constant($2, std::string($4));
                             $$->setLocation(@1);
                         }
                     ;
@@ -591,15 +591,15 @@ program_function    :   function_prototype function_state TOKEN_EOS statements T
                         }
                     ;
 
-function_prototype  :   TOKEN_FUNCTION identifier TOKEN_PARENTHESIS_OPEN o_arguments TOKEN_PARENTHESIS_CLOSE
+function_prototype  :   TOKEN_FUNCTION TOKEN_ID TOKEN_PARENTHESIS_OPEN o_arguments TOKEN_PARENTHESIS_CLOSE
                         {
                             tree::Type *type = new tree::Int();
-                            $$ = new tree::FunctionPrototype(type, $2, $4);
+                            $$ = new tree::FunctionPrototype(type, std::string($2), $4);
                             $$->setLocation(@1);
                         }
-                    |   TOKEN_FUNCTION type TOKEN_CAST identifier TOKEN_PARENTHESIS_OPEN o_arguments TOKEN_PARENTHESIS_CLOSE
+                    |   TOKEN_FUNCTION type TOKEN_CAST TOKEN_ID TOKEN_PARENTHESIS_OPEN o_arguments TOKEN_PARENTHESIS_CLOSE
                         {
-                            $$ = new tree::FunctionPrototype($2, $4, $6);
+                            $$ = new tree::FunctionPrototype($2, std::string($4), $6);
                             $$->setLocation(@1);
                         }
                     ;
@@ -641,15 +641,15 @@ arguments           :   argument
                         }
                     ;
 
-argument            :   identifier
+argument            :   TOKEN_ID
                         {
                             tree::Type *type = new tree::Int();
-                            $$ = new tree::Variable(type, $1);
+                            $$ = new tree::Variable(type, std::string($1));
                             $$->setLocation(@1);
                         }
-                    |   type TOKEN_CAST identifier
+                    |   type TOKEN_CAST TOKEN_ID
                         {
-                            $$ = new tree::Variable($1, $3);
+                            $$ = new tree::Variable($1, std::string($3));
                             $$->setLocation(@1);
                         }
                     |   variable
@@ -739,15 +739,15 @@ variable_assignment :   variable
                         }
                     ;
 
-variable            :   TOKEN_VAR identifier
+variable            :   TOKEN_VAR TOKEN_ID
                         {
                             tree::Type *type = new tree::Int();
-                            $$ = new tree::Variable(type, $2);
+                            $$ = new tree::Variable(type, std::string($2));
                             $$->setLocation(@1);
                         }
-                    |   TOKEN_VAR type TOKEN_CAST identifier
+                    |   TOKEN_VAR type TOKEN_CAST TOKEN_ID
                         {
-                            $$ = new tree::Variable($2, $4);
+                            $$ = new tree::Variable($2, std::string($4));
                             $$->setLocation(@1);
                         }
                     ;
@@ -770,15 +770,15 @@ reference_assignment:   reference
                         }
                     ;
 
-reference           :   TOKEN_REF identifier
+reference           :   TOKEN_REF TOKEN_ID
                         {
                             tree::Type *type = new tree::Int();
-                            $$ = new tree::Reference(type, $2);
+                            $$ = new tree::Reference(type, std::string($2));
                             $$->setLocation(@1);
                         }
-                    |   TOKEN_REF type TOKEN_CAST identifier
+                    |   TOKEN_REF type TOKEN_CAST TOKEN_ID
                         {
-                            $$ = new tree::Reference($2, $4);
+                            $$ = new tree::Reference($2, std::string($4));
                             $$->setLocation(@1);
                         }
                     ;
