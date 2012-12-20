@@ -11,6 +11,8 @@
 
 const char *DIRECTORY_SEPARATORS = " ,:";
 
+static parser::Data parserData; // Debug filenames are maintained by this so it must persist throughout the program's life, FIXME?
+
 int main(int argc, char *argv[])
 {
 	char opt;
@@ -92,7 +94,7 @@ int main(int argc, char *argv[])
 			if(loader::useFile(argv[optind], tmp))
 			{
 				std::string filename = tmp;
-				parser::Data parserData;
+				
 				parserData.uses = new tree::Statements();
 
 				loader::pushCWD(dirname(tmp));
