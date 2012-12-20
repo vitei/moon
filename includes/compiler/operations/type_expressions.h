@@ -2,15 +2,17 @@
 #define COMPILER_OPERATIONS_TYPE_EXPRESSIONS_H
 
 #include "compiler/tree.h"
-#include "depth_restructure.h"
+#include "operation.h"
 
 
 namespace operation
 {
-	class TypeExpressions : public DepthRestructure
+	class TypeExpressions : public Operation
 	{
 	public:
 		static void run(tree::Program *program);
+
+
 
 		//virtual void visit(tree::Scope *scope);
 		//virtual void visit(tree::GlobalScoping *globalScoping);
