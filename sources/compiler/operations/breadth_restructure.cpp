@@ -16,14 +16,22 @@ void operation::BreadthRestructure::process()
 
 		beginScope(scope);
 
-		for(tree::Statements::iterator i = statements->begin(), end = statements->end(); i != end; ++i)
+		for(tree::Statements::iterator i = statements->begin(); i != statements->end();)
 		{
 			(*i)->accept(this);
 
 			tree::Statement *statement = static_cast<tree::Statement *>(mNodeMap.top());
 			mNodeMap.pop();
 
-			*i = statement;
+			if(statement)
+			{
+				*i = statement;
+				++i;
+			}
+			else
+			{
+				i = statements->erase(i);
+			}
 		}
 
 		mVisitNext.pop();
