@@ -35,6 +35,8 @@ namespace operation
 	protected:
 		Restructure() { /* Abstract class */ }
 
+		virtual tree::Scope *getCurrentScope() = 0;
+
 		std::stack<tree::Node *> mNodeMap;
 	};
 }

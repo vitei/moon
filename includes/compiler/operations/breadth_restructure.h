@@ -22,7 +22,7 @@ namespace operation
 	protected:
 		BreadthRestructure() {}
 
-		tree::Scope *getCurrentScope()
+		virtual tree::Scope *getCurrentScope()
 		{
 			return mVisitNext.front();
 		}

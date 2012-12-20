@@ -15,7 +15,14 @@ namespace operation
 		virtual void visit(tree::Scope *scope);
 
 	protected:
-		DepthRestructure() {}
+		DepthRestructure() : mCurrentScope(NULL) {}
+
+		virtual tree::Scope *getCurrentScope()
+		{
+			return mCurrentScope;
+		}
+
+		tree::Scope *mCurrentScope;
 	};
 }
 

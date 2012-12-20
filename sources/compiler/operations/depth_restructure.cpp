@@ -13,6 +13,10 @@ void operation::DepthRestructure::visit(tree::Function *function)
 
 	if(statements)
 	{
+		tree::Scope *currentScope = mCurrentScope;
+
+		mCurrentScope = function;
+
 		for(tree::Statements::iterator i = statements->begin(); i != statements->end();)
 		{
 			(*i)->accept(this);
@@ -30,6 +34,8 @@ void operation::DepthRestructure::visit(tree::Function *function)
 				i = statements->erase(i);
 			}
 		}
+
+		mCurrentScope = currentScope;
 	}
 
 	mNodeMap.push(function->restructure(this));
@@ -41,6 +47,10 @@ void operation::DepthRestructure::visit(tree::Scope *scope)
 
 	if(statements)
 	{
+		tree::Scope *currentScope = mCurrentScope;
+
+		mCurrentScope = scope;
+
 		for(tree::Statements::iterator i = statements->begin(); i != statements->end();)
 		{
 			(*i)->accept(this);
@@ -58,6 +68,8 @@ void operation::DepthRestructure::visit(tree::Scope *scope)
 				i = statements->erase(i);
 			}
 		}
+
+		mCurrentScope = currentScope;
 	}
 
 	mNodeMap.push(scope->restructure(this));
