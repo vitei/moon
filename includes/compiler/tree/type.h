@@ -11,6 +11,15 @@ namespace tree
 	class Type : public Node
 	{
 	protected:
+		enum Weights
+		{
+			BOOL_WEIGHT,
+			INT_WEIGHT,
+			FLOAT_WEIGHT,
+			STRING_WEIGHT,
+			UDT_WEIGHT
+		};
+
 		Type() { /* Abstract class */ }
 	};
 
