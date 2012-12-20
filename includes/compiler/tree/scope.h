@@ -25,6 +25,10 @@ namespace tree
 			tree::Identity *identity;
 		};
 
+		class NotFoundException : public std::exception
+		{
+		};
+
 		Scope(Statements *statements) : mParent(NULL), mStatements(statements) {}
 
 		Scope *getParent()
@@ -37,17 +41,13 @@ namespace tree
 			mParent = parent;
 		}
 
-		std::map<std::string, Identity *> &getIdentities()
-		{
-			return mIdentities;
-		}
-
 		Statements *getStatements()
 		{
 			return mStatements;
 		}
 
 		void mapIdentity(Identity *identity);
+		Identity *findIdentity(Identifier *identifier);
 
 	private:
 		Scope *mParent;
