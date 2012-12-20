@@ -93,14 +93,22 @@ void operation::Restructure::visit(tree::FunctionCall *functionCall)
 
 	if(expressions)
 	{
-		for(tree::Expressions::iterator i = expressions->begin(), end = expressions->end(); i != end; ++i)
+		for(tree::Expressions::iterator i = expressions->begin(); i != expressions->end();)
 		{
 			(*i)->accept(this);
 
 			tree::Expression *expression = static_cast<tree::Expression *>(mNodeMap.top());
 			mNodeMap.pop();
 
-			*i = expression;
+			if(expression)
+			{
+				*i = expression;
+				++i;
+			}
+			else
+			{
+				i = expressions->erase(i);
+			}
 		}
 	}
 
@@ -113,14 +121,22 @@ void operation::Restructure::visit(tree::FunctionPrototype *functionPrototype)
 
 	if(expressions)
 	{
-		for(tree::Expressions::iterator i = expressions->begin(), end = expressions->end(); i != end; ++i)
+		for(tree::Expressions::iterator i = expressions->begin(); i != expressions->end();)
 		{
 			(*i)->accept(this);
 
 			tree::Expression *expression = static_cast<tree::Expression *>(mNodeMap.top());
 			mNodeMap.pop();
 
-			*i = expression;
+			if(expression)
+			{
+				*i = expression;
+				++i;
+			}
+			else
+			{
+				i = expressions->erase(i);
+			}
 		}
 	}
 
@@ -138,14 +154,22 @@ void operation::Restructure::visit(tree::Function *function)
 
 	if(statements)
 	{
-		for(tree::Statements::iterator i = statements->begin(), end = statements->end(); i != end; ++i)
+		for(tree::Statements::iterator i = statements->begin(); i != statements->end();)
 		{
 			(*i)->accept(this);
 
 			tree::Statement *statement = static_cast<tree::Statement *>(mNodeMap.top());
 			mNodeMap.pop();
 
-			*i = statement;
+			if(statement)
+			{
+				*i = statement;
+				++i;
+			}
+			else
+			{
+				i = statements->erase(i);
+			}
 		}
 	}
 
@@ -158,14 +182,22 @@ void operation::Restructure::visit(tree::Scope *scope)
 
 	if(statements)
 	{
-		for(tree::Statements::iterator i = statements->begin(), end = statements->end(); i != end; ++i)
+		for(tree::Statements::iterator i = statements->begin(); i != statements->end();)
 		{
 			(*i)->accept(this);
 
 			tree::Statement *statement = static_cast<tree::Statement *>(mNodeMap.top());
 			mNodeMap.pop();
 
-			*i = statement;
+			if(statement)
+			{
+				*i = statement;
+				++i;
+			}
+			else
+			{
+				i = statements->erase(i);
+			}
 		}
 	}
 
