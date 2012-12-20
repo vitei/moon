@@ -4,13 +4,15 @@
 
 void tree::Scope::mapIdentity(tree::Identity *identity)
 {
-	std::string name = identity->getName()->getName();
+	const std::string &name = identity->getName()->getName();
 
 	for(Scope *s = this; s; s = s->mParent)
 	{
-		if(s->mIdentities.find(name) != s->mIdentities.end())
+		std::map<std::string, Identity *>::iterator previousValue = s->mIdentities.find(name);
+
+		if(previousValue != s->mIdentities.end())
 		{
-			 throw(new tree::Scope::ExistsException(mIdentities[name]));
+			throw(tree::Scope::ExistsException(previousValue->second));
 		}
 	}
 
