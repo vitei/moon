@@ -43,7 +43,7 @@ void operation::MapIdentities::visit(tree::Function *function)
 {
 	LOG("MapIdentities::visit::Function");
 
-	operation::Restructure::visit(function);
+	operation::BreadthRestructure::visit(function);
 	mCurrentScope = mAggregateScope;
 }
 
