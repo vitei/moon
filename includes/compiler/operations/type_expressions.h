@@ -2,12 +2,12 @@
 #define COMPILER_OPERATIONS_TYPE_EXPRESSIONS_H
 
 #include "compiler/tree.h"
-#include "restructure.h"
+#include "depth_restructure.h"
 
 
 namespace operation
 {
-	class TypeExpressions : public Restructure
+	class TypeExpressions : public DepthRestructure
 	{
 	public:
 		static void run(tree::Program *program);
