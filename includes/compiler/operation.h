@@ -3,5 +3,6 @@
 
 #include "operations/map_identities.h"
 #include "operations/scope_parents.h"
+#include "operations/type_expressions.h"
 
 #endif
