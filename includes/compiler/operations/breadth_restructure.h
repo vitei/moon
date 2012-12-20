@@ -19,13 +19,13 @@ namespace operation
 		virtual void visit(tree::Function *function);
 		virtual void visit(tree::Scope *scope);
 
+	protected:
+		BreadthRestructure() {}
+
 		tree::Scope *getCurrentScope()
 		{
 			return mVisitNext.front();
 		}
-
-	protected:
-		BreadthRestructure() {}
 
 		std::queue<tree::Scope *> mVisitNext;
 	};
