@@ -95,7 +95,7 @@ int main(int argc, char *argv[])
 			if(loader::useFile(argv[optind], tmp))
 			{
 				std::string filename = tmp;
-				
+
 				parserData.uses = new tree::Statements();
 
 				loader::pushCWD(dirname(tmp));

@@ -72,6 +72,7 @@ namespace tree
 
 		void setLocation(const Location &location)
 		{
+			ASSERT(location.filename);
 			mLocation = location;
 		}
 
