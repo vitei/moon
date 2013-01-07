@@ -8,33 +8,34 @@ void operation::ScopeParents::run(tree::Program *program)
 	program->accept(&operation);
 }
 
-void operation::ScopeParents::visit(tree::Scope *scope)
+void operation::ScopeParents::setup(tree::Program *program)
 {
-	LOG("ScopeParents::visit::Scope");
-
-	scope->setParent(mScope);
-
-	tree::Statements *statements = scope->getStatements();
-
-	if(statements)
-	{
-		mScope = scope;
-
-		for(tree::Statements::iterator i = statements->begin(), end = statements->end(); i != end; ++i)
-		{
-			(*i)->accept(this);
-		}
-
-		mScope = scope->getParent();
-	}
+	LOG("ScopeParents::setup::Program");
+	mProgramScope = program;
 }
 
-void operation::ScopeParents::visit(tree::GlobalScoping *globalScoping)
+void operation::ScopeParents::setup(tree::Aggregate *aggregate)
+{
+	LOG("ScopeParents::setup::Aggregate");
+	mAggregateScope = aggregate;
+}
+
+tree::Node *operation::ScopeParents::restructure(tree::GlobalScoping *globalScoping)
 {
 	LOG("ScopeParents::visit::Global");
+
+	mProgramScope->getStatements()->push_back(globalScoping->getScoped());
+	delete globalScoping;
+
+	return NULL;
 }
 
-void operation::ScopeParents::visit(tree::SharedScoping *sharedScoping)
+tree::Node *operation::ScopeParents::restructure(tree::SharedScoping *sharedScoping)
 {
 	LOG("ScopeParents::visit::Shared");
+
+	mProgramScope->getStatements()->push_back(sharedScoping->getScoped());
+	delete sharedScoping;
+
+	return NULL;
 }

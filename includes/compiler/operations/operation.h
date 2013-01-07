@@ -19,12 +19,12 @@ namespace operation
 		PROCESS_ACTION(tree::Node, tree::Type, return_type, name) \
 		 \
 		PROCESS_ACTION(tree::Statement, tree::Scope, return_type, name) \
+		PROCESS_ACTION(tree::Statement, tree::Scoping, return_type, name) \
 		 \
 		PROCESS_ACTION(tree::Expression, tree::Access, return_type, name) \
 		PROCESS_ACTION(tree::Expression, tree::BinaryExpression, return_type, name) \
 		PROCESS_ACTION(tree::Expression, tree::Identity, return_type, name) \
 		PROCESS_ACTION(tree::Expression, tree::Literal, return_type, name) \
-		PROCESS_ACTION(tree::Expression, tree::Scoping, return_type, name) \
 		PROCESS_ACTION(tree::Expression, tree::UnaryExpression, return_type, name) \
 		 \
 		PROCESS_ACTION(tree::Identity, tree::TypedIdentity, return_type, name) \
