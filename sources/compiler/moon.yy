@@ -453,6 +453,8 @@ constant_assignment :   constant TOKEN_EQUALS expression
 constant            :   TOKEN_CONST TOKEN_NAME
                         {
                             tree::Type *type = new tree::Int();
+                            type->setLocation(@1);
+
                             $$ = new tree::Constant(type, std::string($2));
                             $$->setLocation(@1);
                         }
@@ -594,6 +596,8 @@ program_function    :   function_prototype function_state TOKEN_EOS statements T
 function_prototype  :   TOKEN_FUNCTION TOKEN_ID TOKEN_PARENTHESIS_OPEN o_arguments TOKEN_PARENTHESIS_CLOSE
                         {
                             tree::Type *type = new tree::Int();
+                            type->setLocation(@1);
+
                             $$ = new tree::FunctionPrototype(type, std::string($2), $4);
                             $$->setLocation(@1);
                         }
@@ -644,6 +648,8 @@ arguments           :   argument
 argument            :   TOKEN_ID
                         {
                             tree::Type *type = new tree::Int();
+                            type->setLocation(@1);
+
                             $$ = new tree::Variable(type, std::string($1));
                             $$->setLocation(@1);
                         }
@@ -742,6 +748,8 @@ variable_assignment :   variable
 variable            :   TOKEN_VAR TOKEN_ID
                         {
                             tree::Type *type = new tree::Int();
+                            type->setLocation(@1);
+
                             $$ = new tree::Variable(type, std::string($2));
                             $$->setLocation(@1);
                         }
@@ -773,6 +781,8 @@ reference_assignment:   reference
 reference           :   TOKEN_REF TOKEN_ID
                         {
                             tree::Type *type = new tree::Int();
+                            type->setLocation(@1);
+
                             $$ = new tree::Reference(type, std::string($2));
                             $$->setLocation(@1);
                         }
