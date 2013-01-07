@@ -53,6 +53,9 @@ public:
 	{
 		SyntaxError::output();
 
+		ASSERT(mConflictLocation.filename);
+		ASSERT(mLocation.filename);
+
 		if(*mConflictLocation.filename != *mLocation.filename)
 		{
 			std::cerr << "\tConflicting File: " << *mConflictLocation.filename << std::endl;
