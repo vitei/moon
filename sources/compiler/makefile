@@ -10,6 +10,9 @@ DEPS := $(OBJECTS:.o=.deps)
 
 all: compiler
 
+# Dependencies
+-include $(DEPS)
+
 generated_parser.cpp: moon.yy moon.ll
 	@echo $@: $<
 	@mkdir -p $(INC_DIR)/generated
@@ -23,20 +26,18 @@ generated_lexer.cpp: moon.ll moon.yy
 $(OBJ_DIR)/generated_lexer.o: generated_parser.cpp
 $(OBJ_DIR)/generated_parser.o: generated_lexer.cpp
 
-$(OBJ_DIR)/%.o: %.cpp
-	@echo $(<:.cpp=.o): $<
-	@mkdir -p $(shell dirname $@)
-	@$(CXX) -c $(CPP_FLAGS) $(CXX_FLAGS) -MD -MF $(@:.o=.deps) -o $@ $<
-
-$(OBJ_DIR)/%.o: %.c
-	@echo $(<:.c=.o): $<
-	@mkdir -p $(shell dirname $@)
-	@$(CC) -c $(CPP_FLAGS) $(CC_FLAGS) -MD -MF $(@:.o=.deps) -o $@ $<
+# Rules
+include $(MOON_ROOT_DIR)/makefile.rules
 
 $(BIN_DIR)/moon: $(OBJECTS)
+	@mkdir -p $(shell dirname $@)
 	@$(CXX) $(CPP_FLAGS) $(CXX_FLAGS) -o $@ $^
 
 compiler: $(BIN_DIR)/moon
 
 clean:
-	@rm -rf generated_* $(INC_DIR)/generated $(DEPS) $(OBJECTS) $(BIN_DIR)/moon
+	@rm -rf generated_*
+	@rm -rf $(INC_DIR)/generated
+	@rm -rf $(DEPS)
+	@rm -rf $(OBJECTS)
+	@rm -rf $(BIN_DIR)/moon
