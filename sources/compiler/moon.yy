@@ -29,11 +29,13 @@
         { \
             if(YYID(N)) \
             { \
+                (Current).filename = YYRHSLOC(Rhs, 1).filename; \
                 (Current).start = YYRHSLOC(Rhs, 1).start; \
                 (Current).end = YYRHSLOC(Rhs, N).end; \
             } \
             else \
             { \
+                (Current).filename = (Current).filename; \
                 (Current).start = (Current).end = YYRHSLOC(Rhs, 0).end; \
             } \
         } \
@@ -50,6 +52,7 @@
 
 %initial-action
 {
+    ASSERT(data->currentFilename);
     @$.filename = data->currentFilename;
 };
 
