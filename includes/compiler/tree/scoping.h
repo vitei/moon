@@ -1,7 +1,7 @@
 #ifndef COMPILER_TREE_SCOPING_H
 #define COMPILER_TREE_SCOPING_H
 
-#include "expression.h"
+#include "statement.h"
 #include "node.h"
 
 
@@ -9,22 +9,22 @@ namespace tree
 {
 	/* ---- ONLY ABSTRACT CLASSES BELOW HERE ---- */
 
-	class Scoping : public Expression
+	class Scoping : public Statement
 	{
 	public:
-		Identity *getScoped()
+		Statement *getScoped()
 		{
 			return mScoped;
 		}
 
-		void setScoped(Identity *scoped)
+		void setScoped(Statement *scoped)
 		{
 			mScoped = scoped;
 		}
 
 		virtual void childAccept(operation::Operation *operation)
 		{
-			Expression::childAccept(operation);
+			Statement::childAccept(operation);
 			mScoped->accept(operation);
 		}
 
@@ -36,10 +36,10 @@ namespace tree
 		}
 
 	protected:
-		Scoping(Identity *scoped) : mScoped(scoped) { /* Abstract class */ }
+		Scoping(Statement *scoped) : mScoped(scoped) { /* Abstract class */ }
 
 	private:
-		Identity *mScoped;
+		Statement *mScoped;
 	};
 
 	/* ---- ONLY CONCRETE CLASSES BELOW HERE ---- */
@@ -47,13 +47,13 @@ namespace tree
 	class GlobalScoping: public Scoping
 	{
 	public:
-		GlobalScoping(Identity *scoped) : Scoping(scoped) {}
+		GlobalScoping(Statement *scoped) : Scoping(scoped) {}
 	};
 
 	class SharedScoping : public Scoping
 	{
 	public:
-		SharedScoping(Identity *scoped) : Scoping(scoped) {}
+		SharedScoping(Statement *scoped) : Scoping(scoped) {}
 	};
 }
 

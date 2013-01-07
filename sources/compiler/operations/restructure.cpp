@@ -105,10 +105,10 @@ void operation::Restructure::visit(tree::FunctionCall *functionCall)
 
 void operation::Restructure::visit(tree::Scoping *scoping)
 {
-	tree::Identity *identity = static_cast<tree::Identity *>(mNodeMap.top());
+	tree::Statement *statement = static_cast<tree::Statement *>(mNodeMap.top());
 	mNodeMap.pop();
 
-	scoping->setScoped(identity);
+	scoping->setScoped(statement);
 	mNodeMap.push(scoping->restructure(this));
 }
 
