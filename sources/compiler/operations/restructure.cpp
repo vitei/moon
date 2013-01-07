@@ -103,36 +103,6 @@ void operation::Restructure::visit(tree::FunctionCall *functionCall)
 	mNodeMap.push(functionCall->restructure(this));
 }
 
-void operation::Restructure::visit(tree::FunctionPrototype *functionPrototype)
-{
-	tree::Expressions *expressions = functionPrototype->getArguments();
-
-	if(expressions)
-	{
-		for(tree::Expressions::iterator i = expressions->begin(); i != expressions->end();)
-		{
-			(*i)->accept(this);
-
-			tree::Expression *expression = static_cast<tree::Expression *>(mNodeMap.top());
-			mNodeMap.pop();
-
-			if(expression)
-			{
-				*i = expression;
-				++i;
-			}
-			else
-			{
-				i = expressions->erase(i);
-			}
-		}
-	}
-
-	mNodeMap.push(functionPrototype->restructure(this));
-}
-
-
-
 void operation::Restructure::visit(tree::Scoping *scoping)
 {
 	tree::Identity *identity = static_cast<tree::Identity *>(mNodeMap.top());

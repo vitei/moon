@@ -14,6 +14,7 @@ void operation::BreadthRestructure::process()
 		tree::Scope *scope = mVisitNext.front();
 		tree::Statements *statements = scope->getStatements();
 
+		mCurrentScope = scope;
 		beginScope(scope);
 
 		for(tree::Statements::iterator i = statements->begin(); i != statements->end();)
@@ -38,6 +39,11 @@ void operation::BreadthRestructure::process()
 	}
 }
 
+void operation::BreadthRestructure::visit(tree::FunctionPrototype *functionPrototype)
+{
+	mNodeMap.push(functionPrototype->restructure(this));
+}
+
 void operation::BreadthRestructure::visit(tree::Function *function)
 {
 	tree::FunctionPrototype *functionPrototype = static_cast<tree::FunctionPrototype *>(mNodeMap.top());
@@ -48,6 +54,37 @@ void operation::BreadthRestructure::visit(tree::Function *function)
 	if(function->getStatements())
 	{
 		add(function);
+	}
+
+	tree::Expressions *expressions = functionPrototype->getArguments();
+
+	if(expressions)
+	{
+		tree::Scope *currentScope = mCurrentScope;
+
+		mCurrentScope = function;
+		beginScope(function);
+
+		for(tree::Expressions::iterator i = expressions->begin(); i != expressions->end();)
+		{
+			(*i)->accept(this);
+
+			tree::Expression *expression = static_cast<tree::Expression *>(mNodeMap.top());
+			mNodeMap.pop();
+
+			if(expression)
+			{
+				*i = expression;
+				++i;
+			}
+			else
+			{
+				i = expressions->erase(i);
+			}
+		}
+
+		mCurrentScope = currentScope;
+		beginScope(currentScope);
 	}
 
 	mNodeMap.push(function->restructure(this));

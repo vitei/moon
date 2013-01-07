@@ -16,6 +16,7 @@ namespace operation
 
 		virtual void beginScope(tree::Scope *scope) {}
 
+		virtual void visit(tree::FunctionPrototype *functionPrototype);
 		virtual void visit(tree::Function *function);
 		virtual void visit(tree::Scope *scope);
 
@@ -24,9 +25,10 @@ namespace operation
 
 		virtual tree::Scope *getCurrentScope()
 		{
-			return mVisitNext.front();
+			return mCurrentScope;
 		}
 
+		tree::Scope *mCurrentScope;
 		std::queue<tree::Scope *> mVisitNext;
 	};
 }
