@@ -5,16 +5,14 @@ include $(THIS_MAKEFILE_DIR)/makefile.settings
 .PHONY: compiler tests all clean
 all: compiler tests
 
-obj_dir:
-	@mkdir -p $(OBJ_DIR)
-
-compiler: obj_dir
+compiler:
 	@$(MAKE) -C sources/compiler
 
-tests: obj_dir
+tests:
 	@$(MAKE) -C tests
 
 clean:
 	@$(MAKE) clean -C sources/compiler
 	@$(MAKE) clean -C tests
 	@rm -rf $(OBJ_DIR)
+	@rm -rf $(BIN_DIR)
