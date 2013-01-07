@@ -11,6 +11,7 @@ namespace operation
 	class DepthRestructure : public Restructure
 	{
 	public:
+		virtual void visit(tree::FunctionPrototype *functionPrototype);
 		virtual void visit(tree::Function *function);
 		virtual void visit(tree::Scope *scope);
 

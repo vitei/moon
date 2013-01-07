@@ -19,12 +19,12 @@ namespace operation
 		virtual void visit(tree::BinaryExpression *binaryExpression);
 		virtual void visit(tree::Cast *cast);
 		virtual void visit(tree::FunctionCall *functionCall);
-		virtual void visit(tree::FunctionPrototype *functionPrototype);
 		virtual void visit(tree::Scoping *scoping);
 		virtual void visit(tree::Execute *execute);
 		virtual void visit(tree::Return *opReturn);
 		virtual void visit(tree::SetState *setState);
 
+		virtual void visit(tree::FunctionPrototype *functionPrototype) = 0;
 		virtual void visit(tree::Function *function) = 0;
 		virtual void visit(tree::Scope *scope) = 0;
 

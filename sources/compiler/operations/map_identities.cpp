@@ -34,9 +34,6 @@ void operation::MapIdentities::beginScope(tree::Scope *scope)
 void operation::MapIdentities::setup(tree::Function *function)
 {
 	LOG("MapIdentities::setup::Function");
-
-	// This is a special case so that prototype variables get added to the correct scope...
-	mCurrentScope = function;
 }
 
 void operation::MapIdentities::visit(tree::Function *function)

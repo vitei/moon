@@ -2,6 +2,34 @@
 #include "compiler/operations/depth_restructure.h"
 
 
+void operation::DepthRestructure::visit(tree::FunctionPrototype *functionPrototype)
+{
+	tree::Expressions *expressions = functionPrototype->getArguments();
+
+	if(expressions)
+	{
+		for(tree::Expressions::iterator i = expressions->begin(); i != expressions->end();)
+		{
+			(*i)->accept(this);
+
+			tree::Expression *expression = static_cast<tree::Expression *>(mNodeMap.top());
+			mNodeMap.pop();
+
+			if(expression)
+			{
+				*i = expression;
+				++i;
+			}
+			else
+			{
+				i = expressions->erase(i);
+			}
+		}
+	}
+
+	mNodeMap.push(functionPrototype->restructure(this));
+}
+
 void operation::DepthRestructure::visit(tree::Function *function)
 {
 	tree::FunctionPrototype *functionPrototype = static_cast<tree::FunctionPrototype *>(mNodeMap.top());
