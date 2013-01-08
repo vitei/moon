@@ -1,8 +1,8 @@
 #ifndef COMPILER_TREE_EXPRESSION_H
 #define COMPILER_TREE_EXPRESSION_H
 
+#include <list>
 #include <string>
-#include <vector>
 #include "node.h"
 #include "type.h"
 
@@ -17,7 +17,7 @@ namespace tree
 		Expression() { /* Abstract class */ }
 	};
 
-	typedef std::vector<Expression *> Expressions;
+	typedef std::list<Expression *> Expressions;
 
 	class Identity : public Expression
 	{
