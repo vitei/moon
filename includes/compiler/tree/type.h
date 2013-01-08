@@ -23,8 +23,20 @@ namespace tree
 		Type(Internal type) : mType(type) { /* Abstract class */ }
 
 	private:
+		friend bool operator == (Type &type1, Type &type2);
+
 		Internal mType;
 	};
+
+	inline bool operator == (Type &type1, Type &type2)
+	{
+		return type1.mType == type2.mType;
+	}
+
+	inline bool operator != (Type &type1, Type &type2)
+	{
+		return !(type1 == type2);
+	}
 
 	/* ---- ONLY CONCRETE CLASSES BELOW HERE ---- */
 
