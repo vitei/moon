@@ -40,7 +40,7 @@ void operation::ScopeParents::visit(tree::Scope *scope)
 
 tree::Node *operation::ScopeParents::restructure(tree::GlobalScoping *globalScoping)
 {
-	LOG("ScopeParents::visit::GlobalScoping");
+	LOG("ScopeParents::restructure::GlobalScoping");
 
 	mProgramScope->getStatements()->push_back(globalScoping->getScoped());
 	delete globalScoping;
@@ -50,7 +50,7 @@ tree::Node *operation::ScopeParents::restructure(tree::GlobalScoping *globalScop
 
 tree::Node *operation::ScopeParents::restructure(tree::SharedScoping *sharedScoping)
 {
-	LOG("ScopeParents::visit::SharedScoping");
+	LOG("ScopeParents::restructure::SharedScoping");
 
 	mAggregateScope->getStatements()->push_back(sharedScoping->getScoped());
 	delete sharedScoping;
