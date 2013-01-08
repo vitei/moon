@@ -15,7 +15,7 @@ namespace tree
 	class UDT : public Type
 	{
 	public:
-		UDT(Identifier *name) : Type() {}
+		UDT(Identifier *name) : Type(tree::Type::TYPE_UDT) {}
 	};
 }
 
