@@ -1,7 +1,7 @@
 #ifndef COMPILER_TREE_STATEMENT_H
 #define COMPILER_TREE_STATEMENT_H
 
-#include <vector>
+#include <list>
 #include "node.h"
 #include "expression.h"
 #include "state.h"
@@ -17,7 +17,7 @@ namespace tree
 		Statement() { /* Abstract class */ }
 	};
 
-	typedef std::vector<Statement *> Statements;
+	typedef std::list<Statement *> Statements;
 
 	/* ---- ONLY CONCRETE CLASSES BELOW HERE ---- */
 
