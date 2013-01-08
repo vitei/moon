@@ -14,77 +14,67 @@ void operation::MapIdentities::run(tree::Program *program)
 	}
 }
 
-void operation::MapIdentities::beginScope(tree::Scope *scope)
+void operation::MapIdentities::add(tree::Scope *scope)
 {
-	tree::Program *program;
-	tree::Aggregate *aggregate;
-
-	if((program = dynamic_cast<tree::Program *>(scope)))
-	{
-		mProgramScope = program;
-	}
-	else if((aggregate = dynamic_cast<tree::Aggregate *>(scope)))
-	{
-		mAggregateScope = aggregate;
-	}
-
-	mCurrentScope = scope;
+	mVisitNext.push(operation::MapIdentities::ScopeList(scope, scope->getStatements()));
 }
 
-void operation::MapIdentities::setup(tree::Function *function)
+void operation::MapIdentities::add(tree::Scope *scope, tree::Expressions *expressions)
 {
-	LOG("MapIdentities::setup::Function");
+	mVisitNext.push(operation::MapIdentities::ScopeList(scope, expressions));
+}
+
+void operation::MapIdentities::add(tree::Scope *scope, tree::Statements *statements)
+{
+	mVisitNext.push(operation::MapIdentities::ScopeList(scope, statements));
+}
+
+void operation::MapIdentities::process()
+{
+	while(!mVisitNext.empty())
+	{
+		operation::MapIdentities::ScopeList scopeList = mVisitNext.front();
+		mVisitNext.pop();
+
+		mCurrentScope = scopeList.scope;
+
+		if(scopeList.expressions)
+		{
+			for(tree::Expressions::iterator i = scopeList.expressions->begin(), end = scopeList.expressions->end(); i != end; (*i++)->accept(this));
+		}
+		else
+		{
+			for(tree::Statements::iterator i = scopeList.statements->begin(), end = scopeList.statements->end(); i != end; (*i++)->accept(this));
+		}
+	}
 }
 
 void operation::MapIdentities::visit(tree::Function *function)
 {
-	LOG("MapIdentities::visit::Function");
+	tree::Expressions *arguments = function->getPrototype()->getArguments();
 
-	operation::BreadthRestructure::visit(function);
-	mCurrentScope = mAggregateScope;
+	if(arguments)
+	{
+		add(function, arguments);
+	}
+
+	if(function->getStatements())
+	{
+		add(function);
+	}
 }
 
-void operation::MapIdentities::setup(tree::GlobalScoping *globalScoping)
+void operation::MapIdentities::visit(tree::Scope *scope)
 {
-	LOG("MapIdentities::setup::GlobalScoping");
-
-	mCurrentScope = mProgramScope;
+	if(scope->getStatements())
+	{
+		add(scope);
+	}
 }
 
-tree::Node *operation::MapIdentities::restructure(tree::GlobalScoping *globalScoping)
+void operation::MapIdentities::visit(tree::Identity *identity)
 {
-	LOG("MapIdentities::restructure::GlobalScoping");
-
-	mCurrentScope = getCurrentScope();
-
-	tree::Node *r = globalScoping->getScoped();
-	delete globalScoping;
-
-	return r;
-}
-
-void operation::MapIdentities::setup(tree::SharedScoping *sharedScoping)
-{
-	LOG("MapIdentities::setup::SharedScoping");
-
-	mCurrentScope = mAggregateScope;
-}
-
-tree::Node *operation::MapIdentities::restructure(tree::SharedScoping *sharedScoping)
-{
-	LOG("MapIdentities::restructure::SharedScoping");
-
-	mCurrentScope = getCurrentScope();
-
-	tree::Node *r = sharedScoping->getScoped();
-	delete sharedScoping;
-
-	return r;
-}
-
-tree::Node *operation::MapIdentities::restructure(tree::Identity *identity)
-{
-	LOG("MapIdentities::restructure::Identity");
+	LOG("MapIdentities::visit::Identity");
 
 	try
 	{
@@ -95,8 +85,4 @@ tree::Node *operation::MapIdentities::restructure(tree::Identity *identity)
 		std::string error = "The identifier \"" + identity->getName() + "\" is already defined";
 		error::enqueue(e.identity->getLocation(), identity->getLocation(), error);
 	}
-
-	// ... mCurrentScope
-
-	return identity;
 }

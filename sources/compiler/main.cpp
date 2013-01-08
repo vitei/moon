@@ -123,8 +123,8 @@ int main(int argc, char *argv[])
 			// We may now perform operations on it...
 			operation::ScopeParents::run(&program);
 			operation::MapIdentities::run(&program);
-			operation::ResolveIdentities::run(&program);
-			operation::TypeExpressions::run(&program);
+			//operation::ResolveIdentities::run(&program);
+			//operation::TypeExpressions::run(&program);
 
 			if(generateDefines)
 			{
