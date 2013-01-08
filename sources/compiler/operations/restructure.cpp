@@ -7,13 +7,17 @@ void operation::Restructure::visit(tree::Node *node)
 	mNodeMap.push(node->restructure(this));
 }
 
-void operation::Restructure::visit(tree::TypedIdentity *typedIdentity)
+void operation::Restructure::visit(tree::Expression *expression)
 {
-	tree::Type *type = static_cast<tree::Type *>(mNodeMap.top());
-	mNodeMap.pop();
+	if(expression->getType())
+	{
+		tree::Type *type = static_cast<tree::Type *>(mNodeMap.top());
+		mNodeMap.pop();
 
-	typedIdentity->setType(type);
-	mNodeMap.push(typedIdentity->restructure(this));
+		expression->setType(type);
+	}
+
+	mNodeMap.push(expression->restructure(this));
 }
 
 void operation::Restructure::visit(tree::Access *access)
@@ -26,15 +30,6 @@ void operation::Restructure::visit(tree::Access *access)
 	access->setContainer(container);
 	access->setTarget(target);
 	mNodeMap.push(access->restructure(this));
-}
-
-void operation::Restructure::visit(tree::Literal *literal)
-{
-	tree::Type *type = static_cast<tree::Type *>(mNodeMap.top());
-	mNodeMap.pop();
-
-	literal->setType(type);
-	mNodeMap.push(literal->restructure(this));
 }
 
 void operation::Restructure::visit(tree::UnaryExpression *unaryExpression)
@@ -62,10 +57,7 @@ void operation::Restructure::visit(tree::Cast *cast)
 {
 	tree::Expression *expression = static_cast<tree::Expression *>(mNodeMap.top());
 	mNodeMap.pop();
-	tree::Type *type = static_cast<tree::Type *>(mNodeMap.top());
-	mNodeMap.pop();
 
-	cast->setType(type);
 	cast->setExpression(expression);
 	mNodeMap.push(cast->restructure(this));
 }

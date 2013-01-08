@@ -13,8 +13,39 @@ namespace tree
 
 	class Expression : public Node
 	{
+	public:
+		Type *getType()
+		{
+			return mType;
+		}
+
+		void setType(Type *type)
+		{
+			mType = type;
+		}
+
+		virtual void childAccept(operation::Operation *operation)
+		{
+			Node::childAccept(operation);
+
+			if(mType)
+			{
+				mType->accept(operation);
+			}
+		}
+
+		virtual void accept(operation::Operation *operation)
+		{
+			setup(operation);
+			childAccept(operation);
+			visit(operation);
+		}
+
 	protected:
-		Expression() { /* Abstract class */ }
+		Expression() : mType(NULL) { /* Abstract class */ }
+
+	private:
+		Type *mType;
 	};
 
 	typedef std::list<Expression *> Expressions;
@@ -48,35 +79,12 @@ namespace tree
 
 	class TypedIdentity : public Identity
 	{
-	public:
-		Type *getType()
-		{
-			return mType;
-		}
-
-		void setType(Type *type)
-		{
-			mType = type;
-		}
-
-		virtual void childAccept(operation::Operation *operation)
-		{
-			Identity::childAccept(operation);
-			mType->accept(operation);
-		}
-
-		virtual void accept(operation::Operation *operation)
-		{
-			setup(operation);
-			childAccept(operation);
-			visit(operation);
-		}
-
 	protected:
-		TypedIdentity(Type *type, std::string name) : Identity(name), mType(type) { /* Abstract class */ }
-
-	private:
-		Type *mType;
+		TypedIdentity(Type *type, std::string name) : Identity(name)
+		{
+			/* Abstract class */
+			setType(type);
+		}
 	};
 
 	class Access : public Expression
@@ -126,35 +134,12 @@ namespace tree
 
 	class Literal : public Expression
 	{
-	public:
-		Type *getType()
-		{
-			return mType;
-		}
-
-		void setType(Type *type)
-		{
-			mType = type;
-		}
-
-		virtual void childAccept(operation::Operation *operation)
-		{
-			Expression::childAccept(operation);
-			mType->accept(operation);
-		}
-
-		virtual void accept(operation::Operation *operation)
-		{
-			setup(operation);
-			childAccept(operation);
-			visit(operation);
-		}
-
 	protected:
-		Literal(Type *type) : mType(type) { /* Abstract class */ }
-
-	private:
-		Type *mType;
+		Literal(Type *type)
+		{
+			/* Abstract class */
+			setType(type);
+		}
 	};
 
 	class UnaryExpression : public Expression
@@ -272,16 +257,9 @@ namespace tree
 	class Cast : public Expression
 	{
 	public:
-		Cast(Type *type, Expression *expression) : mType(type), mExpression(expression) {}
-
-		Type *getType()
+		Cast(Type *type, Expression *expression) : mExpression(expression)
 		{
-			return mType;
-		}
-
-		void setType(Type *type)
-		{
-			mType = type;
+			setType(type);
 		}
 
 		Expression *getExpression()
@@ -297,7 +275,6 @@ namespace tree
 		virtual void childAccept(operation::Operation *operation)
 		{
 			Expression::childAccept(operation);
-			mType->accept(operation);
 			mExpression->accept(operation);
 		}
 
@@ -309,7 +286,6 @@ namespace tree
 		}
 
 	private:
-		Type *mType;
 		Expression *mExpression;
 	};
 
