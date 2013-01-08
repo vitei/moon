@@ -11,13 +11,31 @@ void operation::ScopeParents::run(tree::Program *program)
 void operation::ScopeParents::setup(tree::Program *program)
 {
 	LOG("ScopeParents::setup::Program");
+
 	mProgramScope = program;
 }
 
 void operation::ScopeParents::setup(tree::Aggregate *aggregate)
 {
 	LOG("ScopeParents::setup::Aggregate");
+
 	mAggregateScope = aggregate;
+}
+
+void operation::ScopeParents::visit(tree::Function *function)
+{
+	LOG("ScopeParents::visit::Function");
+
+	function->setParent(getCurrentScope());
+	operation::DepthRestructure::visit(function);
+}
+
+void operation::ScopeParents::visit(tree::Scope *scope)
+{
+	LOG("ScopeParents::visit::Scope");
+
+	scope->setParent(getCurrentScope());
+	operation::DepthRestructure::visit(scope);
 }
 
 tree::Node *operation::ScopeParents::restructure(tree::GlobalScoping *globalScoping)
