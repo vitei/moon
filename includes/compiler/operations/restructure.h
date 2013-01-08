@@ -12,9 +12,8 @@ namespace operation
 	{
 	public:
 		virtual void visit(tree::Node *Node);
-		virtual void visit(tree::TypedIdentity *typedIdentity);
+		virtual void visit(tree::Expression *expression);
 		virtual void visit(tree::Access *access);
-		virtual void visit(tree::Literal *literal);
 		virtual void visit(tree::UnaryExpression *unaryExpression);
 		virtual void visit(tree::BinaryExpression *binaryExpression);
 		virtual void visit(tree::Cast *cast);
