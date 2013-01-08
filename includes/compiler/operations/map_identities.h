@@ -3,34 +3,41 @@
 
 #include <queue>
 #include "compiler/tree.h"
-#include "breadth_restructure.h"
+#include "operation.h"
 
 
 namespace operation
 {
-	class MapIdentities : public BreadthRestructure
+	class MapIdentities : public Operation
 	{
 	public:
 		static void run(tree::Program *program);
 
-		virtual void beginScope(tree::Scope *scope);
-
-		virtual void setup(tree::Function *function);
-		virtual void setup(tree::GlobalScoping *globalScoping);
-		virtual void setup(tree::SharedScoping *sharedScoping);
+		void add(tree::Scope *scope);
+		void add(tree::Scope *scope, tree::Expressions *expressions);
+		void add(tree::Scope *scope, tree::Statements *statements);
+		void process();
 
 		virtual void visit(tree::Function *function);
-
-		virtual tree::Node *restructure(tree::GlobalScoping *globalScoping);
-		virtual tree::Node *restructure(tree::SharedScoping *sharedScoping);
-		virtual tree::Node *restructure(tree::Identity *identity);
+		virtual void visit(tree::Scope *scope);
+		virtual void visit(tree::Identity *identity);
 
 	private:
+		class ScopeList
+		{
+		public:
+			ScopeList(tree::Scope *_scope, tree::Expressions *_expressions) : scope(_scope), expressions(_expressions), statements(NULL) {}
+			ScopeList(tree::Scope *_scope, tree::Statements *_statements) : scope(_scope), expressions(NULL), statements(_statements) {}
+
+			tree::Scope *scope;
+			tree::Expressions *expressions;
+			tree::Statements *statements;
+		};
+
 		MapIdentities() {}
 
-		tree::Program *mProgramScope;
-		tree::Aggregate *mAggregateScope;
 		tree::Scope *mCurrentScope;
+		std::queue<ScopeList> mVisitNext;
 	};
 }
 
