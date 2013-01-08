@@ -429,15 +429,7 @@ program_cvr             :   constant_statement
                             {
                                 $$ = $1;
                             }
-                        |   variable_statement
-                            {
-                                $$ = $1;
-                            }
                         |   s_reference_statement
-                            {
-                                $$ = $1;
-                            }
-                        |   reference_statement
                             {
                                 $$ = $1;
                             }
@@ -473,7 +465,11 @@ constant                :   TOKEN_CONST TOKEN_NAME
                             }
                         ;
 
-s_variable_statement    :   TOKEN_GLOBAL variable TOKEN_EOS
+s_variable_statement    :   variable_statement
+                            {
+                                $$ = $1;
+                            }
+                        |   TOKEN_GLOBAL variable TOKEN_EOS
                             {
                                 tree::Execute *execute = new tree::Execute($2);
                                 execute->setLocation(@2);
@@ -488,7 +484,11 @@ s_variable_statement    :   TOKEN_GLOBAL variable TOKEN_EOS
                             }
                         ;
 
-s_reference_statement   :   TOKEN_GLOBAL reference TOKEN_EOS
+s_reference_statement   :   reference_statement
+                            {
+                                $$ = $1;
+                            }
+                        |   TOKEN_GLOBAL reference TOKEN_EOS
                             {
                                 tree::Execute *execute = new tree::Execute($2);
                                 execute->setLocation(@2);
