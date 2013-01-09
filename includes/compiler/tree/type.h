@@ -10,6 +10,11 @@ namespace tree
 
 	class Type : public Node
 	{
+#ifdef DEBUG
+	public:
+		virtual void printType() = 0;
+#endif
+
 	protected:
 		enum Internal
 		{
@@ -44,18 +49,30 @@ namespace tree
 	{
 	public:
 		Bool() : Type(tree::Type::TYPE_BOOL) {}
+
+#ifdef DEBUG
+		virtual void printType() { LOG("BOOL"); }
+#endif
 	};
 
 	class Int : public Type
 	{
 	public:
 		Int() : Type(tree::Type::TYPE_INT) {}
+
+#ifdef DEBUG
+		virtual void printType() { LOG("INT"); }
+#endif
 	};
 
 	class Float : public Type
 	{
 	public:
 		Float() : Type(tree::Type::TYPE_FLOAT) {}
+
+#ifdef DEBUG
+		virtual void printType() { LOG("FLOAT"); }
+#endif
 	};
 
 	class String : public Type
@@ -69,6 +86,10 @@ namespace tree
 		{
 			return mMaxSize;
 		}
+
+#ifdef DEBUG
+		virtual void printType() { LOG("STRING %d", mMaxSize); }
+#endif
 
 	private:
 		unsigned int mMaxSize;
