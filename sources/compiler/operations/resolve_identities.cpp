@@ -35,6 +35,14 @@ void operation::ResolveIdentities::visit(tree::FunctionCall *functionCall)
 			error::enqueue(prototype->getLocation(), functionCall->getLocation(), error.str());
 		}
 	}
+	else
+	{
+		tree::Identity *identity = static_cast<tree::Identity *>(functionCall->getFunctionPrototype());
+		std::string error = "The identifier \"" + identity->getName() + "\" does not reference a function";
+		error::enqueue(functionCall->getLocation(), error);
+
+		functionCall->setFunctionPrototype(NULL);
+	}
 }
 
 tree::Node *operation::ResolveIdentities::restructure(tree::Identifier *identifier)
