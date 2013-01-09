@@ -25,7 +25,11 @@ namespace tree
 		virtual void childAccept(operation::Operation *operation)
 		{
 			Statement::childAccept(operation);
-			mScoped->accept(operation);
+
+			if(mScoped)
+			{
+				mScoped->accept(operation);
+			}
 		}
 
 		virtual void accept(operation::Operation *operation)

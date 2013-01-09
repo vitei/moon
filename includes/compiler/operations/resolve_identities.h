@@ -12,6 +12,8 @@ namespace operation
 	public:
 		static void run(tree::Program *program);
 
+		virtual void visit(tree::FunctionCall *functionCall);
+
 		virtual tree::Node *restructure(tree::Identifier *identifier);
 
 	private:

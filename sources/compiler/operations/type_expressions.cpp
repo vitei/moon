@@ -14,7 +14,11 @@ void operation::TypeExpressions::visit(tree::Access *access)
 
 	ASSERT(!access->getType());
 
-	access->setType(access->getTarget()->getType());
+	// Check in-case unresolved
+	if(access->getTarget())
+	{
+		access->setType(access->getTarget()->getType());
+	}
 }
 
 void operation::TypeExpressions::visit(tree::ArrayAccess *arrayAccess)
@@ -23,7 +27,11 @@ void operation::TypeExpressions::visit(tree::ArrayAccess *arrayAccess)
 
 	ASSERT(!arrayAccess->getType());
 
-	arrayAccess->setType(arrayAccess->getContainer()->getType());
+	// Check in-case unresolved
+	if(arrayAccess->getContainer())
+	{
+		arrayAccess->setType(arrayAccess->getContainer()->getType());
+	}
 }
 
 void operation::TypeExpressions::visit(tree::BinaryExpression *binaryExpression)
@@ -32,12 +40,12 @@ void operation::TypeExpressions::visit(tree::BinaryExpression *binaryExpression)
 
 	ASSERT(!binaryExpression->getType());
 
-	tree::Type *lhsType = binaryExpression->getLHS()->getType();
-	tree::Type *rhsType = binaryExpression->getRHS()->getType();
-
 	// Check in-case unresolved
-	if(lhsType && rhsType)
+	if(binaryExpression->getLHS() && binaryExpression->getRHS())
 	{
+		tree::Type *lhsType = binaryExpression->getLHS()->getType();
+		tree::Type *rhsType = binaryExpression->getRHS()->getType();
+
 		if(*lhsType != *rhsType)
 		{
 #ifdef DEBUG
@@ -58,7 +66,11 @@ void operation::TypeExpressions::visit(tree::UnaryExpression *unaryExpression)
 
 	ASSERT(!unaryExpression->getType());
 
-	unaryExpression->setType(unaryExpression->getExpression()->getType());
+	// Check in-case unresolved
+	if(unaryExpression->getExpression())
+	{
+		unaryExpression->setType(unaryExpression->getExpression()->getType());
+	}
 }
 
 void operation::TypeExpressions::visit(tree::Scope *scope)

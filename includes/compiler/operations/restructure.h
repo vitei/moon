@@ -11,7 +11,7 @@ namespace operation
 	class Restructure : public Operation
 	{
 	public:
-		virtual void visit(tree::Node *Node);
+		virtual void visit(tree::Node *node);
 		virtual void visit(tree::Expression *expression);
 		virtual void visit(tree::Access *access);
 		virtual void visit(tree::UnaryExpression *unaryExpression);

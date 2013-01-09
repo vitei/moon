@@ -113,8 +113,16 @@ namespace tree
 		virtual void childAccept(operation::Operation *operation)
 		{
 			Expression::childAccept(operation);
-			mContainer->accept(operation);
-			mTarget->accept(operation);
+
+			if(mContainer)
+			{
+				mContainer->accept(operation);
+			}
+
+			if(mTarget)
+			{
+				mTarget->accept(operation);
+			}
 		}
 
 		virtual void accept(operation::Operation *operation)
@@ -158,7 +166,11 @@ namespace tree
 		virtual void childAccept(operation::Operation *operation)
 		{
 			Expression::childAccept(operation);
-			mExpression->accept(operation);
+
+			if(mExpression)
+			{
+				mExpression->accept(operation);
+			}
 		}
 
 		virtual void accept(operation::Operation *operation)
@@ -201,8 +213,16 @@ namespace tree
 		virtual void childAccept(operation::Operation *operation)
 		{
 			Expression::childAccept(operation);
-			mLHS->accept(operation);
-			mRHS->accept(operation);
+
+			if(mLHS)
+			{
+				mLHS->accept(operation);
+			}
+
+			if(mRHS)
+			{
+				mRHS->accept(operation);
+			}
 		}
 
 		virtual void accept(operation::Operation *operation)
@@ -275,7 +295,11 @@ namespace tree
 		virtual void childAccept(operation::Operation *operation)
 		{
 			Expression::childAccept(operation);
-			mExpression->accept(operation);
+
+			if(mExpression)
+			{
+				mExpression->accept(operation);
+			}
 		}
 
 		virtual void accept(operation::Operation *operation)
@@ -330,7 +354,11 @@ namespace tree
 		virtual void childAccept(operation::Operation *operation)
 		{
 			Expression::childAccept(operation);
-			mFunction->accept(operation);
+
+			if(mFunction)
+			{
+				mFunction->accept(operation);
+			}
 		}
 
 		virtual void accept(operation::Operation *operation)
