@@ -971,7 +971,7 @@ access_expression       :   postfix_expression
                             {
                                 $$ = $1;
                             }
-                        |   postfix_expression TOKEN_DIRECT_ACCESS postfix_expression
+                        /*| postfix_expression TOKEN_DIRECT_ACCESS postfix_expression
                             {
                                 $$ = new tree::DirectAccess($1, $3);
                                 $$->setLocation(@1);
@@ -980,7 +980,7 @@ access_expression       :   postfix_expression
                             {
                                 $$ = new tree::MessageAccess($1, $3);
                                 $$->setLocation(@1);
-                            }
+                            }*/
                         ;
 
 postfix_expression      :   expression_atom
