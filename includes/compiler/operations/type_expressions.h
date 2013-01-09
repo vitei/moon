@@ -12,6 +12,11 @@ namespace operation
 	public:
 		static void run(tree::Program *program);
 
+		virtual void visit(tree::Access *access);
+		virtual void visit(tree::ArrayAccess *arrayAccess);
+		virtual void visit(tree::BinaryExpression *binaryExpression);
+		virtual void visit(tree::UnaryExpression *unaryExpression);
+		virtual void visit(tree::Scope *scope);
 
 
 		//virtual void visit(tree::Scope *scope);
