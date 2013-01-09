@@ -331,9 +331,27 @@ namespace tree
 		ArrayAccess(Expression *array, Expression *index) : Access(array, index) {}
 	};
 
+	class FunctionPrototype;
+
 	class FunctionCall : public Expression
 	{
 	public:
+		class InvalidFunctionException : public std::exception
+		{
+		public:
+			InvalidFunctionException(Identity *_identity) : identity(_identity) {}
+
+			Identity *identity;
+		};
+
+		class InvalidArgumentsException : public std::exception
+		{
+		public:
+			InvalidArgumentsException(FunctionPrototype *_functionPrototype) : functionPrototype(_functionPrototype) {}
+
+			FunctionPrototype *functionPrototype;
+		};
+
 		FunctionCall(Identifier *functionPrototype, Expressions *arguments = NULL) : mFunctionPrototype(functionPrototype), mArguments(arguments) {}
 
 		Expression *getFunctionPrototype()
@@ -341,10 +359,7 @@ namespace tree
 			return mFunctionPrototype;
 		}
 
-		void setFunctionPrototype(Expression *functionPrototype)
-		{
-			mFunctionPrototype = functionPrototype;
-		}
+		void setFunctionPrototype(Expression *functionPrototype);
 
 		Expressions *getArguments()
 		{

@@ -12,30 +12,37 @@ namespace operation
 	{
 	public:
 		virtual void visit(tree::Node *node);
-		virtual void visit(tree::Expression *expression);
-		virtual void visit(tree::Access *access);
-		virtual void visit(tree::UnaryExpression *unaryExpression);
-		virtual void visit(tree::BinaryExpression *binaryExpression);
-		virtual void visit(tree::Cast *cast);
-		virtual void visit(tree::FunctionCall *functionCall);
-		virtual void visit(tree::Scoping *scoping);
-		virtual void visit(tree::Execute *execute);
-		virtual void visit(tree::Return *opReturn);
-		virtual void visit(tree::SetState *setState);
 
-		virtual void visit(tree::FunctionPrototype *functionPrototype) = 0;
-		virtual void visit(tree::Function *function) = 0;
-		virtual void visit(tree::Scope *scope) = 0;
+		virtual void doRestructure(tree::Node *node);
+		virtual void doRestructure(tree::Expression *expression);
+		virtual void doRestructure(tree::Access *access);
+		virtual void doRestructure(tree::UnaryExpression *unaryExpression);
+		virtual void doRestructure(tree::BinaryExpression *binaryExpression);
+		virtual void doRestructure(tree::Cast *cast);
+		virtual void doRestructure(tree::FunctionCall *functionCall);
+		virtual void doRestructure(tree::Scoping *scoping);
+		virtual void doRestructure(tree::Execute *execute);
+		virtual void doRestructure(tree::Return *opReturn);
+		virtual void doRestructure(tree::SetState *setState);
+		virtual void doRestructure(tree::FunctionPrototype *functionPrototype);
+		virtual void doRestructure(tree::Function *function);
+		virtual void doRestructure(tree::Scope *scope);
 
 		virtual tree::Node *restructure(tree::Node *node) { return node; }
 		PROCESS_ACTIONS(tree::Node *, restructure)
 
 	protected:
-		Restructure() { /* Abstract class */ }
+		Restructure() : mCurrentScope(NULL) { /* Abstract class */ }
 
-		virtual tree::Scope *getCurrentScope() = 0;
+		tree::Scope *getCurrentScope()
+		{
+			return mCurrentScope;
+		}
 
 		std::stack<tree::Node *> mNodeMap;
+
+	private:
+		tree::Scope *mCurrentScope;
 	};
 }
 
