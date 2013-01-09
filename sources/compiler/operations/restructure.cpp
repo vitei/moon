@@ -90,12 +90,12 @@ void operation::Restructure::visit(tree::Cast *cast)
 
 void operation::Restructure::visit(tree::FunctionCall *functionCall)
 {
-	if(functionCall->getFunction())
+	if(functionCall->getFunctionPrototype())
 	{
-		tree::Expression *function = static_cast<tree::Expression *>(mNodeMap.top());
+		tree::Expression *functionPrototype = static_cast<tree::Expression *>(mNodeMap.top());
 		mNodeMap.pop();
 
-		functionCall->setFunction(function);
+		functionCall->setFunctionPrototype(functionPrototype);
 	}
 
 	tree::Expressions *expressions = functionCall->getArguments();

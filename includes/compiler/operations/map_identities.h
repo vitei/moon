@@ -18,6 +18,8 @@ namespace operation
 		void add(tree::Scope *scope, tree::Statements *statements);
 		void process();
 
+		virtual void setup(tree::Function *function);
+
 		virtual void visit(tree::Function *function);
 		virtual void visit(tree::Scope *scope);
 		virtual void visit(tree::Identity *identity);
