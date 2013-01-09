@@ -60,7 +60,11 @@ namespace tree
 		virtual void childAccept(operation::Operation *operation)
 		{
 			Scope::childAccept(operation);
-			mPrototype->accept(operation);
+
+			if(mPrototype)
+			{
+				mPrototype->accept(operation);
+			}
 		}
 
 		virtual void accept(operation::Operation *operation)

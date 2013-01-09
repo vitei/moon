@@ -39,7 +39,11 @@ namespace tree
 		virtual void childAccept(operation::Operation *operation)
 		{
 			Statement::childAccept(operation);
-			mExpression->accept(operation);
+
+			if(mExpression)
+			{
+				mExpression->accept(operation);
+			}
 		}
 
 		virtual void accept(operation::Operation *operation)
@@ -71,7 +75,11 @@ namespace tree
 		virtual void childAccept(operation::Operation *operation)
 		{
 			Statement::childAccept(operation);
-			mReturn->accept(operation);
+
+			if(mReturn)
+			{
+				mReturn->accept(operation);
+			}
 		}
 
 		virtual void accept(operation::Operation *operation)
@@ -103,7 +111,11 @@ namespace tree
 		virtual void childAccept(operation::Operation *operation)
 		{
 			Statement::childAccept(operation);
-			mState->accept(operation);
+
+			if(mState)
+			{
+				mState->accept(operation);
+			}
 		}
 
 		virtual void accept(operation::Operation *operation)

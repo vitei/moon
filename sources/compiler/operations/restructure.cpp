@@ -22,52 +22,81 @@ void operation::Restructure::visit(tree::Expression *expression)
 
 void operation::Restructure::visit(tree::Access *access)
 {
-	tree::Expression *target = static_cast<tree::Expression *>(mNodeMap.top());
-	mNodeMap.pop();
-	tree::Expression *container = static_cast<tree::Expression *>(mNodeMap.top());
-	mNodeMap.pop();
+	if(access->getTarget())
+	{
+		tree::Expression *target = static_cast<tree::Expression *>(mNodeMap.top());
+		mNodeMap.pop();
 
-	access->setContainer(container);
-	access->setTarget(target);
+		access->setTarget(target);
+	}
+
+	if(access->getContainer())
+	{
+		tree::Expression *container = static_cast<tree::Expression *>(mNodeMap.top());
+		mNodeMap.pop();
+
+		access->setContainer(container);
+	}
+
 	mNodeMap.push(access->restructure(this));
 }
 
 void operation::Restructure::visit(tree::UnaryExpression *unaryExpression)
 {
-	tree::Expression *expression = static_cast<tree::Expression *>(mNodeMap.top());
-	mNodeMap.pop();
+	if(unaryExpression->getExpression())
+	{
+		tree::Expression *expression = static_cast<tree::Expression *>(mNodeMap.top());
+		mNodeMap.pop();
 
-	unaryExpression->setExpression(expression);
+		unaryExpression->setExpression(expression);
+	}
+
 	mNodeMap.push(unaryExpression->restructure(this));
 }
 
 void operation::Restructure::visit(tree::BinaryExpression *binaryExpression)
 {
-	tree::Expression *rhs = static_cast<tree::Expression *>(mNodeMap.top());
-	mNodeMap.pop();
-	tree::Expression *lhs = static_cast<tree::Expression *>(mNodeMap.top());
-	mNodeMap.pop();
+	if(binaryExpression->getRHS())
+	{
+		tree::Expression *rhs = static_cast<tree::Expression *>(mNodeMap.top());
+		mNodeMap.pop();
 
-	binaryExpression->setLHS(lhs);
-	binaryExpression->setRHS(rhs);
+		binaryExpression->setRHS(rhs);
+	}
+
+	if(binaryExpression->getLHS())
+	{
+		tree::Expression *lhs = static_cast<tree::Expression *>(mNodeMap.top());
+		mNodeMap.pop();
+
+		binaryExpression->setLHS(lhs);
+	}
+
 	mNodeMap.push(binaryExpression->restructure(this));
 }
 
 void operation::Restructure::visit(tree::Cast *cast)
 {
-	tree::Expression *expression = static_cast<tree::Expression *>(mNodeMap.top());
-	mNodeMap.pop();
+	if(cast->getExpression())
+	{
+		tree::Expression *expression = static_cast<tree::Expression *>(mNodeMap.top());
+		mNodeMap.pop();
 
-	cast->setExpression(expression);
+		cast->setExpression(expression);
+	}
+
 	mNodeMap.push(cast->restructure(this));
 }
 
 void operation::Restructure::visit(tree::FunctionCall *functionCall)
 {
-	tree::Expression *function = static_cast<tree::Expression *>(mNodeMap.top());
-	mNodeMap.pop();
+	if(functionCall->getFunction())
+	{
+		tree::Expression *function = static_cast<tree::Expression *>(mNodeMap.top());
+		mNodeMap.pop();
 
-	functionCall->setFunction(function);
+		functionCall->setFunction(function);
+	}
 
 	tree::Expressions *expressions = functionCall->getArguments();
 
@@ -97,36 +126,52 @@ void operation::Restructure::visit(tree::FunctionCall *functionCall)
 
 void operation::Restructure::visit(tree::Scoping *scoping)
 {
-	tree::Statement *statement = static_cast<tree::Statement *>(mNodeMap.top());
-	mNodeMap.pop();
+	if(scoping->getScoped())
+	{
+		tree::Statement *statement = static_cast<tree::Statement *>(mNodeMap.top());
+		mNodeMap.pop();
 
-	scoping->setScoped(statement);
+		scoping->setScoped(statement);
+	}
+
 	mNodeMap.push(scoping->restructure(this));
 }
 
 void operation::Restructure::visit(tree::Execute *execute)
 {
-	tree::Expression *expression = static_cast<tree::Expression *>(mNodeMap.top());
-	mNodeMap.pop();
+	if(execute->getExpression())
+	{
+		tree::Expression *expression = static_cast<tree::Expression *>(mNodeMap.top());
+		mNodeMap.pop();
 
-	execute->setExpression(expression);
+		execute->setExpression(expression);
+	}
+
 	mNodeMap.push(execute->restructure(this));
 }
 
 void operation::Restructure::visit(tree::Return *opReturn)
 {
-	tree::Expression *expression = static_cast<tree::Expression *>(mNodeMap.top());
-	mNodeMap.pop();
+	if(opReturn->getReturn())
+	{
+		tree::Expression *expression = static_cast<tree::Expression *>(mNodeMap.top());
+		mNodeMap.pop();
 
-	opReturn->setReturn(expression);
+		opReturn->setReturn(expression);
+	}
+
 	mNodeMap.push(opReturn->restructure(this));
 }
 
 void operation::Restructure::visit(tree::SetState *setState)
 {
-	tree::State *state = static_cast<tree::State *>(mNodeMap.top());
-	mNodeMap.pop();
+	if(setState->getState())
+	{
+		tree::State *state = static_cast<tree::State *>(mNodeMap.top());
+		mNodeMap.pop();
 
-	setState->setState(state);
+		setState->setState(state);
+	}
+
 	mNodeMap.push(setState->restructure(this));
 }
