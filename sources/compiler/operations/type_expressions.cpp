@@ -46,6 +46,9 @@ void operation::TypeExpressions::visit(tree::BinaryExpression *binaryExpression)
 		tree::Type *lhsType = binaryExpression->getLHS()->getType();
 		tree::Type *rhsType = binaryExpression->getRHS()->getType();
 
+		ASSERT(lhsType);
+		ASSERT(rhsType);
+
 		if(*lhsType != *rhsType)
 		{
 #ifdef DEBUG
@@ -70,6 +73,40 @@ void operation::TypeExpressions::visit(tree::UnaryExpression *unaryExpression)
 	if(unaryExpression->getExpression())
 	{
 		unaryExpression->setType(unaryExpression->getExpression()->getType());
+	}
+}
+
+void operation::TypeExpressions::visit(tree::FunctionCall *functionCall)
+{
+	LOG("TypeExpressions::visit::FunctionCall");
+
+	ASSERT(!functionCall->getType());
+
+	// Check in-case unresolved
+	if(functionCall->getFunction())
+	{
+		functionCall->setType(functionCall->getFunction()->getType());
+
+		tree::FunctionPrototype *prototype = static_cast<tree::FunctionPrototype *>(functionCall->getFunction());
+
+		for(tree::Expressions::iterator i = functionCall->getArguments()->begin(), end = functionCall->getArguments()->end(), j = prototype->getArguments()->begin(); i != end; ++i, ++j)
+		{
+			tree::Type *expectedType = (*j)->getType();
+			tree::Type *actualType = (*i)->getType();
+
+			ASSERT(expectedType);
+			ASSERT(actualType);
+
+			if(*expectedType != *actualType)
+			{
+#ifdef DEBUG
+			actualType->printType();
+			expectedType->printType();
+#endif
+
+				*i = new tree::Cast(expectedType, *i);
+			}
+		}
 	}
 }
 
