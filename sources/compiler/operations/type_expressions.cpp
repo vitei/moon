@@ -100,8 +100,8 @@ void operation::TypeExpressions::visit(tree::FunctionCall *functionCall)
 			if(*expectedType != *actualType)
 			{
 #ifdef DEBUG
-			actualType->printType();
-			expectedType->printType();
+				actualType->printType();
+				expectedType->printType();
 #endif
 
 				*i = new tree::Cast(expectedType, *i);
