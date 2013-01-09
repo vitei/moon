@@ -16,12 +16,8 @@ namespace operation
 		virtual void visit(tree::ArrayAccess *arrayAccess);
 		virtual void visit(tree::BinaryExpression *binaryExpression);
 		virtual void visit(tree::UnaryExpression *unaryExpression);
+		virtual void visit(tree::FunctionCall *functionCall);
 		virtual void visit(tree::Scope *scope);
-
-
-		//virtual void visit(tree::Scope *scope);
-		//virtual void visit(tree::GlobalScoping *globalScoping);
-		//virtual void visit(tree::SharedScoping *sharedScoping);
 
 	private:
 		TypeExpressions() {}
