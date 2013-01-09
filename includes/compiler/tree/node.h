@@ -85,6 +85,69 @@ namespace tree
 
 	/* ---- ONLY CONCRETE CLASSES BELOW HERE ---- */
 
+
+	/* ---- Helper macros ---- */
+
+	// This is rather ugly but it saves a LOT of typing...
+	#define DISPATCH_ACTIONS(class, node, function) \
+		if(dynamic_cast<class *>(node)) \
+		{ \
+			return function(static_cast<class *>(node)); \
+		}
+
+	#define GENERATE_DISPATCH(node, function) \
+		DISPATCH_ACTIONS(tree::Add, node, function) \
+		DISPATCH_ACTIONS(tree::Aggregate, node, function) \
+		DISPATCH_ACTIONS(tree::And, node, function) \
+		DISPATCH_ACTIONS(tree::ArrayAccess, node, function) \
+		DISPATCH_ACTIONS(tree::Assign, node, function) \
+		DISPATCH_ACTIONS(tree::Bool, node, function) \
+		DISPATCH_ACTIONS(tree::BoolLiteral, node, function) \
+		DISPATCH_ACTIONS(tree::Cast, node, function) \
+		DISPATCH_ACTIONS(tree::Constant, node, function) \
+		DISPATCH_ACTIONS(tree::DefaultState, node, function) \
+		DISPATCH_ACTIONS(tree::DirectAccess, node, function) \
+		DISPATCH_ACTIONS(tree::Divide, node, function) \
+		DISPATCH_ACTIONS(tree::Equal, node, function) \
+		DISPATCH_ACTIONS(tree::Execute, node, function) \
+		DISPATCH_ACTIONS(tree::Float, node, function) \
+		DISPATCH_ACTIONS(tree::FloatLiteral, node, function) \
+		DISPATCH_ACTIONS(tree::Function, node, function) \
+		DISPATCH_ACTIONS(tree::FunctionCall, node, function) \
+		DISPATCH_ACTIONS(tree::FunctionPrototype, node, function) \
+		DISPATCH_ACTIONS(tree::GlobalScoping, node, function) \
+		DISPATCH_ACTIONS(tree::GreaterEqual, node, function) \
+		DISPATCH_ACTIONS(tree::GreaterThan, node, function) \
+		DISPATCH_ACTIONS(tree::Identifier, node, function) \
+		DISPATCH_ACTIONS(tree::Int, node, function) \
+		DISPATCH_ACTIONS(tree::IntLiteral, node, function) \
+		DISPATCH_ACTIONS(tree::LessEqual, node, function) \
+		DISPATCH_ACTIONS(tree::LessThan, node, function) \
+		DISPATCH_ACTIONS(tree::LogicalAnd, node, function) \
+		DISPATCH_ACTIONS(tree::LogicalNot, node, function) \
+		DISPATCH_ACTIONS(tree::LogicalOr, node, function) \
+		DISPATCH_ACTIONS(tree::MessageAccess, node, function) \
+		DISPATCH_ACTIONS(tree::Minus, node, function) \
+		DISPATCH_ACTIONS(tree::Modulus, node, function) \
+		DISPATCH_ACTIONS(tree::Multiply, node, function) \
+		DISPATCH_ACTIONS(tree::NamedState, node, function) \
+		DISPATCH_ACTIONS(tree::Not, node, function) \
+		DISPATCH_ACTIONS(tree::NullReference, node, function) \
+		DISPATCH_ACTIONS(tree::Or, node, function) \
+		DISPATCH_ACTIONS(tree::Program, node, function) \
+		DISPATCH_ACTIONS(tree::Reference, node, function) \
+		DISPATCH_ACTIONS(tree::Return, node, function) \
+		DISPATCH_ACTIONS(tree::SetState, node, function) \
+		DISPATCH_ACTIONS(tree::SharedScoping, node, function) \
+		DISPATCH_ACTIONS(tree::String, node, function) \
+		DISPATCH_ACTIONS(tree::StringLiteral, node, function) \
+		DISPATCH_ACTIONS(tree::Subtract, node, function) \
+		DISPATCH_ACTIONS(tree::UDT, node, function) \
+		DISPATCH_ACTIONS(tree::Unequal, node, function) \
+		DISPATCH_ACTIONS(tree::Use, node, function) \
+		DISPATCH_ACTIONS(tree::Variable, node, function) \
+		DISPATCH_ACTIONS(tree::Xor, node, function) \
+		ERROR("Unknown concrete class");
 }
 
 #endif

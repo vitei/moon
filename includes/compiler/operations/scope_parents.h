@@ -2,12 +2,12 @@
 #define COMPILER_OPERATIONS_SCOPE_PARENTS_H
 
 #include "compiler/tree.h"
-#include "depth_restructure.h"
+#include "restructure.h"
 
 
 namespace operation
 {
-	class ScopeParents : public DepthRestructure
+	class ScopeParents : public Restructure
 	{
 	public:
 		static void run(tree::Program *program);
@@ -15,8 +15,8 @@ namespace operation
 		virtual void setup(tree::Program *program);
 		virtual void setup(tree::Aggregate *aggregate);
 
-		virtual void visit(tree::Function *function);
-		virtual void visit(tree::Scope *scope);
+		virtual void doRestructure(tree::Function *function);
+		virtual void doRestructure(tree::Scope *scope);
 
 		virtual tree::Node *restructure(tree::GlobalScoping *globalScoping);
 		virtual tree::Node *restructure(tree::SharedScoping *sharedScoping);

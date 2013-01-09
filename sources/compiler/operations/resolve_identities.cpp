@@ -10,39 +10,23 @@ void operation::ResolveIdentities::run(tree::Program *program)
 	program->accept(&operation);
 }
 
-void operation::ResolveIdentities::visit(tree::FunctionCall *functionCall)
+void operation::ResolveIdentities::visit(tree::Expression *expression)
 {
-	operation::Restructure::visit(functionCall);
+	LOG("ResolveIdentities::visit::Expression");
 
-	LOG("ResolveIdentities::visit::FunctionCall");
+	int a = mNodeMap.size();
 
-	tree::FunctionPrototype *prototype = dynamic_cast<tree::FunctionPrototype *>(functionCall->getFunctionPrototype());
-
-	if(prototype)
+	try
 	{
-		unsigned int numExpectedArguments = prototype->getArguments()->size();
-		unsigned int numArguments = functionCall->getArguments()->size();
-
-		if(numExpectedArguments != numArguments)
-		{
-			std::stringstream error;
-
-			functionCall->setFunctionPrototype(NULL);
-
-			error << "Incorrect number of arguments for function \"" << prototype->getName() << "\"" << std::endl
-				<< "\tExpected " << numExpectedArguments << " but got " << numArguments;
-
-			error::enqueue(prototype->getLocation(), functionCall->getLocation(), error.str());
-		}
+		operation::Restructure::visit(expression);
 	}
-	else
+	catch(tree::FunctionCall::InvalidFunctionException &e)
 	{
-		tree::Identity *identity = static_cast<tree::Identity *>(functionCall->getFunctionPrototype());
-		std::string error = "The identifier \"" + identity->getName() + "\" does not reference a function";
-		error::enqueue(functionCall->getLocation(), error);
-
-		functionCall->setFunctionPrototype(NULL);
+		std::string error = "The identifier \"" + e.identity->getName() + "\" does not refer to a function";
+		error::enqueue(e.identity->getLocation(), error);
 	}
+
+	ASSERT(a == mNodeMap.size());
 }
 
 tree::Node *operation::ResolveIdentities::restructure(tree::Identifier *identifier)
