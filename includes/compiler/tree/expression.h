@@ -310,16 +310,16 @@ namespace tree
 	class FunctionCall : public Expression
 	{
 	public:
-		FunctionCall(Identifier *id, Expressions *arguments = NULL) : mID(id), mArguments(arguments) {}
+		FunctionCall(Identifier *function, Expressions *arguments = NULL) : mFunction(function), mArguments(arguments) {}
 
-		Identifier *getID()
+		Expression *getFunction()
 		{
-			return mID;
+			return mFunction;
 		}
 
-		void setID(Identifier *id)
+		void setFunction(Expression *function)
 		{
-			mID = id;
+			mFunction = function;
 		}
 
 		Expressions *getArguments()
@@ -330,7 +330,7 @@ namespace tree
 		virtual void childAccept(operation::Operation *operation)
 		{
 			Expression::childAccept(operation);
-			mID->accept(operation);
+			mFunction->accept(operation);
 		}
 
 		virtual void accept(operation::Operation *operation)
@@ -341,7 +341,7 @@ namespace tree
 		}
 
 	private:
-		Identifier *mID;
+		Expression *mFunction;
 		Expressions *mArguments;
 	};
 
