@@ -64,10 +64,10 @@ void operation::Restructure::visit(tree::Cast *cast)
 
 void operation::Restructure::visit(tree::FunctionCall *functionCall)
 {
-	tree::Identifier *id = static_cast<tree::Identifier *>(mNodeMap.top());
+	tree::Expression *function = static_cast<tree::Expression *>(mNodeMap.top());
 	mNodeMap.pop();
 
-	functionCall->setID(id);
+	functionCall->setFunction(function);
 
 	tree::Expressions *expressions = functionCall->getArguments();
 
