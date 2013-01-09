@@ -58,6 +58,8 @@ void operation::MapIdentities::visit(tree::Function *function)
 		add(function, arguments);
 	}
 
+	function->getPrototype()->setFunction(function);
+
 	if(function->getStatements())
 	{
 		add(function);

@@ -15,18 +15,31 @@ namespace tree
 
 	/* ---- ONLY CONCRETE CLASSES BELOW HERE ---- */
 
+	class Function;
+
 	class FunctionPrototype : public TypedIdentity
 	{
 	public:
-		FunctionPrototype(Type *type, std::string name, Expressions *arguments) : TypedIdentity(type, name), mArguments(arguments) {}
+		FunctionPrototype(Type *type, std::string name, Expressions *arguments) : TypedIdentity(type, name), mArguments(arguments), mFunction(NULL) {}
 
 		Expressions *getArguments()
 		{
 			return mArguments;
 		}
 
+		Function *getFunction()
+		{
+			return mFunction;
+		}
+
+		void setFunction(Function *function)
+		{
+			mFunction = function;
+		}
+
 	private:
 		Expressions *mArguments;
+		Function *mFunction;
 	};
 
 	class Function : public Scope
