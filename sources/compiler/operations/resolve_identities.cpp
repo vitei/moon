@@ -16,7 +16,7 @@ void operation::ResolveIdentities::visit(tree::FunctionCall *functionCall)
 
 	LOG("ResolveIdentities::visit::FunctionCall");
 
-	tree::FunctionPrototype *prototype = dynamic_cast<tree::FunctionPrototype *>(functionCall->getFunction());
+	tree::FunctionPrototype *prototype = dynamic_cast<tree::FunctionPrototype *>(functionCall->getFunctionPrototype());
 
 	if(prototype)
 	{
@@ -27,7 +27,7 @@ void operation::ResolveIdentities::visit(tree::FunctionCall *functionCall)
 		{
 			std::stringstream error;
 
-			functionCall->setFunction(NULL);
+			functionCall->setFunctionPrototype(NULL);
 
 			error << "Incorrect number of arguments for function \"" << prototype->getName() << "\"" << std::endl
 				<< "\tExpected " << numExpectedArguments << " but got " << numArguments;

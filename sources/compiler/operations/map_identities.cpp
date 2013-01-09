@@ -49,16 +49,23 @@ void operation::MapIdentities::process()
 	}
 }
 
+void operation::MapIdentities::setup(tree::Function *function)
+{
+	LOG("MapIdentities::setup::Function");
+
+	function->getPrototype()->setFunction(function);
+}
+
 void operation::MapIdentities::visit(tree::Function *function)
 {
+	LOG("MapIdentities::visit::Function");
+
 	tree::Expressions *arguments = function->getPrototype()->getArguments();
 
 	if(arguments)
 	{
 		add(function, arguments);
 	}
-
-	function->getPrototype()->setFunction(function);
 
 	if(function->getStatements())
 	{
@@ -68,6 +75,8 @@ void operation::MapIdentities::visit(tree::Function *function)
 
 void operation::MapIdentities::visit(tree::Scope *scope)
 {
+	LOG("MapIdentities::visit::Scope");
+
 	if(scope->getStatements())
 	{
 		add(scope);

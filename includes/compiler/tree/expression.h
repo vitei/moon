@@ -334,16 +334,16 @@ namespace tree
 	class FunctionCall : public Expression
 	{
 	public:
-		FunctionCall(Identifier *function, Expressions *arguments = NULL) : mFunction(function), mArguments(arguments) {}
+		FunctionCall(Identifier *functionPrototype, Expressions *arguments = NULL) : mFunctionPrototype(functionPrototype), mArguments(arguments) {}
 
-		Expression *getFunction()
+		Expression *getFunctionPrototype()
 		{
-			return mFunction;
+			return mFunctionPrototype;
 		}
 
-		void setFunction(Expression *function)
+		void setFunctionPrototype(Expression *functionPrototype)
 		{
-			mFunction = function;
+			mFunctionPrototype = functionPrototype;
 		}
 
 		Expressions *getArguments()
@@ -355,9 +355,9 @@ namespace tree
 		{
 			Expression::childAccept(operation);
 
-			if(mFunction)
+			if(mFunctionPrototype)
 			{
-				mFunction->accept(operation);
+				mFunctionPrototype->accept(operation);
 			}
 		}
 
@@ -369,7 +369,7 @@ namespace tree
 		}
 
 	private:
-		Expression *mFunction;
+		Expression *mFunctionPrototype;
 		Expressions *mArguments;
 	};
 

@@ -83,13 +83,13 @@ void operation::TypeExpressions::visit(tree::FunctionCall *functionCall)
 	ASSERT(!functionCall->getType());
 
 	// Check in-case unresolved
-	if(functionCall->getFunction())
+	if(functionCall->getFunctionPrototype())
 	{
-		functionCall->setType(functionCall->getFunction()->getType());
+		tree::FunctionPrototype *functionPrototype = static_cast<tree::FunctionPrototype *>(functionCall->getFunctionPrototype());
 
-		tree::FunctionPrototype *prototype = static_cast<tree::FunctionPrototype *>(functionCall->getFunction());
+		functionCall->setType(functionPrototype->getType());
 
-		for(tree::Expressions::iterator i = functionCall->getArguments()->begin(), end = functionCall->getArguments()->end(), j = prototype->getArguments()->begin(); i != end; ++i, ++j)
+		for(tree::Expressions::iterator i = functionCall->getArguments()->begin(), end = functionCall->getArguments()->end(), j = functionPrototype->getArguments()->begin(); i != end; ++i, ++j)
 		{
 			tree::Type *expectedType = (*j)->getType();
 			tree::Type *actualType = (*i)->getType();
