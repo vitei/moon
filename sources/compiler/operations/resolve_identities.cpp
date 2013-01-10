@@ -32,6 +32,16 @@ void operation::ResolveIdentities::visit(tree::Expression *expression)
 
 			mNodeMap = nodeMapClone;
 		}
+		catch(tree::FunctionCall::InvalidArgumentsException &e)
+		{
+			std::stringstream error;
+
+			error << "The function \"" << e.functionPrototype->getName() << "\" accepts " << e.functionPrototype->getArguments()->size() << " parameters, not " << e.functionCall->getArguments()->size();
+
+			error::enqueue(e.functionPrototype->getLocation(), e.functionCall->getLocation(), error.str());
+
+			mNodeMap = nodeMapClone;
+		}
 	}
 }
 
@@ -47,8 +57,8 @@ tree::Node *operation::ResolveIdentities::restructure(tree::Identifier *identifi
 	}
 	catch(tree::Scope::NotFoundException &e)
 	{
-		std::string error = "The identifier \"" + identifier->getName() + "\" does not exist";
-		error::enqueue(identifier->getLocation(), error);
+		std::string error = "The identifier \"" + e.identifier->getName() + "\" does not exist";
+		error::enqueue(e.identifier->getLocation(), error);
 	}
 
 	delete identifier;
