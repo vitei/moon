@@ -22,7 +22,7 @@ void tree::FunctionCall::setFunctionPrototype(tree::Expression *functionPrototyp
 		else
 		{
 			mFunctionPrototype = NULL;
-			throw(tree::FunctionCall::InvalidArgumentsException(prototype));
+			throw(tree::FunctionCall::InvalidArgumentsException(this, prototype));
 		}
 	}
 	else
