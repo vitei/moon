@@ -14,19 +14,25 @@ void operation::ResolveIdentities::visit(tree::Expression *expression)
 {
 	LOG("ResolveIdentities::visit::Expression");
 
-	int a = mNodeMap.size();
+	// FIXME, this is a terrible hack...
 
-	try
-	{
-		operation::Restructure::visit(expression);
-	}
-	catch(tree::FunctionCall::InvalidFunctionException &e)
-	{
-		std::string error = "The identifier \"" + e.identity->getName() + "\" does not refer to a function";
-		error::enqueue(e.identity->getLocation(), error);
-	}
+	std::stack<tree::Node *> nodeMapClone = mNodeMap;
 
-	ASSERT(a == mNodeMap.size());
+	for(;;)
+	{
+		try
+		{
+			operation::Restructure::visit(static_cast<tree::Node *>(expression));
+			break;
+		}
+		catch(tree::FunctionCall::InvalidFunctionException &e)
+		{
+			std::string error = "The identifier \"" + e.identity->getName() + "\" does not refer to a function";
+			error::enqueue(e.identity->getLocation(), error);
+
+			mNodeMap = nodeMapClone;
+		}
+	}
 }
 
 tree::Node *operation::ResolveIdentities::restructure(tree::Identifier *identifier)
