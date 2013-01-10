@@ -347,8 +347,9 @@ namespace tree
 		class InvalidArgumentsException : public std::exception
 		{
 		public:
-			InvalidArgumentsException(FunctionPrototype *_functionPrototype) : functionPrototype(_functionPrototype) {}
+			InvalidArgumentsException(FunctionCall *_functionCall, FunctionPrototype *_functionPrototype) : functionCall(_functionCall), functionPrototype(_functionPrototype) {}
 
+			FunctionCall *functionCall;
 			FunctionPrototype *functionPrototype;
 		};
 

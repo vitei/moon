@@ -93,7 +93,7 @@ void operation::MapIdentities::visit(tree::Identity *identity)
 	}
 	catch(tree::Scope::ExistsException &e)
 	{
-		std::string error = "The identifier \"" + identity->getName() + "\" is already defined";
-		error::enqueue(e.identity->getLocation(), identity->getLocation(), error);
+		std::string error = "The identifier \"" + e.identity->getName() + "\" is already defined";
+		error::enqueue(e.conflictingIdentity->getLocation(), e.identity->getLocation(), error);
 	}
 }

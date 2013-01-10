@@ -20,13 +20,18 @@ namespace tree
 		class ExistsException : public std::exception
 		{
 		public:
-			ExistsException(tree::Identity *_identity) : identity(_identity) {}
+			ExistsException(tree::Identity *_identity, tree::Identity *_conflictingIdentity) : identity(_identity), conflictingIdentity(_conflictingIdentity) {}
 
 			tree::Identity *identity;
+			tree::Identity *conflictingIdentity;
 		};
 
 		class NotFoundException : public std::exception
 		{
+		public:
+			NotFoundException(tree::Identifier *_identifier) : identifier(_identifier) {}
+
+			tree::Identifier *identifier;
 		};
 
 		Scope(Statements *statements) : mParent(NULL), mStatements(statements) {}

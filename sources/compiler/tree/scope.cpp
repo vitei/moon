@@ -12,7 +12,7 @@ void tree::Scope::mapIdentity(tree::Identity *identity)
 
 		if(previousValue != s->mIdentities.end())
 		{
-			throw(tree::Scope::ExistsException(previousValue->second));
+			throw(tree::Scope::ExistsException(identity, previousValue->second));
 		}
 	}
 
@@ -33,5 +33,5 @@ tree::Identity *tree::Scope::findIdentity(tree::Identifier *identifier)
 		}
 	}
 
-	throw(tree::Scope::NotFoundException());
+	throw(tree::Scope::NotFoundException(identifier));
 }
