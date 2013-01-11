@@ -17,7 +17,9 @@ namespace generator
 
 		virtual void run(tree::Program *program);
 
+		virtual void visit(tree::Scope *scope);
 		virtual void visit(tree::Program *program);
+		virtual void visit(tree::Function *function);
 
 		void outputDeclaration(tree::Identity *identity);
 
