@@ -15,8 +15,8 @@ namespace operation
 		virtual void setup(tree::Program *program);
 		virtual void setup(tree::Aggregate *aggregate);
 
-		virtual void doRestructure(tree::Function *function);
-		virtual void doRestructure(tree::Scope *scope);
+		virtual void dispatch(tree::Function *function);
+		virtual void dispatch(tree::Scope *scope);
 
 		virtual tree::Node *restructure(tree::GlobalScoping *globalScoping);
 		virtual tree::Node *restructure(tree::SharedScoping *sharedScoping);

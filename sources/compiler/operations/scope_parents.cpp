@@ -22,20 +22,20 @@ void operation::ScopeParents::setup(tree::Aggregate *aggregate)
 	mAggregateScope = aggregate;
 }
 
-void operation::ScopeParents::doRestructure(tree::Function *function)
+void operation::ScopeParents::dispatch(tree::Function *function)
 {
-	LOG("ScopeParents::doRestructure::Function");
+	LOG("ScopeParents::dispatch::Function");
 
 	function->setParent(getCurrentScope());
-	operation::Restructure::doRestructure(function);
+	operation::Restructure::dispatch(function);
 }
 
-void operation::ScopeParents::doRestructure(tree::Scope *scope)
+void operation::ScopeParents::dispatch(tree::Scope *scope)
 {
-	LOG("ScopeParents::doRestructure::Scope");
+	LOG("ScopeParents::dispatch::Scope");
 
 	scope->setParent(getCurrentScope());
-	operation::Restructure::doRestructure(scope);
+	operation::Restructure::dispatch(scope);
 }
 
 tree::Node *operation::ScopeParents::restructure(tree::GlobalScoping *globalScoping)
