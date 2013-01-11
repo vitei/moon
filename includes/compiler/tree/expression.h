@@ -14,6 +14,16 @@ namespace tree
 	class Expression : public Node
 	{
 	public:
+		class InvalidException : public std::exception
+		{
+		public:
+			InvalidException(Expression *_expression) : expression(_expression) {}
+
+			virtual void reset() = 0;
+
+			Expression *expression;
+		};
+
 		Type *getType()
 		{
 			return mType;
@@ -90,25 +100,51 @@ namespace tree
 	class Access : public Expression
 	{
 	public:
+		class InvalidException : public tree::Expression::InvalidException
+		{
+		public:
+			InvalidException(Expression *_expression, Access *_access) : tree::Expression::InvalidException(_expression), access(_access) {}
+
+			Access *access;
+		};
+
+		class InvalidContainerException : public tree::Access::InvalidException
+		{
+		public:
+			InvalidContainerException(Access *_access) : tree::Access::InvalidException(_access->getContainer(), _access) {}
+
+			virtual void reset()
+			{
+				LOG("tree::Access::InvalidContainerException::reset");
+				access->setContainer(NULL);
+			}
+		};
+
+		class InvalidTargetException : public tree::Access::InvalidException
+		{
+		public:
+			InvalidTargetException(Access *_access) : tree::Access::InvalidException(_access->getTarget(), _access) {}
+
+			virtual void reset()
+			{
+				LOG("tree::Access::InvalidTargetException::reset");
+				access->setTarget(NULL);
+			}
+		};
+
 		Expression *getContainer()
 		{
 			return mContainer;
 		}
 
-		void setContainer(Expression *container)
-		{
-			mContainer = container;
-		}
+		void setContainer(Expression *container);
 
 		Expression *getTarget()
 		{
 			return mTarget;
 		}
 
-		void setTarget(Expression *target)
-		{
-			mTarget = target;
-		}
+		void setTarget(Expression *target);
 
 		virtual void childAccept(operation::Operation *operation)
 		{
@@ -153,15 +189,26 @@ namespace tree
 	class UnaryExpression : public Expression
 	{
 	public:
+		class InvalidException : public tree::Expression::InvalidException
+		{
+		public:
+			InvalidException(UnaryExpression *_unaryExpression) : tree::Expression::InvalidException(_unaryExpression->getExpression()), unaryExpression(_unaryExpression) {}
+
+			virtual void reset()
+			{
+				LOG("tree::UnaryExpression::InvalidException::reset");
+				unaryExpression->setExpression(NULL);
+			}
+
+			UnaryExpression *unaryExpression;
+		};
+
 		Expression *getExpression()
 		{
 			return mExpression;
 		}
 
-		void setExpression(Expression *expression)
-		{
-			mExpression = expression;
-		}
+		void setExpression(Expression *expression);
 
 		virtual void childAccept(operation::Operation *operation)
 		{
@@ -190,25 +237,51 @@ namespace tree
 	class BinaryExpression : public Expression
 	{
 	public:
+		class InvalidException : public tree::Expression::InvalidException
+		{
+		public:
+			InvalidException(Expression *_expression, BinaryExpression *_binaryExpression) : tree::Expression::InvalidException(_expression), binaryExpression(_binaryExpression) {}
+
+			BinaryExpression *binaryExpression;
+		};
+
+		class InvalidLHSException : public tree::BinaryExpression::InvalidException
+		{
+		public:
+			InvalidLHSException(BinaryExpression *_binaryExpression) : tree::BinaryExpression::InvalidException(_binaryExpression->getLHS(), _binaryExpression) {}
+
+			virtual void reset()
+			{
+				LOG("tree::BinaryExpression::InvalidLHSException::reset");
+				binaryExpression->setLHS(NULL);
+			}
+		};
+
+		class InvalidRHSException : public tree::BinaryExpression::InvalidException
+		{
+		public:
+			InvalidRHSException(BinaryExpression *_binaryExpression) : tree::BinaryExpression::InvalidException(_binaryExpression->getRHS(), _binaryExpression) {}
+
+			virtual void reset()
+			{
+				LOG("tree::BinaryExpression::InvalidRHSException::reset");
+				binaryExpression->setRHS(NULL);
+			}
+		};
+
 		Expression *getLHS()
 		{
 			return mLHS;
 		}
 
-		void setLHS(Expression *lhs)
-		{
-			mLHS = lhs;
-		}
+		void setLHS(Expression *lhs);
 
 		Expression *getRHS()
 		{
 			return mRHS;
 		}
 
-		void setRHS(Expression *rhs)
-		{
-			mRHS = rhs;
-		}
+		void setRHS(Expression *rhs);
 
 		virtual void childAccept(operation::Operation *operation)
 		{
@@ -336,21 +409,36 @@ namespace tree
 	class FunctionCall : public Expression
 	{
 	public:
-		class InvalidFunctionException : public std::exception
+		class InvalidException : public tree::Expression::InvalidException
 		{
 		public:
-			InvalidFunctionException(Identity *_identity) : identity(_identity) {}
-
-			Identity *identity;
-		};
-
-		class InvalidArgumentsException : public std::exception
-		{
-		public:
-			InvalidArgumentsException(FunctionCall *_functionCall, FunctionPrototype *_functionPrototype) : functionCall(_functionCall), functionPrototype(_functionPrototype) {}
+			InvalidException(Expression *_expression, FunctionCall *_functionCall) : tree::Expression::InvalidException(_expression), functionCall(_functionCall) {}
 
 			FunctionCall *functionCall;
-			FunctionPrototype *functionPrototype;
+		};
+
+		class InvalidFunctionException : public tree::FunctionCall::InvalidException
+		{
+		public:
+			InvalidFunctionException(FunctionCall *_functionCall) : tree::FunctionCall::InvalidException(_functionCall->getFunctionPrototype(), _functionCall) {}
+
+			virtual void reset()
+			{
+				LOG("tree::FunctionCall::InvalidFunctionException::reset");
+				functionCall->setFunctionPrototype(NULL);
+			}
+		};
+
+		class InvalidArgumentsException : public tree::FunctionCall::InvalidException
+		{
+		public:
+			InvalidArgumentsException(FunctionCall *_functionCall) : tree::FunctionCall::InvalidException(_functionCall->getFunctionPrototype(), _functionCall) {}
+
+			virtual void reset()
+			{
+				LOG("tree::FunctionCall::InvalidArgumentsException::reset");
+				functionCall->setFunctionPrototype(NULL);
+			}
 		};
 
 		FunctionCall(Identifier *functionPrototype, Expressions *arguments = NULL) : mFunctionPrototype(functionPrototype), mArguments(arguments) {}
