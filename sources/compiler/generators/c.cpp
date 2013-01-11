@@ -2,11 +2,10 @@
 #include "compiler/generators.h"
 
 
-void generator::C::run(tree::Program *program)
+void generator::C::run(std::ostream &output, tree::Program *program)
 {
+	mOutput = &output;
 	dispatch(program);
-
-	LOG("\n\n%s", mOutput.str().c_str());
 }
 
 void generator::C::dispatch(tree::Node *node)
@@ -26,16 +25,23 @@ void generator::C::generate(tree::Scope *scope)
 
 void generator::C::generate(tree::Program *program)
 {
-	mOutput << "typedef struct" << std::endl
+	for(tree::Identities::iterator i = program->getIdentities().begin(), end = program->getIdentities().end(); i != end; ++i)
+	{
+		*mOutput << "extern ";
+		outputDeclaration(i->second);
+		*mOutput << ";" << std::endl;
+	}
+
+	/**mOutput << "typedef struct" << std::endl
 		<< "{" << std::endl;
 
 	for(tree::Identities::iterator i = program->getIdentities().begin(), end = program->getIdentities().end(); i != end; ++i)
 	{
 		outputDeclaration(i->second);
-		mOutput << ";" << std::endl;
+		*mOutput << ";" << std::endl;
 	}
 
-	mOutput << "} FIXME_GENERATE_NAME;" << std::endl << std::endl;
+	*mOutput << "} FIXME_GENERATE_NAME;" << std::endl << std::endl;*/
 
 	generate(static_cast<tree::Scope *>(program));
 }
@@ -43,7 +49,7 @@ void generator::C::generate(tree::Program *program)
 void generator::C::generate(tree::Function *function)
 {
 	outputDeclaration(function->getPrototype());
-	mOutput << "(FIXME_GENERATE_NAME *scope";
+	*mOutput << "(FIXME_GENERATE_NAME *scope";
 
 	tree::Expressions *arguments = function->getPrototype()->getArguments();
 
@@ -51,13 +57,19 @@ void generator::C::generate(tree::Function *function)
 	{
 		for(tree::Expressions::iterator i = arguments->begin(), end = arguments->end(); i != end; ++i)
 		{
-			mOutput << ", ";
+			*mOutput << ", ";
 			outputDeclaration(static_cast<tree::Identity *>(*i));
 		}
 	}
 
-	mOutput << ")" << std::endl
+	*mOutput << ")" << std::endl
 		<< "{" << std::endl;
+
+	for(tree::Identities::iterator i = function->getIdentities().begin(), end = function->getIdentities().end(); i != end; ++i)
+	{
+		outputDeclaration(i->second);
+		*mOutput << ";" << std::endl;
+	}
 
 	generate(static_cast<tree::Scope *>(function));
 
@@ -66,20 +78,20 @@ void generator::C::generate(tree::Function *function)
 	// Check if we need a return statement
 	if(statements && dynamic_cast<tree::Return *>(*(--statements->end())) == NULL)
 	{
-		mOutput << "return 0;" << std::endl;
+		*mOutput << "return 0;" << std::endl;
 	}
 
-	mOutput << "}" << std::endl << std::endl;
+	*mOutput << "}" << std::endl << std::endl;
 }
 
 void generator::C::generate(tree::Identity *identity)
 {
-	mOutput << identity->getName();
+	*mOutput << identity->getName();
 }
 
 void generator::C::generate(tree::Reference *reference)
 {
-	mOutput << "*" << reference->getName();
+	*mOutput << "*" << reference->getName();
 }
 
 void generator::C::generate(tree::Cast *cast)
@@ -88,33 +100,33 @@ void generator::C::generate(tree::Cast *cast)
 
 	if(dynamic_cast<tree::Bool *>(type))
 	{
-		mOutput << "(bool)";
+		*mOutput << "(bool)";
 	}
 	else if(dynamic_cast<tree::Int *>(type))
 	{
-		mOutput << "(int)";
+		*mOutput << "(int)";
 	}
 	else if(dynamic_cast<tree::Float *>(type))
 	{
-		mOutput << "(float)";
+		*mOutput << "(float)";
 	}
 	else if(dynamic_cast<tree::String *>(type))
 	{
-		mOutput << "(char *)";
+		*mOutput << "(char *)";
 	}
 	else if(dynamic_cast<tree::UDT *>(type))
 	{
 		ERROR("FIXME");
-		//mOutput << "char*";
+		//*mOutput << "char*";
 	}
 	else
 	{
 		ERROR("Unknown type");
 	}
 
-	mOutput << "(";
+	*mOutput << "(";
 	dispatch(cast->getExpression());
-	mOutput << ")";
+	*mOutput << ")";
 }
 
 void generator::C::generate(tree::DirectAccess *directAccess)
@@ -136,7 +148,7 @@ void generator::C::generate(tree::FunctionCall *functionCall)
 {
 	tree::FunctionPrototype *prototype = static_cast<tree::FunctionPrototype *>(functionCall->getPrototype());
 
-	mOutput << prototype->getName() << "(scope";
+	*mOutput << prototype->getName() << "(scope";
 
 	tree::Expressions *arguments = prototype->getArguments();
 
@@ -144,222 +156,222 @@ void generator::C::generate(tree::FunctionCall *functionCall)
 	{
 		for(tree::Expressions::iterator i = arguments->begin(), end = arguments->end(); i != end; ++i)
 		{
-			mOutput << ", ";
+			*mOutput << ", ";
 			dispatch(*i);
 		}
 	}
 
-	mOutput << ")";
+	*mOutput << ")";
 }
 
 void generator::C::generate(tree::NullReference *nullReference)
 {
-	mOutput << "NULL";
+	*mOutput << "NULL";
 }
 
 void generator::C::generate(tree::BoolLiteral *boolLiteral)
 {
-	mOutput << (boolLiteral->getValue() ? "true" : "false");
+	*mOutput << (boolLiteral->getValue() ? "true" : "false");
 }
 
 void generator::C::generate(tree::IntLiteral *intLiteral)
 {
-	mOutput << intLiteral->getValue();
+	*mOutput << intLiteral->getValue();
 }
 
 void generator::C::generate(tree::FloatLiteral *floatLiteral)
 {
-	mOutput << floatLiteral->getValue();
+	*mOutput << floatLiteral->getValue();
 }
 
 void generator::C::generate(tree::StringLiteral *stringLiteral)
 {
-	mOutput << "\"" << stringLiteral->getValue() << "\"";
+	*mOutput << "\"" << stringLiteral->getValue() << "\"";
 }
 
 void generator::C::generate(tree::Assign *assign)
 {
 	dispatch(assign->getLHS());
-	mOutput << " = ";
+	*mOutput << " = ";
 	dispatch(assign->getRHS());
 }
 
 void generator::C::generate(tree::LogicalOr *logicalOr)
 {
-	mOutput << "(";
+	*mOutput << "(";
 	dispatch(logicalOr->getLHS());
-	mOutput << ") || (";
+	*mOutput << ") || (";
 	dispatch(logicalOr->getRHS());
-	mOutput << ")";
+	*mOutput << ")";
 }
 
 void generator::C::generate(tree::LogicalAnd *logicalAnd)
 {
-	mOutput << "(";
+	*mOutput << "(";
 	dispatch(logicalAnd->getLHS());
-	mOutput << ") && (";
+	*mOutput << ") && (";
 	dispatch(logicalAnd->getRHS());
-	mOutput << ")";
+	*mOutput << ")";
 }
 
 void generator::C::generate(tree::Or *orExpression)
 {
-	mOutput << "(";
+	*mOutput << "(";
 	dispatch(orExpression->getLHS());
-	mOutput << ") | (";
+	*mOutput << ") | (";
 	dispatch(orExpression->getRHS());
-	mOutput << ")";
+	*mOutput << ")";
 }
 
 void generator::C::generate(tree::Xor *xorExpression)
 {
-	mOutput << "(";
+	*mOutput << "(";
 	dispatch(xorExpression->getLHS());
-	mOutput << ") ^ (";
+	*mOutput << ") ^ (";
 	dispatch(xorExpression->getRHS());
-	mOutput << ")";
+	*mOutput << ")";
 }
 
 void generator::C::generate(tree::And *andExpression)
 {
-	mOutput << "(";
+	*mOutput << "(";
 	dispatch(andExpression->getLHS());
-	mOutput << ") & (";
+	*mOutput << ") & (";
 	dispatch(andExpression->getRHS());
-	mOutput << ")";
+	*mOutput << ")";
 }
 
 void generator::C::generate(tree::Equal *equal)
 {
-	mOutput << "(";
+	*mOutput << "(";
 	dispatch(equal->getLHS());
-	mOutput << ") == (";
+	*mOutput << ") == (";
 	dispatch(equal->getRHS());
-	mOutput << ")";
+	*mOutput << ")";
 }
 
 void generator::C::generate(tree::Unequal *unequal)
 {
-	mOutput << "(";
+	*mOutput << "(";
 	dispatch(unequal->getLHS());
-	mOutput << ") != (";
+	*mOutput << ") != (";
 	dispatch(unequal->getRHS());
-	mOutput << ")";
+	*mOutput << ")";
 }
 
 void generator::C::generate(tree::LessThan *lessThan)
 {
-	mOutput << "(";
+	*mOutput << "(";
 	dispatch(lessThan->getLHS());
-	mOutput << ") < (";
+	*mOutput << ") < (";
 	dispatch(lessThan->getRHS());
-	mOutput << ")";
+	*mOutput << ")";
 }
 
 void generator::C::generate(tree::LessEqual *lessEqual)
 {
-	mOutput << "(";
+	*mOutput << "(";
 	dispatch(lessEqual->getLHS());
-	mOutput << ") <= (";
+	*mOutput << ") <= (";
 	dispatch(lessEqual->getRHS());
-	mOutput << ")";
+	*mOutput << ")";
 }
 
 void generator::C::generate(tree::GreaterThan *greaterThan)
 {
-	mOutput << "(";
+	*mOutput << "(";
 	dispatch(greaterThan->getLHS());
-	mOutput << ") > (";
+	*mOutput << ") > (";
 	dispatch(greaterThan->getRHS());
-	mOutput << ")";
+	*mOutput << ")";
 }
 
 void generator::C::generate(tree::GreaterEqual *greaterEqual)
 {
-	mOutput << "(";
+	*mOutput << "(";
 	dispatch(greaterEqual->getLHS());
-	mOutput << ") >= (";
+	*mOutput << ") >= (";
 	dispatch(greaterEqual->getRHS());
-	mOutput << ")";
+	*mOutput << ")";
 }
 
 void generator::C::generate(tree::Add *add)
 {
-	mOutput << "(";
+	*mOutput << "(";
 	dispatch(add->getLHS());
-	mOutput << ") + (";
+	*mOutput << ") + (";
 	dispatch(add->getRHS());
-	mOutput << ")";
+	*mOutput << ")";
 }
 
 void generator::C::generate(tree::Subtract *subtract)
 {
-	mOutput << "(";
+	*mOutput << "(";
 	dispatch(subtract->getLHS());
-	mOutput << ") - (";
+	*mOutput << ") - (";
 	dispatch(subtract->getRHS());
-	mOutput << ")";
+	*mOutput << ")";
 }
 
 void generator::C::generate(tree::Multiply *multiply)
 {
-	mOutput << "(";
+	*mOutput << "(";
 	dispatch(multiply->getLHS());
-	mOutput << ") * (";
+	*mOutput << ") * (";
 	dispatch(multiply->getRHS());
-	mOutput << ")";
+	*mOutput << ")";
 }
 
 void generator::C::generate(tree::Divide *divide)
 {
-	mOutput << "(";
+	*mOutput << "(";
 	dispatch(divide->getLHS());
-	mOutput << ") / (";
+	*mOutput << ") / (";
 	dispatch(divide->getRHS());
-	mOutput << ")";
+	*mOutput << ")";
 }
 
 void generator::C::generate(tree::Modulus *modulus)
 {
-	mOutput << "(";
+	*mOutput << "(";
 	dispatch(modulus->getLHS());
-	mOutput << ") % (";
+	*mOutput << ") % (";
 	dispatch(modulus->getRHS());
-	mOutput << ")";
+	*mOutput << ")";
 }
 
 void generator::C::generate(tree::LogicalNot *logicalNot)
 {
-	mOutput << "!(";
+	*mOutput << "!(";
 	dispatch(logicalNot->getExpression());
-	mOutput << ")";
+	*mOutput << ")";
 }
 
 void generator::C::generate(tree::Not *notExpression)
 {
-	mOutput << "~(";
+	*mOutput << "~(";
 	dispatch(notExpression->getExpression());
-	mOutput << ")";
+	*mOutput << ")";
 }
 
 void generator::C::generate(tree::Minus *minus)
 {
-	mOutput << "-(";
+	*mOutput << "-(";
 	dispatch(minus->getExpression());
-	mOutput << ")";
+	*mOutput << ")";
 }
 
 void generator::C::generate(tree::Execute *execute)
 {
 	dispatch(execute->getExpression());
-	mOutput << ";" << std::endl;
+	*mOutput << ";" << std::endl;
 }
 
 void generator::C::generate(tree::Return *returnExpression)
 {
-	mOutput << "return ";
+	*mOutput << "return ";
 	dispatch(returnExpression->getReturn());
-	mOutput << ";" << std::endl;
+	*mOutput << ";" << std::endl;
 }
 
 void generator::C::outputDeclaration(tree::Identity *identity)
@@ -376,50 +388,50 @@ void generator::C::outputDeclaration(tree::Identity *identity)
 	{
 		if(isReference)
 		{
-			mOutput << "bool *" << identity->getName();
+			*mOutput << "bool *" << identity->getName();
 		}
 		else
 		{
-			mOutput << "bool " << identity->getName();
+			*mOutput << "bool " << identity->getName();
 		}
 	}
 	else if((integer = dynamic_cast<tree::Int *>(type)))
 	{
 		if(isReference)
 		{
-			mOutput << "int *" << identity->getName();
+			*mOutput << "int *" << identity->getName();
 		}
 		else
 		{
-			mOutput << "int " << identity->getName();
+			*mOutput << "int " << identity->getName();
 		}
 	}
 	else if((floatingPoint = dynamic_cast<tree::Float *>(type)))
 	{
 		if(isReference)
 		{
-			mOutput << "float *" << identity->getName();
+			*mOutput << "float *" << identity->getName();
 		}
 		else
 		{
-			mOutput << "float " << identity->getName();
+			*mOutput << "float " << identity->getName();
 		}
 	}
 	else if((string = dynamic_cast<tree::String *>(type)))
 	{
 		if(isReference)
 		{
-			mOutput << "char **" << identity->getName();
+			*mOutput << "char **" << identity->getName();
 		}
 		else
 		{
-			mOutput << "char " << identity->getName() << "[" << string->getMaxSize() << "]";
+			*mOutput << "char " << identity->getName() << "[" << string->getMaxSize() << "]";
 		}
 	}
 	else if((udt = dynamic_cast<tree::UDT *>(type)))
 	{
 		ERROR("FIXME");
-		//mOutput << "char*";
+		//*mOutput << "char*";
 	}
 	else
 	{
