@@ -1,11 +1,91 @@
 #include "compiler/tree.h"
 
 
+void tree::Access::setContainer(Expression *container)
+{
+	if(container == NULL)
+	{
+		mContainer = NULL;
+	}
+	else if(!dynamic_cast<tree::FunctionPrototype *>(container))
+	{
+		mContainer = container;
+	}
+	else
+	{
+		throw tree::Access::InvalidContainerException(this);
+	}
+}
+
+void tree::Access::setTarget(Expression *target)
+{
+	if(target == NULL)
+	{
+		mTarget = NULL;
+	}
+	else if(!dynamic_cast<tree::FunctionPrototype *>(target))
+	{
+		mTarget = target;
+	}
+	else
+	{
+		throw tree::Access::InvalidTargetException(this);
+	}
+}
+
+void tree::UnaryExpression::setExpression(Expression *expression)
+{
+	if(expression == NULL)
+	{
+		mExpression = NULL;
+	}
+	else if(!dynamic_cast<tree::FunctionPrototype *>(expression))
+	{
+		mExpression = expression;
+	}
+	else
+	{
+		throw tree::UnaryExpression::InvalidException(this);
+	}
+}
+
+void tree::BinaryExpression::setLHS(Expression *lhs)
+{
+	if(lhs == NULL)
+	{
+		mLHS = NULL;
+	}
+	else if(!dynamic_cast<tree::FunctionPrototype *>(lhs))
+	{
+		mLHS = lhs;
+	}
+	else
+	{
+		throw tree::BinaryExpression::InvalidLHSException(this);
+	}
+}
+
+void tree::BinaryExpression::setRHS(Expression *rhs)
+{
+	if(rhs == NULL)
+	{
+		mRHS = NULL;
+	}
+	else if(!dynamic_cast<tree::FunctionPrototype *>(rhs))
+	{
+		mRHS = rhs;
+	}
+	else
+	{
+		throw tree::BinaryExpression::InvalidRHSException(this);
+	}
+}
+
 void tree::FunctionCall::setFunctionPrototype(tree::Expression *functionPrototype)
 {
 	tree::FunctionPrototype *prototype;
 
-	if(!functionPrototype)
+	if(functionPrototype == NULL)
 	{
 		mFunctionPrototype = NULL;
 	}
@@ -15,19 +95,15 @@ void tree::FunctionCall::setFunctionPrototype(tree::Expression *functionPrototyp
 	}
 	else if((prototype = dynamic_cast<tree::FunctionPrototype *>(functionPrototype)))
 	{
-		if((!prototype->getArguments() && !mArguments) || prototype->getArguments()->size() == mArguments->size())
+		mFunctionPrototype = prototype;
+
+		if((prototype->getArguments() && mArguments == NULL) || (prototype->getArguments() == NULL && mArguments)|| prototype->getArguments()->size() != mArguments->size())
 		{
-			mFunctionPrototype = prototype;
-		}
-		else
-		{
-			mFunctionPrototype = NULL;
-			throw(tree::FunctionCall::InvalidArgumentsException(this, prototype));
+			throw tree::FunctionCall::InvalidArgumentsException(this);
 		}
 	}
 	else
 	{
-		mFunctionPrototype = NULL;
-		throw(tree::FunctionCall::InvalidFunctionException(static_cast<tree::Identity *>(functionPrototype)));
+		throw tree::FunctionCall::InvalidFunctionException(this);
 	}
 }
