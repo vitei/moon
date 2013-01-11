@@ -1,5 +1,5 @@
+#include "compiler/operations.h"
 #include "compiler/tree.h"
-#include "compiler/operations/restructure.h"
 
 
 void operation::Restructure::visit(tree::Node *node)

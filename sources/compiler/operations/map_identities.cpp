@@ -1,6 +1,6 @@
 #include "compiler/error.h"
+#include "compiler/operations.h"
 #include "compiler/tree.h"
-#include "compiler/operations/map_identities.h"
 
 
 void operation::MapIdentities::run(tree::Program *program)
