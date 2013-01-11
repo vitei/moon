@@ -51,7 +51,7 @@ void operation::ResolveIdentities::visit(tree::Expression *expression)
 			ASSERT(dynamic_cast<tree::Identifier *>(e.expression));
 
 			tree::Identifier *identifier = static_cast<tree::Identifier *>(e.expression);
-			std::string error = "The identifier \"" + identifier->getName() + "\" is not valid in this context";
+			std::string error = "The identifier \"" + identifier->getName() + "\" cannot be used in an expression";
 
 			error::enqueue(identifier->getLocation(), error);
 			e.reset();
