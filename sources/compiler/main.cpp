@@ -83,55 +83,72 @@ int main(int argc, char *argv[])
 	}
 	else
 	{
-		char tmp[1024];
-		tree::Statements aggregates;
-
-		// The current working directory must also be used...
-		getcwd(tmp, 1024);
-		loader::pushCWD(tmp);
-
-		for(; optind < argc; optind++)
+		if(optind == argc)
 		{
-			if(loader::useFile(argv[optind], tmp))
+			error::enqueue("No input files");
+		}
+		else
+		{
+			char tmp[1024];
+			tree::Statements aggregates;
+
+			// The current working directory must also be used...
+			getcwd(tmp, 1024);
+			loader::pushCWD(tmp);
+
+			for(; optind < argc; optind++)
 			{
-				std::string filename = tmp;
-
-				parserData.uses = new tree::Statements();
-
-				loader::pushCWD(dirname(tmp));
-				parserData.parse(lexer::Data::TYPE_USE, filename);
-				loader::popCWD();
-
-				if(error::count() == 0)
+				if(loader::useFile(argv[optind], tmp))
 				{
-					aggregates.push_back(new tree::Aggregate(parserData.uses));
+					std::string filename = tmp;
+
+					parserData.uses = new tree::Statements();
+
+					loader::pushCWD(dirname(tmp));
+					parserData.parse(lexer::Data::TYPE_USE, filename);
+					loader::popCWD();
+
+					if(error::count() == 0)
+					{
+						aggregates.push_back(new tree::Aggregate(parserData.uses));
+					}
+				}
+				else
+				{
+					std::string error = "Could not load file ";
+					error += argv[optind];
+					error::enqueue(error.c_str());
 				}
 			}
-			else
-			{
-				std::string error = "Could not load file ";
-				error += argv[optind];
-				error::enqueue(error.c_str());
-			}
-		}
 
-		if(error::count() == 0)
-		{
-			// The program has been made...
-			tree::Program program(&aggregates);
-
-			// We may now perform operations on it...
-			operation::ScopeParents::run(&program);
-			operation::MapIdentities::run(&program);
-			operation::ResolveIdentities::run(&program);
-
-			if(generateDefines)
+			if(error::count() == 0)
 			{
-				// ...
-			}
-			else
-			{
-				operation::TypeExpressions::run(&program);
+				// The program has been made...
+				tree::Program program(&aggregates);
+
+				// We may now perform operations on it...
+				operation::ScopeParents::run(&program);
+				operation::MapIdentities::run(&program);
+				operation::ResolveIdentities::run(&program);
+
+				if(generateDefines)
+				{
+					// If there are no errors we should be able to generate the defines
+					if(error::count() == 0)
+					{
+						// ...
+					}
+				}
+				else
+				{
+					operation::TypeExpressions::run(&program);
+
+					// If there are no errors we should be able to do code generation now!
+					if(error::count() == 0)
+					{
+
+					}
+				}
 			}
 		}
 
