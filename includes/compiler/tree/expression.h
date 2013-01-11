@@ -578,7 +578,7 @@ namespace tree
 	class StringLiteral : public Literal
 	{
 	public:
-		StringLiteral(std::string value) : Literal(new String()), mValue(value) {}
+		StringLiteral(std::string value) : Literal(new String(value.length())), mValue(value) {}
 
 		std::string getValue()
 		{
