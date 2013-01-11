@@ -84,8 +84,37 @@ void generator::C::generate(tree::Reference *reference)
 
 void generator::C::generate(tree::Cast *cast)
 {
-	mOutput << "(" << "FIXME" << ")";
+	tree::Type *type = cast->getType();
+
+	if(dynamic_cast<tree::Bool *>(type))
+	{
+		mOutput << "(bool)";
+	}
+	else if(dynamic_cast<tree::Int *>(type))
+	{
+		mOutput << "(int)";
+	}
+	else if(dynamic_cast<tree::Float *>(type))
+	{
+		mOutput << "(float)";
+	}
+	else if(dynamic_cast<tree::String *>(type))
+	{
+		mOutput << "(char *)";
+	}
+	else if(dynamic_cast<tree::UDT *>(type))
+	{
+		ERROR("FIXME");
+		//mOutput << "char*";
+	}
+	else
+	{
+		ERROR("Unknown type");
+	}
+
+	mOutput << "(";
 	dispatch(cast->getExpression());
+	mOutput << ")";
 }
 
 void generator::C::generate(tree::DirectAccess *directAccess)
@@ -130,7 +159,7 @@ void generator::C::generate(tree::NullReference *nullReference)
 
 void generator::C::generate(tree::BoolLiteral *boolLiteral)
 {
-	mOutput << boolLiteral->getValue() ? "true" : "false";
+	mOutput << (boolLiteral->getValue() ? "true" : "false");
 }
 
 void generator::C::generate(tree::IntLiteral *intLiteral)
