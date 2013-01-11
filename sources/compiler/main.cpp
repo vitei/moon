@@ -5,7 +5,7 @@
 #include "compiler/error.h"
 #include "compiler/lexer.h"
 #include "compiler/loader.h"
-#include "compiler/operation.h"
+#include "compiler/operations.h"
 #include "compiler/parser.h"
 #include "compiler/tree.h"
 
