@@ -87,6 +87,8 @@ namespace tree
 		std::string mName;
 	};
 
+	typedef std::map<std::string, Identity *> Identities;
+
 	class TypedIdentity : public Identity
 	{
 	protected:
