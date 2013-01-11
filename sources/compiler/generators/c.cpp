@@ -9,6 +9,16 @@ void generator::C::run(tree::Program *program)
 	LOG("\n\n%s", mOutput.str().c_str());
 }
 
+void generator::C::visit(tree::Scope *scope)
+{
+	tree::Statements *statements = scope->getStatements();
+
+	if(statements)
+	{
+		for(tree::Statements::iterator i = statements->begin(); i != statements->end(); (*i++)->accept(this));
+	}
+}
+
 void generator::C::visit(tree::Program *program)
 {
 	mOutput << "typedef struct" << std::endl
@@ -21,13 +31,38 @@ void generator::C::visit(tree::Program *program)
 		mOutput << ";" << std::endl;
 	}
 
-	mOutput << "} XXXX;" << std::endl;
+	mOutput << "} FIXME_GENERATE_NAME;" << std::endl << std::endl;
+
+	visit(static_cast<tree::Scope *>(program));
+}
+
+void generator::C::visit(tree::Function *function)
+{
+	outputDeclaration(function->getPrototype());
+	mOutput << "(FIXME_GENERATE_NAME *scope";
+
+	tree::Expressions *arguments = function->getPrototype()->getArguments();
+
+	if(arguments)
+	{
+		for(tree::Expressions::iterator i = arguments->begin(), end = arguments->end(); i != end; ++i)
+		{
+			mOutput << ", ";
+			outputDeclaration(static_cast<tree::Identity *>(*i));
+		}
+	}
+
+	mOutput << ")" << std::endl
+		<< "{" << std::endl;
+
+	visit(static_cast<tree::Scope *>(function));
+
+	mOutput << "}" << std::endl << std::endl;
 }
 
 void generator::C::outputDeclaration(tree::Identity *identity)
 {
 	bool isReference = dynamic_cast<tree::Reference *>(identity) != NULL;
-
 	tree::Type *type = identity->getType();
 	tree::Bool *boolean;
 	tree::Int *integer;
