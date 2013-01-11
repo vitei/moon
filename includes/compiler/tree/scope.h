@@ -54,6 +54,10 @@ namespace tree
 		void mapIdentity(Identity *identity);
 		Identity *findIdentity(Identifier *identifier);
 
+#ifdef DEBUG
+		virtual void printNode() { LOG("Scope"); }
+#endif
+
 	private:
 		Scope *mParent;
 		std::map<std::string, Identity *> mIdentities;

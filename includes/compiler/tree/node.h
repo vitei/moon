@@ -76,6 +76,10 @@ namespace tree
 			mLocation = location;
 		}
 
+#ifdef DEBUG
+		virtual void printNode() = 0;
+#endif
+
 	protected:
 		Node() { /* Abstract class */ }
 

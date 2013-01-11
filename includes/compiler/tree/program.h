@@ -16,6 +16,10 @@ namespace tree
 	{
 	public:
 		Program(Statements *aggregates) : Scope(aggregates) {}
+
+#ifdef DEBUG
+		virtual void printNode() { LOG("Program"); }
+#endif
 	};
 }
 

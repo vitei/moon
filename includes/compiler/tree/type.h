@@ -27,6 +27,10 @@ namespace tree
 
 		Type(Internal type) : mType(type) { /* Abstract class */ }
 
+#ifdef DEBUG
+		virtual void printNode() { LOG("Type"); }
+#endif
+
 	private:
 		friend bool operator == (Type &type1, Type &type2);
 

@@ -325,6 +325,10 @@ namespace tree
 			return mName;
 		}
 
+#ifdef DEBUG
+		virtual void printNode() { LOG("Identifier"); }
+#endif
+
 	private:
 		std::string mName;
 	};
@@ -333,18 +337,30 @@ namespace tree
 	{
 	public:
 		Constant(Type *type, std::string name) : TypedIdentity(type, name) {}
+
+#ifdef DEBUG
+		virtual void printNode() { LOG("Constant"); }
+#endif
 	};
 
 	class Variable : public TypedIdentity
 	{
 	public:
 		Variable(Type *type, std::string name) : TypedIdentity(type, name) {}
+
+#ifdef DEBUG
+		virtual void printNode() { LOG("Variable"); }
+#endif
 	};
 
 	class Reference : public TypedIdentity
 	{
 	public:
 		Reference(Type *type, std::string name) : TypedIdentity(type, name) {}
+
+#ifdef DEBUG
+		virtual void printNode() { LOG("Reference"); }
+#endif
 	};
 
 	class Cast : public Expression
@@ -382,6 +398,10 @@ namespace tree
 			visit(operation);
 		}
 
+#ifdef DEBUG
+		virtual void printNode() { LOG("Cast"); }
+#endif
+
 	private:
 		Expression *mExpression;
 	};
@@ -390,18 +410,30 @@ namespace tree
 	{
 	public:
 		DirectAccess(Expression *container, Expression *target) : Access(container, target) {}
+
+#ifdef DEBUG
+		virtual void printNode() { LOG("DirectAccess"); }
+#endif
 	};
 
 	class MessageAccess : public Access
 	{
 	public:
 		MessageAccess(Expression *container, Expression *target) : Access(container, target) {}
+
+#ifdef DEBUG
+		virtual void printNode() { LOG("MessageAccess"); }
+#endif
 	};
 
 	class ArrayAccess : public Access
 	{
 	public:
 		ArrayAccess(Expression *array, Expression *index) : Access(array, index) {}
+
+#ifdef DEBUG
+		virtual void printNode() { LOG("ArrayAccess"); }
+#endif
 	};
 
 	class FunctionPrototype;
@@ -472,6 +504,10 @@ namespace tree
 			visit(operation);
 		}
 
+#ifdef DEBUG
+		virtual void printNode() { LOG("FunctionCall"); }
+#endif
+
 	private:
 		Expression *mFunctionPrototype;
 		Expressions *mArguments;
@@ -479,6 +515,10 @@ namespace tree
 
 	class NullReference : public Expression
 	{
+	public:
+#ifdef DEBUG
+		virtual void printNode() { LOG("NullReference"); }
+#endif
 	};
 
 	class BoolLiteral : public Literal
@@ -490,6 +530,10 @@ namespace tree
 		{
 			return mValue;
 		}
+
+#ifdef DEBUG
+		virtual void printNode() { LOG("BoolLiteral"); }
+#endif
 
 	private:
 		bool mValue;
@@ -505,6 +549,10 @@ namespace tree
 			return mValue;
 		}
 
+#ifdef DEBUG
+		virtual void printNode() { LOG("IntLiteral"); }
+#endif
+
 	private:
 		int mValue;
 	};
@@ -518,6 +566,10 @@ namespace tree
 		{
 			return mValue;
 		}
+
+#ifdef DEBUG
+		virtual void printNode() { LOG("FloatLiteral"); }
+#endif
 
 	private:
 		float mValue;
@@ -533,6 +585,10 @@ namespace tree
 			return mValue;
 		}
 
+#ifdef DEBUG
+		virtual void printNode() { LOG("StringLiteral"); }
+#endif
+
 	private:
 		std::string mValue;
 	};
@@ -541,120 +597,200 @@ namespace tree
 	{
 	public:
 		Assign(Expression *lhs, Expression *rhs) : BinaryExpression(lhs, rhs) {}
+
+#ifdef DEBUG
+		virtual void printNode() { LOG("Assign"); }
+#endif
 	};
 
 	class LogicalOr : public BinaryExpression
 	{
 	public:
 		LogicalOr(Expression *lhs, Expression *rhs) : BinaryExpression(lhs, rhs) {}
+
+#ifdef DEBUG
+		virtual void printNode() { LOG("LogicalOr"); }
+#endif
 	};
 
 	class LogicalAnd : public BinaryExpression
 	{
 	public:
 		LogicalAnd(Expression *lhs, Expression *rhs) : BinaryExpression(lhs, rhs) {}
+
+#ifdef DEBUG
+		virtual void printNode() { LOG("LogicalAnd"); }
+#endif
 	};
 
 	class Or : public BinaryExpression
 	{
 	public:
 		Or(Expression *lhs, Expression *rhs) : BinaryExpression(lhs, rhs) {}
+
+#ifdef DEBUG
+		virtual void printNode() { LOG("Or"); }
+#endif
 	};
 
 	class Xor : public BinaryExpression
 	{
 	public:
 		Xor(Expression *lhs, Expression *rhs) : BinaryExpression(lhs, rhs) {}
+
+#ifdef DEBUG
+		virtual void printNode() { LOG("Xor"); }
+#endif
 	};
 
 	class And : public BinaryExpression
 	{
 	public:
 		And(Expression *lhs, Expression *rhs) : BinaryExpression(lhs, rhs) {}
+
+#ifdef DEBUG
+		virtual void printNode() { LOG("And"); }
+#endif
 	};
 
 	class Equal : public BinaryExpression
 	{
 	public:
 		Equal(Expression *lhs, Expression *rhs) : BinaryExpression(lhs, rhs) {}
+
+#ifdef DEBUG
+		virtual void printNode() { LOG("Equal"); }
+#endif
 	};
 
 	class Unequal : public BinaryExpression
 	{
 	public:
 		Unequal(Expression *lhs, Expression *rhs) : BinaryExpression(lhs, rhs) {}
+
+#ifdef DEBUG
+		virtual void printNode() { LOG("Unequal"); }
+#endif
 	};
 
 	class LessThan : public BinaryExpression
 	{
 	public:
 		LessThan(Expression *lhs, Expression *rhs) : BinaryExpression(lhs, rhs) {}
+
+#ifdef DEBUG
+		virtual void printNode() { LOG("LessThan"); }
+#endif
 	};
 
 	class LessEqual : public BinaryExpression
 	{
 	public:
 		LessEqual(Expression *lhs, Expression *rhs) : BinaryExpression(lhs, rhs) {}
+
+#ifdef DEBUG
+		virtual void printNode() { LOG("LessEqual"); }
+#endif
 	};
 
 	class GreaterThan : public BinaryExpression
 	{
 	public:
 		GreaterThan(Expression *lhs, Expression *rhs) : BinaryExpression(lhs, rhs) {}
+
+#ifdef DEBUG
+		virtual void printNode() { LOG("GreaterThan"); }
+#endif
 	};
 
 	class GreaterEqual : public BinaryExpression
 	{
 	public:
 		GreaterEqual(Expression *lhs, Expression *rhs) : BinaryExpression(lhs, rhs) {}
+
+#ifdef DEBUG
+		virtual void printNode() { LOG("GreaterEqual"); }
+#endif
 	};
 
 	class Add : public BinaryExpression
 	{
 	public:
 		Add(Expression *lhs, Expression *rhs) : BinaryExpression(lhs, rhs) {}
+
+#ifdef DEBUG
+		virtual void printNode() { LOG("Add"); }
+#endif
 	};
 
 	class Subtract : public BinaryExpression
 	{
 	public:
 		Subtract(Expression *lhs, Expression *rhs) : BinaryExpression(lhs, rhs) {}
+
+#ifdef DEBUG
+		virtual void printNode() { LOG("Subtract"); }
+#endif
 	};
 
 	class Multiply : public BinaryExpression
 	{
 	public:
 		Multiply(Expression *lhs, Expression *rhs) : BinaryExpression(lhs, rhs) {}
+
+#ifdef DEBUG
+		virtual void printNode() { LOG("Multiply"); }
+#endif
 	};
 
 	class Divide : public BinaryExpression
 	{
 	public:
 		Divide(Expression *lhs, Expression *rhs) : BinaryExpression(lhs, rhs) {}
+
+#ifdef DEBUG
+		virtual void printNode() { LOG("Divide"); }
+#endif
 	};
 
 	class Modulus : public BinaryExpression
 	{
 	public:
 		Modulus(Expression *lhs, Expression *rhs) : BinaryExpression(lhs, rhs) {}
+
+#ifdef DEBUG
+		virtual void printNode() { LOG("Modulus"); }
+#endif
 	};
 
 	class LogicalNot : public UnaryExpression
 	{
 	public:
 		LogicalNot(Expression *expression) : UnaryExpression(expression) {}
+
+#ifdef DEBUG
+		virtual void printNode() { LOG("LogicalNot"); }
+#endif
 	};
 
 	class Not : public UnaryExpression
 	{
 	public:
 		Not(Expression *expression) : UnaryExpression(expression) {}
+
+#ifdef DEBUG
+		virtual void printNode() { LOG("Not"); }
+#endif
 	};
 
 	class Minus : public UnaryExpression
 	{
 	public:
 		Minus(Expression *expression) : UnaryExpression(expression) {}
+
+#ifdef DEBUG
+		virtual void printNode() { LOG("Minus"); }
+#endif
 	};
 }
 

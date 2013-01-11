@@ -16,6 +16,10 @@ namespace tree
 	{
 	public:
 		Use(Statements *statements) : Scope(statements) {}
+
+#ifdef DEBUG
+		virtual void printNode() { LOG("Use"); }
+#endif
 	};
 }
 

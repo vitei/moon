@@ -52,12 +52,20 @@ namespace tree
 	{
 	public:
 		GlobalScoping(Statement *scoped) : Scoping(scoped) {}
+
+#ifdef DEBUG
+		virtual void printNode() { LOG("GlobalScoping"); }
+#endif
 	};
 
 	class SharedScoping : public Scoping
 	{
 	public:
 		SharedScoping(Statement *scoped) : Scoping(scoped) {}
+
+#ifdef DEBUG
+		virtual void printNode() { LOG("SharedScoping"); }
+#endif
 	};
 }
 
