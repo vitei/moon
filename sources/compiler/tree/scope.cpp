@@ -8,7 +8,7 @@ void tree::Scope::mapIdentity(tree::Identity *identity)
 
 	for(Scope *s = this; s; s = s->mParent)
 	{
-		std::map<std::string, Identity *>::iterator previousValue = s->mIdentities.find(name);
+		tree::Identities::iterator previousValue = s->mIdentities.find(name);
 
 		if(previousValue != s->mIdentities.end())
 		{
@@ -25,7 +25,7 @@ tree::Identity *tree::Scope::findIdentity(tree::Identifier *identifier)
 
 	for(Scope *s = this; s; s = s->mParent)
 	{
-		std::map<std::string, Identity *>::iterator identity = s->mIdentities.find(name);
+		tree::Identities::iterator identity = s->mIdentities.find(name);
 
 		if(identity != s->mIdentities.end())
 		{

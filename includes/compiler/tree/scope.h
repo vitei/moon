@@ -46,6 +46,11 @@ namespace tree
 			mParent = parent;
 		}
 
+		Identities &getIdentities()
+		{
+			return mIdentities;
+		}
+
 		Statements *getStatements()
 		{
 			return mStatements;
@@ -60,7 +65,7 @@ namespace tree
 
 	private:
 		Scope *mParent;
-		std::map<std::string, Identity *> mIdentities;
+		Identities mIdentities;
 		Statements *mStatements;
 	};
 }
