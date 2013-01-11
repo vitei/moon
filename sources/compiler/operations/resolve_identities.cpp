@@ -1,7 +1,7 @@
 #include <sstream>
 #include "compiler/error.h"
+#include "compiler/operations.h"
 #include "compiler/tree.h"
-#include "compiler/operations/resolve_identities.h"
 
 
 void operation::ResolveIdentities::run(tree::Program *program)
