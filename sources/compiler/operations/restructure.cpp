@@ -4,15 +4,15 @@
 
 void operation::Restructure::visit(tree::Node *node)
 {
-	GENERATE_DISPATCH(node, doRestructure)
+	GENERATE_DISPATCH(node, dispatch)
 }
 
-void operation::Restructure::doRestructure(tree::Node *node)
+void operation::Restructure::dispatch(tree::Node *node)
 {
 	mNodeMap.push(node->restructure(this));
 }
 
-void operation::Restructure::doRestructure(tree::Expression *expression)
+void operation::Restructure::dispatch(tree::Expression *expression)
 {
 	tree::Type *type = NULL;
 
@@ -27,7 +27,7 @@ void operation::Restructure::doRestructure(tree::Expression *expression)
 	mNodeMap.push(expression->restructure(this));
 }
 
-void operation::Restructure::doRestructure(tree::Access *access)
+void operation::Restructure::dispatch(tree::Access *access)
 {
 	tree::Expression *container = NULL;
 	tree::Expression *target = NULL;
@@ -50,7 +50,7 @@ void operation::Restructure::doRestructure(tree::Access *access)
 	mNodeMap.push(access->restructure(this));
 }
 
-void operation::Restructure::doRestructure(tree::UnaryExpression *unaryExpression)
+void operation::Restructure::dispatch(tree::UnaryExpression *unaryExpression)
 {
 	tree::Expression *expression = NULL;
 
@@ -65,7 +65,7 @@ void operation::Restructure::doRestructure(tree::UnaryExpression *unaryExpressio
 	mNodeMap.push(unaryExpression->restructure(this));
 }
 
-void operation::Restructure::doRestructure(tree::BinaryExpression *binaryExpression)
+void operation::Restructure::dispatch(tree::BinaryExpression *binaryExpression)
 {
 	tree::Expression *lhs = NULL;
 	tree::Expression *rhs = NULL;
@@ -88,7 +88,7 @@ void operation::Restructure::doRestructure(tree::BinaryExpression *binaryExpress
 	mNodeMap.push(binaryExpression->restructure(this));
 }
 
-void operation::Restructure::doRestructure(tree::Cast *cast)
+void operation::Restructure::dispatch(tree::Cast *cast)
 {
 	tree::Expression *expression = NULL;
 
@@ -103,7 +103,7 @@ void operation::Restructure::doRestructure(tree::Cast *cast)
 	mNodeMap.push(cast->restructure(this));
 }
 
-void operation::Restructure::doRestructure(tree::FunctionCall *functionCall)
+void operation::Restructure::dispatch(tree::FunctionCall *functionCall)
 {
 	tree::Expression *functionPrototype = NULL;
 
@@ -141,7 +141,7 @@ void operation::Restructure::doRestructure(tree::FunctionCall *functionCall)
 	mNodeMap.push(functionCall->restructure(this));
 }
 
-void operation::Restructure::doRestructure(tree::Scoping *scoping)
+void operation::Restructure::dispatch(tree::Scoping *scoping)
 {
 	tree::Statement *statement = NULL;
 
@@ -156,7 +156,7 @@ void operation::Restructure::doRestructure(tree::Scoping *scoping)
 	mNodeMap.push(scoping->restructure(this));
 }
 
-void operation::Restructure::doRestructure(tree::Execute *execute)
+void operation::Restructure::dispatch(tree::Execute *execute)
 {
 	tree::Expression *expression = NULL;
 
@@ -171,7 +171,7 @@ void operation::Restructure::doRestructure(tree::Execute *execute)
 	mNodeMap.push(execute->restructure(this));
 }
 
-void operation::Restructure::doRestructure(tree::Return *opReturn)
+void operation::Restructure::dispatch(tree::Return *opReturn)
 {
 	tree::Expression *expression = NULL;
 
@@ -186,7 +186,7 @@ void operation::Restructure::doRestructure(tree::Return *opReturn)
 	mNodeMap.push(opReturn->restructure(this));
 }
 
-void operation::Restructure::doRestructure(tree::SetState *setState)
+void operation::Restructure::dispatch(tree::SetState *setState)
 {
 	tree::State *state = NULL;
 
@@ -201,7 +201,7 @@ void operation::Restructure::doRestructure(tree::SetState *setState)
 	mNodeMap.push(setState->restructure(this));
 }
 
-void operation::Restructure::doRestructure(tree::FunctionPrototype *functionPrototype)
+void operation::Restructure::dispatch(tree::FunctionPrototype *functionPrototype)
 {
 	tree::Expressions *expressions = functionPrototype->getArguments();
 
@@ -229,7 +229,7 @@ void operation::Restructure::doRestructure(tree::FunctionPrototype *functionProt
 	mNodeMap.push(functionPrototype->restructure(this));
 }
 
-void operation::Restructure::doRestructure(tree::Function *function)
+void operation::Restructure::dispatch(tree::Function *function)
 {
 	tree::FunctionPrototype *functionPrototype = static_cast<tree::FunctionPrototype *>(mNodeMap.top());
 	mNodeMap.pop();
@@ -268,7 +268,7 @@ void operation::Restructure::doRestructure(tree::Function *function)
 	mNodeMap.push(function->restructure(this));
 }
 
-void operation::Restructure::doRestructure(tree::Scope *scope)
+void operation::Restructure::dispatch(tree::Scope *scope)
 {
 	tree::Statements *statements = scope->getStatements();
 
