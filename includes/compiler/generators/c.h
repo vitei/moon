@@ -1,6 +1,3 @@
-#include <sstream> // DEBUG
-
-
 #ifndef COMPILER_GENERATORS_C_H
 #define COMPILER_GENERATORS_C_H
 
@@ -15,7 +12,7 @@ namespace generator
 	public:
 		C() {}
 
-		virtual void run(tree::Program *program);
+		virtual void run(std::ostream &output, tree::Program *program);
 
 		virtual void dispatch(tree::Node *node);
 
@@ -70,7 +67,7 @@ namespace generator
 		void outputDeclaration(tree::Identity *identity);
 
 	private:
-		std::stringstream mOutput; // DEBUG
+		std::ostream *mOutput;
 	};
 }
 

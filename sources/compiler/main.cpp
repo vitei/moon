@@ -1,6 +1,7 @@
 #include <cstring>
 #include <libgen.h>
 #include <unistd.h>
+#include <fstream>
 #include <iostream>
 #include "compiler/error.h"
 #include "compiler/generators.h"
@@ -23,6 +24,7 @@ int main(int argc, char *argv[])
 	char opt;
 	bool error = false;
 	bool generateDefines = false;
+	std::string outputFilename = "a.c";
 
 	LOG("DEBUG OUTPUT IS ON!");
 
@@ -30,7 +32,7 @@ int main(int argc, char *argv[])
 
 	// Parse options
 	opterr = 0;
-	while((opt = getopt(argc, argv, "D:dU:I:h")) != -1)
+	while((opt = getopt(argc, argv, "D:dI:U:o:h")) != -1)
 	{
 		switch(opt)
 		{
@@ -58,6 +60,11 @@ int main(int argc, char *argv[])
 
 			break;
 
+		case 'o':
+			outputFilename = optarg;
+
+			break;
+
 		case ':':
 			std::cerr << "Option " << static_cast<char>(optopt) << " requires parameter" << std::endl;
 			error = true;
@@ -77,12 +84,13 @@ int main(int argc, char *argv[])
 	if(error) // I'm doing this backwards so that the usage text is near the command line option parser
 	{
 		std::cerr << "Usage:" << std::endl
-			<< "\t" << basename(argv[0]) << " [-D<dirs>] [-d] [-I<dirs>] [-U<dirs>] [-h] <input>" << std::endl << std::endl
+			<< "\t" << basename(argv[0]) << " [-D<dirs>] [-d] [-I<dirs>] [-U<dirs>] [-o<output>] [-h] <input>" << std::endl << std::endl
 			<< "Options:" << std::endl
 			<< "\t-D Scan directories for define files" << std::endl
 			<< "\t-d Generate define file(s) for each input file" << std::endl
 			<< "\t-I Scan directories for include files" << std::endl
 			<< "\t-U Scan directories for use files"<< std::endl
+			<< "\t-o Output location"<< std::endl
 			<< "\t-h Show this message" << std::endl << std::endl
 			<< "Notes:" << std::endl
 			<< "\tDirectories may be separated by spaces, commas or colons." << std::endl;
@@ -152,7 +160,11 @@ int main(int argc, char *argv[])
 					// If there are no errors we should be able to do code generation now!
 					if(error::count() == 0)
 					{
-						sGenerator->run(&program);
+						std::ofstream outputFile;
+
+						outputFile.open(outputFilename.c_str());
+						sGenerator->run(outputFile, &program);
+						outputFile.close();
 					}
 				}
 			}
