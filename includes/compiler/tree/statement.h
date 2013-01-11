@@ -53,6 +53,10 @@ namespace tree
 			visit(operation);
 		}
 
+#ifdef DEBUG
+		virtual void printNode() { LOG("Execute"); }
+#endif
+
 	private:
 		Expression *mExpression;
 	};
@@ -89,6 +93,10 @@ namespace tree
 			visit(operation);
 		}
 
+#ifdef DEBUG
+		virtual void printNode() { LOG("Return"); }
+#endif
+
 	private:
 		Expression *mReturn;
 	};
@@ -124,6 +132,10 @@ namespace tree
 			childAccept(operation);
 			visit(operation);
 		}
+
+#ifdef DEBUG
+		virtual void printNode() { LOG("SetState"); }
+#endif
 
 	private:
 		State *mState;

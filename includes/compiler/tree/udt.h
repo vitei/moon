@@ -16,6 +16,10 @@ namespace tree
 	{
 	public:
 		UDT(Identifier *name) : Type(tree::Type::TYPE_UDT) {}
+
+#ifdef DEBUG
+		virtual void printNode() { LOG("UDT"); }
+#endif
 	};
 }
 

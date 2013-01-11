@@ -37,6 +37,10 @@ namespace tree
 			mFunction = function;
 		}
 
+#ifdef DEBUG
+		virtual void printNode() { LOG("FunctionPrototype"); }
+#endif
+
 	private:
 		Expressions *mArguments;
 		Function *mFunction;
@@ -73,6 +77,10 @@ namespace tree
 			childAccept(operation);
 			visit(operation);
 		}
+
+#ifdef DEBUG
+		virtual void printNode() { LOG("Function"); }
+#endif
 
 	private:
 		FunctionPrototype *mPrototype;

@@ -19,6 +19,10 @@ namespace tree
 
 	class DefaultState : public State
 	{
+	public:
+#ifdef DEBUG
+		virtual void printNode() { LOG("DefaultState"); }
+#endif
 	};
 
 	class NamedState : public State
@@ -30,6 +34,10 @@ namespace tree
 		{
 			return mName;
 		}
+
+#ifdef DEBUG
+		virtual void printNode() { LOG("NamedState"); }
+#endif
 
 	private:
 		std::string mName;

@@ -16,6 +16,10 @@ namespace tree
 	{
 	public:
 		Aggregate(Statements *uses) : Scope(uses) {}
+
+#ifdef DEBUG
+		virtual void printNode() { LOG("Aggregate"); }
+#endif
 	};
 }
 
