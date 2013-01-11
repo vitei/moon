@@ -7,7 +7,7 @@
 
 namespace generator
 {
-	class Generator : public operation::Operation
+	class Generator
 	{
 	public:
 		virtual void run(tree::Program *program) = 0;

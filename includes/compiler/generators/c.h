@@ -17,9 +17,12 @@ namespace generator
 
 		virtual void run(tree::Program *program);
 
-		virtual void visit(tree::Scope *scope);
-		virtual void visit(tree::Program *program);
-		virtual void visit(tree::Function *function);
+		virtual void dispatch(tree::Node *node);
+
+		virtual void generate(tree::Node *node) { /*ERROR("Should never reach here");*/ }
+		virtual void generate(tree::Scope *scope);
+		virtual void generate(tree::Program *program);
+		virtual void generate(tree::Function *function);
 
 		void outputDeclaration(tree::Identity *identity);
 
