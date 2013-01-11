@@ -113,6 +113,8 @@ void operation::Restructure::doRestructure(tree::FunctionCall *functionCall)
 		mNodeMap.pop();
 	}
 
+	functionCall->setFunctionPrototype(functionPrototype);
+
 	tree::Expressions *expressions = functionCall->getArguments();
 
 	if(expressions)
@@ -135,8 +137,6 @@ void operation::Restructure::doRestructure(tree::FunctionCall *functionCall)
 			}
 		}
 	}
-
-	functionCall->setFunctionPrototype(functionPrototype);
 
 	mNodeMap.push(functionCall->restructure(this));
 }

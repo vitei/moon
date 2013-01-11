@@ -27,19 +27,34 @@ void operation::ResolveIdentities::visit(tree::Expression *expression)
 		}
 		catch(tree::FunctionCall::InvalidFunctionException &e)
 		{
-			std::string error = "The identifier \"" + e.identity->getName() + "\" does not refer to a function";
-			error::enqueue(e.identity->getLocation(), error);
+			tree::Identifier *identifier = static_cast<tree::Identifier *>(e.functionCall->getFunctionPrototype());
+			std::string error = "The identifier \"" + identifier->getName() + "\" does not refer to a function";
 
+			error::enqueue(identifier->getLocation(), error);
+			e.reset();
 			mNodeMap = nodeMapClone;
 		}
 		catch(tree::FunctionCall::InvalidArgumentsException &e)
 		{
+			tree::FunctionPrototype *functionPrototype = static_cast<tree::FunctionPrototype *>(e.functionCall->getFunctionPrototype());
 			std::stringstream error;
 
-			error << "The function \"" << e.functionPrototype->getName() << "\" accepts " << e.functionPrototype->getArguments()->size() << " parameters, not " << e.functionCall->getArguments()->size();
+			error << "The function \"" << functionPrototype->getName() << "\" accepts " << functionPrototype->getArguments()->size() << " parameters, not " << e.functionCall->getArguments()->size();
 
-			error::enqueue(e.functionPrototype->getLocation(), e.functionCall->getLocation(), error.str());
+			error::enqueue(functionPrototype->getLocation(), e.functionCall->getLocation(), error.str());
+			e.reset();
+			mNodeMap = nodeMapClone;
+		}
+		catch(tree::Expression::InvalidException &e)
+		{
+			ASSERT(e.expression);
+			ASSERT(dynamic_cast<tree::Identifier *>(e.expression));
 
+			tree::Identifier *identifier = static_cast<tree::Identifier *>(e.expression);
+			std::string error = "The identifier \"" + identifier->getName() + "\" is not valid in this context";
+
+			error::enqueue(identifier->getLocation(), error);
+			e.reset();
 			mNodeMap = nodeMapClone;
 		}
 	}
@@ -61,7 +76,7 @@ tree::Node *operation::ResolveIdentities::restructure(tree::Identifier *identifi
 		error::enqueue(e.identifier->getLocation(), error);
 	}
 
-	delete identifier;
+	//delete identifier; // Can't do this here as it'll cause problems if an exception is thrown...
 
 	return r;
 }
