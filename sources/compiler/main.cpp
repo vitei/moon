@@ -16,6 +16,7 @@ const char *DIRECTORY_SEPARATORS = " ,:";
 static parser::Data sParserData; // Debug filenames are maintained by this so it must persist throughout the program's life, FIXME?
 
 static generator::C sCGenerator;
+static generator::Generator *sGenerator;
 
 int main(int argc, char *argv[])
 {
@@ -24,6 +25,8 @@ int main(int argc, char *argv[])
 	bool generateDefines = false;
 
 	LOG("DEBUG OUTPUT IS ON!");
+
+	sGenerator = &sCGenerator;
 
 	// Parse options
 	opterr = 0;
@@ -149,7 +152,7 @@ int main(int argc, char *argv[])
 					// If there are no errors we should be able to do code generation now!
 					if(error::count() == 0)
 					{
-						sCGenerator.run(&program);
+						sGenerator->run(&program);
 					}
 				}
 			}
