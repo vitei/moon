@@ -4,22 +4,27 @@
 
 void generator::C::run(tree::Program *program)
 {
-	program->accept(this);
+	dispatch(program);
 
 	LOG("\n\n%s", mOutput.str().c_str());
 }
 
-void generator::C::visit(tree::Scope *scope)
+void generator::C::dispatch(tree::Node *node)
+{
+	GENERATE_DISPATCH(node, generate)
+}
+
+void generator::C::generate(tree::Scope *scope)
 {
 	tree::Statements *statements = scope->getStatements();
 
 	if(statements)
 	{
-		for(tree::Statements::iterator i = statements->begin(); i != statements->end(); (*i++)->accept(this));
+		for(tree::Statements::iterator i = statements->begin(); i != statements->end(); dispatch(*i++));
 	}
 }
 
-void generator::C::visit(tree::Program *program)
+void generator::C::generate(tree::Program *program)
 {
 	mOutput << "typedef struct" << std::endl
 		<< "{" << std::endl;
@@ -33,10 +38,10 @@ void generator::C::visit(tree::Program *program)
 
 	mOutput << "} FIXME_GENERATE_NAME;" << std::endl << std::endl;
 
-	visit(static_cast<tree::Scope *>(program));
+	generate(static_cast<tree::Scope *>(program));
 }
 
-void generator::C::visit(tree::Function *function)
+void generator::C::generate(tree::Function *function)
 {
 	outputDeclaration(function->getPrototype());
 	mOutput << "(FIXME_GENERATE_NAME *scope";
@@ -55,7 +60,7 @@ void generator::C::visit(tree::Function *function)
 	mOutput << ")" << std::endl
 		<< "{" << std::endl;
 
-	visit(static_cast<tree::Scope *>(function));
+	generate(static_cast<tree::Scope *>(function));
 
 	mOutput << "}" << std::endl << std::endl;
 }
