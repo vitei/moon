@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include <iostream>
 #include "compiler/error.h"
+#include "compiler/generators.h"
 #include "compiler/lexer.h"
 #include "compiler/loader.h"
 #include "compiler/operations.h"
@@ -12,7 +13,9 @@
 
 const char *DIRECTORY_SEPARATORS = " ,:";
 
-static parser::Data parserData; // Debug filenames are maintained by this so it must persist throughout the program's life, FIXME?
+static parser::Data sParserData; // Debug filenames are maintained by this so it must persist throughout the program's life, FIXME?
+
+static generator::C sCGenerator;
 
 int main(int argc, char *argv[])
 {
@@ -102,15 +105,15 @@ int main(int argc, char *argv[])
 				{
 					std::string filename = tmp;
 
-					parserData.uses = new tree::Statements();
+					sParserData.uses = new tree::Statements();
 
 					loader::pushCWD(dirname(tmp));
-					parserData.parse(lexer::Data::TYPE_USE, filename);
+					sParserData.parse(lexer::Data::TYPE_USE, filename);
 					loader::popCWD();
 
 					if(error::count() == 0)
 					{
-						aggregates.push_back(new tree::Aggregate(parserData.uses));
+						aggregates.push_back(new tree::Aggregate(sParserData.uses));
 					}
 				}
 				else
@@ -146,7 +149,7 @@ int main(int argc, char *argv[])
 					// If there are no errors we should be able to do code generation now!
 					if(error::count() == 0)
 					{
-
+						sCGenerator.run(&program);
 					}
 				}
 			}
