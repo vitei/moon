@@ -119,3 +119,20 @@ void operation::TypeExpressions::visit(tree::Scope *scope)
 		for(tree::Statements::iterator i = statements->begin(), end = statements->end(); i != end; (*i++)->accept(this));
 	}
 }
+
+void operation::TypeExpressions::setup(tree::Function *function)
+{
+	LOG("TypeExpressions::setup::Function");
+
+	tree::FunctionPrototype *functionPrototype = function->getPrototype();
+
+	mReturnType = functionPrototype ? functionPrototype->getType() : NULL;
+}
+
+void operation::TypeExpressions::visit(tree::Return *returnStatement)
+{
+	if(mReturnType && returnStatement->getReturn()->getType() != mReturnType)
+	{
+		returnStatement->setReturn(new tree::Cast(mReturnType, returnStatement->getReturn()));
+	}
+}

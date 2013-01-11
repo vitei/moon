@@ -12,15 +12,20 @@ namespace operation
 	public:
 		static void run(tree::Program *program);
 
+		virtual void setup(tree::Function *function);
+
 		virtual void visit(tree::Access *access);
 		virtual void visit(tree::ArrayAccess *arrayAccess);
 		virtual void visit(tree::BinaryExpression *binaryExpression);
 		virtual void visit(tree::UnaryExpression *unaryExpression);
 		virtual void visit(tree::FunctionCall *functionCall);
 		virtual void visit(tree::Scope *scope);
+		virtual void visit(tree::Return *returnStatement);
 
 	private:
-		TypeExpressions() {}
+		TypeExpressions() : mReturnType(NULL) {}
+
+		tree::Type *mReturnType;
 	};
 }
 
