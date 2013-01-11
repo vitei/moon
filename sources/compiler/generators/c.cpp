@@ -105,7 +105,7 @@ void generator::C::generate(tree::ArrayAccess *arrayAccess)
 
 void generator::C::generate(tree::FunctionCall *functionCall)
 {
-	tree::FunctionPrototype *prototype = static_cast<tree::FunctionPrototype *>(functionCall->getFunctionPrototype());
+	tree::FunctionPrototype *prototype = static_cast<tree::FunctionPrototype *>(functionCall->getPrototype());
 
 	mOutput << prototype->getName() << "(scope";
 
