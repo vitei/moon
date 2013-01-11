@@ -107,7 +107,7 @@ void operation::Restructure::dispatch(tree::FunctionCall *functionCall)
 {
 	tree::Expression *functionPrototype = NULL;
 
-	if(functionCall->getFunctionPrototype())
+	if(functionCall->getPrototype())
 	{
 		functionPrototype = static_cast<tree::Expression *>(mNodeMap.top());
 		mNodeMap.pop();

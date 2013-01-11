@@ -27,7 +27,7 @@ void operation::ResolveIdentities::visit(tree::Expression *expression)
 		}
 		catch(tree::FunctionCall::InvalidFunctionException &e)
 		{
-			tree::Identifier *identifier = static_cast<tree::Identifier *>(e.functionCall->getFunctionPrototype());
+			tree::Identifier *identifier = static_cast<tree::Identifier *>(e.functionCall->getPrototype());
 			std::string error = "The identifier \"" + identifier->getName() + "\" does not refer to a function";
 
 			error::enqueue(identifier->getLocation(), error);
@@ -36,7 +36,7 @@ void operation::ResolveIdentities::visit(tree::Expression *expression)
 		}
 		catch(tree::FunctionCall::InvalidArgumentsException &e)
 		{
-			tree::FunctionPrototype *functionPrototype = static_cast<tree::FunctionPrototype *>(e.functionCall->getFunctionPrototype());
+			tree::FunctionPrototype *functionPrototype = static_cast<tree::FunctionPrototype *>(e.functionCall->getPrototype());
 			std::stringstream error;
 
 			error << "The function \"" << functionPrototype->getName() << "\" accepts " << functionPrototype->getArguments()->size() << " parameters, not " << e.functionCall->getArguments()->size();

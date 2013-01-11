@@ -454,7 +454,7 @@ namespace tree
 		class InvalidFunctionException : public tree::FunctionCall::InvalidException
 		{
 		public:
-			InvalidFunctionException(FunctionCall *_functionCall) : tree::FunctionCall::InvalidException(_functionCall->getFunctionPrototype(), _functionCall) {}
+			InvalidFunctionException(FunctionCall *_functionCall) : tree::FunctionCall::InvalidException(_functionCall->getPrototype(), _functionCall) {}
 
 			virtual void reset()
 			{
@@ -466,7 +466,7 @@ namespace tree
 		class InvalidArgumentsException : public tree::FunctionCall::InvalidException
 		{
 		public:
-			InvalidArgumentsException(FunctionCall *_functionCall) : tree::FunctionCall::InvalidException(_functionCall->getFunctionPrototype(), _functionCall) {}
+			InvalidArgumentsException(FunctionCall *_functionCall) : tree::FunctionCall::InvalidException(_functionCall->getPrototype(), _functionCall) {}
 
 			virtual void reset()
 			{
@@ -477,7 +477,7 @@ namespace tree
 
 		FunctionCall(Identifier *functionPrototype, Expressions *arguments = NULL) : mFunctionPrototype(functionPrototype), mArguments(arguments) {}
 
-		Expression *getFunctionPrototype()
+		Expression *getPrototype()
 		{
 			return mFunctionPrototype;
 		}

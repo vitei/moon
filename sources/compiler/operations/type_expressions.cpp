@@ -83,9 +83,9 @@ void operation::TypeExpressions::visit(tree::FunctionCall *functionCall)
 	ASSERT(!functionCall->getType());
 
 	// Check in-case unresolved
-	if(functionCall->getFunctionPrototype())
+	if(functionCall->getPrototype())
 	{
-		tree::FunctionPrototype *functionPrototype = static_cast<tree::FunctionPrototype *>(functionCall->getFunctionPrototype());
+		tree::FunctionPrototype *functionPrototype = static_cast<tree::FunctionPrototype *>(functionCall->getPrototype());
 
 		functionCall->setType(functionPrototype->getType());
 
