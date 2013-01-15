@@ -1,3 +1,4 @@
+#include <ostream>
 #include "compiler/tree.h"
 #include "compiler/generators.h"
 
@@ -5,7 +6,103 @@
 void generator::C::run(std::ostream &output, tree::Program *program)
 {
 	mOutput = &output;
-	dispatch(program);
+	generate(program);
+}
+
+void generator::C::generate(tree::Program *program)
+{
+	tree::Statements *statements = program->getStatements();
+
+	for(tree::Identities::iterator i = program->getIdentities().begin(), end = program->getIdentities().end(); i != end; ++i)
+	{
+		*mOutput << "extern ";
+		outputDeclaration(i->second);
+		*mOutput << ";" << std::endl;
+	}
+
+	*mOutput << std::endl;
+
+	*mOutput << "typedef struct" << std::endl
+		<< "{" << std::endl;
+
+	increaseDepth();
+
+	if(statements)
+	{
+		for(tree::Statements::iterator i = statements->begin(), end = statements->end(); i != end; ++i)
+		{
+			tree::Aggregate *aggregate = dynamic_cast<tree::Aggregate *>(*i);
+
+			if(aggregate)
+			{
+				tree::Statements *aggregateStatements = aggregate->getStatements();
+
+				if(aggregateStatements)
+				{
+					for(tree::Statements::iterator j = aggregateStatements->begin(), end2 = aggregateStatements->end(); j != end2; ++j)
+					{
+						tree::Use *use = dynamic_cast<tree::Use *>(*j);
+
+						if(use)
+						{
+							for(tree::Identities::iterator i = use->getIdentities().begin(), end3 = use->getIdentities().end(); i != end3; ++i)
+							{
+								outputTabs();
+								outputDeclaration(i->second);
+								*mOutput << ";" << std::endl;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	decreaseDepth();
+
+	*mOutput << "}" << std::endl
+		<< "FIXME_GENERATE_NAME;" << std::endl << std::endl;
+
+	mCurrentScope = program;
+
+	if(statements)
+	{
+		for(tree::Statements::iterator i = statements->begin(), end = statements->end(); i != end; ++i)
+		{
+			tree::Aggregate *aggregate = dynamic_cast<tree::Aggregate *>(*i);
+
+			if(aggregate)
+			{
+				tree::Statements *aggregateStatements = aggregate->getStatements();
+
+				if(aggregateStatements)
+				{
+					for(tree::Statements::iterator j = aggregateStatements->begin(), end2 = aggregateStatements->end(); j != end2; ++j)
+					{
+						tree::Use *use = dynamic_cast<tree::Use *>(*j);
+
+						if(use)
+						{
+							tree::Statements *useStatements = use->getStatements();
+
+							if(useStatements)
+							{
+								for(tree::Statements::iterator k = useStatements->begin(), end3 = useStatements->end(); k != end3; ++k)
+								{
+									tree::Scope *scope = dynamic_cast<tree::Scope *>(*k);
+
+									if(scope)
+									{
+										dispatch(scope);
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
 }
 
 void generator::C::dispatch(tree::Node *node)
@@ -15,39 +112,21 @@ void generator::C::dispatch(tree::Node *node)
 
 void generator::C::generate(tree::Scope *scope)
 {
+	increaseDepth();
+
 	tree::Statements *statements = scope->getStatements();
 
 	if(statements)
 	{
 		for(tree::Statements::iterator i = statements->begin(); i != statements->end(); dispatch(*i++));
 	}
-}
 
-void generator::C::generate(tree::Program *program)
-{
-	for(tree::Identities::iterator i = program->getIdentities().begin(), end = program->getIdentities().end(); i != end; ++i)
-	{
-		*mOutput << "extern ";
-		outputDeclaration(i->second);
-		*mOutput << ";" << std::endl;
-	}
-
-	/**mOutput << "typedef struct" << std::endl
-		<< "{" << std::endl;
-
-	for(tree::Identities::iterator i = program->getIdentities().begin(), end = program->getIdentities().end(); i != end; ++i)
-	{
-		outputDeclaration(i->second);
-		*mOutput << ";" << std::endl;
-	}
-
-	*mOutput << "} FIXME_GENERATE_NAME;" << std::endl << std::endl;*/
-
-	generate(static_cast<tree::Scope *>(program));
+	decreaseDepth();
 }
 
 void generator::C::generate(tree::Function *function)
 {
+	outputTabs();
 	outputDeclaration(function->getPrototype());
 	*mOutput << "(FIXME_GENERATE_NAME *scope";
 
@@ -62,14 +141,23 @@ void generator::C::generate(tree::Function *function)
 		}
 	}
 
-	*mOutput << ")" << std::endl
-		<< "{" << std::endl;
+	*mOutput << ")" << std::endl;
+
+	outputTabs();
+	*mOutput << "{" << std::endl;
+
+	increaseDepth();
 
 	for(tree::Identities::iterator i = function->getIdentities().begin(), end = function->getIdentities().end(); i != end; ++i)
 	{
+		outputTabs();
 		outputDeclaration(i->second);
 		*mOutput << ";" << std::endl;
 	}
+
+	decreaseDepth();
+
+	*mOutput << std::endl;
 
 	generate(static_cast<tree::Scope *>(function));
 
@@ -78,14 +166,21 @@ void generator::C::generate(tree::Function *function)
 	// Check if we need a return statement
 	if(statements && dynamic_cast<tree::Return *>(*(--statements->end())) == NULL)
 	{
+		increaseDepth();
+		*mOutput << std::endl;
+		outputTabs();
 		*mOutput << "return 0;" << std::endl;
+		decreaseDepth();
 	}
 
+	outputTabs();
 	*mOutput << "}" << std::endl << std::endl;
 }
 
 void generator::C::generate(tree::Identity *identity)
 {
+//	if(dynamic_cast<tree::Use *>(identity->getParent()))
+
 	*mOutput << identity->getName();
 }
 
@@ -150,7 +245,7 @@ void generator::C::generate(tree::FunctionCall *functionCall)
 
 	*mOutput << prototype->getName() << "(scope";
 
-	tree::Expressions *arguments = prototype->getArguments();
+	tree::Expressions *arguments = functionCall->getArguments();
 
 	if(arguments)
 	{
@@ -363,12 +458,14 @@ void generator::C::generate(tree::Minus *minus)
 
 void generator::C::generate(tree::Execute *execute)
 {
+	outputTabs();
 	dispatch(execute->getExpression());
 	*mOutput << ";" << std::endl;
 }
 
 void generator::C::generate(tree::Return *returnExpression)
 {
+	outputTabs();
 	*mOutput << "return ";
 	dispatch(returnExpression->getReturn());
 	*mOutput << ";" << std::endl;
@@ -436,5 +533,13 @@ void generator::C::outputDeclaration(tree::Identity *identity)
 	else
 	{
 		ERROR("Unknown type");
+	}
+}
+
+void generator::C::outputTabs()
+{
+	for(unsigned int i = 0; i < mDepth; i++)
+	{
+		*mOutput << "\t";
 	}
 }

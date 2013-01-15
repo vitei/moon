@@ -1,6 +1,7 @@
 #ifndef COMPILER_GENERATORS_C_H
 #define COMPILER_GENERATORS_C_H
 
+#include <ostream>
 #include "compiler/tree.h"
 #include "generator.h"
 
@@ -10,22 +11,16 @@ namespace generator
 	class C : public Generator
 	{
 	public:
-		C() {}
+		C() : mDepth(0) {}
 
 		virtual void run(std::ostream &output, tree::Program *program);
 
+	private:
+		virtual void generate(tree::Program *program);
+
 		virtual void dispatch(tree::Node *node);
 
-		virtual void generate(tree::Node *node)
-		{
-#ifdef DEBUG
-			node->printNode();
-			ERROR("Should never reach here");
-#endif
-		}
-
 		virtual void generate(tree::Scope *scope);
-		virtual void generate(tree::Program *program);
 		virtual void generate(tree::Function *function);
 
 		virtual void generate(tree::Identity *identity);
@@ -64,10 +59,30 @@ namespace generator
 		virtual void generate(tree::Execute *execute);
 		virtual void generate(tree::Return *returnExpression);
 
-		void outputDeclaration(tree::Identity *identity);
+		virtual void generate(tree::Node *node)
+		{
+#ifdef DEBUG
+			node->printNode();
+			ERROR("Should never reach here");
+#endif
+		}
 
-	private:
+		void increaseDepth()
+		{
+			mDepth++;
+		}
+
+		void decreaseDepth()
+		{
+			mDepth--;
+		}
+
+		void outputDeclaration(tree::Identity *identity);
+		void outputTabs();
+
+		tree::Scope *mCurrentScope;
 		std::ostream *mOutput;
+		unsigned int mDepth;
 	};
 }
 
