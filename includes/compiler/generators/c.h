@@ -20,7 +20,7 @@ namespace generator
 		{
 #ifdef DEBUG
 			node->printNode();
-		//	ERROR("Should never reach here");
+			ERROR("Should never reach here");
 #endif
 		}
 
