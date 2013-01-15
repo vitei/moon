@@ -35,6 +35,13 @@ void generator::C::generate(tree::Program *program)
 
 			if(aggregate)
 			{
+				for(tree::Identities::iterator j = aggregate->getIdentities().begin(), end2 = aggregate->getIdentities().end(); j != end2; ++j)
+				{
+					outputTabs();
+					outputDeclaration(j->second);
+					*mOutput << ";" << std::endl;
+				}
+
 				tree::Statements *aggregateStatements = aggregate->getStatements();
 
 				if(aggregateStatements)
@@ -45,10 +52,10 @@ void generator::C::generate(tree::Program *program)
 
 						if(use)
 						{
-							for(tree::Identities::iterator i = use->getIdentities().begin(), end3 = use->getIdentities().end(); i != end3; ++i)
+							for(tree::Identities::iterator k = use->getIdentities().begin(), end3 = use->getIdentities().end(); k != end3; ++k)
 							{
 								outputTabs();
-								outputDeclaration(i->second);
+								outputDeclaration(k->second);
 								*mOutput << ";" << std::endl;
 							}
 						}
