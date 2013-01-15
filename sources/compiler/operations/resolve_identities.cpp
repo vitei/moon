@@ -80,3 +80,19 @@ tree::Node *operation::ResolveIdentities::restructure(tree::Identifier *identifi
 
 	return r;
 }
+
+tree::Node *operation::ResolveIdentities::restructure(tree::Execute *execute)
+{
+	LOG("ResolveIdentities::restructure::Execute");
+
+	// If this was just a declaration statement then we can get rid of it.
+	if(dynamic_cast<tree::Identity *>(execute->getExpression()))
+	{
+		delete execute;
+		return NULL;
+	}
+	else
+	{
+		return execute;
+	}
+}

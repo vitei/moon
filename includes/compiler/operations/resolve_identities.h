@@ -15,6 +15,7 @@ namespace operation
 		virtual void visit(tree::Expression *expression);
 
 		virtual tree::Node *restructure(tree::Identifier *identifier);
+		virtual tree::Node *restructure(tree::Execute *execute);
 
 	private:
 		ResolveIdentities() {}
