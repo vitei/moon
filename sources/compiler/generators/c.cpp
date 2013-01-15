@@ -15,8 +15,13 @@ void generator::C::generate(tree::Program *program)
 
 	for(tree::Identities::iterator i = program->getIdentities().begin(), end = program->getIdentities().end(); i != end; ++i)
 	{
+		tree::Identity *identity = i->second;
+		std::string *cName = new std::string("__" + identity->getName());
+
+		identity->setMetadata(cName);
+
 		*mOutput << "extern ";
-		outputDeclaration(i->second);
+		outputDeclaration(identity);
 		*mOutput << ";" << std::endl;
 	}
 
@@ -37,8 +42,13 @@ void generator::C::generate(tree::Program *program)
 			{
 				for(tree::Identities::iterator j = aggregate->getIdentities().begin(), end2 = aggregate->getIdentities().end(); j != end2; ++j)
 				{
+					tree::Identity *identity = j->second;
+					std::string *cName = new std::string("__" + identity->getName());
+
+					identity->setMetadata(cName);
+
 					outputTabs();
-					outputDeclaration(j->second);
+					outputDeclaration(identity);
 					*mOutput << ";" << std::endl;
 				}
 
@@ -54,8 +64,13 @@ void generator::C::generate(tree::Program *program)
 						{
 							for(tree::Identities::iterator k = use->getIdentities().begin(), end3 = use->getIdentities().end(); k != end3; ++k)
 							{
+								tree::Identity *identity = k->second;
+								std::string *cName = new std::string("__" + identity->getName());
+
+								identity->setMetadata(cName);
+
 								outputTabs();
-								outputDeclaration(k->second);
+								outputDeclaration(identity);
 								*mOutput << ";" << std::endl;
 							}
 						}
@@ -143,8 +158,13 @@ void generator::C::generate(tree::Function *function)
 	{
 		for(tree::Expressions::iterator i = arguments->begin(), end = arguments->end(); i != end; ++i)
 		{
+			tree::Identity *identity = static_cast<tree::Identity *>(*i);
+			std::string *cName = new std::string("__" + identity->getName());
+
+			identity->setMetadata(cName);
+
 			*mOutput << ", ";
-			outputDeclaration(static_cast<tree::Identity *>(*i));
+			outputDeclaration(identity);
 		}
 	}
 
@@ -157,8 +177,13 @@ void generator::C::generate(tree::Function *function)
 
 	for(tree::Identities::iterator i = function->getIdentities().begin(), end = function->getIdentities().end(); i != end; ++i)
 	{
+		tree::Identity *identity = i->second;
+		std::string *cName = new std::string("__" + identity->getName());
+
+		identity->setMetadata(cName);
+
 		outputTabs();
-		outputDeclaration(i->second);
+		outputDeclaration(identity);
 		*mOutput << ";" << std::endl;
 	}
 
@@ -186,14 +211,14 @@ void generator::C::generate(tree::Function *function)
 
 void generator::C::generate(tree::Identity *identity)
 {
-//	if(dynamic_cast<tree::Use *>(identity->getParent()))
-
-	*mOutput << identity->getName();
+	ASSERT(identity->getMetadata());
+	*mOutput << *(static_cast<std::string *>(identity->getMetadata()));
 }
 
 void generator::C::generate(tree::Reference *reference)
 {
-	*mOutput << "*" << reference->getName();
+	ASSERT(reference->getMetadata());
+	*mOutput << "*" << *(static_cast<std::string *>(reference->getMetadata()));
 }
 
 void generator::C::generate(tree::Cast *cast)
@@ -250,7 +275,8 @@ void generator::C::generate(tree::FunctionCall *functionCall)
 {
 	tree::FunctionPrototype *prototype = static_cast<tree::FunctionPrototype *>(functionCall->getPrototype());
 
-	*mOutput << prototype->getName() << "(scope";
+	ASSERT(prototype->getMetadata());
+	*mOutput << *(static_cast<std::string *>(prototype->getMetadata())) << "(scope";
 
 	tree::Expressions *arguments = functionCall->getArguments();
 
@@ -488,48 +514,51 @@ void generator::C::outputDeclaration(tree::Identity *identity)
 	tree::String *string;
 	tree::UDT *udt;
 
+	ASSERT(identity->getMetadata());
+	std::string *name = static_cast<std::string *>(identity->getMetadata());
+
 	if((boolean = dynamic_cast<tree::Bool *>(type)))
 	{
 		if(isReference)
 		{
-			*mOutput << "bool *" << identity->getName();
+			*mOutput << "bool *" << *name;
 		}
 		else
 		{
-			*mOutput << "bool " << identity->getName();
+			*mOutput << "bool " << *name;
 		}
 	}
 	else if((integer = dynamic_cast<tree::Int *>(type)))
 	{
 		if(isReference)
 		{
-			*mOutput << "int *" << identity->getName();
+			*mOutput << "int *" << *name;
 		}
 		else
 		{
-			*mOutput << "int " << identity->getName();
+			*mOutput << "int " << *name;
 		}
 	}
 	else if((floatingPoint = dynamic_cast<tree::Float *>(type)))
 	{
 		if(isReference)
 		{
-			*mOutput << "float *" << identity->getName();
+			*mOutput << "float *" << *name;
 		}
 		else
 		{
-			*mOutput << "float " << identity->getName();
+			*mOutput << "float " << *name;
 		}
 	}
 	else if((string = dynamic_cast<tree::String *>(type)))
 	{
 		if(isReference)
 		{
-			*mOutput << "char **" << identity->getName();
+			*mOutput << "char **" << *name;
 		}
 		else
 		{
-			*mOutput << "char " << identity->getName() << "[" << string->getMaxSize() << "]";
+			*mOutput << "char " << *name << "[" << string->getMaxSize() << "]";
 		}
 	}
 	else if((udt = dynamic_cast<tree::UDT *>(type)))
