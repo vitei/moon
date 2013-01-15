@@ -56,15 +56,18 @@ namespace tree
 			return mStatements;
 		}
 
+		virtual void checkIdentity(Identity *identity);
 		void mapIdentity(Identity *identity);
-		Identity *findIdentity(Identifier *identifier);
+		virtual Identity *findIdentity(Identifier *identifier);
 
 #ifdef DEBUG
 		virtual void printNode() { LOG("Scope"); }
 #endif
 
-	private:
+	protected:
 		Scope *mParent;
+
+	private:
 		Identities mIdentities;
 		Statements *mStatements;
 	};

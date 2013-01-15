@@ -78,12 +78,17 @@ namespace tree
 			visit(operation);
 		}
 
+		virtual void checkIdentity(Identity *identity);
+		void mapParameterIdentity(Identity *identity);
+		virtual Identity *findIdentity(Identifier *identifier);
+
 #ifdef DEBUG
 		virtual void printNode() { LOG("Function"); }
 #endif
 
 	private:
 		FunctionPrototype *mPrototype;
+		Identities mParameterIdentities;
 	};
 }
 

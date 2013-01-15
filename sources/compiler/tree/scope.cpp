@@ -2,36 +2,42 @@
 #include "compiler/tree.h"
 
 
-void tree::Scope::mapIdentity(tree::Identity *identity)
+void tree::Scope::checkIdentity(Identity *identity)
 {
 	const std::string &name = identity->getName();
+	tree::Identities::iterator previousValue = mIdentities.find(name);
 
-	for(Scope *s = this; s; s = s->mParent)
+	if(previousValue != mIdentities.end())
 	{
-		tree::Identities::iterator previousValue = s->mIdentities.find(name);
-
-		if(previousValue != s->mIdentities.end())
-		{
-			throw tree::Scope::ExistsException(identity, previousValue->second);
-		}
+		throw tree::Scope::ExistsException(identity, previousValue->second);
 	}
+	else if(mParent)
+	{
+		mParent->checkIdentity(identity);
+	}
+}
 
-	mIdentities[name] = identity;
+void tree::Scope::mapIdentity(tree::Identity *identity)
+{
+	checkIdentity(identity);
+	mIdentities[identity->getName()] = identity;
 }
 
 tree::Identity *tree::Scope::findIdentity(tree::Identifier *identifier)
 {
 	const std::string &name = identifier->getName();
+	tree::Identities::iterator identity = mIdentities.find(name);
 
-	for(Scope *s = this; s; s = s->mParent)
+	if(identity != mIdentities.end())
 	{
-		tree::Identities::iterator identity = s->mIdentities.find(name);
-
-		if(identity != s->mIdentities.end())
-		{
-			return identity->second;
-		}
+		return identity->second;
 	}
-
-	throw tree::Scope::NotFoundException(identifier);
+	else if(mParent)
+	{
+		return mParent->findIdentity(identifier);
+	}
+	else
+	{
+		throw tree::Scope::NotFoundException(identifier);
+	}
 }
