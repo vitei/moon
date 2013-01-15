@@ -100,6 +100,7 @@ namespace tree
 		}
 
 	#define GENERATE_DISPATCH(node, function) \
+		ASSERT(node); \
 		DISPATCH_ACTIONS(tree::Add, node, function) \
 		DISPATCH_ACTIONS(tree::Aggregate, node, function) \
 		DISPATCH_ACTIONS(tree::And, node, function) \
