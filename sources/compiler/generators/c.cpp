@@ -17,6 +17,7 @@ void generator::C::run(std::ostream &output, tree::Program *program)
 {
 	mOutput = &output;
 	generate(program);
+	mOutput = NULL;
 }
 
 void generator::C::generate(tree::Program *program)
