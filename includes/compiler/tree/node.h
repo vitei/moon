@@ -76,15 +76,27 @@ namespace tree
 			mLocation = location;
 		}
 
+		void *getMetadata()
+		{
+			return mMetadata;
+		}
+
+		void setMetadata(void *metadata)
+		{
+			mMetadata = metadata;
+		}
+
 #ifdef DEBUG
 		virtual void printNode() = 0;
 #endif
 
 	protected:
-		Node() { /* Abstract class */ }
+		Node() : mMetadata(NULL) { /* Abstract class */ }
 
 	private:
 		Location mLocation;
+
+		void *mMetadata;
 	};
 
 	/* ---- ONLY CONCRETE CLASSES BELOW HERE ---- */
