@@ -20,9 +20,13 @@ void generator::C::generate(tree::Program *program)
 
 		identity->setMetadata(cName);
 
-		*mOutput << "extern ";
-		outputDeclaration(identity);
-		*mOutput << ";" << std::endl;
+		if(dynamic_cast<tree::Variable *>(identity) || dynamic_cast<tree::Reference *>(identity))
+		{
+			outputTabs();
+			*mOutput << "extern ";
+			outputDeclaration(identity);
+			*mOutput << ";" << std::endl;
+		}
 	}
 
 	*mOutput << std::endl;
@@ -47,9 +51,12 @@ void generator::C::generate(tree::Program *program)
 
 					identity->setMetadata(cName);
 
-					outputTabs();
-					outputDeclaration(identity);
-					*mOutput << ";" << std::endl;
+					if(dynamic_cast<tree::Variable *>(identity) || dynamic_cast<tree::Reference *>(identity))
+					{
+						outputTabs();
+						outputDeclaration(identity);
+						*mOutput << ";" << std::endl;
+					}
 				}
 
 				tree::Statements *aggregateStatements = aggregate->getStatements();
@@ -69,9 +76,12 @@ void generator::C::generate(tree::Program *program)
 
 								identity->setMetadata(cName);
 
-								outputTabs();
-								outputDeclaration(identity);
-								*mOutput << ";" << std::endl;
+								if(dynamic_cast<tree::Variable *>(identity) || dynamic_cast<tree::Reference *>(identity))
+								{
+									outputTabs();
+									outputDeclaration(identity);
+									*mOutput << ";" << std::endl;
+								}
 							}
 						}
 					}
