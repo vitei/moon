@@ -14,8 +14,8 @@ namespace operation
 		static void run(tree::Program *program);
 
 		void add(tree::Scope *scope);
-		void add(tree::Scope *scope, tree::Expressions *expressions);
-		void add(tree::Scope *scope, tree::Statements *statements);
+		void add(tree::Node *scope, tree::Expressions *expressions);
+		void add(tree::Node *scope, tree::Statements *statements);
 		void process();
 
 		virtual void setup(tree::Function *function);
@@ -28,17 +28,17 @@ namespace operation
 		class ScopeList
 		{
 		public:
-			ScopeList(tree::Scope *_scope, tree::Expressions *_expressions) : scope(_scope), expressions(_expressions), statements(NULL) {}
-			ScopeList(tree::Scope *_scope, tree::Statements *_statements) : scope(_scope), expressions(NULL), statements(_statements) {}
+			ScopeList(tree::Node *_scope, tree::Expressions *_expressions) : scope(_scope), expressions(_expressions), statements(NULL) {}
+			ScopeList(tree::Node *_scope, tree::Statements *_statements) : scope(_scope), expressions(NULL), statements(_statements) {}
 
-			tree::Scope *scope;
+			tree::Node *scope;
 			tree::Expressions *expressions;
 			tree::Statements *statements;
 		};
 
 		MapIdentities() {}
 
-		tree::Scope *mCurrentScope;
+		tree::Node *mCurrentScope;
 		std::queue<ScopeList> mVisitNext;
 	};
 }

@@ -19,12 +19,12 @@ void operation::MapIdentities::add(tree::Scope *scope)
 	mVisitNext.push(operation::MapIdentities::ScopeList(scope, scope->getStatements()));
 }
 
-void operation::MapIdentities::add(tree::Scope *scope, tree::Expressions *expressions)
+void operation::MapIdentities::add(tree::Node *scope, tree::Expressions *expressions)
 {
 	mVisitNext.push(operation::MapIdentities::ScopeList(scope, expressions));
 }
 
-void operation::MapIdentities::add(tree::Scope *scope, tree::Statements *statements)
+void operation::MapIdentities::add(tree::Node *scope, tree::Statements *statements)
 {
 	mVisitNext.push(operation::MapIdentities::ScopeList(scope, statements));
 }
@@ -60,11 +60,12 @@ void operation::MapIdentities::visit(tree::Function *function)
 {
 	LOG("MapIdentities::visit::Function");
 
-	tree::Expressions *arguments = function->getPrototype()->getArguments();
+	tree::FunctionPrototype *prototype = function->getPrototype();
+	tree::Expressions *arguments = prototype->getArguments();
 
 	if(arguments)
 	{
-		add(function, arguments);
+		add(prototype, arguments);
 	}
 
 	if(function->getStatements())
@@ -89,7 +90,16 @@ void operation::MapIdentities::visit(tree::Identity *identity)
 
 	try
 	{
-		mCurrentScope->mapIdentity(identity);
+		tree::FunctionPrototype *prototype = dynamic_cast<tree::FunctionPrototype *>(mCurrentScope);
+
+		if(prototype)
+		{
+			prototype->getFunction()->mapParameterIdentity(identity);
+		}
+		else
+		{
+			static_cast<tree::Scope *>(mCurrentScope)->mapIdentity(identity);
+		}
 	}
 	catch(tree::Scope::ExistsException &e)
 	{
