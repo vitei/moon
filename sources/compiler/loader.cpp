@@ -31,6 +31,34 @@ void loader::popCWD()
 	sCurrentWorkingDirectory.pop();
 }
 
+void loader::filenameToUseName(char *name, const char *filename)
+{
+	// First character is always upper case
+	for(bool nextUpper = true; *filename != '.'; filename++)
+	{
+		if(*filename == '_')
+		{
+			nextUpper = true;
+		}
+		else if(nextUpper)
+		{
+			*name++ = toupper(*filename);
+		}
+		else
+		{
+			*name++ = *filename;
+		}
+	}
+
+	ASSERT(strcmp(filename, ".moon") == 0);
+}
+
+void loader::filenameToIncludeName(char *name, const char *filename)
+{
+	for(; *filename != '.'; *name++ = *filename++);
+	ASSERT(strcmp(filename, ".minc") == 0);
+}
+
 void loader::useNameToFilename(char *filename, const char *name)
 {
 	// First character is always upper case

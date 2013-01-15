@@ -9,6 +9,9 @@ namespace loader
 	void pushCWD(const char *directory);
 	void popCWD();
 
+	void filenameToUseName(char *name, const char *filename);
+	void filenameToIncludeName(char *name, const char *filename);
+
 	void useNameToFilename(char *filename, const char *name);
 	void includeNameToFilename(char *filename, const char *name);
 
