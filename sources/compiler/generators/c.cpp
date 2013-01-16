@@ -172,7 +172,7 @@ void generator::C::generate(tree::Program *program)
 
 	*mOutput << std::endl;
 
-	*mOutput << "typedef struct" << std::endl
+	*mOutput << "struct FIXME_GENERATE_NAME" << std::endl
 		<< "{" << std::endl;
 
 	increaseDepth();
@@ -227,8 +227,7 @@ void generator::C::generate(tree::Program *program)
 
 	decreaseDepth();
 
-	*mOutput << "}" << std::endl
-		<< "FIXME_GENERATE_NAME;" << std::endl << std::endl;
+	*mOutput << "};" << std::endl << std::endl;
 
 	mCurrentScope = program;
 
@@ -295,7 +294,7 @@ void generator::C::generate(tree::Function *function)
 {
 	outputTabs();
 	outputDeclaration(function->getPrototype());
-	*mOutput << "(FIXME_GENERATE_NAME *scope";
+	*mOutput << "(struct FIXME_GENERATE_NAME *scope";
 
 	tree::Expressions *arguments = function->getPrototype()->getArguments();
 
