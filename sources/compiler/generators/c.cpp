@@ -290,6 +290,14 @@ void generator::C::generate(tree::Program *program)
 				{
 					for(tree::Statements::iterator j = aggregateStatements->begin(), end2 = aggregateStatements->end(); j != end2; ++j)
 					{
+						if(!dynamic_cast<tree::Use *>(*j))
+						{
+							dispatch(*j);
+						}
+					}
+
+					for(tree::Statements::iterator j = aggregateStatements->begin(), end2 = aggregateStatements->end(); j != end2; ++j)
+					{
 						tree::Use *use = dynamic_cast<tree::Use *>(*j);
 
 						if(use)
@@ -309,10 +317,6 @@ void generator::C::generate(tree::Program *program)
 									}
 								}
 							}
-						}
-						else
-						{
-							dispatch(*j);
 						}
 					}
 				}
