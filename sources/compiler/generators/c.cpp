@@ -369,7 +369,7 @@ void generator::C::generate(tree::Function *function)
 		for(tree::Expressions::iterator i = arguments->begin(), end = arguments->end(); i != end; ++i)
 		{
 			tree::Identity *identity = static_cast<tree::Identity *>(*i);
-			Mangled *cName = new Mangled("__" + identity->getName());
+			Mangled *cName = new Mangled("moon_" + identity->getName());
 
 			identity->setMetadata(cName);
 
@@ -388,7 +388,7 @@ void generator::C::generate(tree::Function *function)
 	for(tree::Identities::iterator i = function->getIdentities().begin(), end = function->getIdentities().end(); i != end; ++i)
 	{
 		tree::Identity *identity = i->second;
-		Mangled *cName = new Mangled("__" + identity->getName());
+		Mangled *cName = new Mangled("moon_" + identity->getName());
 
 		identity->setMetadata(cName);
 
