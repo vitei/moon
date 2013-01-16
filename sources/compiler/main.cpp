@@ -105,6 +105,7 @@ int main(int argc, char *argv[])
 		{
 			char tmp[1024];
 			tree::Statements aggregates;
+			std::string name;
 
 			// The current working directory must also be used...
 			getcwd(tmp, 1024);
@@ -116,10 +117,13 @@ int main(int argc, char *argv[])
 				{
 					std::string filename = tmp;
 
+					loader::filenameToUseName(tmp, tmp);
+					name = tmp;
+
 					sParserData.uses = new tree::Statements();
 
 					loader::pushCWD(dirname(tmp));
-					sParserData.parse(lexer::Data::TYPE_USE, filename);
+					sParserData.parseUse(name, filename);
 					loader::popCWD();
 
 					if(error::count() == 0)
@@ -138,7 +142,7 @@ int main(int argc, char *argv[])
 			if(error::count() == 0)
 			{
 				// The program has been made...
-				tree::Program program(&aggregates);
+				tree::Program program(name, &aggregates);
 
 				// We may now perform operations on it...
 				operation::ScopeParents::run(&program);

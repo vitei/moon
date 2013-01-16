@@ -273,7 +273,7 @@ use                     :   o_program_includes o_program_uses o_program_cvrs o_p
                                     }
                                 }
 
-                                $$ = new tree::Use(useStatements);
+                                $$ = new tree::Use(data->currentName, useStatements);
                             }
                         ;
 
@@ -344,7 +344,7 @@ include_statement       :   TOKEN_INCLUDE TOKEN_ID TOKEN_EOS
                                     if(!data->isParsedFile(filename))
                                     {
                                         loader::pushCWD(dirname(tmp));
-                                        data->parse(lexer::Data::TYPE_INCLUDE, filename);
+                                        data->parseInclude(filename);
                                         loader::popCWD();
 
                                         $$ = data->statements;
@@ -380,13 +380,13 @@ use_statement           :   TOKEN_USE TOKEN_NAME TOKEN_EOS
                                     if(!data->isParsedFile(filename))
                                     {
                                         loader::pushCWD(dirname(tmp));
-                                        data->parse(lexer::Data::TYPE_USE, filename);
+                                        data->parseUse($2, filename);
                                         loader::popCWD();
                                     }
                                 }
                                 else
                                 {
-                                    std::string error("Could not find include file ");
+                                    std::string error("Could not find use file ");
                                     error += tmp;
                                     error::enqueue(@1, error.c_str());
                                 }
