@@ -226,7 +226,7 @@ ASSERT  (data->currentFilename);
 
 %%
 
-start                  :   START_USE use
+start                   :   START_USE use
                             {
                                 data->uses->push_back($2);
                             }
