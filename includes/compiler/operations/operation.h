@@ -29,6 +29,8 @@ namespace operation
 		 \
 		PROCESS_ACTION(tree::Identity, tree::TypedIdentity, return_type, name) \
 		 \
+		PROCESS_ACTION(tree::Scope, tree::NamedScope, return_type, name) \
+		 \
 		/* ---- ONLY CONCRETE CLASSES BELOW HERE ---- */ \
 		 \
 		PROCESS_ACTION(tree::Access, tree::ArrayAccess, return_type, name) \
@@ -63,10 +65,11 @@ namespace operation
 		PROCESS_ACTION(tree::Literal, tree::FloatLiteral, return_type, name) \
 		PROCESS_ACTION(tree::Literal, tree::StringLiteral, return_type, name) \
 		 \
+		PROCESS_ACTION(tree::NamedScope, tree::Program, return_type, name) \
+		PROCESS_ACTION(tree::NamedScope, tree::Use, return_type, name) \
+		 \
 		PROCESS_ACTION(tree::Scope, tree::Aggregate, return_type, name) \
 		PROCESS_ACTION(tree::Scope, tree::Function, return_type, name) \
-		PROCESS_ACTION(tree::Scope, tree::Program, return_type, name) \
-		PROCESS_ACTION(tree::Scope, tree::Use, return_type, name) \
 		 \
 		PROCESS_ACTION(tree::Scoping, tree::GlobalScoping, return_type, name) \
 		PROCESS_ACTION(tree::Scoping, tree::SharedScoping, return_type, name) \
