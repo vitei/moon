@@ -119,6 +119,14 @@
     "%"                 return TOKEN_MODULUS;
     "!"                 return TOKEN_LOGICAL_NOT;
     "~"                 return TOKEN_NOT;
+    "|="                return TOKEN_OR_EQUALS;
+    "^="                return TOKEN_XOR_EQUALS;
+    "&="                return TOKEN_AND_EQUALS;
+    "+="                return TOKEN_ADD_EQUALS;
+    "-="                return TOKEN_SUBTRACT_EQUALS;
+    "*="                return TOKEN_MULTIPLY_EQUALS;
+    "/="                return TOKEN_DIVIDE_EQUALS;
+    "%="                return TOKEN_MODULUS_EQUALS;
     ":"                 return TOKEN_CAST;
     "="                 return TOKEN_EQUALS;
 

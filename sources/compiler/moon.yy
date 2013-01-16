@@ -118,6 +118,14 @@ ASSERT  (data->currentFilename);
 %token TOKEN_MODULUS
 %token TOKEN_LOGICAL_NOT
 %token TOKEN_NOT
+%token TOKEN_OR_EQUALS
+%token TOKEN_XOR_EQUALS
+%token TOKEN_AND_EQUALS
+%token TOKEN_ADD_EQUALS
+%token TOKEN_SUBTRACT_EQUALS
+%token TOKEN_MULTIPLY_EQUALS
+%token TOKEN_DIVIDE_EQUALS
+%token TOKEN_MODULUS_EQUALS
 %token TOKEN_CAST
 %token TOKEN_EQUALS
 
@@ -792,7 +800,71 @@ assign_or_expression    :   assignment
 assignment              :   identifier TOKEN_EQUALS expression
                             {
                                 $$ = new tree::Assign($1, $3);
-                                $$->setLocation(@1);
+                                $$->setLocation(@2);
+                            }
+                        |   identifier TOKEN_OR_EQUALS expression
+                            {
+                                tree::Or *orExpression = new tree::Or($1, $3);
+                                orExpression->setLocation(@2);
+
+                                $$ = new tree::Assign($1, orExpression);
+                                $$->setLocation(@2);
+                            }
+                        |   identifier TOKEN_XOR_EQUALS expression
+                            {
+                                tree::Xor *xorExpression = new tree::Xor($1, $3);
+                                xorExpression->setLocation(@2);
+
+                                $$ = new tree::Assign($1, xorExpression);
+                                $$->setLocation(@2);
+                            }
+                        |   identifier TOKEN_AND_EQUALS expression
+                            {
+                                tree::And *andExpression = new tree::And($1, $3);
+                                andExpression->setLocation(@2);
+
+                                $$ = new tree::Assign($1, andExpression);
+                                $$->setLocation(@2);
+                            }
+                        |   identifier TOKEN_ADD_EQUALS expression
+                            {
+                                tree::Add *add = new tree::Add($1, $3);
+                                add->setLocation(@2);
+
+                                $$ = new tree::Assign($1, add);
+                                $$->setLocation(@2);
+                            }
+                        |   identifier TOKEN_SUBTRACT_EQUALS expression
+                            {
+                                tree::Subtract *subtract = new tree::Subtract($1, $3);
+                                subtract->setLocation(@2);
+
+                                $$ = new tree::Assign($1, subtract);
+                                $$->setLocation(@2);
+                            }
+                        |   identifier TOKEN_MULTIPLY_EQUALS expression
+                            {
+                                tree::Multiply *multiply = new tree::Multiply($1, $3);
+                                multiply->setLocation(@2);
+
+                                $$ = new tree::Assign($1, multiply);
+                                $$->setLocation(@2);
+                            }
+                        |   identifier TOKEN_DIVIDE_EQUALS expression
+                            {
+                                tree::Divide *divide = new tree::Divide($1, $3);
+                                divide->setLocation(@2);
+
+                                $$ = new tree::Assign($1, divide);
+                                $$->setLocation(@2);
+                            }
+                        |   identifier TOKEN_MODULUS_EQUALS expression
+                            {
+                                tree::Modulus *modulus = new tree::Modulus($1, $3);
+                                modulus->setLocation(@2);
+
+                                $$ = new tree::Assign($1, modulus);
+                                $$->setLocation(@2);
                             }
                         ;
 
