@@ -16,6 +16,7 @@ public:
 void generator::C::run(std::ostream &output, tree::Program *program)
 {
 	mOutput = &output;
+	mStructName = "XXXX";
 	generate(program);
 	mOutput = NULL;
 }
@@ -168,7 +169,7 @@ void generator::C::generate(tree::Program *program)
 	*mOutput << std::endl;
 
 	outputTabs();
-	*mOutput << "struct FIXME_GENERATE_NAME" << std::endl
+	*mOutput << "struct " << mStructName << std::endl
 		<< "{" << std::endl;
 
 	increaseDepth();
@@ -268,13 +269,13 @@ void generator::C::generate(tree::Program *program)
 	}
 
 	outputTabs();
-	*mOutput << "struct FIXME_GENERATE_NAME *ou()" << std::endl
+	*mOutput << "struct " << mStructName << " *ou()" << std::endl
 		<< "{" << std::endl;
 
 	increaseDepth();
 
 	outputTabs();
-	*mOutput << "struct FIXME_GENERATE_NAME *scope = (struct FIXME_GENERATE_NAME *)malloc(sizeof(struct FIXME_GENERATE_NAME));" << std::endl << std::endl;
+	*mOutput << "struct " << mStructName << " *scope = (struct " << mStructName << " *)malloc(sizeof(struct " << mStructName << "));" << std::endl << std::endl;
 
 	if(statements)
 	{
@@ -357,7 +358,7 @@ void generator::C::generate(tree::Function *function)
 {
 	outputTabs();
 	outputDeclaration(function->getPrototype());
-	*mOutput << "(struct FIXME_GENERATE_NAME *scope";
+	*mOutput << "(struct " << mStructName << " *scope";
 
 	tree::Expressions *arguments = function->getPrototype()->getArguments();
 
