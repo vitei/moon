@@ -9,13 +9,13 @@
 
 extern int yyparse(parser::Data *parserData);
 
-void parser::Data::parse(lexer::Data::FileType type, std::string filename)
+void parser::Data::parse(lexer::Data::FileType type, const std::string &filename)
 {
 	lexer::Data lexerData;
 	void *tmp = lexer;
 	FILE *input = fopen(filename.c_str(), "r");
 
-	currentFilename = &filename;
+	currentFilename = &const_cast<std::string &>(filename);
 	addParsedFile(filename);
 
 	lexerData.type = type;
@@ -28,4 +28,18 @@ void parser::Data::parse(lexer::Data::FileType type, std::string filename)
 	fclose(input);
 
 	lexer = tmp;
+}
+
+void parser::Data::parseUse(const std::string &name, const std::string &filename)
+{
+	std::string previousName = currentName;
+
+	currentName = name;
+	parse(lexer::Data::TYPE_USE, filename);
+	currentName = previousName;
+}
+
+void parser::Data::parseInclude(const std::string &filename)
+{
+	parse(lexer::Data::TYPE_INCLUDE, filename);
 }

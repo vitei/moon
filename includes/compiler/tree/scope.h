@@ -71,6 +71,21 @@ namespace tree
 		Identities mIdentities;
 		Statements *mStatements;
 	};
+
+	class NamedScope : public Scope
+	{
+	public:
+		NamedScope(std::string name, Statements *statements) : Scope(statements), mName(name) {}
+
+		const std::string &getName()
+		{
+			return mName;
+		}
+
+	private:
+		std::string mName;
+	};
+	
 }
 
 #endif

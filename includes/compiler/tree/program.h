@@ -12,10 +12,10 @@ namespace tree
 
 	/* ---- ONLY CONCRETE CLASSES BELOW HERE ---- */
 
-	class Program : public Scope
+	class Program : public NamedScope
 	{
 	public:
-		Program(Statements *aggregates) : Scope(aggregates) {}
+		Program(std::string name, Statements *aggregates) : NamedScope(name, aggregates) {}
 
 #ifdef DEBUG
 		virtual void printNode() { LOG("Program"); }

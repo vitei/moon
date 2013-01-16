@@ -30,15 +30,19 @@ namespace parser
 			return false;
 		}
 
-		void parse(lexer::Data::FileType type, std::string filename);
+		void parseUse(const std::string &name, const std::string &filename);
+		void parseInclude(const std::string &filename);
 
 		// FIXME, these three need to be nicer...
+		std::string currentName;
 		std::string *currentFilename;
 		void *lexer;
 		tree::Statements *uses;
 		tree::Statements *statements;
 
 	private:
+		void parse(lexer::Data::FileType type, const std::string &filename);
+
 		std::vector<std::string> mParsedFiles;
 	};
 }

@@ -12,10 +12,10 @@ namespace tree
 
 	/* ---- ONLY CONCRETE CLASSES BELOW HERE ---- */
 
-	class Use : public Scope
+	class Use : public NamedScope
 	{
 	public:
-		Use(Statements *statements) : Scope(statements) {}
+		Use(std::string name, Statements *statements) : NamedScope(name, statements) {}
 
 #ifdef DEBUG
 		virtual void printNode() { LOG("Use"); }
