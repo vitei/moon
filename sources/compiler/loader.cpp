@@ -33,6 +33,8 @@ void loader::popCWD()
 
 void loader::filenameToUseName(char *name, const char *filename)
 {
+	char *nameCurrent = name;
+
 	// First character is always upper case
 	for(bool nextUpper = true; *filename != '.'; filename++)
 	{
@@ -40,22 +42,45 @@ void loader::filenameToUseName(char *name, const char *filename)
 		{
 			nextUpper = true;
 		}
+		else if(*filename == '/')
+		{
+			nextUpper = true;
+			nameCurrent = name;
+		}
 		else if(nextUpper)
 		{
-			*name++ = toupper(*filename);
+			*nameCurrent++ = toupper(*filename);
+			nextUpper = false;
 		}
 		else
 		{
-			*name++ = *filename;
+			*nameCurrent++ = *filename;
 		}
 	}
+
+	*nameCurrent = NULL;
 
 	ASSERT(strcmp(filename, ".moon") == 0);
 }
 
 void loader::filenameToIncludeName(char *name, const char *filename)
 {
-	for(; *filename != '.'; *name++ = *filename++);
+	char *nameCurrent = name;
+
+	for(; *filename != '.'; filename++)
+	{
+		if(*filename == '/')
+		{
+			nameCurrent = name;
+		}
+		else
+		{
+			*nameCurrent++ = *filename;
+		}
+	}
+
+	*nameCurrent = NULL;
+
 	ASSERT(strcmp(filename, ".minc") == 0);
 }
 
