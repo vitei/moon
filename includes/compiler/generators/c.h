@@ -24,6 +24,7 @@ namespace generator
 		virtual void generate(tree::Function *function);
 
 		virtual void generate(tree::Identity *identity);
+		virtual void generate(tree::Constant *constant);
 		virtual void generate(tree::Reference *reference);
 		virtual void generate(tree::Cast *cast);
 		virtual void generate(tree::DirectAccess *directAccess);
