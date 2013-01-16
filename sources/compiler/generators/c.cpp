@@ -22,8 +22,6 @@ void generator::C::run(std::ostream &output, tree::Program *program)
 
 void generator::C::generate(tree::Program *program)
 {
-	tree::Statements *statements = program->getStatements();
-
 	for(tree::Identities::iterator i = program->getIdentities().begin(), end = program->getIdentities().end(); i != end; ++i)
 	{
 		tree::Identity *identity = i->second;
@@ -31,6 +29,8 @@ void generator::C::generate(tree::Program *program)
 
 		identity->setMetadata(cName);
 	}
+
+	tree::Statements *statements = program->getStatements();
 
 	if(statements)
 	{
@@ -92,6 +92,9 @@ void generator::C::generate(tree::Program *program)
 		}
 	}
 
+	outputTabs();
+	*mOutput << "#include <stdlib.h>" << std::endl << std::endl;
+
 	for(tree::Identities::iterator i = program->getIdentities().begin(), end = program->getIdentities().end(); i != end; ++i)
 	{
 		tree::Identity *identity = i->second;
@@ -128,19 +131,6 @@ void generator::C::generate(tree::Program *program)
 
 			if(aggregate)
 			{
-				for(tree::Identities::iterator j = aggregate->getIdentities().begin(), end2 = aggregate->getIdentities().end(); j != end2; ++j)
-				{
-					tree::Identity *identity = j->second;
-
-					if(dynamic_cast<tree::Constant *>(identity))
-					{
-						outputTabs();
-						*mOutput << "const ";
-						outputDeclaration(identity);
-						*mOutput << ";" << std::endl;
-					}
-				}
-
 				tree::Statements *aggregateStatements = aggregate->getStatements();
 
 				if(aggregateStatements)
@@ -151,16 +141,21 @@ void generator::C::generate(tree::Program *program)
 
 						if(use)
 						{
-							for(tree::Identities::iterator k = use->getIdentities().begin(), end3 = use->getIdentities().end(); k != end3; ++k)
-							{
-								tree::Identity *identity = k->second;
+							tree::Statements *useStatements = use->getStatements();
 
-								if(dynamic_cast<tree::Constant *>(identity))
+							if(useStatements)
+							{
+								for(tree::Statements::iterator k = useStatements->begin(), end3 = useStatements->end(); k != end3; ++k)
 								{
-									outputTabs();
-									*mOutput << "const ";
-									outputDeclaration(identity);
-									*mOutput << ";" << std::endl;
+									tree::Execute *execute = dynamic_cast<tree::Execute *>(*k);
+									tree::Assign *assign;
+
+									if(execute && (assign = dynamic_cast<tree::Assign *>(execute->getExpression())) && dynamic_cast<tree::Constant *>(assign->getLHS()))
+									{
+										outputTabs();
+										dispatch(assign);
+										*mOutput << ";" << std::endl;
+									}
 								}
 							}
 						}
@@ -172,6 +167,7 @@ void generator::C::generate(tree::Program *program)
 
 	*mOutput << std::endl;
 
+	outputTabs();
 	*mOutput << "struct FIXME_GENERATE_NAME" << std::endl
 		<< "{" << std::endl;
 
@@ -227,6 +223,7 @@ void generator::C::generate(tree::Program *program)
 
 	decreaseDepth();
 
+	outputTabs();
 	*mOutput << "};" << std::endl << std::endl;
 
 	mCurrentScope = program;
@@ -269,6 +266,68 @@ void generator::C::generate(tree::Program *program)
 			}
 		}
 	}
+
+	outputTabs();
+	*mOutput << "struct FIXME_GENERATE_NAME *ou()" << std::endl
+		<< "{" << std::endl;
+
+	increaseDepth();
+
+	outputTabs();
+	*mOutput << "struct FIXME_GENERATE_NAME *scope = (struct FIXME_GENERATE_NAME *)malloc(sizeof(struct FIXME_GENERATE_NAME));" << std::endl << std::endl;
+
+	if(statements)
+	{
+		for(tree::Statements::iterator i = statements->begin(), end = statements->end(); i != end; ++i)
+		{
+			tree::Aggregate *aggregate = dynamic_cast<tree::Aggregate *>(*i);
+
+			if(aggregate)
+			{
+				tree::Statements *aggregateStatements = aggregate->getStatements();
+
+				if(aggregateStatements)
+				{
+					for(tree::Statements::iterator j = aggregateStatements->begin(), end2 = aggregateStatements->end(); j != end2; ++j)
+					{
+						tree::Use *use = dynamic_cast<tree::Use *>(*j);
+
+						if(use)
+						{
+							tree::Statements *useStatements = use->getStatements();
+
+							if(useStatements)
+							{
+								for(tree::Statements::iterator k = useStatements->begin(), end3 = useStatements->end(); k != end3; ++k)
+								{
+									tree::Execute *execute = dynamic_cast<tree::Execute *>(*k);
+									tree::Assign *assign;
+
+									if(execute && (!(assign = dynamic_cast<tree::Assign *>(execute->getExpression())) || (assign && !dynamic_cast<tree::Constant *>(assign->getLHS()))))
+									{
+										dispatch(*k);
+									}
+								}
+							}
+						}
+						else
+						{
+							dispatch(*j);
+						}
+					}
+				}
+			}
+		}
+	}
+
+	*mOutput << std::endl;
+	outputTabs();
+	*mOutput << "return scope;" << std::endl;
+
+	decreaseDepth();
+
+	outputTabs();
+	*mOutput << "}" << std::endl;
 }
 
 void generator::C::dispatch(tree::Node *node)
@@ -359,6 +418,12 @@ void generator::C::generate(tree::Identity *identity)
 	Mangled *cName = static_cast<Mangled *>(identity->getMetadata());
 
 	*mOutput << cName->useName;
+}
+
+void generator::C::generate(tree::Constant *constant)
+{
+	*mOutput << "const ";
+	outputDeclaration(constant);
 }
 
 void generator::C::generate(tree::Reference *reference)
