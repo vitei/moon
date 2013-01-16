@@ -16,7 +16,7 @@ public:
 void generator::C::run(std::ostream &output, tree::Program *program)
 {
 	mOutput = &output;
-	mStructName = "XXXX";
+	mStructName = "moon_" + program->getName() + "Data";
 	generate(program);
 	mOutput = NULL;
 }
@@ -26,7 +26,7 @@ void generator::C::generate(tree::Program *program)
 	for(tree::Identities::iterator i = program->getIdentities().begin(), end = program->getIdentities().end(); i != end; ++i)
 	{
 		tree::Identity *identity = i->second;
-		Mangled *cName = new Mangled("__" + identity->getName());
+		Mangled *cName = new Mangled("moon_" + program->getName() + "_" + identity->getName());
 
 		identity->setMetadata(cName);
 	}
@@ -47,13 +47,14 @@ void generator::C::generate(tree::Program *program)
 
 					if(dynamic_cast<tree::Variable *>(identity) || dynamic_cast<tree::Reference *>(identity))
 					{
-						Mangled *cName = new Mangled("__" + identity->getName(), "scope->__" + identity->getName());
+						std::string name = "moon_" + program->getName() + "_" + identity->getName();
+						Mangled *cName = new Mangled(name, "scope->" + name);
 
 						identity->setMetadata(cName);
 					}
 					else
 					{
-						Mangled *cName = new Mangled("__" + identity->getName());
+						Mangled *cName = new Mangled("moon_" + program->getName() + "_" + identity->getName());
 
 						identity->setMetadata(cName);
 					}
@@ -75,13 +76,14 @@ void generator::C::generate(tree::Program *program)
 
 								if(dynamic_cast<tree::Variable *>(identity) || dynamic_cast<tree::Reference *>(identity))
 								{
-									Mangled *cName = new Mangled("__" + identity->getName(), "scope->__" + identity->getName());
+									std::string name = "moon_" + use->getName() + "_" + identity->getName();
+									Mangled *cName = new Mangled(name, "scope->" + name);
 
 									identity->setMetadata(cName);
 								}
 								else
 								{
-									Mangled *cName = new Mangled("__" + identity->getName());
+									Mangled *cName = new Mangled("moon_" + use->getName() + "_" + identity->getName());
 
 									identity->setMetadata(cName);
 								}
@@ -269,7 +271,7 @@ void generator::C::generate(tree::Program *program)
 	}
 
 	outputTabs();
-	*mOutput << "struct " << mStructName << " *ou()" << std::endl
+	*mOutput << "struct " << mStructName << " *moon_new" << program->getName() << "Instance()" << std::endl
 		<< "{" << std::endl;
 
 	increaseDepth();
