@@ -2,6 +2,7 @@
 #define COMPILER_GENERATORS_C_H
 
 #include <ostream>
+#include <string>
 #include "compiler/tree.h"
 #include "generator.h"
 
@@ -84,6 +85,7 @@ namespace generator
 		tree::Scope *mCurrentScope;
 		std::ostream *mOutput;
 		unsigned int mDepth;
+		std::string mStructName;
 	};
 }
 
