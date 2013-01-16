@@ -30,22 +30,7 @@ void generator::C::generate(tree::Program *program)
 		Mangled *cName = new Mangled("__" + identity->getName());
 
 		identity->setMetadata(cName);
-
-		if(dynamic_cast<tree::Variable *>(identity) || dynamic_cast<tree::Reference *>(identity))
-		{
-			outputTabs();
-			*mOutput << "extern ";
-			outputDeclaration(identity);
-			*mOutput << ";" << std::endl;
-		}
 	}
-
-	*mOutput << std::endl;
-
-	*mOutput << "typedef struct" << std::endl
-		<< "{" << std::endl;
-
-	increaseDepth();
 
 	if(statements)
 	{
@@ -64,10 +49,6 @@ void generator::C::generate(tree::Program *program)
 						Mangled *cName = new Mangled("__" + identity->getName(), "scope->__" + identity->getName());
 
 						identity->setMetadata(cName);
-
-						outputTabs();
-						outputDeclaration(identity);
-						*mOutput << ";" << std::endl;
 					}
 					else
 					{
@@ -96,16 +77,145 @@ void generator::C::generate(tree::Program *program)
 									Mangled *cName = new Mangled("__" + identity->getName(), "scope->__" + identity->getName());
 
 									identity->setMetadata(cName);
-
-									outputTabs();
-									outputDeclaration(identity);
-									*mOutput << ";" << std::endl;
 								}
 								else
 								{
 									Mangled *cName = new Mangled("__" + identity->getName());
 
 									identity->setMetadata(cName);
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	for(tree::Identities::iterator i = program->getIdentities().begin(), end = program->getIdentities().end(); i != end; ++i)
+	{
+		tree::Identity *identity = i->second;
+
+		if(dynamic_cast<tree::Variable *>(identity) || dynamic_cast<tree::Reference *>(identity))
+		{
+			outputTabs();
+			*mOutput << "extern ";
+			outputDeclaration(identity);
+			*mOutput << ";" << std::endl;
+		}
+	}
+
+	*mOutput << std::endl;
+
+	for(tree::Identities::iterator i = program->getIdentities().begin(), end = program->getIdentities().end(); i != end; ++i)
+	{
+		tree::Identity *identity = i->second;
+
+		if(dynamic_cast<tree::Constant *>(identity))
+		{
+			outputTabs();
+			*mOutput << "const ";
+			outputDeclaration(identity);
+			*mOutput << ";" << std::endl;
+		}
+	}
+
+	if(statements)
+	{
+		for(tree::Statements::iterator i = statements->begin(), end = statements->end(); i != end; ++i)
+		{
+			tree::Aggregate *aggregate = dynamic_cast<tree::Aggregate *>(*i);
+
+			if(aggregate)
+			{
+				for(tree::Identities::iterator j = aggregate->getIdentities().begin(), end2 = aggregate->getIdentities().end(); j != end2; ++j)
+				{
+					tree::Identity *identity = j->second;
+
+					if(dynamic_cast<tree::Constant *>(identity))
+					{
+						outputTabs();
+						*mOutput << "const ";
+						outputDeclaration(identity);
+						*mOutput << ";" << std::endl;
+					}
+				}
+
+				tree::Statements *aggregateStatements = aggregate->getStatements();
+
+				if(aggregateStatements)
+				{
+					for(tree::Statements::iterator j = aggregateStatements->begin(), end2 = aggregateStatements->end(); j != end2; ++j)
+					{
+						tree::Use *use = dynamic_cast<tree::Use *>(*j);
+
+						if(use)
+						{
+							for(tree::Identities::iterator k = use->getIdentities().begin(), end3 = use->getIdentities().end(); k != end3; ++k)
+							{
+								tree::Identity *identity = k->second;
+
+								if(dynamic_cast<tree::Constant *>(identity))
+								{
+									outputTabs();
+									*mOutput << "const ";
+									outputDeclaration(identity);
+									*mOutput << ";" << std::endl;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	*mOutput << std::endl;
+
+	*mOutput << "typedef struct" << std::endl
+		<< "{" << std::endl;
+
+	increaseDepth();
+
+	if(statements)
+	{
+		for(tree::Statements::iterator i = statements->begin(), end = statements->end(); i != end; ++i)
+		{
+			tree::Aggregate *aggregate = dynamic_cast<tree::Aggregate *>(*i);
+
+			if(aggregate)
+			{
+				for(tree::Identities::iterator j = aggregate->getIdentities().begin(), end2 = aggregate->getIdentities().end(); j != end2; ++j)
+				{
+					tree::Identity *identity = j->second;
+
+					if(dynamic_cast<tree::Variable *>(identity) || dynamic_cast<tree::Reference *>(identity))
+					{
+						outputTabs();
+						outputDeclaration(identity);
+						*mOutput << ";" << std::endl;
+					}
+				}
+
+				tree::Statements *aggregateStatements = aggregate->getStatements();
+
+				if(aggregateStatements)
+				{
+					for(tree::Statements::iterator j = aggregateStatements->begin(), end2 = aggregateStatements->end(); j != end2; ++j)
+					{
+						tree::Use *use = dynamic_cast<tree::Use *>(*j);
+
+						if(use)
+						{
+							for(tree::Identities::iterator k = use->getIdentities().begin(), end3 = use->getIdentities().end(); k != end3; ++k)
+							{
+								tree::Identity *identity = k->second;
+
+								if(dynamic_cast<tree::Variable *>(identity) || dynamic_cast<tree::Reference *>(identity))
+								{
+									outputTabs();
+									outputDeclaration(identity);
+									*mOutput << ";" << std::endl;
 								}
 							}
 						}
