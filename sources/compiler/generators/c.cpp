@@ -85,6 +85,9 @@ void MangleNames::visit(tree::Aggregate *aggregate)
 
 void MangleNames::visit(tree::Use *use)
 {
+	tree::Aggregate *aggregate = static_cast<tree::Aggregate *>(use->getParent());
+	tree::Program *program = static_cast<tree::Program *>(aggregate->getParent());
+
 	for(tree::Identities::iterator i = use->getIdentities().begin(), end = use->getIdentities().end(); i != end; ++i)
 	{
 		tree::Identity *identity = i->second;
@@ -92,12 +95,12 @@ void MangleNames::visit(tree::Use *use)
 
 		if(dynamic_cast<tree::Variable *>(identity) || dynamic_cast<tree::Reference *>(identity))
 		{
-			std::string mangledName = "moon_" + identity->getName();
-			cName = new Mangled(mangledName, "scope->" + use->getName() + "." + mangledName);
+			std::string mangledName = "moon_" + program->getName() + "_" + use->getName() + "_" + identity->getName();
+			cName = new Mangled(mangledName, "scope->" + mangledName);
 		}
 		else
 		{
-			cName = new Mangled("moon_" + use->getName() + "_" + identity->getName());
+			cName = new Mangled("moon_" + program->getName() + "_" + use->getName() + "_" + identity->getName());
 		}
 
 		identity->setMetadata(cName);
@@ -137,34 +140,28 @@ void MangleNames::visit(tree::Function *function)
 	visit(static_cast<tree::Scope *>(function));
 }
 
-
-
-
-
-
-/*class OutputVariables : public operation::Operation
+class OutputConstants : public operation::Operation
 {
 public:
-	static void run(tree::Program *program);
-
-	virtual void setup(tree::Use *program);
+	static void run(generator::C::Printer *printer, tree::Program *program);
 
 	virtual void visit(tree::Scope *scope);
-	virtual void visit(tree::Program *program);
+	virtual void visit(tree::Assign *assign);
 
 private:
-	OutputVariables() : mCurrentScope(NULL) {}
+	OutputConstants() {}
 
-	tree::NamedScope *mCurrentScope;
+	generator::C::Printer *mPrinter;
 };
 
-void OutputVariables::run(tree::Program *program)
+void OutputConstants::run(generator::C::Printer *printer, tree::Program *program)
 {
-	OutputVariables operation;
+	OutputConstants operation;
+	operation.mPrinter = printer;
 	program->accept(&operation);
 }
 
-void OutputVariables::visit(tree::Scope *scope)
+void OutputConstants::visit(tree::Scope *scope)
 {
 	tree::Statements *statements = scope->getStatements();
 
@@ -172,6 +169,43 @@ void OutputVariables::visit(tree::Scope *scope)
 	{
 		for(tree::Statements::iterator i = statements->begin(); i != statements->end(); (*i++)->accept(this));
 	}
+}
+
+void OutputConstants::visit(tree::Assign *assign)
+{
+	tree::Constant *constant = dynamic_cast<tree::Constant *>(assign->getLHS());
+
+	if(constant)
+	{
+		mPrinter->outputDeclaration(constant);
+		mPrinter->outputRaw(" = ");
+		mPrinter->dispatch(assign->getRHS());
+		mPrinter->outputEOS();
+	}
+}
+
+class OutputVariables : public operation::Operation
+{
+public:
+	static void run(generator::C::Printer *printer, tree::Program *program);
+
+	virtual void visit(tree::Program *program);
+	virtual void visit(tree::Aggregate *aggregate);
+	virtual void visit(tree::Use *use);
+
+private:
+	OutputVariables() {}
+
+	void visitScope(tree::Scope *scope);
+
+	generator::C::Printer *mPrinter;
+};
+
+void OutputVariables::run(generator::C::Printer *printer, tree::Program *program)
+{
+	OutputVariables operation;
+	operation.mPrinter = printer;
+	program->accept(&operation);
 }
 
 void OutputVariables::visit(tree::Program *program)
@@ -182,26 +216,48 @@ void OutputVariables::visit(tree::Program *program)
 
 		if(dynamic_cast<tree::Variable *>(identity) || dynamic_cast<tree::Reference *>(identity))
 		{
-			LOG("extern XXX;");
-			//outputTabs();
-			//*mOutput << "extern ";
-			//outputDeclaration(identity);
-			//*mOutput << ";" << std::endl;
+			mPrinter->outputExtern(static_cast<tree::TypedIdentity *>(identity));
 		}
 	}
 
-	visit(static_cast<tree::Scope *>(program));
+	mPrinter->outputVariablesBegin();
+	mPrinter->increaseDepth();
+	visitScope(program);
+	mPrinter->decreaseDepth();
+	mPrinter->outputVariablesEnd();
 }
 
-
-void OutputVariables::visit(tree::Program *program)
+void OutputVariables::visit(tree::Aggregate *aggregate)
 {
-	
-}*/
+	for(tree::Identities::iterator i = aggregate->getIdentities().begin(), end = aggregate->getIdentities().end(); i != end; ++i)
+	{
+		tree::Identity *identity = i->second;
 
+		if(dynamic_cast<tree::Variable *>(identity) || dynamic_cast<tree::Reference *>(identity))
+		{
+			mPrinter->outputDeclaration(static_cast<tree::TypedIdentity *>(identity));
+			mPrinter->outputEOS();
+		}
+	}
 
-/*
-void OutputVariables::visit(tree::Scope *scope)
+	visitScope(aggregate);
+}
+
+void OutputVariables::visit(tree::Use *use)
+{
+	for(tree::Identities::iterator i = use->getIdentities().begin(), end = use->getIdentities().end(); i != end; ++i)
+	{
+		tree::Identity *identity = i->second;
+
+		if(dynamic_cast<tree::Variable *>(identity) || dynamic_cast<tree::Reference *>(identity))
+		{
+			mPrinter->outputDeclaration(static_cast<tree::TypedIdentity *>(identity));
+			mPrinter->outputEOS();
+		}
+	}
+}
+
+void OutputVariables::visitScope(tree::Scope *scope)
 {
 	tree::Statements *statements = scope->getStatements();
 
@@ -211,295 +267,175 @@ void OutputVariables::visit(tree::Scope *scope)
 	}
 }
 
-void OutputVariables::visit(tree::NamedScope *namedScope)
+class OutputFunctions : public operation::Operation
 {
-	tree::NamedScope *oldScope = mCurrentScope;
+public:
+	static void run(generator::C::Printer *printer, tree::Program *program);
 
-	mCurrentScope = namedScope;
-	visit(static_cast<tree::Scope *>(namedScope));
-	mCurrentScope = oldScope;
+	virtual void visit(tree::Scope *scope);
+	virtual void visit(tree::Function *function);
+
+private:
+	OutputFunctions() {}
+
+	generator::C::Printer *mPrinter;
+};
+
+void OutputFunctions::run(generator::C::Printer *printer, tree::Program *program)
+{
+	OutputFunctions operation;
+	operation.mPrinter = printer;
+	program->accept(&operation);
 }
-*/
 
+void OutputFunctions::visit(tree::Scope *scope)
+{
+	tree::Statements *statements = scope->getStatements();
 
+	if(statements)
+	{
+		for(tree::Statements::iterator i = statements->begin(); i != statements->end(); (*i++)->accept(this));
+	}
+}
 
+void OutputFunctions::visit(tree::Function *function)
+{
+	mPrinter->dispatch(function);
+}
 
+class OutputNew : public operation::Operation
+{
+public:
+	static void run(generator::C::Printer *printer, tree::Program *program);
 
+	virtual void visit(tree::Scope *scope);
+	virtual void visit(tree::Program *program);
+	virtual void visit(tree::Aggregate *aggregate);
+	virtual void visit(tree::Use *use);
 
+private:
+	OutputNew() {}
 
+	void outputScope(tree::Scope *scope);
 
+	generator::C::Printer *mPrinter;
+};
 
+void OutputNew::run(generator::C::Printer *printer, tree::Program *program)
+{
+	OutputNew operation;
+	operation.mPrinter = printer;
+	program->accept(&operation);
+}
 
+void OutputNew::visit(tree::Scope *scope)
+{
+	tree::Statements *statements = scope->getStatements();
 
+	if(statements)
+	{
+		for(tree::Statements::iterator i = statements->begin(); i != statements->end(); ++i)
+		{
+			if(!dynamic_cast<tree::Function *>(*i))
+			{
+				(*i)->accept(this);
+			}
+		}
+	}
+}
 
+void OutputNew::visit(tree::Program *program)
+{
+	mPrinter->outputNewBegin();
+	mPrinter->increaseDepth();
+	visit(static_cast<tree::Scope *>(program));
+	mPrinter->decreaseDepth();
+	mPrinter->outputNewEnd();
+}
 
+void OutputNew::visit(tree::Aggregate *aggregate)
+{
+	outputScope(aggregate);
+	visit(static_cast<tree::Scope *>(aggregate));
+}
 
+void OutputNew::visit(tree::Use *use)
+{
+	outputScope(use);
+}
 
+void OutputNew::outputScope(tree::Scope *scope)
+{
+	tree::Statements *statements = scope->getStatements();
+
+	if(statements)
+	{
+		for(tree::Statements::iterator i = statements->begin(); i != statements->end(); ++i)
+		{
+			tree::Execute *execute;
+			tree::Assign *assign;
+
+			// Only non-scope and non-constant-assigning expressions should be output here
+			if(!dynamic_cast<tree::Scope *>(*i)
+				&& !((execute = dynamic_cast<tree::Execute *>(*i)) && (assign = dynamic_cast<tree::Assign *>(execute->getExpression())) && dynamic_cast<tree::Constant *>(assign->getLHS()))
+				)
+			{
+				mPrinter->dispatch(*i);
+			}
+		}
+	}
+}
 
 void generator::C::run(std::ostream &output, tree::Program *program)
 {
-	mOutput = &output;
-	mStructName = "moon_" + program->getName() + "Data";
+	mPrinter.init(output, program);
 	generate(program);
-	mOutput = NULL;
 }
 
 void generator::C::generate(tree::Program *program)
 {
-	outputTabs();
-	*mOutput << "#include <stdlib.h>" << std::endl << std::endl;
+	mangleNames(program);
 
-	LOG("#include <stdlib.h>");
+	mPrinter.outputTabs();
+	mPrinter.outputPragma("#include <stdlib.h>");
 
-	MangleNames::run(program);
-	//OutputVariables::run(program);
-
-
-
-
-
-
-
-
-
-
-
-
-
-	for(tree::Identities::iterator i = program->getIdentities().begin(), end = program->getIdentities().end(); i != end; ++i)
-	{
-		tree::Identity *identity = i->second;
-
-		if(dynamic_cast<tree::Variable *>(identity) || dynamic_cast<tree::Reference *>(identity))
-		{
-			outputTabs();
-			*mOutput << "extern ";
-			outputDeclaration(identity);
-			*mOutput << ";" << std::endl;
-		}
-	}
-
-	*mOutput << std::endl;
-
-	tree::Statements *statements = program->getStatements();
-
-	if(statements)
-	{
-		for(tree::Statements::iterator i = statements->begin(), end = statements->end(); i != end; ++i)
-		{
-			tree::Aggregate *aggregate = dynamic_cast<tree::Aggregate *>(*i);
-
-			if(aggregate)
-			{
-				tree::Statements *aggregateStatements = aggregate->getStatements();
-
-				if(aggregateStatements)
-				{
-					for(tree::Statements::iterator j = aggregateStatements->begin(), end2 = aggregateStatements->end(); j != end2; ++j)
-					{
-						tree::Use *use = dynamic_cast<tree::Use *>(*j);
-
-						if(use)
-						{
-							tree::Statements *useStatements = use->getStatements();
-
-							if(useStatements)
-							{
-								for(tree::Statements::iterator k = useStatements->begin(), end3 = useStatements->end(); k != end3; ++k)
-								{
-									tree::Execute *execute = dynamic_cast<tree::Execute *>(*k);
-									tree::Assign *assign;
-
-									if(execute && (assign = dynamic_cast<tree::Assign *>(execute->getExpression())) && dynamic_cast<tree::Constant *>(assign->getLHS()))
-									{
-										outputTabs();
-										dispatch(assign);
-										*mOutput << ";" << std::endl;
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-	}
-
-	*mOutput << std::endl;
-
-	outputTabs();
-	*mOutput << "struct " << mStructName << std::endl
-		<< "{" << std::endl;
-
-	increaseDepth();
-
-	if(statements)
-	{
-		for(tree::Statements::iterator i = statements->begin(), end = statements->end(); i != end; ++i)
-		{
-			tree::Aggregate *aggregate = dynamic_cast<tree::Aggregate *>(*i);
-
-			if(aggregate)
-			{
-				for(tree::Identities::iterator j = aggregate->getIdentities().begin(), end2 = aggregate->getIdentities().end(); j != end2; ++j)
-				{
-					tree::Identity *identity = j->second;
-
-					if(dynamic_cast<tree::Variable *>(identity) || dynamic_cast<tree::Reference *>(identity))
-					{
-						outputTabs();
-						outputDeclaration(identity);
-						*mOutput << ";" << std::endl;
-					}
-				}
-
-				tree::Statements *aggregateStatements = aggregate->getStatements();
-
-				if(aggregateStatements)
-				{
-					for(tree::Statements::iterator j = aggregateStatements->begin(), end2 = aggregateStatements->end(); j != end2; ++j)
-					{
-						tree::Use *use = dynamic_cast<tree::Use *>(*j);
-
-						if(use)
-						{
-							for(tree::Identities::iterator k = use->getIdentities().begin(), end3 = use->getIdentities().end(); k != end3; ++k)
-							{
-								tree::Identity *identity = k->second;
-
-								if(dynamic_cast<tree::Variable *>(identity) || dynamic_cast<tree::Reference *>(identity))
-								{
-									outputTabs();
-									outputDeclaration(identity);
-									*mOutput << ";" << std::endl;
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-	}
-
-	decreaseDepth();
-
-	outputTabs();
-	*mOutput << "};" << std::endl << std::endl;
-
-	mCurrentScope = program;
-
-	if(statements)
-	{
-		for(tree::Statements::iterator i = statements->begin(), end = statements->end(); i != end; ++i)
-		{
-			tree::Aggregate *aggregate = dynamic_cast<tree::Aggregate *>(*i);
-
-			if(aggregate)
-			{
-				tree::Statements *aggregateStatements = aggregate->getStatements();
-
-				if(aggregateStatements)
-				{
-					for(tree::Statements::iterator j = aggregateStatements->begin(), end2 = aggregateStatements->end(); j != end2; ++j)
-					{
-						tree::Use *use = dynamic_cast<tree::Use *>(*j);
-
-						if(use)
-						{
-							tree::Statements *useStatements = use->getStatements();
-
-							if(useStatements)
-							{
-								for(tree::Statements::iterator k = useStatements->begin(), end3 = useStatements->end(); k != end3; ++k)
-								{
-									tree::Scope *scope = dynamic_cast<tree::Scope *>(*k);
-
-									if(scope)
-									{
-										dispatch(scope);
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-	}
-
-	outputTabs();
-	*mOutput << "struct " << mStructName << " *moon_new" << program->getName() << "Instance()" << std::endl
-		<< "{" << std::endl;
-
-	increaseDepth();
-
-	outputTabs();
-	*mOutput << "struct " << mStructName << " *scope = (struct " << mStructName << " *)malloc(sizeof(struct " << mStructName << "));" << std::endl << std::endl;
-
-	if(statements)
-	{
-		for(tree::Statements::iterator i = statements->begin(), end = statements->end(); i != end; ++i)
-		{
-			tree::Aggregate *aggregate = dynamic_cast<tree::Aggregate *>(*i);
-
-			if(aggregate)
-			{
-				tree::Statements *aggregateStatements = aggregate->getStatements();
-
-				if(aggregateStatements)
-				{
-					for(tree::Statements::iterator j = aggregateStatements->begin(), end2 = aggregateStatements->end(); j != end2; ++j)
-					{
-						if(!dynamic_cast<tree::Use *>(*j))
-						{
-							dispatch(*j);
-						}
-					}
-
-					for(tree::Statements::iterator j = aggregateStatements->begin(), end2 = aggregateStatements->end(); j != end2; ++j)
-					{
-						tree::Use *use = dynamic_cast<tree::Use *>(*j);
-
-						if(use)
-						{
-							tree::Statements *useStatements = use->getStatements();
-
-							if(useStatements)
-							{
-								for(tree::Statements::iterator k = useStatements->begin(), end3 = useStatements->end(); k != end3; ++k)
-								{
-									tree::Execute *execute = dynamic_cast<tree::Execute *>(*k);
-									tree::Assign *assign;
-
-									if(execute && (!(assign = dynamic_cast<tree::Assign *>(execute->getExpression())) || (assign && !dynamic_cast<tree::Constant *>(assign->getLHS()))))
-									{
-										dispatch(*k);
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-	}
-
-	*mOutput << std::endl;
-	outputTabs();
-	*mOutput << "return scope;" << std::endl;
-
-	decreaseDepth();
-
-	outputTabs();
-	*mOutput << "}" << std::endl;
+	outputConstants(program);
+	outputVariables(program);
+	outputFunctions(program);
+	outputNew(program);
 }
 
-void generator::C::dispatch(tree::Node *node)
+void generator::C::mangleNames(tree::Program *program)
 {
-	GENERATE_DISPATCH(node, generate)
+	MangleNames::run(program);
 }
 
-void generator::C::generate(tree::Scope *scope)
+void generator::C::outputConstants(tree::Program *program)
+{
+	OutputConstants::run(&mPrinter, program);
+}
+
+void generator::C::outputVariables(tree::Program *program)
+{
+	OutputVariables::run(&mPrinter, program);
+}
+
+void generator::C::outputFunctions(tree::Program *program)
+{
+	OutputFunctions::run(&mPrinter, program);
+}
+
+void generator::C::outputNew(tree::Program *program)
+{
+	OutputNew::run(&mPrinter, program);
+}
+
+void generator::C::Printer::dispatch(tree::Node *node)
+{
+	GENERATE_DISPATCH(node, output)
+}
+
+void generator::C::Printer::output(tree::Scope *scope)
 {
 	increaseDepth();
 
@@ -513,7 +449,7 @@ void generator::C::generate(tree::Scope *scope)
 	decreaseDepth();
 }
 
-void generator::C::generate(tree::Function *function)
+void generator::C::Printer::output(tree::Function *function)
 {
 	outputTabs();
 	outputDeclaration(function->getPrototype());
@@ -525,13 +461,10 @@ void generator::C::generate(tree::Function *function)
 	{
 		for(tree::Expressions::iterator i = arguments->begin(), end = arguments->end(); i != end; ++i)
 		{
-			tree::Identity *identity = static_cast<tree::Identity *>(*i);
-			/*Mangled *cName = new Mangled("moon_" + identity->getName());
-
-			identity->setMetadata(cName);*/
+			tree::TypedIdentity *typedIdentity = static_cast<tree::TypedIdentity *>(*i);
 
 			*mOutput << ", ";
-			outputDeclaration(identity);
+			outputDeclaration(typedIdentity);
 		}
 	}
 
@@ -544,21 +477,23 @@ void generator::C::generate(tree::Function *function)
 
 	for(tree::Identities::iterator i = function->getIdentities().begin(), end = function->getIdentities().end(); i != end; ++i)
 	{
-		tree::Identity *identity = i->second;
-		/*Mangled *cName = new Mangled("moon_" + identity->getName());
-
-		identity->setMetadata(cName);*/
+#ifdef DEBUG
+		tree::TypedIdentity *typedIdentity = dynamic_cast<tree::TypedIdentity *>(i->second);
+		ASSERT(typedIdentity);
+#else
+		tree::TypedIdentity *typedIdentity = static_cast<tree::TypedIdentity *>(i->second);
+#endif
 
 		outputTabs();
-		outputDeclaration(identity);
-		*mOutput << ";" << std::endl;
+		outputDeclaration(typedIdentity);
+		outputEOS();
 	}
 
 	decreaseDepth();
 
 	*mOutput << std::endl;
 
-	generate(static_cast<tree::Scope *>(function));
+	output(static_cast<tree::Scope *>(function));
 
 	tree::Statements *statements = function->getStatements();
 
@@ -573,10 +508,10 @@ void generator::C::generate(tree::Function *function)
 	}
 
 	outputTabs();
-	*mOutput << "}" << std::endl << std::endl;
+	*mOutput << "}" << std::endl;
 }
 
-void generator::C::generate(tree::Identity *identity)
+void generator::C::Printer::output(tree::Identity *identity)
 {
 	ASSERT(identity->getMetadata());
 	Mangled *cName = static_cast<Mangled *>(identity->getMetadata());
@@ -584,13 +519,7 @@ void generator::C::generate(tree::Identity *identity)
 	*mOutput << cName->useName;
 }
 
-/*void generator::C::generate(tree::Constant *constant)
-{
-	*mOutput << "const ";
-	outputDeclaration(constant);
-}*/
-
-void generator::C::generate(tree::Reference *reference)
+void generator::C::Printer::output(tree::Reference *reference)
 {
 	ASSERT(reference->getMetadata());
 	Mangled *cName = static_cast<Mangled *>(reference->getMetadata());
@@ -598,7 +527,7 @@ void generator::C::generate(tree::Reference *reference)
 	*mOutput << cName->useName;
 }
 
-void generator::C::generate(tree::Cast *cast)
+void generator::C::Printer::output(tree::Cast *cast)
 {
 	tree::Type *type = cast->getType();
 
@@ -633,22 +562,22 @@ void generator::C::generate(tree::Cast *cast)
 	*mOutput << ")";
 }
 
-void generator::C::generate(tree::DirectAccess *directAccess)
+void generator::C::Printer::output(tree::DirectAccess *directAccess)
 {
-	// FIXME
+	ERROR("FIXME");
 }
 
-void generator::C::generate(tree::MessageAccess *messageAccess)
+void generator::C::Printer::output(tree::MessageAccess *messageAccess)
 {
-	// FIXME
+	ERROR("FIXME");
 }
 
-void generator::C::generate(tree::ArrayAccess *arrayAccess)
+void generator::C::Printer::output(tree::ArrayAccess *arrayAccess)
 {
-	// FIXME
+	ERROR("FIXME");
 }
 
-void generator::C::generate(tree::FunctionCall *functionCall)
+void generator::C::Printer::output(tree::FunctionCall *functionCall)
 {
 	tree::FunctionPrototype *prototype = static_cast<tree::FunctionPrototype *>(functionCall->getPrototype());
 
@@ -671,39 +600,39 @@ void generator::C::generate(tree::FunctionCall *functionCall)
 	*mOutput << ")";
 }
 
-void generator::C::generate(tree::NullReference *nullReference)
+void generator::C::Printer::output(tree::NullReference *nullReference)
 {
 	*mOutput << "NULL";
 }
 
-void generator::C::generate(tree::BoolLiteral *boolLiteral)
+void generator::C::Printer::output(tree::BoolLiteral *boolLiteral)
 {
 	*mOutput << (boolLiteral->getValue() ? "true" : "false");
 }
 
-void generator::C::generate(tree::IntLiteral *intLiteral)
+void generator::C::Printer::output(tree::IntLiteral *intLiteral)
 {
 	*mOutput << intLiteral->getValue();
 }
 
-void generator::C::generate(tree::FloatLiteral *floatLiteral)
+void generator::C::Printer::output(tree::FloatLiteral *floatLiteral)
 {
 	*mOutput << floatLiteral->getValue();
 }
 
-void generator::C::generate(tree::StringLiteral *stringLiteral)
+void generator::C::Printer::output(tree::StringLiteral *stringLiteral)
 {
 	*mOutput << "\"" << stringLiteral->getValue() << "\"";
 }
 
-void generator::C::generate(tree::Assign *assign)
+void generator::C::Printer::output(tree::Assign *assign)
 {
 	dispatch(assign->getLHS());
 	*mOutput << " = ";
 	dispatch(assign->getRHS());
 }
 
-void generator::C::generate(tree::LogicalOr *logicalOr)
+void generator::C::Printer::output(tree::LogicalOr *logicalOr)
 {
 	*mOutput << "(";
 	dispatch(logicalOr->getLHS());
@@ -712,7 +641,7 @@ void generator::C::generate(tree::LogicalOr *logicalOr)
 	*mOutput << ")";
 }
 
-void generator::C::generate(tree::LogicalAnd *logicalAnd)
+void generator::C::Printer::output(tree::LogicalAnd *logicalAnd)
 {
 	*mOutput << "(";
 	dispatch(logicalAnd->getLHS());
@@ -721,7 +650,7 @@ void generator::C::generate(tree::LogicalAnd *logicalAnd)
 	*mOutput << ")";
 }
 
-void generator::C::generate(tree::Or *orExpression)
+void generator::C::Printer::output(tree::Or *orExpression)
 {
 	*mOutput << "(";
 	dispatch(orExpression->getLHS());
@@ -730,7 +659,7 @@ void generator::C::generate(tree::Or *orExpression)
 	*mOutput << ")";
 }
 
-void generator::C::generate(tree::Xor *xorExpression)
+void generator::C::Printer::output(tree::Xor *xorExpression)
 {
 	*mOutput << "(";
 	dispatch(xorExpression->getLHS());
@@ -739,7 +668,7 @@ void generator::C::generate(tree::Xor *xorExpression)
 	*mOutput << ")";
 }
 
-void generator::C::generate(tree::And *andExpression)
+void generator::C::Printer::output(tree::And *andExpression)
 {
 	*mOutput << "(";
 	dispatch(andExpression->getLHS());
@@ -748,7 +677,7 @@ void generator::C::generate(tree::And *andExpression)
 	*mOutput << ")";
 }
 
-void generator::C::generate(tree::Equal *equal)
+void generator::C::Printer::output(tree::Equal *equal)
 {
 	*mOutput << "(";
 	dispatch(equal->getLHS());
@@ -757,7 +686,7 @@ void generator::C::generate(tree::Equal *equal)
 	*mOutput << ")";
 }
 
-void generator::C::generate(tree::Unequal *unequal)
+void generator::C::Printer::output(tree::Unequal *unequal)
 {
 	*mOutput << "(";
 	dispatch(unequal->getLHS());
@@ -766,7 +695,7 @@ void generator::C::generate(tree::Unequal *unequal)
 	*mOutput << ")";
 }
 
-void generator::C::generate(tree::LessThan *lessThan)
+void generator::C::Printer::output(tree::LessThan *lessThan)
 {
 	*mOutput << "(";
 	dispatch(lessThan->getLHS());
@@ -775,7 +704,7 @@ void generator::C::generate(tree::LessThan *lessThan)
 	*mOutput << ")";
 }
 
-void generator::C::generate(tree::LessEqual *lessEqual)
+void generator::C::Printer::output(tree::LessEqual *lessEqual)
 {
 	*mOutput << "(";
 	dispatch(lessEqual->getLHS());
@@ -784,7 +713,7 @@ void generator::C::generate(tree::LessEqual *lessEqual)
 	*mOutput << ")";
 }
 
-void generator::C::generate(tree::GreaterThan *greaterThan)
+void generator::C::Printer::output(tree::GreaterThan *greaterThan)
 {
 	*mOutput << "(";
 	dispatch(greaterThan->getLHS());
@@ -793,7 +722,7 @@ void generator::C::generate(tree::GreaterThan *greaterThan)
 	*mOutput << ")";
 }
 
-void generator::C::generate(tree::GreaterEqual *greaterEqual)
+void generator::C::Printer::output(tree::GreaterEqual *greaterEqual)
 {
 	*mOutput << "(";
 	dispatch(greaterEqual->getLHS());
@@ -802,7 +731,7 @@ void generator::C::generate(tree::GreaterEqual *greaterEqual)
 	*mOutput << ")";
 }
 
-void generator::C::generate(tree::Add *add)
+void generator::C::Printer::output(tree::Add *add)
 {
 	*mOutput << "(";
 	dispatch(add->getLHS());
@@ -811,7 +740,7 @@ void generator::C::generate(tree::Add *add)
 	*mOutput << ")";
 }
 
-void generator::C::generate(tree::Subtract *subtract)
+void generator::C::Printer::output(tree::Subtract *subtract)
 {
 	*mOutput << "(";
 	dispatch(subtract->getLHS());
@@ -820,7 +749,7 @@ void generator::C::generate(tree::Subtract *subtract)
 	*mOutput << ")";
 }
 
-void generator::C::generate(tree::Multiply *multiply)
+void generator::C::Printer::output(tree::Multiply *multiply)
 {
 	*mOutput << "(";
 	dispatch(multiply->getLHS());
@@ -829,7 +758,7 @@ void generator::C::generate(tree::Multiply *multiply)
 	*mOutput << ")";
 }
 
-void generator::C::generate(tree::Divide *divide)
+void generator::C::Printer::output(tree::Divide *divide)
 {
 	*mOutput << "(";
 	dispatch(divide->getLHS());
@@ -838,7 +767,7 @@ void generator::C::generate(tree::Divide *divide)
 	*mOutput << ")";
 }
 
-void generator::C::generate(tree::Modulus *modulus)
+void generator::C::Printer::output(tree::Modulus *modulus)
 {
 	*mOutput << "(";
 	dispatch(modulus->getLHS());
@@ -847,56 +776,68 @@ void generator::C::generate(tree::Modulus *modulus)
 	*mOutput << ")";
 }
 
-void generator::C::generate(tree::LogicalNot *logicalNot)
+void generator::C::Printer::output(tree::LogicalNot *logicalNot)
 {
 	*mOutput << "!(";
 	dispatch(logicalNot->getExpression());
 	*mOutput << ")";
 }
 
-void generator::C::generate(tree::Not *notExpression)
+void generator::C::Printer::output(tree::Not *notExpression)
 {
 	*mOutput << "~(";
 	dispatch(notExpression->getExpression());
 	*mOutput << ")";
 }
 
-void generator::C::generate(tree::Minus *minus)
+void generator::C::Printer::output(tree::Minus *minus)
 {
 	*mOutput << "-(";
 	dispatch(minus->getExpression());
 	*mOutput << ")";
 }
 
-void generator::C::generate(tree::Execute *execute)
+void generator::C::Printer::output(tree::Execute *execute)
 {
 	outputTabs();
 	dispatch(execute->getExpression());
-	*mOutput << ";" << std::endl;
+	outputEOS();
 }
 
-void generator::C::generate(tree::Return *returnExpression)
+void generator::C::Printer::output(tree::Return *returnExpression)
 {
 	outputTabs();
 	*mOutput << "return ";
 	dispatch(returnExpression->getReturn());
+	outputEOS();
+}
+
+void generator::C::Printer::outputEOS()
+{
 	*mOutput << ";" << std::endl;
 }
 
-void generator::C::outputDeclaration(tree::Identity *identity)
+void generator::C::Printer::outputExtern(tree::TypedIdentity *typedIdentity)
 {
-	bool isReference = dynamic_cast<tree::Reference *>(identity) != NULL;
-	tree::Type *type = identity->getType();
+	*mOutput << "extern ";
+	outputDeclaration(typedIdentity);
+	outputEOS();
+}
+
+void generator::C::Printer::outputDeclaration(tree::TypedIdentity *typedIdentity)
+{
+	bool isReference = dynamic_cast<tree::Reference *>(typedIdentity) != NULL;
+	tree::Type *type = typedIdentity->getType();
 	tree::Bool *boolean;
 	tree::Int *integer;
 	tree::Float *floatingPoint;
 	tree::String *string;
 	tree::UDT *udt;
 
-	ASSERT(identity->getMetadata());
-	Mangled *cName = static_cast<Mangled *>(identity->getMetadata());
+	ASSERT(typedIdentity->getMetadata());
+	Mangled *cName = static_cast<Mangled *>(typedIdentity->getMetadata());
 
-	if(dynamic_cast<tree::Constant *>(identity))
+	if(dynamic_cast<tree::Constant *>(typedIdentity))
 	{
 		*mOutput << "const ";
 	}
@@ -948,7 +889,6 @@ void generator::C::outputDeclaration(tree::Identity *identity)
 	else if((udt = dynamic_cast<tree::UDT *>(type)))
 	{
 		ERROR("FIXME");
-		//*mOutput << "char*";
 	}
 	else
 	{
@@ -956,7 +896,43 @@ void generator::C::outputDeclaration(tree::Identity *identity)
 	}
 }
 
-void generator::C::outputTabs()
+void generator::C::Printer::outputVariablesBegin()
+{
+	*mOutput << "struct " << mStructName << std::endl
+		<< "{" << std::endl;
+}
+
+void generator::C::Printer::outputVariablesEnd()
+{
+	*mOutput << "}";
+	outputEOS();
+}
+
+void generator::C::Printer::outputNewBegin()
+{
+	*mOutput << "struct " << mStructName << " *moon_" << mProgram->getName() << "New()" << std::endl
+		<< "{" << std::endl;
+
+	*mOutput << "struct " << mStructName << " *scope = (struct " << mStructName << " *)malloc(sizeof(struct " << mStructName << "));" << std::endl;
+}
+
+void generator::C::Printer::outputNewEnd()
+{
+	*mOutput << "return scope;" << std::endl
+		<< "}" << std::endl;
+}
+
+void generator::C::Printer::outputPragma(std::string pragma)
+{
+	*mOutput << pragma << std::endl;
+}
+
+void generator::C::Printer::outputRaw(std::string data)
+{
+	*mOutput << data;
+}
+
+void generator::C::Printer::outputTabs()
 {
 	for(unsigned int i = 0; i < mDepth; i++)
 	{
