@@ -27,6 +27,10 @@ namespace operation
 		PROCESS_ACTION(tree::Expression, tree::Literal, return_type, name) \
 		PROCESS_ACTION(tree::Expression, tree::UnaryExpression, return_type, name) \
 		 \
+		PROCESS_ACTION(tree::BinaryExpression, tree::BooleanBinaryExpression, return_type, name) \
+		 \
+		PROCESS_ACTION(tree::UnaryExpression, tree::BooleanUnaryExpression, return_type, name) \
+		 \
 		PROCESS_ACTION(tree::Identity, tree::TypedIdentity, return_type, name) \
 		 \
 		PROCESS_ACTION(tree::Scope, tree::NamedScope, return_type, name) \
@@ -46,14 +50,17 @@ namespace operation
 		PROCESS_ACTION(tree::BinaryExpression, tree::GreaterThan, return_type, name) \
 		PROCESS_ACTION(tree::BinaryExpression, tree::LessEqual, return_type, name) \
 		PROCESS_ACTION(tree::BinaryExpression, tree::LessThan, return_type, name) \
-		PROCESS_ACTION(tree::BinaryExpression, tree::LogicalAnd, return_type, name) \
-		PROCESS_ACTION(tree::BinaryExpression, tree::LogicalOr, return_type, name) \
 		PROCESS_ACTION(tree::BinaryExpression, tree::Modulus, return_type, name) \
 		PROCESS_ACTION(tree::BinaryExpression, tree::Multiply, return_type, name) \
 		PROCESS_ACTION(tree::BinaryExpression, tree::Or, return_type, name) \
 		PROCESS_ACTION(tree::BinaryExpression, tree::Subtract, return_type, name) \
 		PROCESS_ACTION(tree::BinaryExpression, tree::Unequal, return_type, name) \
 		PROCESS_ACTION(tree::BinaryExpression, tree::Xor, return_type, name) \
+		 \
+		PROCESS_ACTION(tree::BooleanBinaryExpression, tree::LogicalAnd, return_type, name) \
+		PROCESS_ACTION(tree::BooleanBinaryExpression, tree::LogicalOr, return_type, name) \
+		 \
+		PROCESS_ACTION(tree::BooleanUnaryExpression, tree::LogicalNot, return_type, name) \
 		 \
 		PROCESS_ACTION(tree::Expression, tree::Cast, return_type, name) \
 		PROCESS_ACTION(tree::Expression, tree::FunctionCall, return_type, name) \
@@ -92,7 +99,6 @@ namespace operation
 		PROCESS_ACTION(tree::TypedIdentity, tree::Reference, return_type, name) \
 		PROCESS_ACTION(tree::TypedIdentity, tree::Variable, return_type, name) \
 		 \
-		PROCESS_ACTION(tree::UnaryExpression, tree::LogicalNot, return_type, name) \
 		PROCESS_ACTION(tree::UnaryExpression, tree::Not, return_type, name) \
 		PROCESS_ACTION(tree::UnaryExpression, tree::Minus, return_type, name)
 

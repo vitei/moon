@@ -236,6 +236,16 @@ namespace tree
 		Expression *mExpression;
 	};
 
+	class BooleanUnaryExpression : public UnaryExpression
+	{
+	protected:
+		BooleanUnaryExpression(Expression *expression) : UnaryExpression(expression)
+		{
+			/* Abstract class */
+			setType(new Bool());
+		}
+	};
+
 	class BinaryExpression : public Expression
 	{
 	public:
@@ -313,6 +323,16 @@ namespace tree
 	private:
 		Expression *mLHS;
 		Expression *mRHS;
+	};
+
+	class BooleanBinaryExpression : public BinaryExpression
+	{
+	protected:
+		BooleanBinaryExpression(Expression *lhs, Expression *rhs) : BinaryExpression(lhs, rhs)
+		{
+			/* Abstract class */
+			setType(new Bool());
+		}
 	};
 
 	/* ---- ONLY CONCRETE CLASSES BELOW HERE ---- */
@@ -605,20 +625,20 @@ namespace tree
 #endif
 	};
 
-	class LogicalOr : public BinaryExpression
+	class LogicalOr : public BooleanBinaryExpression
 	{
 	public:
-		LogicalOr(Expression *lhs, Expression *rhs) : BinaryExpression(lhs, rhs) {}
+		LogicalOr(Expression *lhs, Expression *rhs) : BooleanBinaryExpression(lhs, rhs) {}
 
 #ifdef DEBUG
 		virtual void printNode() { LOG("LogicalOr"); }
 #endif
 	};
 
-	class LogicalAnd : public BinaryExpression
+	class LogicalAnd : public BooleanBinaryExpression
 	{
 	public:
-		LogicalAnd(Expression *lhs, Expression *rhs) : BinaryExpression(lhs, rhs) {}
+		LogicalAnd(Expression *lhs, Expression *rhs) : BooleanBinaryExpression(lhs, rhs) {}
 
 #ifdef DEBUG
 		virtual void printNode() { LOG("LogicalAnd"); }
@@ -765,10 +785,10 @@ namespace tree
 #endif
 	};
 
-	class LogicalNot : public UnaryExpression
+	class LogicalNot : public BooleanUnaryExpression
 	{
 	public:
-		LogicalNot(Expression *expression) : UnaryExpression(expression) {}
+		LogicalNot(Expression *expression) : BooleanUnaryExpression(expression) {}
 
 #ifdef DEBUG
 		virtual void printNode() { LOG("LogicalNot"); }

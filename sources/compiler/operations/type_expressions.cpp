@@ -63,6 +63,13 @@ void operation::TypeExpressions::visit(tree::BinaryExpression *binaryExpression)
 	}
 }
 
+void operation::TypeExpressions::visit(tree::BooleanBinaryExpression *booleanBinaryExpression)
+{
+	LOG("TypeExpressions::visit::BooleanBinaryExpression");
+
+	ASSERT(booleanBinaryExpression->getType());
+}
+
 void operation::TypeExpressions::visit(tree::UnaryExpression *unaryExpression)
 {
 	LOG("TypeExpressions::visit::UnaryExpression");
@@ -74,6 +81,13 @@ void operation::TypeExpressions::visit(tree::UnaryExpression *unaryExpression)
 	{
 		unaryExpression->setType(unaryExpression->getExpression()->getType());
 	}
+}
+
+void operation::TypeExpressions::visit(tree::BooleanUnaryExpression *booleanUnaryExpression)
+{
+	LOG("TypeExpressions::visit::BooleanUnaryExpression");
+
+	ASSERT(booleanUnaryExpression->getType());
 }
 
 void operation::TypeExpressions::visit(tree::FunctionCall *functionCall)
