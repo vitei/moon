@@ -178,5 +178,5 @@ int main(int argc, char *argv[])
 		error::output();
 	}
 
-	return error ? 1 : 0;
+	return error || error::count() != 0 ? 1 : 0;
 }
