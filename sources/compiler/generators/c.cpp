@@ -1,6 +1,7 @@
 #include <ostream>
-#include "compiler/tree.h"
 #include "compiler/generators.h"
+#include "compiler/operations.h"
+#include "compiler/tree.h"
 
 
 class Mangled
@@ -13,6 +14,228 @@ public:
 	std::string useName;
 };
 
+class MangleNames : public operation::Operation
+{
+public:
+	static void run(tree::Program *program);
+
+	virtual void visit(tree::Scope *scope);
+	virtual void visit(tree::Program *program);
+	virtual void visit(tree::Aggregate *aggregate);
+	virtual void visit(tree::Use *use);
+	virtual void visit(tree::Function *function);
+
+private:
+	MangleNames() {}
+};
+
+void MangleNames::run(tree::Program *program)
+{
+	MangleNames operation;
+	program->accept(&operation);
+}
+
+void MangleNames::visit(tree::Scope *scope)
+{
+	tree::Statements *statements = scope->getStatements();
+
+	if(statements)
+	{
+		for(tree::Statements::iterator i = statements->begin(); i != statements->end(); (*i++)->accept(this));
+	}
+}
+
+void MangleNames::visit(tree::Program *program)
+{
+	for(tree::Identities::iterator i = program->getIdentities().begin(), end = program->getIdentities().end(); i != end; ++i)
+	{
+		tree::Identity *identity = i->second;
+		Mangled *cName = new Mangled("moon_" + program->getName() + "_" + identity->getName());
+
+		identity->setMetadata(cName);
+	}
+
+	visit(static_cast<tree::Scope *>(program));
+}
+
+void MangleNames::visit(tree::Aggregate *aggregate)
+{
+	tree::Program *program = static_cast<tree::Program *>(aggregate->getParent());
+
+	for(tree::Identities::iterator i = aggregate->getIdentities().begin(), end = aggregate->getIdentities().end(); i != end; ++i)
+	{
+		tree::Identity *identity = i->second;
+		Mangled *cName;
+
+		if(dynamic_cast<tree::Variable *>(identity) || dynamic_cast<tree::Reference *>(identity))
+		{
+			std::string mangledName = "moon_" + program->getName() + "_" + identity->getName();
+			cName = new Mangled(mangledName, "scope->" + mangledName);
+		}
+		else
+		{
+			cName = new Mangled("moon_" + program->getName() + "_" + identity->getName());
+		}
+
+		identity->setMetadata(cName);
+	}
+
+	visit(static_cast<tree::Scope *>(aggregate));
+}
+
+void MangleNames::visit(tree::Use *use)
+{
+	for(tree::Identities::iterator i = use->getIdentities().begin(), end = use->getIdentities().end(); i != end; ++i)
+	{
+		tree::Identity *identity = i->second;
+		Mangled *cName;
+
+		if(dynamic_cast<tree::Variable *>(identity) || dynamic_cast<tree::Reference *>(identity))
+		{
+			std::string mangledName = "moon_" + identity->getName();
+			cName = new Mangled(mangledName, "scope->" + use->getName() + "." + mangledName);
+		}
+		else
+		{
+			cName = new Mangled("moon_" + use->getName() + "_" + identity->getName());
+		}
+
+		identity->setMetadata(cName);
+	}
+
+	visit(static_cast<tree::Scope *>(use));
+}
+
+void MangleNames::visit(tree::Function *function)
+{
+	tree::FunctionPrototype *prototype = function->getPrototype();
+
+	ASSERT(prototype->getMetadata());
+	Mangled *cPrototypeName = static_cast<Mangled *>(prototype->getMetadata());
+
+	tree::Expressions *arguments = prototype->getArguments();
+
+	if(arguments)
+	{
+		for(tree::Expressions::iterator i = arguments->begin(), end = arguments->end(); i != end; ++i)
+		{
+			tree::Identity *identity = static_cast<tree::Identity *>(*i);
+			Mangled *cName = new Mangled(cPrototypeName->useName + "_" + identity->getName());
+
+			identity->setMetadata(cName);
+		}
+	}
+
+	for(tree::Identities::iterator i = function->getIdentities().begin(), end = function->getIdentities().end(); i != end; ++i)
+	{
+		tree::Identity *identity = i->second;
+		Mangled *cName = new Mangled(cPrototypeName->useName + "_" + identity->getName());
+
+		identity->setMetadata(cName);
+	}
+
+	visit(static_cast<tree::Scope *>(function));
+}
+
+
+
+
+
+
+/*class OutputVariables : public operation::Operation
+{
+public:
+	static void run(tree::Program *program);
+
+	virtual void setup(tree::Use *program);
+
+	virtual void visit(tree::Scope *scope);
+	virtual void visit(tree::Program *program);
+
+private:
+	OutputVariables() : mCurrentScope(NULL) {}
+
+	tree::NamedScope *mCurrentScope;
+};
+
+void OutputVariables::run(tree::Program *program)
+{
+	OutputVariables operation;
+	program->accept(&operation);
+}
+
+void OutputVariables::visit(tree::Scope *scope)
+{
+	tree::Statements *statements = scope->getStatements();
+
+	if(statements)
+	{
+		for(tree::Statements::iterator i = statements->begin(); i != statements->end(); (*i++)->accept(this));
+	}
+}
+
+void OutputVariables::visit(tree::Program *program)
+{
+	for(tree::Identities::iterator i = program->getIdentities().begin(), end = program->getIdentities().end(); i != end; ++i)
+	{
+		tree::Identity *identity = i->second;
+
+		if(dynamic_cast<tree::Variable *>(identity) || dynamic_cast<tree::Reference *>(identity))
+		{
+			LOG("extern XXX;");
+			//outputTabs();
+			//*mOutput << "extern ";
+			//outputDeclaration(identity);
+			//*mOutput << ";" << std::endl;
+		}
+	}
+
+	visit(static_cast<tree::Scope *>(program));
+}
+
+
+void OutputVariables::visit(tree::Program *program)
+{
+	
+}*/
+
+
+/*
+void OutputVariables::visit(tree::Scope *scope)
+{
+	tree::Statements *statements = scope->getStatements();
+
+	if(statements)
+	{
+		for(tree::Statements::iterator i = statements->begin(); i != statements->end(); (*i++)->accept(this));
+	}
+}
+
+void OutputVariables::visit(tree::NamedScope *namedScope)
+{
+	tree::NamedScope *oldScope = mCurrentScope;
+
+	mCurrentScope = namedScope;
+	visit(static_cast<tree::Scope *>(namedScope));
+	mCurrentScope = oldScope;
+}
+*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 void generator::C::run(std::ostream &output, tree::Program *program)
 {
 	mOutput = &output;
@@ -23,80 +246,25 @@ void generator::C::run(std::ostream &output, tree::Program *program)
 
 void generator::C::generate(tree::Program *program)
 {
-	for(tree::Identities::iterator i = program->getIdentities().begin(), end = program->getIdentities().end(); i != end; ++i)
-	{
-		tree::Identity *identity = i->second;
-		Mangled *cName = new Mangled("moon_" + program->getName() + "_" + identity->getName());
-
-		identity->setMetadata(cName);
-	}
-
-	tree::Statements *statements = program->getStatements();
-
-	if(statements)
-	{
-		for(tree::Statements::iterator i = statements->begin(), end = statements->end(); i != end; ++i)
-		{
-			tree::Aggregate *aggregate = dynamic_cast<tree::Aggregate *>(*i);
-
-			if(aggregate)
-			{
-				for(tree::Identities::iterator j = aggregate->getIdentities().begin(), end2 = aggregate->getIdentities().end(); j != end2; ++j)
-				{
-					tree::Identity *identity = j->second;
-
-					if(dynamic_cast<tree::Variable *>(identity) || dynamic_cast<tree::Reference *>(identity))
-					{
-						std::string name = "moon_" + program->getName() + "_" + identity->getName();
-						Mangled *cName = new Mangled(name, "scope->" + name);
-
-						identity->setMetadata(cName);
-					}
-					else
-					{
-						Mangled *cName = new Mangled("moon_" + program->getName() + "_" + identity->getName());
-
-						identity->setMetadata(cName);
-					}
-				}
-
-				tree::Statements *aggregateStatements = aggregate->getStatements();
-
-				if(aggregateStatements)
-				{
-					for(tree::Statements::iterator j = aggregateStatements->begin(), end2 = aggregateStatements->end(); j != end2; ++j)
-					{
-						tree::Use *use = dynamic_cast<tree::Use *>(*j);
-
-						if(use)
-						{
-							for(tree::Identities::iterator k = use->getIdentities().begin(), end3 = use->getIdentities().end(); k != end3; ++k)
-							{
-								tree::Identity *identity = k->second;
-
-								if(dynamic_cast<tree::Variable *>(identity) || dynamic_cast<tree::Reference *>(identity))
-								{
-									std::string name = "moon_" + use->getName() + "_" + identity->getName();
-									Mangled *cName = new Mangled(name, "scope->" + name);
-
-									identity->setMetadata(cName);
-								}
-								else
-								{
-									Mangled *cName = new Mangled("moon_" + use->getName() + "_" + identity->getName());
-
-									identity->setMetadata(cName);
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-	}
-
 	outputTabs();
 	*mOutput << "#include <stdlib.h>" << std::endl << std::endl;
+
+	LOG("#include <stdlib.h>");
+
+	MangleNames::run(program);
+	//OutputVariables::run(program);
+
+
+
+
+
+
+
+
+
+
+
+
 
 	for(tree::Identities::iterator i = program->getIdentities().begin(), end = program->getIdentities().end(); i != end; ++i)
 	{
@@ -113,18 +281,7 @@ void generator::C::generate(tree::Program *program)
 
 	*mOutput << std::endl;
 
-	for(tree::Identities::iterator i = program->getIdentities().begin(), end = program->getIdentities().end(); i != end; ++i)
-	{
-		tree::Identity *identity = i->second;
-
-		if(dynamic_cast<tree::Constant *>(identity))
-		{
-			outputTabs();
-			*mOutput << "const ";
-			outputDeclaration(identity);
-			*mOutput << ";" << std::endl;
-		}
-	}
+	tree::Statements *statements = program->getStatements();
 
 	if(statements)
 	{
@@ -369,9 +526,9 @@ void generator::C::generate(tree::Function *function)
 		for(tree::Expressions::iterator i = arguments->begin(), end = arguments->end(); i != end; ++i)
 		{
 			tree::Identity *identity = static_cast<tree::Identity *>(*i);
-			Mangled *cName = new Mangled("moon_" + identity->getName());
+			/*Mangled *cName = new Mangled("moon_" + identity->getName());
 
-			identity->setMetadata(cName);
+			identity->setMetadata(cName);*/
 
 			*mOutput << ", ";
 			outputDeclaration(identity);
@@ -388,9 +545,9 @@ void generator::C::generate(tree::Function *function)
 	for(tree::Identities::iterator i = function->getIdentities().begin(), end = function->getIdentities().end(); i != end; ++i)
 	{
 		tree::Identity *identity = i->second;
-		Mangled *cName = new Mangled("moon_" + identity->getName());
+		/*Mangled *cName = new Mangled("moon_" + identity->getName());
 
-		identity->setMetadata(cName);
+		identity->setMetadata(cName);*/
 
 		outputTabs();
 		outputDeclaration(identity);
@@ -427,11 +584,11 @@ void generator::C::generate(tree::Identity *identity)
 	*mOutput << cName->useName;
 }
 
-void generator::C::generate(tree::Constant *constant)
+/*void generator::C::generate(tree::Constant *constant)
 {
 	*mOutput << "const ";
 	outputDeclaration(constant);
-}
+}*/
 
 void generator::C::generate(tree::Reference *reference)
 {
@@ -738,6 +895,11 @@ void generator::C::outputDeclaration(tree::Identity *identity)
 
 	ASSERT(identity->getMetadata());
 	Mangled *cName = static_cast<Mangled *>(identity->getMetadata());
+
+	if(dynamic_cast<tree::Constant *>(identity))
+	{
+		*mOutput << "const ";
+	}
 
 	if((boolean = dynamic_cast<tree::Bool *>(type)))
 	{
