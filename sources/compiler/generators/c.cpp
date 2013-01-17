@@ -177,6 +177,7 @@ void OutputConstants::visit(tree::Assign *assign)
 
 	if(constant)
 	{
+		mPrinter->outputTabs();
 		mPrinter->outputDeclaration(constant);
 		mPrinter->outputRaw(" = ");
 		mPrinter->dispatch(assign->getRHS());
@@ -221,9 +222,7 @@ void OutputVariables::visit(tree::Program *program)
 	}
 
 	mPrinter->outputVariablesBegin();
-	mPrinter->increaseDepth();
 	visitScope(program);
-	mPrinter->decreaseDepth();
 	mPrinter->outputVariablesEnd();
 }
 
@@ -235,6 +234,7 @@ void OutputVariables::visit(tree::Aggregate *aggregate)
 
 		if(dynamic_cast<tree::Variable *>(identity) || dynamic_cast<tree::Reference *>(identity))
 		{
+			mPrinter->outputTabs();
 			mPrinter->outputDeclaration(static_cast<tree::TypedIdentity *>(identity));
 			mPrinter->outputEOS();
 		}
@@ -251,6 +251,7 @@ void OutputVariables::visit(tree::Use *use)
 
 		if(dynamic_cast<tree::Variable *>(identity) || dynamic_cast<tree::Reference *>(identity))
 		{
+			mPrinter->outputTabs();
 			mPrinter->outputDeclaration(static_cast<tree::TypedIdentity *>(identity));
 			mPrinter->outputEOS();
 		}
@@ -347,9 +348,7 @@ void OutputNew::visit(tree::Scope *scope)
 void OutputNew::visit(tree::Program *program)
 {
 	mPrinter->outputNewBegin();
-	mPrinter->increaseDepth();
 	visit(static_cast<tree::Scope *>(program));
-	mPrinter->decreaseDepth();
 	mPrinter->outputNewEnd();
 }
 
@@ -491,8 +490,6 @@ void generator::C::Printer::output(tree::Function *function)
 
 	decreaseDepth();
 
-	*mOutput << std::endl;
-
 	output(static_cast<tree::Scope *>(function));
 
 	tree::Statements *statements = function->getStatements();
@@ -501,7 +498,6 @@ void generator::C::Printer::output(tree::Function *function)
 	if(statements && dynamic_cast<tree::Return *>(*(--statements->end())) == NULL)
 	{
 		increaseDepth();
-		*mOutput << std::endl;
 		outputTabs();
 		*mOutput << "return 0;" << std::endl;
 		decreaseDepth();
@@ -898,28 +894,47 @@ void generator::C::Printer::outputDeclaration(tree::TypedIdentity *typedIdentity
 
 void generator::C::Printer::outputVariablesBegin()
 {
-	*mOutput << "struct " << mStructName << std::endl
-		<< "{" << std::endl;
+	outputTabs();
+	*mOutput << "struct " << mStructName << std::endl;
+
+	outputTabs();
+	*mOutput << "{" << std::endl;
+
+	increaseDepth();
 }
 
 void generator::C::Printer::outputVariablesEnd()
 {
+	decreaseDepth();
+
+	outputTabs();
 	*mOutput << "}";
 	outputEOS();
 }
 
 void generator::C::Printer::outputNewBegin()
 {
-	*mOutput << "struct " << mStructName << " *moon_" << mProgram->getName() << "New()" << std::endl
-		<< "{" << std::endl;
+	outputTabs();
+	*mOutput << "struct " << mStructName << " *moon_" << mProgram->getName() << "New()" << std::endl;
 
+	outputTabs();
+	*mOutput << "{" << std::endl;
+
+	increaseDepth();
+
+	outputTabs();
 	*mOutput << "struct " << mStructName << " *scope = (struct " << mStructName << " *)malloc(sizeof(struct " << mStructName << "));" << std::endl;
 }
 
 void generator::C::Printer::outputNewEnd()
 {
-	*mOutput << "return scope;" << std::endl
-		<< "}" << std::endl;
+	outputTabs();
+	*mOutput << "return scope;" << std::endl;
+
+	decreaseDepth();
+
+	outputTabs();
+	*mOutput << "}" << std::endl;
 }
 
 void generator::C::Printer::outputPragma(std::string pragma)
