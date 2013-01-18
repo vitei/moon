@@ -29,12 +29,44 @@ void operation::MapIdentities::add(tree::Node *scope, tree::Statements *statemen
 	mVisitNext.push(operation::MapIdentities::ScopeList(scope, statements));
 }
 
+void operation::MapIdentities::addFunction(tree::Scope *scope)
+{
+	mVisitFunctions.push(operation::MapIdentities::ScopeList(scope, scope->getStatements()));
+}
+
+void operation::MapIdentities::addFunction(tree::Node *scope, tree::Expressions *expressions)
+{
+	mVisitFunctions.push(operation::MapIdentities::ScopeList(scope, expressions));
+}
+
+void operation::MapIdentities::addFunction(tree::Node *scope, tree::Statements *statements)
+{
+	mVisitFunctions.push(operation::MapIdentities::ScopeList(scope, statements));
+}
+
 void operation::MapIdentities::process()
 {
 	while(!mVisitNext.empty())
 	{
 		operation::MapIdentities::ScopeList scopeList = mVisitNext.front();
 		mVisitNext.pop();
+
+		mCurrentScope = scopeList.scope;
+
+		if(scopeList.expressions)
+		{
+			for(tree::Expressions::iterator i = scopeList.expressions->begin(), end = scopeList.expressions->end(); i != end; (*i++)->accept(this));
+		}
+		else
+		{
+			for(tree::Statements::iterator i = scopeList.statements->begin(), end = scopeList.statements->end(); i != end; (*i++)->accept(this));
+		}
+	}
+
+	while(!mVisitFunctions.empty())
+	{
+		operation::MapIdentities::ScopeList scopeList = mVisitFunctions.front();
+		mVisitFunctions.pop();
 
 		mCurrentScope = scopeList.scope;
 
@@ -65,12 +97,12 @@ void operation::MapIdentities::visit(tree::Function *function)
 
 	if(arguments)
 	{
-		add(prototype, arguments);
+		addFunction(prototype, arguments);
 	}
 
 	if(function->getStatements())
 	{
-		add(function);
+		addFunction(function);
 	}
 }
 

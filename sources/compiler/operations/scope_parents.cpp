@@ -44,6 +44,13 @@ tree::Node *operation::ScopeParents::restructure(tree::GlobalScoping *globalScop
 {
 	LOG("ScopeParents::restructure::GlobalScoping");
 
+	tree::Function *function = dynamic_cast<tree::Function *>(globalScoping->getScoped());
+
+	if(function)
+	{
+		function->setOriginalScope(getCurrentScope());
+	}
+
 	mProgramScope->getStatements()->push_back(globalScoping->getScoped());
 	delete globalScoping;
 
@@ -53,6 +60,13 @@ tree::Node *operation::ScopeParents::restructure(tree::GlobalScoping *globalScop
 tree::Node *operation::ScopeParents::restructure(tree::SharedScoping *sharedScoping)
 {
 	LOG("ScopeParents::restructure::SharedScoping");
+
+	tree::Function *function = dynamic_cast<tree::Function *>(sharedScoping->getScoped());
+
+	if(function)
+	{
+		function->setOriginalScope(getCurrentScope());
+	}
 
 	mAggregateScope->getStatements()->push_back(sharedScoping->getScoped());
 	delete sharedScoping;

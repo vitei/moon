@@ -66,9 +66,9 @@ namespace tree
 
 	protected:
 		Scope *mParent;
+		Identities mIdentities;
 
 	private:
-		Identities mIdentities;
 		Statements *mStatements;
 	};
 

@@ -49,7 +49,7 @@ namespace tree
 	class Function : public Scope
 	{
 	public:
-		Function(FunctionPrototype *prototype, Statements *statements) : Scope(statements), mPrototype(prototype) {}
+		Function(FunctionPrototype *prototype, Statements *statements) : Scope(statements), mOriginalScope(NULL), mPrototype(prototype) {}
 
 		FunctionPrototype *getPrototype()
 		{
@@ -59,6 +59,11 @@ namespace tree
 		void setPrototype(FunctionPrototype *prototype)
 		{
 			mPrototype = prototype;
+		}
+
+		void setOriginalScope(Scope *originalScope)
+		{
+			mOriginalScope = originalScope;
 		}
 
 		virtual void childAccept(operation::Operation *operation)
@@ -87,6 +92,8 @@ namespace tree
 #endif
 
 	private:
+		Scope *mOriginalScope;
+
 		FunctionPrototype *mPrototype;
 		Identities mParameterIdentities;
 	};
