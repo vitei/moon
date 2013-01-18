@@ -13,7 +13,20 @@ void tree::Function::checkIdentity(Identity *identity)
 	}
 	else
 	{
-		tree::Scope::checkIdentity(identity);
+		previousValue = mIdentities.find(name);
+
+		if(previousValue != mIdentities.end())
+		{
+			throw tree::Scope::ExistsException(identity, previousValue->second);
+		}
+		else if(mOriginalScope)
+		{
+			mOriginalScope->checkIdentity(identity);
+		}
+		else if(mParent)
+		{
+			mParent->checkIdentity(identity);
+		}
 	}
 }
 
@@ -32,12 +45,25 @@ tree::Identity *tree::Function::findIdentity(tree::Identifier *identifier)
 	{
 		return identity->second;
 	}
-	else if(mParent)
-	{
-		return tree::Scope::findIdentity(identifier);
-	}
 	else
 	{
-		throw tree::Scope::NotFoundException(identifier);
+		identity = mIdentities.find(name);
+
+		if(identity != mIdentities.end())
+		{
+			return identity->second;
+		}
+		else if(mOriginalScope)
+		{
+			return mOriginalScope->findIdentity(identifier);
+		}
+		else if(mParent)
+		{
+			return mParent->findIdentity(identifier);
+		}
+		else
+		{
+			throw tree::Scope::NotFoundException(identifier);
+		}
 	}
 }

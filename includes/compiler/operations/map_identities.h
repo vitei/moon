@@ -16,6 +16,9 @@ namespace operation
 		void add(tree::Scope *scope);
 		void add(tree::Node *scope, tree::Expressions *expressions);
 		void add(tree::Node *scope, tree::Statements *statements);
+		void addFunction(tree::Scope *scope);
+		void addFunction(tree::Node *scope, tree::Expressions *expressions);
+		void addFunction(tree::Node *scope, tree::Statements *statements);
 		void process();
 
 		virtual void setup(tree::Function *function);
@@ -40,6 +43,7 @@ namespace operation
 
 		tree::Node *mCurrentScope;
 		std::queue<ScopeList> mVisitNext;
+		std::queue<ScopeList> mVisitFunctions;
 	};
 }
 
