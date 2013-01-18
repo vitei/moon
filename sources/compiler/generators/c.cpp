@@ -268,6 +268,43 @@ void OutputVariables::visitScope(tree::Scope *scope)
 	}
 }
 
+class OutputFunctionPrototypes : public operation::Operation
+{
+public:
+	static void run(generator::C::Printer *printer, tree::Program *program);
+
+	virtual void visit(tree::Scope *scope);
+	virtual void visit(tree::Function *function);
+
+private:
+	OutputFunctionPrototypes() {}
+
+	generator::C::Printer *mPrinter;
+};
+
+void OutputFunctionPrototypes::run(generator::C::Printer *printer, tree::Program *program)
+{
+	OutputFunctionPrototypes operation;
+	operation.mPrinter = printer;
+	program->accept(&operation);
+}
+
+void OutputFunctionPrototypes::visit(tree::Scope *scope)
+{
+	tree::Statements *statements = scope->getStatements();
+
+	if(statements)
+	{
+		for(tree::Statements::iterator i = statements->begin(); i != statements->end(); (*i++)->accept(this));
+	}
+}
+
+void OutputFunctionPrototypes::visit(tree::Function *function)
+{
+	mPrinter->output(function->getPrototype());
+	mPrinter->outputEOS();
+}
+
 class OutputFunctions : public operation::Operation
 {
 public:
@@ -301,7 +338,7 @@ void OutputFunctions::visit(tree::Scope *scope)
 
 void OutputFunctions::visit(tree::Function *function)
 {
-	mPrinter->dispatch(function);
+	mPrinter->output(function);
 }
 
 class OutputNew : public operation::Operation
@@ -421,6 +458,7 @@ void generator::C::outputVariables(tree::Program *program)
 
 void generator::C::outputFunctions(tree::Program *program)
 {
+	OutputFunctionPrototypes::run(&mPrinter, program);
 	OutputFunctions::run(&mPrinter, program);
 }
 
@@ -450,24 +488,8 @@ void generator::C::Printer::output(tree::Scope *scope)
 
 void generator::C::Printer::output(tree::Function *function)
 {
-	outputTabs();
-	outputDeclaration(function->getPrototype());
-	*mOutput << "(struct " << mStructName << " *scope";
-
-	tree::Expressions *arguments = function->getPrototype()->getArguments();
-
-	if(arguments)
-	{
-		for(tree::Expressions::iterator i = arguments->begin(), end = arguments->end(); i != end; ++i)
-		{
-			tree::TypedIdentity *typedIdentity = static_cast<tree::TypedIdentity *>(*i);
-
-			*mOutput << ", ";
-			outputDeclaration(typedIdentity);
-		}
-	}
-
-	*mOutput << ")" << std::endl;
+	output(function->getPrototype());
+	*mOutput << std::endl;
 
 	outputTabs();
 	*mOutput << "{" << std::endl;
@@ -505,6 +527,28 @@ void generator::C::Printer::output(tree::Function *function)
 
 	outputTabs();
 	*mOutput << "}" << std::endl;
+}
+
+void generator::C::Printer::output(tree::FunctionPrototype *functionPrototype)
+{
+	outputTabs();
+	outputDeclaration(functionPrototype);
+	*mOutput << "(struct " << mStructName << " *scope";
+
+	tree::Expressions *arguments = functionPrototype->getArguments();
+
+	if(arguments)
+	{
+		for(tree::Expressions::iterator i = arguments->begin(), end = arguments->end(); i != end; ++i)
+		{
+			tree::TypedIdentity *typedIdentity = static_cast<tree::TypedIdentity *>(*i);
+
+			*mOutput << ", ";
+			outputDeclaration(typedIdentity);
+		}
+	}
+
+	*mOutput << ")";
 }
 
 void generator::C::Printer::output(tree::Identity *identity)
