@@ -1,11 +1,10 @@
 MOON = ../bin/moon
 MOON_FLAGS = 
 
-all: one
+all: one.c
 
-%: %.moon
-#	$(MOON) $(MOON_FLAGS) -o $@ $<
-	$(MOON) $(MOON_FLAGS) $<
+%.c: %.moon
+	$(MOON) $(MOON_FLAGS) -o $@ $<
 
 clean:
 #	rm -rf *.o ../bin/compiler
