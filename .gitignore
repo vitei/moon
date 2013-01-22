@@ -12,3 +12,6 @@ generated_*
 # OS problem files
 .DS_Store
 .tags
+
+# Test output files
+tests/*.c
