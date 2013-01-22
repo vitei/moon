@@ -135,6 +135,10 @@
                             yylval->integer = atoi(yytext);
                             return TOKEN_INTEGER;
                         }
+    0x[0-9A-Fa-f]+      {
+                            sscanf(yytext, "0x%x", &yylval->integer);
+                            return TOKEN_INTEGER;
+                        }
     [0-9]*\.[0-9]+      {
                             yylval->real = (float)atof(yytext);
                             return TOKEN_FLOAT;
