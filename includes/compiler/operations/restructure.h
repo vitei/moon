@@ -19,6 +19,7 @@ namespace operation
 		void dispatch(tree::UnaryExpression *unaryExpression);
 		void dispatch(tree::BinaryExpression *binaryExpression);
 		void dispatch(tree::Cast *cast);
+		void dispatch(tree::Import *import);
 		void dispatch(tree::FunctionCall *functionCall);
 		void dispatch(tree::Scoping *scoping);
 		void dispatch(tree::Execute *execute);

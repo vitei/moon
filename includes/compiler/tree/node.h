@@ -136,6 +136,7 @@ namespace tree
 		DISPATCH_ACTIONS(tree::GreaterEqual, node, function) \
 		DISPATCH_ACTIONS(tree::GreaterThan, node, function) \
 		DISPATCH_ACTIONS(tree::Identifier, node, function) \
+		DISPATCH_ACTIONS(tree::Import, node, function) \
 		DISPATCH_ACTIONS(tree::Int, node, function) \
 		DISPATCH_ACTIONS(tree::IntLiteral, node, function) \
 		DISPATCH_ACTIONS(tree::LessEqual, node, function) \

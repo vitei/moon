@@ -84,6 +84,7 @@ namespace operation
 		PROCESS_ACTION(tree::State, tree::DefaultState, return_type, name) \
 		PROCESS_ACTION(tree::State, tree::NamedState, return_type, name) \
 		 \
+		PROCESS_ACTION(tree::Statement, tree::Import, return_type, name) \
 		PROCESS_ACTION(tree::Statement, tree::Execute, return_type, name) \
 		PROCESS_ACTION(tree::Statement, tree::Return, return_type, name) \
 		PROCESS_ACTION(tree::Statement, tree::SetState, return_type, name) \

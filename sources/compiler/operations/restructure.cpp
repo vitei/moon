@@ -103,6 +103,16 @@ void operation::Restructure::dispatch(tree::Cast *cast)
 	mNodeMap.push(cast->restructure(this));
 }
 
+void operation::Restructure::dispatch(tree::Import *import)
+{
+	tree::FunctionPrototype *functionPrototype = static_cast<tree::FunctionPrototype *>(mNodeMap.top());
+	mNodeMap.pop();
+
+	import->setPrototype(functionPrototype);
+
+	mNodeMap.push(import->restructure(this));
+}
+
 void operation::Restructure::dispatch(tree::FunctionCall *functionCall)
 {
 	tree::Expression *functionPrototype = NULL;
