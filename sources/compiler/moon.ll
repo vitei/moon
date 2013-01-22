@@ -139,7 +139,7 @@
                             sscanf(yytext, "0x%x", &yylval->integer);
                             return TOKEN_INTEGER;
                         }
-    [0-9]*\.[0-9]+      {
+    [0-9]+\.[0-9]+      {
                             yylval->real = (float)atof(yytext);
                             return TOKEN_FLOAT;
                         }
