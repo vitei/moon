@@ -295,7 +295,7 @@ use                     :   o_program_includes o_program_uses o_imports o_progra
                             }
                         ;
 
-include                 :   o_program_includes o_program_cvrs /* FIXME */
+include                 :   o_program_includes o_imports o_program_cvrs /* FIXME */
                             {
                                 $$ = $1;
 
@@ -309,6 +309,19 @@ include                 :   o_program_includes o_program_cvrs /* FIXME */
                                     else
                                     {
                                         $$ = $2;
+                                    }                                
+                                }
+
+                                if($3)
+                                {
+                                    if($$)
+                                    {
+                                        $$->insert($$->end(), $3->begin(), $3->end());
+                                        delete $3;
+                                    }
+                                    else
+                                    {
+                                        $$ = $3;
                                     }                                
                                 }
                             }
