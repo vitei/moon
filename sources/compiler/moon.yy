@@ -141,6 +141,7 @@ ASSERT  (data->currentFilename);
 %token TOKEN_END
 %token TOKEN_INCLUDE
 %token TOKEN_USE
+%token TOKEN_IMPORT
 %token TOKEN_GLOBAL
 %token TOKEN_SHARED
 %token TOKEN_CONST
@@ -167,6 +168,9 @@ ASSERT  (data->currentFilename);
 %type<statements> o_program_includes
 %type<statements> program_includes
 %type<statements> include_statement
+%type<statements> o_imports
+%type<statements> imports
+%type<statement> import_statement
 %type<statements> o_program_cvrs
 %type<statements> program_cvrs
 %type<statement> program_cvr
@@ -211,6 +215,7 @@ ASSERT  (data->currentFilename);
 %type<expression> postfix_expression
 %type<expression> array_expression
 %type<expression> call_expression
+%type<expressions> o_argument_expressions
 %type<expressions> argument_expressions
 %type<expression> expression_atom
 %type<type> cv_type
@@ -236,13 +241,13 @@ start                   :   START_USE use
                             }
                         ;
 
-use                     :   o_program_includes o_program_uses o_program_cvrs o_program_functions
+use                     :   o_program_includes o_program_uses o_imports o_program_cvrs o_program_functions
                             {
                                 tree::Statements *useStatements = NULL;
 
                                 // Check there is actually something in this scope...
                                 // (Uses are not nested so we don't count them here...)
-                                if($1 || $3 || $4)
+                                if($1 || $3 || $4 || $5)
                                 {
                                     useStatements = $1;
 
@@ -269,6 +274,19 @@ use                     :   o_program_includes o_program_uses o_program_cvrs o_p
                                         else
                                         {
                                             useStatements = $4;
+                                        }
+                                    }
+
+                                    if($5)
+                                    {
+                                        if(useStatements)
+                                        {
+                                            useStatements->insert(useStatements->end(), $5->begin(), $5->end());
+                                            delete $5;
+                                        }
+                                        else
+                                        {
+                                            useStatements = $5;
                                         }
                                     }
                                 }
@@ -393,6 +411,50 @@ use_statement           :   TOKEN_USE TOKEN_NAME TOKEN_EOS
                             }
                         ;
 
+o_imports               :   /* Empty */
+                            {
+                                $$ = NULL;
+                            }
+                        |   imports
+                            {
+                                $$ = $1;
+                            }
+                        ;
+
+imports                 :   import_statement
+                            {
+                                if($1)
+                                {
+                                    $$ = new tree::Statements();
+                                    $$->push_back($1);
+                                }
+                                else
+                                {
+                                    $$ = NULL;
+                                }
+                            }
+                        |   imports import_statement
+                            {
+                                $$ = $1;
+
+                                if($2)
+                                {
+                                    if(!$$)
+                                    {
+                                        $$ = new tree::Statements();
+                                    }
+                                    $$->push_back($2);
+                                }
+                            }
+                        ;
+
+import_statement        :   TOKEN_IMPORT function_prototype TOKEN_EOS
+                            {
+                                $$ = new tree::Import($2);
+                                $$->setLocation(@1);
+                            }
+                        ;
+
 o_program_cvrs          :   /* Empty */
                             {
                                 $$ = NULL;
@@ -443,7 +505,6 @@ program_cvr             :   constant_statement
                                 $$ = $1;
                             }
                         ;
-
 
 constant_statement      :   constant_assignment TOKEN_EOS
                             {
@@ -1077,17 +1138,21 @@ array_expression        :   postfix_expression TOKEN_BRACKETS_OPEN expression TO
                             }
                         ;
 
-call_expression         :   identifier TOKEN_PARENTHESIS_OPEN TOKEN_PARENTHESIS_CLOSE
-                            {
-                                $$ = new tree::FunctionCall($1);
-                                $$->setLocation(@1);
-                            }
-                        |   identifier TOKEN_PARENTHESIS_OPEN argument_expressions TOKEN_PARENTHESIS_CLOSE
+call_expression         :   identifier TOKEN_PARENTHESIS_OPEN o_argument_expressions TOKEN_PARENTHESIS_CLOSE
                             {
                                 $$ = new tree::FunctionCall($1, $3);
                                 $$->setLocation(@1);
                             }
                         ;
+
+o_argument_expressions  :   /* Empty */
+                            {
+                                $$ = NULL;
+                            }
+                        |   argument_expressions
+                            {
+                                $$ = $1;
+                            }
 
 argument_expressions    :   expression
                             {

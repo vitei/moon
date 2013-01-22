@@ -153,6 +153,7 @@
     "end"               return TOKEN_END;
     "include"           return TOKEN_INCLUDE;
     "use"               return TOKEN_USE;
+    "import"            return TOKEN_IMPORT;
     "global"            return TOKEN_GLOBAL;
     "shared"            return TOKEN_SHARED;
     "const"             return TOKEN_CONST;
