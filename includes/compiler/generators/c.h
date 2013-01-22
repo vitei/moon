@@ -30,6 +30,7 @@ namespace generator
 
 			void output(tree::Scope *scope);
 			void output(tree::Function *function);
+			void output(tree::Import *import);
 			void output(tree::FunctionPrototype *functionPrototype);
 			void output(tree::Identity *identity);
 			void output(tree::Reference *reference);

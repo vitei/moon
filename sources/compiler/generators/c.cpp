@@ -7,11 +7,12 @@
 class Mangled
 {
 public:
-	Mangled(std::string _declarationName) : declarationName(_declarationName), useName(_declarationName) {}
-	Mangled(std::string _declarationName, std::string _useName) : declarationName(_declarationName), useName(_useName) {}
+	Mangled(std::string _declarationName, bool _isImport = false) : declarationName(_declarationName), useName(_declarationName), isImport(_isImport) {}
+	Mangled(std::string _declarationName, std::string _useName, bool _isImport = false) : declarationName(_declarationName), useName(_useName), isImport(_isImport) {}
 
 	std::string declarationName;
 	std::string useName;
+	bool isImport;
 };
 
 class MangleNames : public operation::Operation
@@ -24,6 +25,7 @@ public:
 	virtual void visit(tree::Aggregate *aggregate);
 	virtual void visit(tree::Use *use);
 	virtual void visit(tree::Function *function);
+	virtual void visit(tree::Import *import);
 
 private:
 	MangleNames() {}
@@ -72,9 +74,13 @@ void MangleNames::visit(tree::Aggregate *aggregate)
 			std::string mangledName = "moon_" + program->getName() + "_" + identity->getName();
 			cName = new Mangled(mangledName, "scope->" + mangledName);
 		}
-		else
+		else if(!dynamic_cast<tree::Function *>(identity))
 		{
 			cName = new Mangled("moon_" + program->getName() + "_" + identity->getName());
+		}
+		else
+		{
+			ERROR("Unknown identity type");
 		}
 
 		identity->setMetadata(cName);
@@ -138,6 +144,32 @@ void MangleNames::visit(tree::Function *function)
 	}
 
 	visit(static_cast<tree::Scope *>(function));
+}
+
+void MangleNames::visit(tree::Import *import)
+{
+	tree::FunctionPrototype *prototype = import->getPrototype();
+
+	ASSERT(prototype->getMetadata());
+
+	// FIXME, this is rather ugly right now...
+	Mangled *cPrototypeName = static_cast<Mangled *>(prototype->getMetadata());
+	delete cPrototypeName;
+	cPrototypeName = new Mangled(prototype->getName(), true);
+	prototype->setMetadata(cPrototypeName);
+
+	tree::Expressions *arguments = prototype->getArguments();
+
+	if(arguments)
+	{
+		for(tree::Expressions::iterator i = arguments->begin(), end = arguments->end(); i != end; ++i)
+		{
+			tree::Identity *identity = static_cast<tree::Identity *>(*i);
+			Mangled *cName = new Mangled(identity->getName());
+
+			identity->setMetadata(cName);
+		}
+	}
 }
 
 class OutputConstants : public operation::Operation
@@ -275,6 +307,7 @@ public:
 
 	virtual void visit(tree::Scope *scope);
 	virtual void visit(tree::Function *function);
+	virtual void visit(tree::Import *import);
 
 private:
 	OutputFunctionPrototypes() {}
@@ -302,6 +335,14 @@ void OutputFunctionPrototypes::visit(tree::Scope *scope)
 void OutputFunctionPrototypes::visit(tree::Function *function)
 {
 	mPrinter->output(function->getPrototype());
+	mPrinter->outputEOS();
+}
+
+void OutputFunctionPrototypes::visit(tree::Import *import)
+{
+	//LOG("C FUNCTION");
+
+	mPrinter->output(import);
 	mPrinter->outputEOS();
 }
 
@@ -411,10 +452,8 @@ void OutputNew::outputScope(tree::Scope *scope)
 			tree::Execute *execute;
 			tree::Assign *assign;
 
-			// Only non-scope and non-constant-assigning expressions should be output here
-			if(!dynamic_cast<tree::Scope *>(*i)
-				&& !((execute = dynamic_cast<tree::Execute *>(*i)) && (assign = dynamic_cast<tree::Assign *>(execute->getExpression())) && dynamic_cast<tree::Constant *>(assign->getLHS()))
-				)
+			// Only non-constant-assigning expressions should be output here
+			if((execute = dynamic_cast<tree::Execute *>(*i)) && !((assign = dynamic_cast<tree::Assign *>(execute->getExpression())) && dynamic_cast<tree::Constant *>(assign->getLHS())))
 			{
 				mPrinter->dispatch(*i);
 			}
@@ -529,6 +568,35 @@ void generator::C::Printer::output(tree::Function *function)
 	*mOutput << "}" << std::endl;
 }
 
+void generator::C::Printer::output(tree::Import *import)
+{
+	tree::FunctionPrototype *functionPrototype = import->getPrototype();
+
+	outputTabs();
+	*mOutput << "extern ";
+	outputDeclaration(functionPrototype);
+	*mOutput << "(";
+
+	tree::Expressions *arguments = functionPrototype->getArguments();
+
+	if(arguments)
+	{
+		tree::Expressions::iterator i = arguments->begin();
+		tree::TypedIdentity *typedIdentity = static_cast<tree::TypedIdentity *>(*i++);
+
+		outputDeclaration(typedIdentity);
+
+		for(tree::Expressions::iterator end = arguments->end(); i != end; ++i)
+		{
+			typedIdentity = static_cast<tree::TypedIdentity *>(*i);
+			*mOutput << ", ";
+			outputDeclaration(typedIdentity);
+		}
+	}
+
+	*mOutput << ")";
+}
+
 void generator::C::Printer::output(tree::FunctionPrototype *functionPrototype)
 {
 	outputTabs();
@@ -624,16 +692,36 @@ void generator::C::Printer::output(tree::FunctionCall *functionCall)
 	ASSERT(prototype->getMetadata());
 	Mangled *cName = static_cast<Mangled *>(prototype->getMetadata());
 
-	*mOutput << cName->useName << "(scope";
+	*mOutput << cName->useName << "(";
 
 	tree::Expressions *arguments = functionCall->getArguments();
 
-	if(arguments)
+	if(cName->isImport)
 	{
-		for(tree::Expressions::iterator i = arguments->begin(), end = arguments->end(); i != end; ++i)
+		if(arguments)
 		{
-			*mOutput << ", ";
-			dispatch(*i);
+			tree::Expressions::iterator i = arguments->begin();
+
+			dispatch(*i++);
+
+			for(tree::Expressions::iterator end = arguments->end(); i != end; ++i)
+			{
+				*mOutput << ", ";
+				dispatch(*i);
+			}
+		}
+	}
+	else
+	{
+		*mOutput << "scope";
+
+		if(arguments)
+		{
+			for(tree::Expressions::iterator i = arguments->begin(), end = arguments->end(); i != end; ++i)
+			{
+				*mOutput << ", ";
+				dispatch(*i);
+			}
 		}
 	}
 
