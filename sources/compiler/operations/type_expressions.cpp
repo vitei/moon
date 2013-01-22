@@ -110,6 +110,9 @@ void operation::TypeExpressions::visit(tree::FunctionCall *functionCall)
 		{
 			for(tree::Expressions::iterator i = arguments->begin(), end = arguments->end(), j = parameters->begin(); i != end; ++i, ++j)
 			{
+				// Ensure the parameter gets typed...
+				(*i)->accept(this);
+
 				tree::Type *expectedType = (*j)->getType();
 				tree::Type *actualType = (*i)->getType();
 
