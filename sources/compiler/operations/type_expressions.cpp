@@ -103,22 +103,28 @@ void operation::TypeExpressions::visit(tree::FunctionCall *functionCall)
 
 		functionCall->setType(functionPrototype->getType());
 
-		for(tree::Expressions::iterator i = functionCall->getArguments()->begin(), end = functionCall->getArguments()->end(), j = functionPrototype->getArguments()->begin(); i != end; ++i, ++j)
+		tree::Expressions *arguments = functionCall->getArguments();
+		tree::Expressions *parameters = functionPrototype->getArguments();
+
+		if(arguments && parameters)
 		{
-			tree::Type *expectedType = (*j)->getType();
-			tree::Type *actualType = (*i)->getType();
-
-			ASSERT(expectedType);
-			ASSERT(actualType);
-
-			if(*expectedType != *actualType)
+			for(tree::Expressions::iterator i = arguments->begin(), end = arguments->end(), j = parameters->begin(); i != end; ++i, ++j)
 			{
+				tree::Type *expectedType = (*j)->getType();
+				tree::Type *actualType = (*i)->getType();
+
+				ASSERT(expectedType);
+				ASSERT(actualType);
+
+				if(*expectedType != *actualType)
+				{
 #ifdef DEBUG
-				actualType->printType();
-				expectedType->printType();
+					actualType->printType();
+					expectedType->printType();
 #endif
 
-				*i = new tree::Cast(expectedType, *i);
+					*i = new tree::Cast(expectedType, *i);
+				}
 			}
 		}
 	}
