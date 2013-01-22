@@ -97,7 +97,7 @@ void tree::FunctionCall::setFunctionPrototype(tree::Expression *functionPrototyp
 	{
 		mFunctionPrototype = prototype;
 
-		if((prototype->getArguments() && mArguments == NULL) || (prototype->getArguments() == NULL && mArguments)|| prototype->getArguments()->size() != mArguments->size())
+		if((prototype->getArguments() || mArguments) && ((prototype->getArguments() && mArguments == NULL) || (prototype->getArguments() == NULL && mArguments) || prototype->getArguments()->size() != mArguments->size()))
 		{
 			throw tree::FunctionCall::InvalidArgumentsException(this);
 		}
