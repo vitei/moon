@@ -116,10 +116,11 @@ void operation::TypeExpressions::visit(tree::FunctionCall *functionCall)
 				tree::Type *expectedType = (*j)->getType();
 				tree::Type *actualType = (*i)->getType();
 
-				ASSERT(expectedType);
-				ASSERT(actualType);
+				//ASSERT(expectedType);
+				//ASSERT(actualType);
 
-				if(*expectedType != *actualType)
+				// Check the types in-case unresolved
+				if((expectedType && actualType) && *expectedType != *actualType)
 				{
 #ifdef DEBUG
 					actualType->printType();
