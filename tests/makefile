@@ -3,7 +3,7 @@ MOON_FLAGS =
 
 all: one.c
 
-%.c: %.moon
+%.c: %.moon $(MOON)
 	$(MOON) $(MOON_FLAGS) -o $@ $<
 
 clean:
