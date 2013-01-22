@@ -174,6 +174,7 @@ ASSERT  (data->currentFilename);
 %type<statements> o_program_cvrs
 %type<statements> program_cvrs
 %type<statement> program_cvr
+%type<statement> s_constant_statement
 %type<statement> constant_statement
 %type<expression> constant_assignment
 %type<identity> constant
@@ -505,7 +506,7 @@ program_cvrs            :   program_cvr                                         
                             }
                         ;
 
-program_cvr             :   constant_statement
+program_cvr             :   s_constant_statement
                             {
                                 $$ = $1;
                             }
@@ -516,6 +517,18 @@ program_cvr             :   constant_statement
                         |   s_reference_statement
                             {
                                 $$ = $1;
+                            }
+                        ;
+
+s_constant_statement    :   constant_statement
+                            {
+                                $$ = $1;
+                            }
+                            /* FIXME, what to do about global scoping?? */
+                        |   TOKEN_SHARED constant_statement
+                            {
+                                $$ = new tree::SharedScoping($2);
+                                $$->setLocation(@1);
                             }
                         ;
 
