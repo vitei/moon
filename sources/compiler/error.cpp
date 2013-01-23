@@ -80,12 +80,12 @@ void error::enqueue(const std::string &message)
 	sErrorList.push_back(new Error(message));
 }
 
-void error::enqueue(tree::Node::Location &location, const std::string &message)
+void error::enqueue(const tree::Node::Location &location, const std::string &message)
 {
 	sErrorList.push_back(new SyntaxError(location, message));
 }
 
-void error::enqueue(tree::Node::Location &conflictLocation, tree::Node::Location &location, const std::string &message)
+void error::enqueue(const tree::Node::Location &conflictLocation, const tree::Node::Location &location, const std::string &message)
 {
 	sErrorList.push_back(new ConflictError(conflictLocation, location, message));
 }
