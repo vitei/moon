@@ -192,6 +192,7 @@
 %type<expressions> arguments
 %type<expression> argument
 %type<state> function_state
+%type<statements> o_statements
 %type<statements> statements
 %type<statement> statement
 %type<statement> variable_statement
@@ -701,7 +702,7 @@ s_program_function      :   program_function
                             }
                         ;
 
-program_function        :   function_prototype function_state TOKEN_EOS statements TOKEN_END TOKEN_EOS /* FIXME, support states */
+program_function        :   function_prototype function_state TOKEN_EOS o_statements TOKEN_END TOKEN_EOS /* FIXME, support states */
                             {
                                 $$ = new tree::Function($1, $4);
                                 $$->setLocation(@1);
@@ -790,6 +791,16 @@ function_state          :   /* No state */
                         |   TOKEN_LT state TOKEN_GT
                             {
                                 $$ = $2;
+                            }
+                        ;
+
+o_statements            :   /* Empty */
+                            {
+                                $$ = NULL;
+                            }
+                        |   statements
+                            {
+                                $$ = $1;
                             }
                         ;
 
