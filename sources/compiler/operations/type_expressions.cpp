@@ -72,8 +72,8 @@ void operation::TypeExpressions::visit(tree::BooleanBinaryExpression *booleanBin
 	ASSERT(booleanType);
 	ASSERT(dynamic_cast<tree::Bool *>(booleanType));
 
+	booleanBinaryExpression->setType(NULL);
 	operation::TypeExpressions::visit(static_cast<tree::BinaryExpression *>(booleanBinaryExpression));
-
 	booleanBinaryExpression->setType(booleanType);
 }
 
