@@ -42,6 +42,9 @@
         while(YYID(0));
 %}
 
+/* GLR */
+%glr-parser
+
 /* Re-entrant */
 %pure-parser
 %parse-param {parser::Data *data}

@@ -23,13 +23,13 @@ namespace tree
 			class Position
 			{
 			public:
-				Position() : line(1), character(1) {}
+				//Position() : line(1), character(1) {}
 
 				unsigned int line;
 				unsigned int character;
 			};
 
-			Location() : filename(NULL) {}
+			//Location() : filename(NULL) {}
 
 			void advance()
 			{

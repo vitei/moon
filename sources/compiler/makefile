@@ -16,12 +16,17 @@ all: compiler
 generated_parser.cpp: moon.yy moon.ll
 	@echo $@: $<
 	@mkdir -p $(INC_DIR)/generated
-	@$(BISON) $(BISON_FLAGS) --defines=$(INC_DIR)/generated/parser.h -o generated_parser.cpp $<
+	@$(BISON) $(BISON_FLAGS) --defines="$(INC_DIR)/generated/parser.h" -o generated_parser.cpp $<
 
 generated_lexer.cpp: moon.ll moon.yy
 	@echo $@: $<
 	@mkdir -p $(INC_DIR)/generated
-	@$(FLEX) $(FLEX_FLAGS) --header-file=$(INC_DIR)/generated/lexer.h -o generated_lexer.cpp $<
+	@$(FLEX) $(FLEX_FLAGS) --header-file="$(INC_DIR)/generated/lexer.h" -o generated_lexer.cpp $<
+
+$(OBJ_DIR)/generated_%.o: generated_%.cpp
+	@echo $(<:.cpp=.o): $< [Auto-generated]
+	@mkdir -p $(shell dirname $@)
+	@$(CXX) -c $(CPP_FLAGS) $(CXX_FLAGS) -I"$(INC_DIR)/generated" -MD -MF $(@:.o=.deps) -o $@ $<
 
 $(OBJ_DIR)/generated_lexer.o: generated_parser.cpp
 $(OBJ_DIR)/generated_parser.o: generated_lexer.cpp
