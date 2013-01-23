@@ -971,11 +971,11 @@ void generator::C::Printer::output(tree::If *ifStatement)
 	//outputEOS();
 }
 
-void generator::C::Printer::output(tree::Return *returnExpression)
+void generator::C::Printer::output(tree::Return *returnStatement)
 {
 	outputTabs();
 	*mOutput << "return ";
-	dispatch(returnExpression->getReturn());
+	dispatch(returnStatement->getReturn());
 	outputEOS();
 }
 
