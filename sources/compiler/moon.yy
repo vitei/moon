@@ -476,9 +476,34 @@ o_program_cvrs          :   /* Empty */
                             {
                                 $$ = NULL;
                             }
-                        |   program_cvrs
+                        |   program_cvr
                             {
-                                $$ = $1;
+                                if($1)
+                                {
+                                    $$ = new tree::Statements();
+                                    $$->push_back($1);
+                                }
+                                else
+                                {
+                                    $$ = NULL;
+                                }
+                            }
+                        |   program_cvr program_cvrs
+                            {
+                                $$ = $2;
+
+                                if($1)
+                                {
+                                    if($$)
+                                    {
+                                        $$->push_front($1);
+                                    }
+                                    else
+                                    {
+                                        $$ = new tree::Statements();
+                                        $$->push_back($1);
+                                    }
+                                }
                             }
                         ;
 
@@ -606,9 +631,34 @@ o_program_functions     :   /* Empty */
                             {
                                 $$ = NULL;
                             }
-                        |   program_functions
+                        |   s_program_function
                             {
-                                $$ = $1;
+                                if($1)
+                                {
+                                    $$ = new tree::Statements();
+                                    $$->push_back($1);
+                                }
+                                else
+                                {
+                                    $$ = NULL;
+                                }
+                            }
+                        |   s_program_function program_functions
+                            {
+                                $$ = $2;
+
+                                if($1)
+                                {
+                                    if($$)
+                                    {
+                                        $$->push_front($1);
+                                    }
+                                    else
+                                    {
+                                        $$ = new tree::Statements();
+                                        $$->push_back($1);
+                                    }
+                                }
                             }
                         ;
 
