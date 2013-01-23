@@ -1368,7 +1368,15 @@ name                    :   TOKEN_NAME
                             }
                         ;
 
-return_statement        :   TOKEN_RETURN expression TOKEN_EOS
+return_statement        :   TOKEN_RETURN TOKEN_EOS                             // Use void type instead?? FIXME
+                            {
+                                tree::IntLiteral *returnValue = new tree::IntLiteral(0);
+                                returnValue->setLocation(@1);
+
+                                $$ = new tree::Return(returnValue);
+                                $$->setLocation(@1);
+                            }
+                        |   TOKEN_RETURN expression TOKEN_EOS
                             {
                                 $$ = new tree::Return($2);
                                 $$->setLocation(@1);
