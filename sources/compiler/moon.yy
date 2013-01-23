@@ -203,8 +203,8 @@
 %type<statement> reference_statement
 %type<expression> reference_assignment
 %type<identity> reference
-%type<statement> a_or_e_statement
-%type<expression> assign_or_expression
+%type<statement> execute_statement
+%type<expression> assign_or_function
 %type<expression> assignment
 %type<expression> expression
 %type<expression> l_or_expression
@@ -842,7 +842,7 @@ statement               :   variable_statement
                             {
                                 $$ = $1;
                             }
-                        |   a_or_e_statement
+                        |   execute_statement
                             {
                                 $$ = $1;
                             }
@@ -926,7 +926,7 @@ reference               :   TOKEN_REF TOKEN_ID
                             }
                         ;
 
-a_or_e_statement        :   assign_or_expression TOKEN_EOS
+execute_statement       :   assign_or_function TOKEN_EOS
                             {
                                 if($1)
                                 {
@@ -940,11 +940,11 @@ a_or_e_statement        :   assign_or_expression TOKEN_EOS
                             }
                         ;
 
-assign_or_expression    :   assignment
+assign_or_function      :   assignment
                             {
                                 $$ = $1;
                             }
-                        |   expression
+                        |   call_expression
                             {
                                 $$ = $1;
                             }
