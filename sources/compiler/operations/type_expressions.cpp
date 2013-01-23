@@ -67,7 +67,14 @@ void operation::TypeExpressions::visit(tree::BooleanBinaryExpression *booleanBin
 {
 	LOG("TypeExpressions::visit::BooleanBinaryExpression");
 
-	ASSERT(booleanBinaryExpression->getType());
+	tree::Type *booleanType = booleanBinaryExpression->getType();
+
+	ASSERT(booleanType);
+	ASSERT(dynamic_cast<tree::Bool *>(booleanType));
+
+	operation::TypeExpressions::visit(static_cast<tree::BinaryExpression *>(booleanBinaryExpression));
+
+	booleanBinaryExpression->setType(booleanType);
 }
 
 void operation::TypeExpressions::visit(tree::UnaryExpression *unaryExpression)
@@ -88,6 +95,7 @@ void operation::TypeExpressions::visit(tree::BooleanUnaryExpression *booleanUnar
 	LOG("TypeExpressions::visit::BooleanUnaryExpression");
 
 	ASSERT(booleanUnaryExpression->getType());
+	ASSERT(dynamic_cast<tree::Bool *>(booleanUnaryExpression->getType()));
 }
 
 void operation::TypeExpressions::visit(tree::FunctionCall *functionCall)
@@ -151,6 +159,25 @@ void operation::TypeExpressions::setup(tree::Function *function)
 	tree::FunctionPrototype *functionPrototype = function->getPrototype();
 
 	mReturnType = functionPrototype ? functionPrototype->getType() : NULL;
+}
+
+void operation::TypeExpressions::visit(tree::If *ifStatement)
+{
+	LOG("TypeExpressions::setup::If");
+
+	tree::Expression *test = ifStatement->getTest();
+
+	ASSERT(test);
+	ASSERT(test->getType());
+
+	if(!dynamic_cast<tree::Bool *>(test->getType()))
+	{
+#ifdef DEBUG
+		test->getType()->printType();
+#endif
+
+		ifStatement->setTest(new tree::Cast(new tree::Bool(), test));
+	}
 }
 
 void operation::TypeExpressions::visit(tree::Return *returnStatement)
