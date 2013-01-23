@@ -56,10 +56,6 @@ namespace tree
 		void mapIdentity(Identity *identity);
 		virtual Identity *findIdentity(Identifier *identifier);
 
-#ifdef DEBUG
-		virtual void printNode() { LOG("Scope"); }
-#endif
-
 	protected:
 		Scope(Statements *statements) : mParent(NULL), mStatements(statements) { /* Abstract class */ }
 
@@ -76,6 +72,10 @@ namespace tree
 	{
 	public:
 		AnonymousScope(Statements *statements) : Scope(statements) {}
+
+#ifdef DEBUG
+		virtual void printNode() { LOG("AnonymousScope"); }
+#endif
 	};
 
 	class NamedScope : public Scope
@@ -87,6 +87,10 @@ namespace tree
 		{
 			return mName;
 		}
+
+#ifdef DEBUG
+		virtual void printNode() { LOG("NamedScope"); }
+#endif
 
 	private:
 		std::string mName;
