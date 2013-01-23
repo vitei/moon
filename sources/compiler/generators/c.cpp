@@ -932,6 +932,45 @@ void generator::C::Printer::output(tree::Execute *execute)
 	outputEOS();
 }
 
+void generator::C::Printer::output(tree::If *ifStatement)
+{
+	outputTabs();
+	*mOutput << "if(";
+	dispatch(ifStatement->getTest());
+	*mOutput << ")" << std::endl;
+
+	outputTabs();
+	*mOutput << "{" << std::endl;
+
+	tree::Statement *trueStatement = ifStatement->getTrueStatement();
+
+	if(trueStatement)
+	{
+		dispatch(trueStatement);
+	}
+
+	outputTabs();
+	*mOutput << "}" << std::endl;
+
+	tree::Statement *falseStatement = ifStatement->getFalseStatement();
+
+	if(falseStatement)
+	{
+		outputTabs();
+		*mOutput << "else" << std::endl;
+
+		outputTabs();
+		*mOutput << "{" << std::endl;
+
+		dispatch(falseStatement);
+
+		outputTabs();
+		*mOutput << "}" << std::endl;
+	}
+
+	//outputEOS();
+}
+
 void generator::C::Printer::output(tree::Return *returnExpression)
 {
 	outputTabs();
