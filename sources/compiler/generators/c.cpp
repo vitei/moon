@@ -25,6 +25,7 @@ public:
 	virtual void visit(tree::Aggregate *aggregate);
 	virtual void visit(tree::Use *use);
 	virtual void visit(tree::Function *function);
+	virtual void visit(tree::AnonymousScope *anonymousScope);
 	virtual void visit(tree::Import *import);
 
 private:
@@ -144,6 +145,30 @@ void MangleNames::visit(tree::Function *function)
 	}
 
 	visit(static_cast<tree::Scope *>(function));
+}
+
+void MangleNames::visit(tree::AnonymousScope *anonymousScope)
+{
+	tree::Function *function;
+
+	for(tree::Scope *nextScope = anonymousScope->getParent(); nextScope && !function; function = dynamic_cast<tree::Function *>(nextScope), nextScope = nextScope->getParent());
+
+	ASSERT(function);
+
+	tree::FunctionPrototype *prototype = function->getPrototype();
+
+	ASSERT(prototype->getMetadata());
+	Mangled *cPrototypeName = static_cast<Mangled *>(prototype->getMetadata());
+
+	for(tree::Identities::iterator i = anonymousScope->getIdentities().begin(), end = anonymousScope->getIdentities().end(); i != end; ++i)
+	{
+		tree::Identity *identity = i->second;
+		Mangled *cName = new Mangled(cPrototypeName->useName + "_" + identity->getName());
+
+		identity->setMetadata(cName);
+	}
+
+	visit(static_cast<tree::Scope *>(anonymousScope));
 }
 
 void MangleNames::visit(tree::Import *import)
