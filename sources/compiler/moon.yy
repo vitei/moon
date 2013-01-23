@@ -151,6 +151,8 @@
 %token TOKEN_VAR
 %token TOKEN_REF
 %token TOKEN_FUNCTION
+%token TOKEN_IF
+%token TOKEN_ELSE
 %token TOKEN_RETURN
 %token TOKEN_STATE
 %token TOKEN_RESET
@@ -227,6 +229,7 @@
 %type<type> type
 %type<id> identifier
 %type<id> name
+%type<statement> if_statement
 %type<statement> return_statement
 %type<statement> state_statement
 %type<state> state
@@ -843,6 +846,10 @@ statement               :   variable_statement
                             {
                                 $$ = $1;
                             }
+                        |   if_statement
+                            {
+                                $$ = $1;
+                            }
                         |   return_statement
                             {
                                 $$ = $1;
@@ -1366,6 +1373,25 @@ name                    :   TOKEN_NAME
                                 $$ = new tree::Identifier(std::string($1));
                                 $$->setLocation(@1);
                             }
+                        ;
+
+if_statement            :   TOKEN_IF expression TOKEN_EOS o_statements TOKEN_END TOKEN_EOS
+                            {
+                                tree::Scope *trueStatements = new tree::Scope($4);
+
+                                $$ = new tree::If($2, trueStatements);
+                                $$->setLocation(@1);
+                            }
+                        |   TOKEN_IF expression TOKEN_EOS o_statements TOKEN_ELSE TOKEN_EOS o_statements TOKEN_END TOKEN_EOS
+                            {
+                                tree::Scope *trueStatements = new tree::Scope($4);
+                                tree::Scope *falseStatements = new tree::Scope($7);
+
+                                $$ = new tree::If($2, trueStatements, falseStatements);
+                                $$->setLocation(@1);
+                            }
+
+                        /* FIXME, needs additional ifs. */
                         ;
 
 return_statement        :   TOKEN_RETURN TOKEN_EOS                             // Use void type instead?? FIXME
