@@ -18,6 +18,7 @@ namespace tree
 	protected:
 		enum Internal
 		{
+			TYPE_VOID,
 			TYPE_BOOL,
 			TYPE_INT,
 			TYPE_FLOAT,
@@ -48,6 +49,16 @@ namespace tree
 	}
 
 	/* ---- ONLY CONCRETE CLASSES BELOW HERE ---- */
+
+	class Void : public Type
+	{
+	public:
+		Void() : Type(tree::Type::TYPE_VOID) {}
+
+#ifdef DEBUG
+		virtual void printType() { LOG("VOID"); }
+#endif
+	};
 
 	class Bool : public Type
 	{

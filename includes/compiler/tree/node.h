@@ -180,6 +180,7 @@ namespace tree
 		DISPATCH_ACTIONS(tree::Unequal, node, function) \
 		DISPATCH_ACTIONS(tree::Use, node, function) \
 		DISPATCH_ACTIONS(tree::Variable, node, function) \
+		DISPATCH_ACTIONS(tree::Void, node, function) \
 		DISPATCH_ACTIONS(tree::Xor, node, function) \
 		ERROR("Unknown concrete class");
 }
