@@ -103,6 +103,37 @@ void operation::Restructure::dispatch(tree::Cast *cast)
 	mNodeMap.push(cast->restructure(this));
 }
 
+void operation::Restructure::dispatch(tree::If *ifStatement)
+{
+	tree::Expression *test = NULL;
+	tree::Statement *trueStatement = NULL;
+	tree::Statement *falseStatement = NULL;
+
+	if(ifStatement->getFalseStatement())
+	{
+		falseStatement = static_cast<tree::Statement *>(mNodeMap.top());
+		mNodeMap.pop();
+	}
+
+	if(ifStatement->getTrueStatement())
+	{
+		trueStatement = static_cast<tree::Statement *>(mNodeMap.top());
+		mNodeMap.pop();
+	}
+
+	if(ifStatement->getTest())
+	{
+		test = static_cast<tree::Expression *>(mNodeMap.top());
+		mNodeMap.pop();
+	}
+
+	ifStatement->setTest(test);
+	ifStatement->setTrueStatement(trueStatement);
+	ifStatement->setFalseStatement(falseStatement);
+
+	mNodeMap.push(ifStatement->restructure(this));
+}
+
 void operation::Restructure::dispatch(tree::Import *import)
 {
 	tree::FunctionPrototype *functionPrototype = NULL;
