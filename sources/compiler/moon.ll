@@ -164,6 +164,8 @@
     "var"               return TOKEN_VAR;
     "ref"               return TOKEN_REF;
     "function"          return TOKEN_FUNCTION;
+    "if"                return TOKEN_IF;
+    "else"              return TOKEN_ELSE;
     "return"            return TOKEN_RETURN;
     "state"             return TOKEN_STATE;
     "reset"             return TOKEN_RESET;
