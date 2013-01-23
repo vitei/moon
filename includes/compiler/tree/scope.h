@@ -12,8 +12,6 @@ namespace tree
 {
 	/* ---- ONLY ABSTRACT CLASSES BELOW HERE ---- */
 
-	/* ---- ONLY CONCRETE CLASSES BELOW HERE ---- */
-
 	class Scope : public Statement
 	{
 	public:
@@ -33,8 +31,6 @@ namespace tree
 
 			tree::Identifier *identifier;
 		};
-
-		Scope(Statements *statements) : mParent(NULL), mStatements(statements) {}
 
 		Scope *getParent()
 		{
@@ -65,11 +61,21 @@ namespace tree
 #endif
 
 	protected:
+		Scope(Statements *statements) : mParent(NULL), mStatements(statements) { /* Abstract class */ }
+
 		Scope *mParent;
 		Identities mIdentities;
 
 	private:
 		Statements *mStatements;
+	};
+
+	/* ---- ONLY CONCRETE CLASSES BELOW HERE ---- */
+
+	class AnonymousScope : public Scope
+	{
+	public:
+		AnonymousScope(Statements *statements) : Scope(statements) {}
 	};
 
 	class NamedScope : public Scope
