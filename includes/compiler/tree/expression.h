@@ -675,60 +675,60 @@ namespace tree
 #endif
 	};
 
-	class Equal : public BinaryExpression
+	class Equal : public BooleanBinaryExpression
 	{
 	public:
-		Equal(Expression *lhs, Expression *rhs) : BinaryExpression(lhs, rhs) {}
+		Equal(Expression *lhs, Expression *rhs) : BooleanBinaryExpression(lhs, rhs) {}
 
 #ifdef DEBUG
 		virtual void printNode() { LOG("Equal"); }
 #endif
 	};
 
-	class Unequal : public BinaryExpression
+	class Unequal : public BooleanBinaryExpression
 	{
 	public:
-		Unequal(Expression *lhs, Expression *rhs) : BinaryExpression(lhs, rhs) {}
+		Unequal(Expression *lhs, Expression *rhs) : BooleanBinaryExpression(lhs, rhs) {}
 
 #ifdef DEBUG
 		virtual void printNode() { LOG("Unequal"); }
 #endif
 	};
 
-	class LessThan : public BinaryExpression
+	class LessThan : public BooleanBinaryExpression
 	{
 	public:
-		LessThan(Expression *lhs, Expression *rhs) : BinaryExpression(lhs, rhs) {}
+		LessThan(Expression *lhs, Expression *rhs) : BooleanBinaryExpression(lhs, rhs) {}
 
 #ifdef DEBUG
 		virtual void printNode() { LOG("LessThan"); }
 #endif
 	};
 
-	class LessEqual : public BinaryExpression
+	class LessEqual : public BooleanBinaryExpression
 	{
 	public:
-		LessEqual(Expression *lhs, Expression *rhs) : BinaryExpression(lhs, rhs) {}
+		LessEqual(Expression *lhs, Expression *rhs) : BooleanBinaryExpression(lhs, rhs) {}
 
 #ifdef DEBUG
 		virtual void printNode() { LOG("LessEqual"); }
 #endif
 	};
 
-	class GreaterThan : public BinaryExpression
+	class GreaterThan : public BooleanBinaryExpression
 	{
 	public:
-		GreaterThan(Expression *lhs, Expression *rhs) : BinaryExpression(lhs, rhs) {}
+		GreaterThan(Expression *lhs, Expression *rhs) : BooleanBinaryExpression(lhs, rhs) {}
 
 #ifdef DEBUG
 		virtual void printNode() { LOG("GreaterThan"); }
 #endif
 	};
 
-	class GreaterEqual : public BinaryExpression
+	class GreaterEqual : public BooleanBinaryExpression
 	{
 	public:
-		GreaterEqual(Expression *lhs, Expression *rhs) : BinaryExpression(lhs, rhs) {}
+		GreaterEqual(Expression *lhs, Expression *rhs) : BooleanBinaryExpression(lhs, rhs) {}
 
 #ifdef DEBUG
 		virtual void printNode() { LOG("GreaterEqual"); }
