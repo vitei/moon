@@ -376,7 +376,7 @@ include_statement       :   TOKEN_INCLUDE TOKEN_ID TOKEN_EOS
                                 {
                                     std::string filename = tmp;
 
-                                    if(!data->isParsedFile(filename))
+                                    if(!data->isParsedIncludeFile(filename))
                                     {
                                         loader::pushCWD(dirname(tmp));
                                         data->parseInclude(filename);
@@ -412,7 +412,7 @@ use_statement           :   TOKEN_USE TOKEN_NAME TOKEN_EOS
                                 {
                                     std::string filename = tmp;
 
-                                    if(!data->isParsedFile(filename))
+                                    if(!data->isParsedUseFile(filename))
                                     {
                                         loader::pushCWD(dirname(tmp));
                                         data->parseUse($2, filename);

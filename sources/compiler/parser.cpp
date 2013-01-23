@@ -16,7 +16,6 @@ void parser::Data::parse(lexer::Data::FileType type, const std::string &filename
 	FILE *input = fopen(filename.c_str(), "r");
 
 	currentFilename = &const_cast<std::string &>(filename);
-	addParsedFile(filename);
 
 	lexerData.type = type;
 	lexerData.startSymbolIssued = false;
@@ -35,11 +34,15 @@ void parser::Data::parseUse(const std::string &name, const std::string &filename
 	std::string previousName = currentName;
 
 	currentName = name;
+
+	addParsedUseFile(filename);
+
 	parse(lexer::Data::TYPE_USE, filename);
 	currentName = previousName;
 }
 
 void parser::Data::parseInclude(const std::string &filename)
 {
+	addParsedIncludeFile(filename);
 	parse(lexer::Data::TYPE_INCLUDE, filename);
 }
