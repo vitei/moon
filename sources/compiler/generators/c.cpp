@@ -499,6 +499,9 @@ void generator::C::generate(tree::Program *program)
 	mPrinter.outputTabs();
 	mPrinter.outputPragma("#include <stdlib.h>");
 
+	mPrinter.outputTabs();
+	mPrinter.outputPragma("#include <stdbool.h>");
+
 	outputConstants(program);
 	outputVariables(program);
 	outputFunctions(program);
