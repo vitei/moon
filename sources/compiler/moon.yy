@@ -1377,15 +1377,15 @@ name                    :   TOKEN_NAME
 
 if_statement            :   TOKEN_IF expression TOKEN_EOS o_statements TOKEN_END TOKEN_EOS
                             {
-                                tree::Scope *trueStatements = new tree::Scope($4);
+                                tree::AnonymousScope *trueStatements = new tree::AnonymousScope($4);
 
                                 $$ = new tree::If($2, trueStatements);
                                 $$->setLocation(@1);
                             }
                         |   TOKEN_IF expression TOKEN_EOS o_statements TOKEN_ELSE TOKEN_EOS o_statements TOKEN_END TOKEN_EOS
                             {
-                                tree::Scope *trueStatements = new tree::Scope($4);
-                                tree::Scope *falseStatements = new tree::Scope($7);
+                                tree::AnonymousScope *trueStatements = new tree::AnonymousScope($4);
+                                tree::AnonymousScope *falseStatements = new tree::AnonymousScope($7);
 
                                 $$ = new tree::If($2, trueStatements, falseStatements);
                                 $$->setLocation(@1);
