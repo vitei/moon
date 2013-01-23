@@ -105,8 +105,13 @@ void operation::Restructure::dispatch(tree::Cast *cast)
 
 void operation::Restructure::dispatch(tree::Import *import)
 {
-	tree::FunctionPrototype *functionPrototype = static_cast<tree::FunctionPrototype *>(mNodeMap.top());
-	mNodeMap.pop();
+	tree::FunctionPrototype *functionPrototype = NULL;
+
+	if(import->getPrototype())
+	{
+		functionPrototype = static_cast<tree::FunctionPrototype *>(mNodeMap.top());
+		mNodeMap.pop();
+	}
 
 	import->setPrototype(functionPrototype);
 
