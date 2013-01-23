@@ -67,7 +67,7 @@ namespace generator
 
 			void output(tree::Execute *execute);
 			void output(tree::If *ifStatement);
-			void output(tree::Return *returnExpression);
+			void output(tree::Return *returnStatement);
 
 			void output(tree::Node *node)
 			{
