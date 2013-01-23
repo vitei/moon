@@ -86,6 +86,7 @@ tree::Node *operation::ResolveIdentities::restructure(tree::Execute *execute)
 	LOG("ResolveIdentities::restructure::Execute");
 
 	// If this was just a declaration statement then we can get rid of it.
+	// FIXME, when default types are added this will be redundant...
 	if(dynamic_cast<tree::Identity *>(execute->getExpression()))
 	{
 		delete execute;
