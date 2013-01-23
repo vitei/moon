@@ -662,7 +662,7 @@ o_program_functions     :   /* Empty */
                             }
                         ;
 
-program_functions       :   program_function
+program_functions       :   s_program_function
                             {
                                 if($1)
                                 {
