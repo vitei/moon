@@ -1,6 +1,7 @@
 #ifndef COMPILER_PARSER_H
 #define COMPILER_PARSER_H
 
+#include <map>
 #include <string>
 #include <vector>
 #include "lexer.h"
@@ -12,14 +13,34 @@ namespace parser
 	class Data
 	{
 	public:
-		void addParsedFile(const std::string &filename)
+		void addParsedUseFile(const std::string &filename)
 		{
-			mParsedFiles.push_back(filename);
+			mParsedUseFiles.push_back(filename);
 		}
 
-		bool isParsedFile(const std::string &filename)
+		void addParsedIncludeFile(const std::string &filename)
 		{
-			for(std::vector<std::string>::iterator i = mParsedFiles.begin(), end = mParsedFiles.end(); i != end; ++i)
+			mParsedIncludeFiles[currentName].push_back(filename);
+		}
+
+		bool isParsedUseFile(const std::string &filename)
+		{
+			for(std::vector<std::string>::iterator i = mParsedUseFiles.begin(), end = mParsedUseFiles.end(); i != end; ++i)
+			{
+				if(*i == filename)
+				{
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+		bool isParsedIncludeFile(const std::string &filename)
+		{
+			std::vector<std::string> currentIncludeFiles = mParsedIncludeFiles[currentName];
+
+			for(std::vector<std::string>::iterator i = currentIncludeFiles.begin(), end = currentIncludeFiles.end(); i != end; ++i)
 			{
 				if(*i == filename)
 				{
@@ -43,7 +64,8 @@ namespace parser
 	private:
 		void parse(lexer::Data::FileType type, const std::string &filename);
 
-		std::vector<std::string> mParsedFiles;
+		std::vector<std::string> mParsedUseFiles;
+		std::map<std::string, std::vector<std::string> > mParsedIncludeFiles;
 	};
 }
 
