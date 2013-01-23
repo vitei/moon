@@ -46,37 +46,40 @@ void operation::MapIdentities::addFunction(tree::Node *scope, tree::Statements *
 
 void operation::MapIdentities::process()
 {
-	while(!mVisitNext.empty())
+	while(!mVisitNext.empty() || !mVisitFunctions.empty())
 	{
-		operation::MapIdentities::ScopeList scopeList = mVisitNext.front();
-		mVisitNext.pop();
-
-		mCurrentScope = scopeList.scope;
-
-		if(scopeList.expressions)
+		while(!mVisitNext.empty())
 		{
-			for(tree::Expressions::iterator i = scopeList.expressions->begin(), end = scopeList.expressions->end(); i != end; (*i++)->accept(this));
+			operation::MapIdentities::ScopeList scopeList = mVisitNext.front();
+			mVisitNext.pop();
+
+			mCurrentScope = scopeList.scope;
+
+			if(scopeList.expressions)
+			{
+				for(tree::Expressions::iterator i = scopeList.expressions->begin(), end = scopeList.expressions->end(); i != end; (*i++)->accept(this));
+			}
+			else
+			{
+				for(tree::Statements::iterator i = scopeList.statements->begin(), end = scopeList.statements->end(); i != end; (*i++)->accept(this));
+			}
 		}
-		else
-		{
-			for(tree::Statements::iterator i = scopeList.statements->begin(), end = scopeList.statements->end(); i != end; (*i++)->accept(this));
-		}
-	}
 
-	while(!mVisitFunctions.empty())
-	{
-		operation::MapIdentities::ScopeList scopeList = mVisitFunctions.front();
-		mVisitFunctions.pop();
-
-		mCurrentScope = scopeList.scope;
-
-		if(scopeList.expressions)
+		while(!mVisitFunctions.empty())
 		{
-			for(tree::Expressions::iterator i = scopeList.expressions->begin(), end = scopeList.expressions->end(); i != end; (*i++)->accept(this));
-		}
-		else
-		{
-			for(tree::Statements::iterator i = scopeList.statements->begin(), end = scopeList.statements->end(); i != end; (*i++)->accept(this));
+			operation::MapIdentities::ScopeList scopeList = mVisitFunctions.front();
+			mVisitFunctions.pop();
+
+			mCurrentScope = scopeList.scope;
+
+			if(scopeList.expressions)
+			{
+				for(tree::Expressions::iterator i = scopeList.expressions->begin(), end = scopeList.expressions->end(); i != end; (*i++)->accept(this));
+			}
+			else
+			{
+				for(tree::Statements::iterator i = scopeList.statements->begin(), end = scopeList.statements->end(); i != end; (*i++)->accept(this));
+			}
 		}
 	}
 }
