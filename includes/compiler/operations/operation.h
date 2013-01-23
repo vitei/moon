@@ -94,6 +94,7 @@ namespace operation
 		PROCESS_ACTION(tree::Type, tree::Int, return_type, name) \
 		PROCESS_ACTION(tree::Type, tree::String, return_type, name) \
 		PROCESS_ACTION(tree::Type, tree::UDT, return_type, name) /* FIXME */ \
+		PROCESS_ACTION(tree::Type, tree::Void, return_type, name) \
 		 \
 		PROCESS_ACTION(tree::TypedIdentity, tree::Constant, return_type, name) \
 		PROCESS_ACTION(tree::TypedIdentity, tree::FunctionPrototype, return_type, name) \
