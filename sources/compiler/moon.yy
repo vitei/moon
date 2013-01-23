@@ -55,7 +55,7 @@
 
 %initial-action
 {
-ASSERT  (data->currentFilename);
+    ASSERT(data->currentFilename);
     @$.filename = data->currentFilename;
 };
 

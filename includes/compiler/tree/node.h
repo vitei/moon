@@ -25,11 +25,23 @@ namespace tree
 			public:
 				//Position() : line(1), character(1) {}
 
+				void reset()
+				{
+					line = 1;
+					character = 1;
+				}
+
 				unsigned int line;
 				unsigned int character;
 			};
 
 			//Location() : filename(NULL) {}
+			void reset()
+			{
+				filename = NULL;
+				start.reset();
+				end.reset();
+			}
 
 			void advance()
 			{
@@ -91,7 +103,11 @@ namespace tree
 #endif
 
 	protected:
-		Node() : mMetadata(NULL) { /* Abstract class */ }
+		Node() : mMetadata(NULL)
+		{
+			/* Abstract class */
+			mLocation.reset();
+		}
 
 	private:
 		Location mLocation;
