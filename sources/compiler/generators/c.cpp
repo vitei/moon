@@ -593,6 +593,29 @@ void generator::C::Printer::output(tree::Function *function)
 	*mOutput << "}" << std::endl;
 }
 
+void generator::C::Printer::output(tree::AnonymousScope *anonymousScope)
+{
+	increaseDepth();
+
+	for(tree::Identities::iterator i = anonymousScope->getIdentities().begin(), end = anonymousScope->getIdentities().end(); i != end; ++i)
+	{
+#ifdef DEBUG
+		tree::TypedIdentity *typedIdentity = dynamic_cast<tree::TypedIdentity *>(i->second);
+		ASSERT(typedIdentity);
+#else
+		tree::TypedIdentity *typedIdentity = static_cast<tree::TypedIdentity *>(i->second);
+#endif
+
+		outputTabs();
+		outputDeclaration(typedIdentity);
+		outputEOS();
+	}
+
+	decreaseDepth();
+
+	output(static_cast<tree::Scope *>(anonymousScope));
+}
+
 void generator::C::Printer::output(tree::Import *import)
 {
 	tree::FunctionPrototype *functionPrototype = import->getPrototype();
