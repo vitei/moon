@@ -36,6 +36,7 @@ namespace tree
 			};
 
 			//Location() : filename(NULL) {}
+
 			void reset()
 			{
 				filename = NULL;
