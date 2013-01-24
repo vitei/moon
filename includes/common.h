@@ -53,8 +53,8 @@
 		abort(); \
 	}
 #else
-	#define ASSERT(test) { test; }
-	#define ASSERT_LOG(test, ...) { test; }
+	#define ASSERT(test) { (void)(test); }
+	#define ASSERT_LOG(test, ...) { (void)(test); }
 	#define LOG(...) {}
 	#define WARNING(...) {}
 	#define ERROR(...) {}
