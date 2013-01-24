@@ -1022,6 +1022,27 @@ void generator::C::Printer::output(tree::If *ifStatement)
 	//outputEOS();
 }
 
+void generator::C::Printer::output(tree::While *whileStatement)
+{
+	outputTabs();
+	*mOutput << "while(";
+	dispatch(whileStatement->getTest());
+	*mOutput << ")" << std::endl;
+
+	outputTabs();
+	*mOutput << "{" << std::endl;
+
+	tree::Statement *loopStatement = whileStatement->getLoopStatement();
+
+	if(loopStatement)
+	{
+		dispatch(loopStatement);
+	}
+
+	outputTabs();
+	*mOutput << "}" << std::endl;
+}
+
 void generator::C::Printer::output(tree::Return *returnStatement)
 {
 	outputTabs();
