@@ -22,8 +22,8 @@ namespace tree
 			TYPE_BOOL,
 			TYPE_INT,
 			TYPE_FLOAT,
-			TYPE_STRING,
-			TYPE_UDT
+			TYPE_UDT,
+			TYPE_STRING
 		};
 
 		Type(Internal type) : mType(type) { /* Abstract class */ }
