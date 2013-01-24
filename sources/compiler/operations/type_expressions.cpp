@@ -49,6 +49,52 @@ void operation::TypeExpressions::visit(tree::BinaryExpression *binaryExpression)
 		ASSERT(lhsType);
 		ASSERT(rhsType);
 
+		if(*lhsType > *rhsType)
+		{
+			if(*lhsType != *rhsType)
+			{
+#ifdef DEBUG
+				lhsType->printType();
+				rhsType->printType();
+#endif
+
+				binaryExpression->setRHS(new tree::Cast(lhsType, binaryExpression->getRHS()));
+			}
+
+			binaryExpression->setType(lhsType);
+		}
+		else
+		{
+			if(*lhsType != *rhsType)
+			{
+#ifdef DEBUG
+				lhsType->printType();
+				rhsType->printType();
+#endif
+
+				binaryExpression->setLHS(new tree::Cast(rhsType, binaryExpression->getLHS()));
+			}
+
+			binaryExpression->setType(rhsType);
+		}
+	}
+}
+
+void operation::TypeExpressions::visit(tree::Assign *assign)
+{
+	LOG("TypeExpressions::visit::Assign");
+
+	ASSERT(!assign->getType());
+
+	// Check in-case unresolved
+	if(assign->getLHS() && assign->getRHS())
+	{
+		tree::Type *lhsType = assign->getLHS()->getType();
+		tree::Type *rhsType = assign->getRHS()->getType();
+
+		ASSERT(lhsType);
+		ASSERT(rhsType);
+
 		if(*lhsType != *rhsType)
 		{
 #ifdef DEBUG
@@ -56,10 +102,10 @@ void operation::TypeExpressions::visit(tree::BinaryExpression *binaryExpression)
 			rhsType->printType();
 #endif
 
-			binaryExpression->setRHS(new tree::Cast(lhsType, binaryExpression->getRHS()));
+			assign->setRHS(new tree::Cast(lhsType, assign->getRHS()));
 		}
 
-		binaryExpression->setType(lhsType);
+		assign->setType(lhsType);
 	}
 }
 
