@@ -347,3 +347,26 @@ void operation::Restructure::dispatch(tree::Scope *scope)
 
 	operation::Restructure::dispatch(static_cast<tree::Statement *>(scope));
 }
+
+void operation::Restructure::dispatch(tree::While *whileStatement)
+{
+	tree::Expression *test = NULL;
+	tree::Statement *loopStatement = NULL;
+
+	if(whileStatement->getLoopStatement())
+	{
+		loopStatement = static_cast<tree::Statement *>(mNodeMap.top());
+		mNodeMap.pop();
+	}
+
+	if(whileStatement->getTest())
+	{
+		test = static_cast<tree::Expression *>(mNodeMap.top());
+		mNodeMap.pop();
+	}
+
+	whileStatement->setTest(test);
+	whileStatement->setLoopStatement(loopStatement);
+
+	operation::Restructure::dispatch(static_cast<tree::Statement *>(whileStatement));
+}

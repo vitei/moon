@@ -14,5 +14,6 @@
 #include "compiler/tree/type.h"
 #include "compiler/tree/udt.h"
 #include "compiler/tree/use.h"
+#include "compiler/tree/while.h"
 
 #endif
