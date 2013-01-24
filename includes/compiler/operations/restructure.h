@@ -29,6 +29,7 @@ namespace operation
 		void dispatch(tree::FunctionPrototype *functionPrototype);
 		void dispatch(tree::Function *function);
 		void dispatch(tree::Scope *scope);
+		void dispatch(tree::While *whileStatement);
 
 		virtual tree::Node *restructure(tree::Node *node) { return node; }
 		PROCESS_ACTIONS(tree::Node *, restructure)

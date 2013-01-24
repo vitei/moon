@@ -180,6 +180,25 @@ void operation::TypeExpressions::visit(tree::If *ifStatement)
 	}
 }
 
+void operation::TypeExpressions::visit(tree::While *whileStatement)
+{
+	LOG("TypeExpressions::setup::While");
+
+	tree::Expression *test = whileStatement->getTest();
+
+	ASSERT(test);
+	ASSERT(test->getType());
+
+	if(!dynamic_cast<tree::Bool *>(test->getType()))
+	{
+#ifdef DEBUG
+		test->getType()->printType();
+#endif
+
+		whileStatement->setTest(new tree::Cast(new tree::Bool(), test));
+	}
+}
+
 void operation::TypeExpressions::visit(tree::Return *returnStatement)
 {
 	if(mReturnType && returnStatement->getReturn()->getType() != mReturnType)

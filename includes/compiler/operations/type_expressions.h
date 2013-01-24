@@ -23,6 +23,7 @@ namespace operation
 		virtual void visit(tree::FunctionCall *functionCall);
 		virtual void visit(tree::Scope *scope);
 		virtual void visit(tree::If *ifStatement);
+		virtual void visit(tree::While *whileStatement);
 		virtual void visit(tree::Return *returnStatement);
 
 	private:
