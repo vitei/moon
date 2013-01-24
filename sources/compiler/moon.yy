@@ -80,7 +80,7 @@
     tree::State *state;
 
     /* The lexer returns these... */
-    int integer;
+    long int integer;
     float real;
     char string[1024]; /* FIXME: We should make this bigger... */
 }

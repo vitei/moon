@@ -135,8 +135,16 @@
                             yylval->integer = atoi(yytext);
                             return TOKEN_INTEGER;
                         }
-    0x[0-9A-Fa-f]+      {
-                            sscanf(yytext, "0x%x", &yylval->integer);
+    b[0-1]+             {
+                            yylval->integer = strtol(yytext + 1, NULL, 2);
+                            return TOKEN_INTEGER;
+                        }
+    o[0-8]+             {
+                            yylval->integer = strtol(yytext + 1, NULL, 8);
+                            return TOKEN_INTEGER;
+                        }
+    h[0-9A-Fa-f]+       {
+                            yylval->integer = strtol(yytext + 1, NULL, 16);
                             return TOKEN_INTEGER;
                         }
     [0-9]+\.[0-9]+      {
