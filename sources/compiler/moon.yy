@@ -1400,8 +1400,14 @@ if_statement            :   TOKEN_IF expression TOKEN_EOS o_statements TOKEN_END
                                 $$ = new tree::If($2, trueStatements, falseStatements);
                                 $$->setLocation(@1);
                             }
+                        |   TOKEN_IF expression TOKEN_EOS o_statements TOKEN_ELSE if_statement
+                            {
+                                tree::AnonymousScope *trueStatements = new tree::AnonymousScope($4);
+                                trueStatements->setLocation(@4);
 
-                        /* FIXME, needs additional ifs. */
+                                $$ = new tree::If($2, trueStatements, $6);
+                                $$->setLocation(@1);
+                            }
                         ;
 
 while_statement         :   TOKEN_WHILE expression TOKEN_EOS o_statements TOKEN_END TOKEN_EOS
