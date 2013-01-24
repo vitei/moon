@@ -1007,16 +1007,26 @@ void generator::C::Printer::output(tree::If *ifStatement)
 
 	if(falseStatement)
 	{
-		outputTabs();
-		*mOutput << "else" << std::endl;
+		if(dynamic_cast<tree::If *>(falseStatement))
+		{
+			outputTabs();
+			*mOutput << "else ";
 
-		outputTabs();
-		*mOutput << "{" << std::endl;
+			dispatch(falseStatement);
+		}
+		else
+		{
+			outputTabs();
+			*mOutput << "else" << std::endl;
 
-		dispatch(falseStatement);
+			outputTabs();
+			*mOutput << "{" << std::endl;
 
-		outputTabs();
-		*mOutput << "}" << std::endl;
+			dispatch(falseStatement);
+
+			outputTabs();
+			*mOutput << "}" << std::endl;
+		}
 	}
 
 	//outputEOS();
