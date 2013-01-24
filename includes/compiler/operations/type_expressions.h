@@ -17,6 +17,7 @@ namespace operation
 		virtual void visit(tree::Access *access);
 		virtual void visit(tree::ArrayAccess *arrayAccess);
 		virtual void visit(tree::BinaryExpression *binaryExpression);
+		virtual void visit(tree::Assign *assign);
 		virtual void visit(tree::BooleanBinaryExpression *booleanBinaryExpression);
 		virtual void visit(tree::UnaryExpression *unaryExpression);
 		virtual void visit(tree::BooleanUnaryExpression *booleanUnaryExpression);
