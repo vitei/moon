@@ -153,6 +153,7 @@
 %token TOKEN_FUNCTION
 %token TOKEN_IF
 %token TOKEN_ELSE
+%token TOKEN_WHILE
 %token TOKEN_RETURN
 %token TOKEN_STATE
 %token TOKEN_RESET
@@ -230,6 +231,7 @@
 %type<id> identifier
 %type<id> name
 %type<statement> if_statement
+%type<statement> while_statement
 %type<statement> return_statement
 %type<statement> state_statement
 %type<state> state
@@ -850,6 +852,10 @@ statement               :   variable_statement
                             {
                                 $$ = $1;
                             }
+                        |   while_statement
+                            {
+                                $$ = $1;
+                            }
                         |   return_statement
                             {
                                 $$ = $1;
@@ -1396,6 +1402,16 @@ if_statement            :   TOKEN_IF expression TOKEN_EOS o_statements TOKEN_END
                             }
 
                         /* FIXME, needs additional ifs. */
+                        ;
+
+while_statement         :   TOKEN_WHILE expression TOKEN_EOS o_statements TOKEN_END TOKEN_EOS
+                            {
+                                tree::AnonymousScope *loopStatements = new tree::AnonymousScope($4);
+                                loopStatements->setLocation(@4);
+
+                                $$ = new tree::While($2, loopStatements);
+                                $$->setLocation(@1);
+                            }
                         ;
 
 return_statement        :   TOKEN_RETURN TOKEN_EOS                             // Use void type instead?? FIXME
