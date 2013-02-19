@@ -134,9 +134,9 @@
     "="                     return TOKEN_EQUALS;
 
     /* Basic Types */
-    [0-9]+                  {
-                                yylval->integer = atoi(yytext);
-                                return TOKEN_INTEGER;
+    [0-9]+\.[0-9]+          {
+                                yylval->real = (float)atof(yytext);
+                                return TOKEN_FLOAT;
                             }
     "b:"[0-1]+              {
                                 yylval->integer = strtol(yytext + 2, NULL, 2);
@@ -190,9 +190,9 @@
 
                                 return TOKEN_INTEGER;
                             }
-    [0-9]+\.[0-9]+          {
-                                yylval->real = (float)atof(yytext);
-                                return TOKEN_FLOAT;
+    [0-9]+                  {
+                                yylval->integer = atoi(yytext);
+                                return TOKEN_INTEGER;
                             }
 
     /* Strings */
