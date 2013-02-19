@@ -1256,6 +1256,7 @@ o_argument_expressions  :   /* Empty */
                             {
                                 $$ = $1;
                             }
+                        ;
 
 argument_expressions    :   expression
                             {
