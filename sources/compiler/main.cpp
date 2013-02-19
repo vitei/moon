@@ -24,7 +24,7 @@ int main(int argc, char *argv[])
 	char opt;
 	bool error = false;
 	bool generateDefines = false;
-	std::string outputFilename = "a.c";
+	std::string outputFilename("a.c");
 
 	LOG("DEBUG OUTPUT IS ON!");
 
@@ -133,7 +133,7 @@ int main(int argc, char *argv[])
 				}
 				else
 				{
-					std::string error = "Could not load file ";
+					std::string error("Could not load file ");
 					error += argv[optind];
 					error::enqueue(error.c_str());
 				}
