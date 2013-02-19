@@ -56,6 +56,7 @@
 %initial-action
 {
     ASSERT(data->currentFilename);
+    @$.reset();
     @$.filename = data->currentFilename;
 };
 
