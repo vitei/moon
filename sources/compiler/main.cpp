@@ -122,7 +122,7 @@ int main(int argc, char *argv[])
 
 					sParserData.uses = new tree::Statements();
 
-					loader::pushCWD(dirname(tmp));
+					loader::pushCWD(dirname(const_cast<char *>(filename.c_str())));
 					sParserData.parseUse(name, filename);
 					loader::popCWD();
 
