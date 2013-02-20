@@ -12,13 +12,6 @@ namespace generator
 	class C : public Generator
 	{
 	public:
-		virtual void run(std::ostream &output, tree::Program *program);
-
-		virtual std::string getName()
-		{
-			return "C";
-		}
-
 		class Printer
 		{
 		public:
@@ -115,6 +108,13 @@ namespace generator
 			std::string mStructName;
 			unsigned int mDepth;
 		};
+
+		virtual void run(std::ostream &output, tree::Program *program);
+
+		virtual std::string getName()
+		{
+			return "C";
+		}
 
 	private:
 		virtual void generate(tree::Program *program);
