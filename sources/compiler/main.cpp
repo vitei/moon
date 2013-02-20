@@ -30,7 +30,7 @@ static generator::Generator *sGenerators[GENERATOR_MAX];
 int main(int argc, char *argv[])
 {
 	char opt;
-	bool error = false;
+	bool usage = false;
 	bool generateDefines = false;
 	std::string outputFilename("a.c");
 
@@ -103,28 +103,40 @@ int main(int argc, char *argv[])
 			break;
 
 		case ':':
-			std::cerr << "Option " << static_cast<char>(optopt) << " requires parameter" << std::endl;
-			error = true;
+		{
+			std::string error("Option \"");
+			error += optopt;
+			error += "\" requires parameter";
+
+			error::enqueue(error);
+
 			break;
+		}
 
 		case '?':
-			std::cerr << "Unknown option \"-" << static_cast<char>(optopt) << "\"" << std::endl;
-			error = true;
+		{
+			std::string error("Unknown option \"");
+			error += optopt;
+			error += "\" was passed";
+
+			error::enqueue(error);
+
 			break;
+		}
 
 		case 'h':
-			error = true; // Not really an error but this will print usage...
+			usage = true;
 			break;
 
 		default:
-			error = sGenerator->handleOption(opt, optarg, optopt);
+			sGenerator->handleOption(opt, optarg, optopt);
 			break;
 		}
 
 		options = baseOptions + sGenerator->getOptions();
 	}
 
-	if(error) // I'm doing this backwards so that the usage text is near the command line option parser
+	if(usage) // I'm doing this backwards so that the usage text is near the command line option parser
 	{
 		std::cerr << "Usage:" << std::endl
 			<< "\t" << basename(argv[0]) << " [-D<dirs>] [-d] [-G<generator>] [-I<dirs>] [-U<dirs>] [-o<output>] [-h] <input>" << std::endl << std::endl
@@ -234,5 +246,5 @@ int main(int argc, char *argv[])
 		error::output();
 	}
 
-	return (error || error::count() != 0) ? 1 : 0;
+	return usage ? 2 : (error::count() != 0 ? 1 : 0);
 }
