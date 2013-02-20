@@ -57,17 +57,29 @@ int main(int argc, char *argv[])
 			break;
 
 		case 'G':
-			for(unsigned int i = 0; i < GENERATOR_MAX; i++)
+		{
+			unsigned int generatorIdx = 0;
+
+			for(; generatorIdx < GENERATOR_MAX; generatorIdx++)
 			{
-				if(sGenerators[i]->getName().compare(optarg) == 0)
+				if(sGenerators[generatorIdx]->getName().compare(optarg) == 0)
 				{
-					sGenerator = sGenerators[i];
+					sGenerator = sGenerators[generatorIdx];
 					break;
 				}
-				std::cerr << "\t" << sGenerators[i]->getName() << std::endl;
+			}
+
+			if(generatorIdx == GENERATOR_MAX)
+			{
+				std::string error("Generator \"");
+				error += optarg;
+				error += "\" was not found";
+
+				error::enqueue(error);
 			}
 
 			break;
+		}
 
 		case 'I':
 			for(char *directory = strtok(optarg, DIRECTORY_SEPARATORS); directory != 0; directory = strtok(0, DIRECTORY_SEPARATORS))
