@@ -14,10 +14,18 @@
 
 const char *DIRECTORY_SEPARATORS = " ,:";
 
+enum Generators
+{
+	GENERATOR_C,
+
+	GENERATOR_MAX
+};
+
 static parser::Data sParserData; // Debug filenames are maintained by this so it must persist throughout the program's life, FIXME?
 
 static generator::C sCGenerator;
 static generator::Generator *sGenerator;
+static generator::Generator *sGenerators[GENERATOR_MAX];
 
 int main(int argc, char *argv[])
 {
@@ -28,11 +36,15 @@ int main(int argc, char *argv[])
 
 	LOG("DEBUG OUTPUT IS ON!");
 
-	sGenerator = &sCGenerator;
+	sGenerators[GENERATOR_C] = &sCGenerator;
+	sGenerator = sGenerators[0];
+
+	std::string baseOptions("D:dG:I:U:o:h");
+	std::string options = baseOptions + sGenerator->getOptions();
 
 	// Parse options
 	opterr = 0;
-	while((opt = getopt(argc, argv, "D:dI:U:o:h")) != -1)
+	while((opt = getopt(argc, argv, options.c_str())) != -1)
 	{
 		switch(opt)
 		{
@@ -41,6 +53,19 @@ int main(int argc, char *argv[])
 
 		case 'd':
 			generateDefines = true;
+
+			break;
+
+		case 'G':
+			for(unsigned int i = 0; i < GENERATOR_MAX; i++)
+			{
+				if(sGenerators[i]->getName().compare(optarg) == 0)
+				{
+					sGenerator = sGenerators[i];
+					break;
+				}
+				std::cerr << "\t" << sGenerators[i]->getName() << std::endl;
+			}
 
 			break;
 
@@ -78,22 +103,41 @@ int main(int argc, char *argv[])
 		case 'h':
 			error = true; // Not really an error but this will print usage...
 			break;
+
+		default:
+			error = sGenerator->handleOption(opt, optarg, optopt);
+			break;
 		}
+
+		options = baseOptions + sGenerator->getOptions();
 	}
 
 	if(error) // I'm doing this backwards so that the usage text is near the command line option parser
 	{
 		std::cerr << "Usage:" << std::endl
-			<< "\t" << basename(argv[0]) << " [-D<dirs>] [-d] [-I<dirs>] [-U<dirs>] [-o<output>] [-h] <input>" << std::endl << std::endl
+			<< "\t" << basename(argv[0]) << " [-D<dirs>] [-d] [-G<generator>] [-I<dirs>] [-U<dirs>] [-o<output>] [-h] <input>" << std::endl << std::endl
 			<< "Options:" << std::endl
 			<< "\t-D Scan directories for define files" << std::endl
 			<< "\t-d Generate define file(s) for each input file" << std::endl
+			<< "\t-G Use the specified generator to generate output file" << std::endl
 			<< "\t-I Scan directories for include files" << std::endl
 			<< "\t-U Scan directories for use files"<< std::endl
 			<< "\t-o Output location"<< std::endl
 			<< "\t-h Show this message" << std::endl << std::endl
-			<< "Notes:" << std::endl
-			<< "\tDirectories may be separated by spaces, commas or colons." << std::endl;
+			<< "Generator options:" << std::endl
+			<< sGenerator->optionsHelpString() << std::endl << std::endl;
+
+		std::cerr << "Avaliable Generators:" << std::endl
+			<< "\t" << sGenerators[0]->getName() << " (default)" << std::endl;
+
+		for(unsigned int i = 1; i < GENERATOR_MAX; i++)
+		{
+			std::cerr << "\t" << sGenerators[i]->getName() << std::endl;
+		}
+
+
+		std::cerr << std::endl << "Notes:" << std::endl
+			<< "\tDirectories may be separated by spaces, commas or colons." << std::endl << std::endl;
 	}
 	else
 	{

@@ -14,6 +14,11 @@ namespace generator
 	public:
 		virtual void run(std::ostream &output, tree::Program *program);
 
+		virtual std::string getName()
+		{
+			return "C";
+		}
+
 		class Printer
 		{
 		public:
