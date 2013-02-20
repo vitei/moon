@@ -21,9 +21,8 @@ namespace generator
 			return "";
 		}
 
-		virtual bool handleOption(char opt, char *optarg, int optopt)
+		virtual void handleOption(char opt, char *optarg, int optopt)
 		{
-			return false;
 		}
 
 		virtual std::string optionsHelpString()
