@@ -10,7 +10,7 @@ public:
 
 	virtual void output()
 	{
-		std::cerr << "\033[1;31mError\033[0m: " << mMessage << std::endl;
+		std::cerr << "Error: " << mMessage << std::endl;
 	}
 
 protected:
