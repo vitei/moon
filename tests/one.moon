@@ -1,10 +1,12 @@
 include output
 use Base
 
-global var float:positionX
-global var positionY
+import function printf(string:data)
 
-var x = 30
+#global var float:positionX
+#global var positionY
+
+var x = 5:020 % 20
 var y = 20
 
 #global var x
@@ -22,11 +24,16 @@ function float:test_add(float:one, int:two)
 end
 
 #global function main()
-function main()
+shared function main()
 	var float:localX = 0.0
 	#var string:test = STR_ONE + STR_TWO
 
-	positionX = 0
+	while localX < 10
+		printf("test some stuff for me...")
+		localX += 0.1
+	end
+
+	#positionX = 0
 
 	#positionX = "STR_ONE" + positionX
 

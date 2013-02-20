@@ -492,6 +492,26 @@ void generator::C::run(std::ostream &output, tree::Program *program)
 	generate(program);
 }
 
+std::string generator::C::getOptions()
+{
+	return "B";
+}
+
+void generator::C::handleOption(char opt, char *optarg, int optopt)
+{
+	switch(opt)
+	{
+		case 'B':
+			mIsBoostrapped = true;
+			break;
+	}
+}
+
+std::string generator::C::optionsHelpString()
+{
+	return "\t-B Output bootstrap code";
+}
+
 void generator::C::generate(tree::Program *program)
 {
 	mangleNames(program);
@@ -506,6 +526,11 @@ void generator::C::generate(tree::Program *program)
 	outputVariables(program);
 	outputFunctions(program);
 	outputNew(program);
+
+	if(mIsBoostrapped)
+	{
+		mPrinter.outputBootstrapMain();
+	}
 }
 
 void generator::C::mangleNames(tree::Program *program)
@@ -1183,6 +1208,28 @@ void generator::C::Printer::outputNewEnd()
 {
 	outputTabs();
 	*mOutput << "return scope;" << std::endl;
+
+	decreaseDepth();
+
+	outputTabs();
+	*mOutput << "}" << std::endl;
+}
+
+void generator::C::Printer::outputBootstrapMain()
+{
+	outputTabs();
+	*mOutput << "int main(int argc, char *argv[])" << std::endl;
+
+	outputTabs();
+	*mOutput << "{" << std::endl;
+
+	increaseDepth();
+
+	outputTabs();
+	*mOutput << "moon_" << mProgram->getName() << "_main(moon_" << mProgram->getName() << "New());" << std::endl;
+
+	outputTabs();
+	*mOutput << "return 0;" << std::endl;
 
 	decreaseDepth();
 

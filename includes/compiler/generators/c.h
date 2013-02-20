@@ -87,6 +87,8 @@ namespace generator
 			void outputNewBegin();
 			void outputNewEnd();
 
+			void outputBootstrapMain();
+
 			void outputPragma(std::string pragma);
 
 			void outputRaw(std::string data);
@@ -109,12 +111,18 @@ namespace generator
 			unsigned int mDepth;
 		};
 
+		C() : mIsBoostrapped(false) {}
+
 		virtual void run(std::ostream &output, tree::Program *program);
 
 		virtual std::string getName()
 		{
 			return "C";
 		}
+
+		virtual std::string getOptions();
+		virtual void handleOption(char opt, char *optarg, int optopt);
+		virtual std::string optionsHelpString();
 
 	private:
 		virtual void generate(tree::Program *program);
@@ -126,6 +134,7 @@ namespace generator
 		void outputNew(tree::Program *program);
 
 		Printer mPrinter;
+		bool mIsBoostrapped;
 	};
 }
 
