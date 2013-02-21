@@ -79,7 +79,7 @@ namespace generator
 
 			void outputEOS();
 			void outputExtern(tree::TypedIdentity *typedIdentity);
-			void outputDeclaration(tree::TypedIdentity *typedIdentity);
+			void outputDeclaration(tree::TypedIdentity *typedIdentity, bool functionPrototype = false);
 
 			void outputVariablesBegin();
 			void outputVariablesEnd();
