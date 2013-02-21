@@ -300,6 +300,14 @@
                                 yylval->string[sStringLength++] = '\t';
                                 BEGIN STRING_LITERAL;
                             }
+    .                       {
+                                std::string error("Invalid escape character \"");
+                                error += *yytext;
+                                error += "\"";
+
+                                error::enqueue(*yylloc, error);
+                                BEGIN STRING_LITERAL;
+                            }
 }
 
 <LINE_COMMENT>{
