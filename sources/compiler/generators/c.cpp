@@ -826,7 +826,55 @@ void generator::C::Printer::output(tree::FloatLiteral *floatLiteral)
 
 void generator::C::Printer::output(tree::StringLiteral *stringLiteral)
 {
-	*mOutput << "\"" << stringLiteral->getValue() << "\"";
+	*mOutput << "\"";
+
+	for(char *i = const_cast<char *>(stringLiteral->getValue().c_str()); *i; i++)
+	{
+		switch(*i)
+		{
+			case '\\':
+				*mOutput << "\\\\";
+				break;
+
+			case '\'':
+				*mOutput << "\\\'";
+				break;
+
+			case '\"':
+				*mOutput << "\\\"";
+				break;
+
+			case '\a':
+				*mOutput << "\\a";
+				break;
+
+			case '\b':
+				*mOutput << "\\b";
+				break;
+
+			case '\f':
+				*mOutput << "\\f";
+				break;
+
+			case '\n':
+				*mOutput << "\\n";
+				break;
+
+			case '\r':
+				*mOutput << "\\r";
+				break;
+
+			case '\t':
+				*mOutput << "\\t";
+				break;
+
+			default:
+				*mOutput << *i;
+				break;
+		}
+	}
+
+	*mOutput << "\"";
 }
 
 void generator::C::Printer::output(tree::Assign *assign)
