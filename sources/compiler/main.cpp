@@ -192,12 +192,13 @@ int main(int argc, char *argv[])
 				{
 					std::string filename = tmp;
 
-					loader::filenameToUseName(tmp, tmp);
+					loader::pushCWD(dirname(tmp));
+
+					loader::filenameToUseName(tmp, filename.c_str());
 					name = tmp;
 
 					sParserData.uses = new tree::Statements();
 
-					loader::pushCWD(dirname(const_cast<char *>(filename.c_str())));
 					sParserData.parseUse(name, filename);
 					loader::popCWD();
 
