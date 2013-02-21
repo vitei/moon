@@ -182,9 +182,11 @@
                                 }
                                 else
                                 {
-                                    std::ostringstream errorStream;
-                                    errorStream << "Invalid base " << base;
-                                    error::enqueue(*yylloc, errorStream.str());
+                                    std::string error("Invalid base \"");
+                                    error += yytext;
+                                    error += "\"";
+
+                                    error::enqueue(*yylloc, error);
 
                                     yylval->integer = 0;
                                 }
