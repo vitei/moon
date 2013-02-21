@@ -155,7 +155,7 @@
                                 char *numString = strchr(yytext, ':');
 
                                 // Get rid of the ":"
-                                *numString++ = NULL;
+                                *numString++ = 0;
 
                                 int base = atoi(yytext);
 
