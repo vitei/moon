@@ -25,6 +25,11 @@ namespace generator
 		{
 		}
 
+		virtual std::string optionsString()
+		{
+			return "";
+		}
+
 		virtual std::string optionsHelpString()
 		{
 			return "\tNo options";

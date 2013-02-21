@@ -122,6 +122,7 @@ namespace generator
 
 		virtual std::string getOptions();
 		virtual void handleOption(char opt, char *optarg, int optopt);
+		virtual std::string optionsString();
 		virtual std::string optionsHelpString();
 
 	private:
