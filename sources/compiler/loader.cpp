@@ -113,7 +113,7 @@ void loader::includeNameToFilename(char *filename, const char *name)
 
 bool loader::useFile(const char *filename, char *usedFilename)
 {
-	bool r;
+	bool r = false;
 
 	if(*filename == '/')
 	{
@@ -124,7 +124,8 @@ bool loader::useFile(const char *filename, char *usedFilename)
 			strcpy(usedFilename, filename);
 		}
 	}
-	else
+
+	if(!r)
 	{
 		std::string resolvedFilename = sCurrentWorkingDirectory.top() + "/" + filename;
 
@@ -145,20 +146,36 @@ bool loader::useFile(const char *filename, char *usedFilename)
 	return r;
 }
 
-bool loader::includeFile(const char *filename, char *usedFilename)
+bool loader::includeFile(const char *filename, char *includedFilename)
 {
-	std::string resolvedFilename = sCurrentWorkingDirectory.top() + "/" + filename;
-	bool r = access(resolvedFilename.c_str(), R_OK) == 0;
+	bool r = false;
 
-	for(std::vector<std::string>::iterator i = sIncludeDirectories.begin(), end = sIncludeDirectories.end(); !r && i != end; ++i)
+	if(*filename == '/')
 	{
-		resolvedFilename = *i + "/" + filename;
-		r = access(resolvedFilename.c_str(), R_OK) == 0;
+		r = access(filename, R_OK) == 0;
+
+		if(r && includedFilename)
+		{
+			strcpy(includedFilename, filename);
+		}
 	}
 
-	if(r && usedFilename)
+	if(!r)
 	{
-		strcpy(usedFilename, resolvedFilename.c_str());
+		std::string resolvedFilename = sCurrentWorkingDirectory.top() + "/" + filename;
+
+		r = access(resolvedFilename.c_str(), R_OK) == 0;
+
+		for(std::vector<std::string>::iterator i = sIncludeDirectories.begin(), end = sIncludeDirectories.end(); !r && i != end; ++i)
+		{
+			resolvedFilename = *i + "/" + filename;
+			r = access(resolvedFilename.c_str(), R_OK) == 0;
+		}
+
+		if(r && includedFilename)
+		{
+			strcpy(includedFilename, resolvedFilename.c_str());
+		}
 	}
 
 	return r;

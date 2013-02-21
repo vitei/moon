@@ -16,7 +16,7 @@ namespace loader
 	void includeNameToFilename(char *filename, const char *name);
 
 	bool useFile(const char *filename, char *usedFilename = 0);
-	bool includeFile(const char *filename, char *usedFilename = 0);
+	bool includeFile(const char *filename, char *includedFilename = 0);
 }
 
 #endif
