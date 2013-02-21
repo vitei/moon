@@ -44,7 +44,8 @@ void MangleNames::visit(tree::Scope *scope)
 
 	if(statements)
 	{
-		for(tree::Statements::iterator i = statements->begin(); i != statements->end(); (*i++)->accept(this));
+		for(tree::Statements::iterator i = statements->begin(); i != statements->end(); (*i++)->accept(this))
+			;
 	}
 }
 
@@ -151,7 +152,8 @@ void MangleNames::visit(tree::AnonymousScope *anonymousScope)
 {
 	tree::Function *function;
 
-	for(tree::Scope *nextScope = anonymousScope->getParent(); nextScope && !function; function = dynamic_cast<tree::Function *>(nextScope), nextScope = nextScope->getParent());
+	for(tree::Scope *nextScope = anonymousScope->getParent(); nextScope && !function; function = dynamic_cast<tree::Function *>(nextScope), nextScope = nextScope->getParent())
+		;
 
 	ASSERT(function);
 
