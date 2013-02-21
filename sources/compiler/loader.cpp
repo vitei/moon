@@ -58,7 +58,7 @@ void loader::filenameToUseName(char *name, const char *filename)
 		}
 	}
 
-	*nameCurrent = NULL;
+	*nameCurrent = 0;
 
 	ASSERT(strcmp(filename, ".moon") == 0);
 }
@@ -79,7 +79,7 @@ void loader::filenameToIncludeName(char *name, const char *filename)
 		}
 	}
 
-	*nameCurrent = NULL;
+	*nameCurrent = 0;
 
 	ASSERT(strcmp(filename, ".minc") == 0);
 }
