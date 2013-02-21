@@ -655,7 +655,7 @@ void generator::C::Printer::output(tree::Import *import)
 
 	outputTabs();
 	*mOutput << "extern ";
-	outputDeclaration(functionPrototype);
+	outputDeclaration(functionPrototype, true);
 	*mOutput << "(";
 
 	tree::Expressions *arguments = functionPrototype->getArguments();
@@ -665,13 +665,13 @@ void generator::C::Printer::output(tree::Import *import)
 		tree::Expressions::iterator i = arguments->begin();
 		tree::TypedIdentity *typedIdentity = static_cast<tree::TypedIdentity *>(*i++);
 
-		outputDeclaration(typedIdentity);
+		outputDeclaration(typedIdentity, true);
 
 		for(tree::Expressions::iterator end = arguments->end(); i != end; ++i)
 		{
 			typedIdentity = static_cast<tree::TypedIdentity *>(*i);
 			*mOutput << ", ";
-			outputDeclaration(typedIdentity);
+			outputDeclaration(typedIdentity, true);
 		}
 	}
 
@@ -681,7 +681,7 @@ void generator::C::Printer::output(tree::Import *import)
 void generator::C::Printer::output(tree::FunctionPrototype *functionPrototype)
 {
 	outputTabs();
-	outputDeclaration(functionPrototype);
+	outputDeclaration(functionPrototype, true);
 	*mOutput << "(struct " << mStructName << " *scope";
 
 	tree::Expressions *arguments = functionPrototype->getArguments();
@@ -693,7 +693,7 @@ void generator::C::Printer::output(tree::FunctionPrototype *functionPrototype)
 			tree::TypedIdentity *typedIdentity = static_cast<tree::TypedIdentity *>(*i);
 
 			*mOutput << ", ";
-			outputDeclaration(typedIdentity);
+			outputDeclaration(typedIdentity, true);
 		}
 	}
 
@@ -1151,9 +1151,10 @@ void generator::C::Printer::outputExtern(tree::TypedIdentity *typedIdentity)
 	outputEOS();
 }
 
-void generator::C::Printer::outputDeclaration(tree::TypedIdentity *typedIdentity)
+void generator::C::Printer::outputDeclaration(tree::TypedIdentity *typedIdentity, bool functionPrototype)
 {
 	bool isReference = dynamic_cast<tree::Reference *>(typedIdentity) != NULL;
+	bool isConstant = dynamic_cast<tree::Constant *>(typedIdentity);
 	tree::Type *type = typedIdentity->getType();
 	tree::Bool *boolean;
 	tree::Int *integer;
@@ -1164,7 +1165,7 @@ void generator::C::Printer::outputDeclaration(tree::TypedIdentity *typedIdentity
 	ASSERT(typedIdentity->getMetadata());
 	Mangled *cName = static_cast<Mangled *>(typedIdentity->getMetadata());
 
-	if(dynamic_cast<tree::Constant *>(typedIdentity))
+	if(isConstant)
 	{
 		*mOutput << "const ";
 	}
@@ -1207,6 +1208,10 @@ void generator::C::Printer::outputDeclaration(tree::TypedIdentity *typedIdentity
 		if(isReference)
 		{
 			*mOutput << "char **" << cName->declarationName;
+		}
+		else if(functionPrototype || isConstant)
+		{
+			*mOutput << "char *" << cName->declarationName;
 		}
 		else
 		{
