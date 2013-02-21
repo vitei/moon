@@ -38,6 +38,7 @@
 /* States */
 %x PRIMED
 %x STRING_LITERAL
+%x STRING_LITERAL_ESCAPE
 %x LINE_COMMENT
 %x BLOCK_COMMENT
 
@@ -255,7 +256,48 @@
                                 yylval->string[sStringLength] = 0;
                                 return TOKEN_STRING;
                             }
+    "\\"                    BEGIN STRING_LITERAL_ESCAPE;
     .                       yylval->string[sStringLength++] = *yytext;
+}
+
+<STRING_LITERAL_ESCAPE>{
+    /* Strings */
+    "\\"                    {
+                                yylval->string[sStringLength++] = '\\';
+                                BEGIN STRING_LITERAL;
+                            }
+    "\'"                    {
+                                yylval->string[sStringLength++] = '\'';
+                                BEGIN STRING_LITERAL;
+                            }
+    "\""                    {
+                                yylval->string[sStringLength++] = '\"';
+                                BEGIN STRING_LITERAL;
+                            }
+    "a"                     {
+                                yylval->string[sStringLength++] = '\a';
+                                BEGIN STRING_LITERAL;
+                            }
+    "b"                     {
+                                yylval->string[sStringLength++] = '\b';
+                                BEGIN STRING_LITERAL;
+                            }
+    "f"                     {
+                                yylval->string[sStringLength++] = '\f';
+                                BEGIN STRING_LITERAL;
+                            }
+    "n"                     {
+                                yylval->string[sStringLength++] = '\n';
+                                BEGIN STRING_LITERAL;
+                            }
+    "r"                     {
+                                yylval->string[sStringLength++] = '\r';
+                                BEGIN STRING_LITERAL;
+                            }
+    "t"                     {
+                                yylval->string[sStringLength++] = '\t';
+                                BEGIN STRING_LITERAL;
+                            }
 }
 
 <LINE_COMMENT>{
