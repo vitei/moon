@@ -252,6 +252,17 @@
 }
 
 <STRING_LITERAL>{
+    [\n\r]+                 {
+                                error::enqueue(*yylloc, "Premature end of string");
+                                BEGIN INITIAL;
+                                return TOKEN_EOS;
+                            }
+    <<EOF>>                 {
+                                error::enqueue(*yylloc, "Premature end of string");
+                                BEGIN INITIAL;
+                                return TOKEN_EOS;
+                            }
+
     /* Strings */
     "\""                    {
                                 BEGIN PRIMED;
@@ -263,6 +274,17 @@
 }
 
 <STRING_LITERAL_ESCAPE>{
+    [\n\r]+                 {
+                                error::enqueue(*yylloc, "Premature end of string");
+                                BEGIN INITIAL;
+                                return TOKEN_EOS;
+                            }
+    <<EOF>>                 {
+                                error::enqueue(*yylloc, "Premature end of string");
+                                BEGIN INITIAL;
+                                return TOKEN_EOS;
+                            }
+
     /* Strings */
     "\\"                    {
                                 yylval->string[sStringLength++] = '\\';
