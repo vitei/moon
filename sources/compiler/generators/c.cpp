@@ -507,6 +507,11 @@ void generator::C::handleOption(char opt, char *optarg, int optopt)
 	}
 }
 
+std::string generator::C::optionsString()
+{
+	return "[-B]";
+}
+
 std::string generator::C::optionsHelpString()
 {
 	return "\t-B Output bootstrap code";

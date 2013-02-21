@@ -139,7 +139,14 @@ int main(int argc, char *argv[])
 	if(usage) // I'm doing this backwards so that the usage text is near the command line option parser
 	{
 		std::cerr << "Usage:" << std::endl
-			<< "\t" << basename(argv[0]) << " [-D<dirs>] [-d] [-G<generator>] [-I<dirs>] [-U<dirs>] [-o<output>] [-h] <input>" << std::endl << std::endl
+			<< "\t" << basename(argv[0]) << " [-D<dirs>] [-d] [-G<generator>] [-I<dirs>] [-U<dirs>] [-o<output>] [-h]";
+
+		if(sGenerator->optionsString() != "")
+		{
+			std::cerr << " " << sGenerator->optionsString();
+		}
+
+		std::cerr << " <input>" << std::endl << std::endl
 			<< "Options:" << std::endl
 			<< "\t-D Scan directories for define files" << std::endl
 			<< "\t-d Generate define file(s) for each input file" << std::endl
