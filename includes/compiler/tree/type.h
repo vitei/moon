@@ -98,41 +98,61 @@ namespace tree
 	class Int : public Type
 	{
 	public:
-		Int() : Type(tree::Type::TYPE_INT) {}
+		static const unsigned int DEFAULT_SIZE = 32;
+
+		Int(unsigned int Size = DEFAULT_SIZE) : Type(tree::Type::TYPE_INT), mSize(Size) {}
+
+		unsigned int getSize()
+		{
+			return mSize;
+		}
 
 #ifdef DEBUG
-		virtual void printType() { LOG("INT"); }
+		virtual void printType() { LOG("INT %d", mSize); }
 #endif
+
+	private:
+		unsigned int mSize;
 	};
 
 	class Float : public Type
 	{
 	public:
-		Float() : Type(tree::Type::TYPE_FLOAT) {}
+		static const unsigned int DEFAULT_SIZE = 32;
+
+		Float(unsigned int Size = DEFAULT_SIZE) : Type(tree::Type::TYPE_FLOAT), mSize(Size) {}
+
+		unsigned int getSize()
+		{
+			return mSize;
+		}
 
 #ifdef DEBUG
-		virtual void printType() { LOG("FLOAT"); }
+		virtual void printType() { LOG("FLOAT %d", mSize); }
 #endif
+
+	private:
+		unsigned int mSize;
 	};
 
 	class String : public Type
 	{
 	public:
-		static const unsigned int STRING_DEFAULT_MAX_SIZE = 256;
+		static const unsigned int DEFAULT_SIZE = 256;
 
-		String(unsigned int maxSize = STRING_DEFAULT_MAX_SIZE) : Type(tree::Type::TYPE_STRING), mMaxSize(maxSize) {}
+		String(unsigned int Size = DEFAULT_SIZE) : Type(tree::Type::TYPE_STRING), mSize(Size) {}
 
-		unsigned int getMaxSize()
+		unsigned int getSize()
 		{
-			return mMaxSize;
+			return mSize;
 		}
 
 #ifdef DEBUG
-		virtual void printType() { LOG("STRING %d", mMaxSize); }
+		virtual void printType() { LOG("STRING %d", mSize); }
 #endif
 
 	private:
-		unsigned int mMaxSize;
+		unsigned int mSize;
 	};
 }
 
