@@ -175,22 +175,23 @@
 %type<statements> o_program_includes
 %type<statements> program_includes
 %type<statements> include_statement
-%type<statements> o_imports
-%type<statements> imports
+%type<statements> o_defines
+%type<statements> defines
+%type<statement> define
 %type<statement> import_statement
-%type<statements> o_program_cvrs
-%type<statements> program_cvrs
-%type<statement> program_cvr
 %type<statement> s_constant_statement
 %type<statement> constant_statement
 %type<expression> constant_assignment
 %type<identity> constant
+%type<statements> o_declarations
+%type<statements> declarations
+%type<statement> declaration
 %type<statement> s_variable_statement
 %type<statement> s_reference_statement
-%type<statements> o_program_functions
-%type<statements> program_functions
-%type<statement> s_program_function
-%type<statement> program_function
+%type<statements> o_functions
+%type<statements> functions
+%type<statement> s_function
+%type<statement> function
 %type<prototype> function_prototype
 %type<expressions> o_arguments
 %type<expressions> arguments
@@ -252,13 +253,13 @@ start                   :   START_USE use
                             }
                         ;
 
-use                     :   o_program_includes o_program_uses o_imports o_program_cvrs o_program_functions
+use                     :   o_program_includes o_program_uses o_declarations o_functions
                             {
                                 tree::Statements *useStatements = NULL;
 
                                 // Check there is actually something in this scope...
                                 // (Uses are not nested so we don't count them here...)
-                                if($1 || $3 || $4 || $5)
+                                if($1 || $3 || $4)
                                 {
                                     useStatements = $1;
 
@@ -287,26 +288,13 @@ use                     :   o_program_includes o_program_uses o_imports o_progra
                                             useStatements = $4;
                                         }
                                     }
-
-                                    if($5)
-                                    {
-                                        if(useStatements)
-                                        {
-                                            useStatements->insert(useStatements->end(), $5->begin(), $5->end());
-                                            delete $5;
-                                        }
-                                        else
-                                        {
-                                            useStatements = $5;
-                                        }
-                                    }
                                 }
 
                                 $$ = new tree::Use(data->currentName, useStatements);
                             }
                         ;
 
-include                 :   o_program_includes o_imports o_program_cvrs /* FIXME */
+include                 :   o_program_includes o_defines
                             {
                                 $$ = $1;
 
@@ -320,19 +308,6 @@ include                 :   o_program_includes o_imports o_program_cvrs /* FIXME
                                     else
                                     {
                                         $$ = $2;
-                                    }                                
-                                }
-
-                                if($3)
-                                {
-                                    if($$)
-                                    {
-                                        $$->insert($$->end(), $3->begin(), $3->end());
-                                        delete $3;
-                                    }
-                                    else
-                                    {
-                                        $$ = $3;
                                     }                                
                                 }
                             }
@@ -435,17 +410,11 @@ use_statement           :   TOKEN_USE TOKEN_NAME TOKEN_EOS
                             }
                         ;
 
-o_imports               :   /* Empty */
+o_defines               :   /* Empty */
                             {
                                 $$ = NULL;
                             }
-                        |   imports
-                            {
-                                $$ = $1;
-                            }
-                        ;
-
-imports                 :   import_statement
+                        |   define
                             {
                                 if($1)
                                 {
@@ -457,45 +426,7 @@ imports                 :   import_statement
                                     $$ = NULL;
                                 }
                             }
-                        |   imports import_statement
-                            {
-                                $$ = $1;
-
-                                if($2)
-                                {
-                                    if(!$$)
-                                    {
-                                        $$ = new tree::Statements();
-                                    }
-                                    $$->push_back($2);
-                                }
-                            }
-                        ;
-
-import_statement        :   TOKEN_IMPORT function_prototype TOKEN_EOS
-                            {
-                                $$ = new tree::Import($2);
-                                $$->setLocation(@1);
-                            }
-                        ;
-
-o_program_cvrs          :   /* Empty */
-                            {
-                                $$ = NULL;
-                            }
-                        |   program_cvr
-                            {
-                                if($1)
-                                {
-                                    $$ = new tree::Statements();
-                                    $$->push_back($1);
-                                }
-                                else
-                                {
-                                    $$ = NULL;
-                                }
-                            }
-                        |   program_cvr program_cvrs
+                        |   define defines
                             {
                                 $$ = $2;
 
@@ -514,7 +445,7 @@ o_program_cvrs          :   /* Empty */
                             }
                         ;
 
-program_cvrs            :   program_cvr                                                                 /* CVRs = constants + variables + references */
+defines                 :   define
                             {
                                 if($1)
                                 {
@@ -526,7 +457,7 @@ program_cvrs            :   program_cvr                                         
                                     $$ = NULL;
                                 }
                             }
-                        |   program_cvrs program_cvr
+                        |   defines define
                             {
                                 $$ = $1;
 
@@ -541,17 +472,20 @@ program_cvrs            :   program_cvr                                         
                             }
                         ;
 
-program_cvr             :   s_constant_statement
+define                  :   import_statement
                             {
                                 $$ = $1;
                             }
-                        |   s_variable_statement
+                        |   s_constant_statement
                             {
                                 $$ = $1;
                             }
-                        |   s_reference_statement
+                        ;
+
+import_statement        :   TOKEN_IMPORT function_prototype TOKEN_EOS
                             {
-                                $$ = $1;
+                                $$ = new tree::Import($2);
+                                $$->setLocation(@1);
                             }
                         ;
 
@@ -596,6 +530,82 @@ constant                :   TOKEN_CONST TOKEN_NAME
                             }
                         ;
 
+o_declarations          :   /* Empty */
+                            {
+                                $$ = NULL;
+                            }
+                        |   declaration
+                            {
+                                if($1)
+                                {
+                                    $$ = new tree::Statements();
+                                    $$->push_back($1);
+                                }
+                                else
+                                {
+                                    $$ = NULL;
+                                }
+                            }
+                        |   declaration declarations
+                            {
+                                $$ = $2;
+
+                                if($1)
+                                {
+                                    if($$)
+                                    {
+                                        $$->push_front($1);
+                                    }
+                                    else
+                                    {
+                                        $$ = new tree::Statements();
+                                        $$->push_back($1);
+                                    }
+                                }
+                            }
+                        ;
+
+declarations            :   declaration
+                            {
+                                if($1)
+                                {
+                                    $$ = new tree::Statements();
+                                    $$->push_back($1);
+                                }
+                                else
+                                {
+                                    $$ = NULL;
+                                }
+                            }
+                        |   declarations declaration
+                            {
+                                $$ = $1;
+
+                                if($2)
+                                {
+                                    if(!$$)
+                                    {
+                                        $$ = new tree::Statements();
+                                    }
+                                    $$->push_back($2);
+                                }
+                            }
+                        ;
+
+declaration             :   s_variable_statement
+                            {
+                                $$ = $1;
+                            }
+                        |   s_reference_statement
+                            {
+                                $$ = $1;
+                            }
+                        |   define
+                            {
+                                $$ = $1;
+                            }
+                        ;
+
 s_variable_statement    :   variable_statement
                             {
                                 $$ = $1;
@@ -634,11 +644,11 @@ s_reference_statement   :   reference_statement
                             }
                         ;
 
-o_program_functions     :   /* Empty */
+o_functions             :   /* Empty */
                             {
                                 $$ = NULL;
                             }
-                        |   s_program_function
+                        |   s_function
                             {
                                 if($1)
                                 {
@@ -650,7 +660,7 @@ o_program_functions     :   /* Empty */
                                     $$ = NULL;
                                 }
                             }
-                        |   s_program_function program_functions
+                        |   s_function functions
                             {
                                 $$ = $2;
 
@@ -669,7 +679,7 @@ o_program_functions     :   /* Empty */
                             }
                         ;
 
-program_functions       :   s_program_function
+functions               :   s_function
                             {
                                 if($1)
                                 {
@@ -681,7 +691,7 @@ program_functions       :   s_program_function
                                     $$ = NULL;
                                 }
                             }
-                        |   program_functions s_program_function
+                        |   functions s_function
                             {
                                 $$ = $1;
 
@@ -696,19 +706,19 @@ program_functions       :   s_program_function
                             }
                         ;
 
-s_program_function      :   program_function
+s_function              :   function
                             {
                                 $$ = $1;
                             }
                             /* FIXME, what to do about global scoping?? */
-                        |   TOKEN_SHARED program_function
+                        |   TOKEN_SHARED function
                             {
                                 $$ = new tree::SharedScoping($2);
                                 $$->setLocation(@1);
                             }
                         ;
 
-program_function        :   function_prototype function_state TOKEN_EOS o_statements TOKEN_END TOKEN_EOS /* FIXME, support states */
+function                :   function_prototype function_state TOKEN_EOS o_statements TOKEN_END TOKEN_EOS /* FIXME, support states */
                             {
                                 $$ = new tree::Function($1, $4);
                                 $$->setLocation(@1);
