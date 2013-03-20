@@ -1185,25 +1185,57 @@ void generator::C::Printer::outputDeclaration(tree::TypedIdentity *typedIdentity
 	}
 	else if((integer = dynamic_cast<tree::Int *>(type)))
 	{
+		switch(integer->getSize())
+		{
+			case 8:
+				*mOutput << "char ";
+				break;
+
+			case 16:
+				*mOutput << "short ";
+				break;
+
+			case 32:
+				*mOutput << "long ";
+				break;
+
+			case 64:
+				*mOutput << "long long ";
+				break;
+
+			default:
+				ERROR("FIXME");
+		}
+
 		if(isReference)
 		{
-			*mOutput << "int *" << cName->declarationName;
+			*mOutput << "*";
 		}
-		else
-		{
-			*mOutput << "int " << cName->declarationName;
-		}
+
+		*mOutput << cName->declarationName;
 	}
 	else if((floatingPoint = dynamic_cast<tree::Float *>(type)))
 	{
+		switch(floatingPoint->getSize())
+		{
+			case 32:
+				*mOutput << "float ";
+				break;
+
+			case 64:
+				*mOutput << "double ";
+				break;
+
+			default:
+				ERROR("FIXME");
+		}
+
 		if(isReference)
 		{
-			*mOutput << "float *" << cName->declarationName;
+			*mOutput << "*";
 		}
-		else
-		{
-			*mOutput << "float " << cName->declarationName;
-		}
+
+		*mOutput << cName->declarationName;
 	}
 	else if((string = dynamic_cast<tree::String *>(type)))
 	{
@@ -1217,7 +1249,7 @@ void generator::C::Printer::outputDeclaration(tree::TypedIdentity *typedIdentity
 		}
 		else
 		{
-			*mOutput << "char " << cName->declarationName << "[" << string->getMaxSize() << "]";
+			*mOutput << "char " << cName->declarationName << "[" << string->getSize() << "]";
 		}
 	}
 	else if((udt = dynamic_cast<tree::UDT *>(type)))

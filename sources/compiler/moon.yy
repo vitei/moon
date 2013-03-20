@@ -228,7 +228,6 @@
 %type<expressions> o_argument_expressions
 %type<expressions> argument_expressions
 %type<expression> expression_atom
-%type<type> cv_type
 %type<type> type
 %type<id> identifier
 %type<id> name
@@ -523,7 +522,7 @@ constant                :   TOKEN_CONST TOKEN_NAME
                                 $$ = new tree::Constant(type, std::string($2));
                                 $$->setLocation(@1);
                             }
-                        |   TOKEN_CONST cv_type TOKEN_CAST TOKEN_NAME
+                        |   TOKEN_CONST type TOKEN_CAST TOKEN_NAME
                             {
                                 $$ = new tree::Constant($2, std::string($4));
                                 $$->setLocation(@1);
@@ -785,7 +784,7 @@ argument                :   TOKEN_ID
                                 $$ = new tree::Variable(type, std::string($1));
                                 $$->setLocation(@1);
                             }
-                        |   cv_type TOKEN_CAST TOKEN_ID
+                        |   type TOKEN_CAST TOKEN_ID
                             {
                                 $$ = new tree::Variable($1, std::string($3));
                                 $$->setLocation(@1);
@@ -903,7 +902,7 @@ variable                :   TOKEN_VAR TOKEN_ID
                                 $$ = new tree::Variable(type, std::string($2));
                                 $$->setLocation(@1);
                             }
-                        |   TOKEN_VAR cv_type TOKEN_CAST TOKEN_ID
+                        |   TOKEN_VAR type TOKEN_CAST TOKEN_ID
                             {
                                 $$ = new tree::Variable($2, std::string($4));
                                 $$->setLocation(@1);
@@ -1340,17 +1339,6 @@ expression_atom         :   name /* Constant */
                             }
                         ;
 
-cv_type                 :   type
-                            {
-                                $$ = $1;
-                            }
-                        |   TOKEN_TYPE_STRING TOKEN_LT TOKEN_INTEGER TOKEN_GT
-                            {
-                                $$ = new tree::String($3);
-                                $$->setLocation(@1);
-                            }
-                        ;
-
 type                    :   TOKEN_TYPE_BOOL
                             {
                                 $$ = new tree::Bool();
@@ -1361,14 +1349,29 @@ type                    :   TOKEN_TYPE_BOOL
                                 $$ = new tree::Int();
                                 $$->setLocation(@1);
                             }
+                        |   TOKEN_TYPE_INT TOKEN_LT TOKEN_INTEGER TOKEN_GT
+                            {
+                                $$ = new tree::Int($3);
+                                $$->setLocation(@1);
+                            }
                         |   TOKEN_TYPE_FLOAT
                             {
                                 $$ = new tree::Float();
                                 $$->setLocation(@1);
                             }
+                        |   TOKEN_TYPE_FLOAT TOKEN_LT TOKEN_INTEGER TOKEN_GT
+                            {
+                                $$ = new tree::Float($3);
+                                $$->setLocation(@1);
+                            }
                         |   TOKEN_TYPE_STRING
                             {
                                 $$ = new tree::String();
+                                $$->setLocation(@1);
+                            }
+                        |   TOKEN_TYPE_STRING TOKEN_LT TOKEN_INTEGER TOKEN_GT
+                            {
+                                $$ = new tree::String($3);
                                 $$->setLocation(@1);
                             }
 
