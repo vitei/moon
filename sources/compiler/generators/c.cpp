@@ -613,17 +613,6 @@ void generator::C::Printer::output(tree::Function *function)
 
 	output(static_cast<tree::Scope *>(function));
 
-	tree::Statements *statements = function->getStatements();
-
-	// Check if we need a return statement
-	if(statements && dynamic_cast<tree::Return *>(*(--statements->end())) == NULL)
-	{
-		increaseDepth();
-		outputTabs();
-		*mOutput << "return 0;" << std::endl;
-		decreaseDepth();
-	}
-
 	outputTabs();
 	*mOutput << "}" << std::endl;
 }
@@ -1158,6 +1147,7 @@ void generator::C::Printer::outputDeclaration(tree::TypedIdentity *typedIdentity
 	bool isReference = dynamic_cast<tree::Reference *>(typedIdentity) != NULL;
 	bool isConstant = dynamic_cast<tree::Constant *>(typedIdentity);
 	tree::Type *type = typedIdentity->getType();
+	tree::Void *_void;
 	tree::Bool *boolean;
 	tree::Int *integer;
 	tree::Float *floatingPoint;
@@ -1172,7 +1162,18 @@ void generator::C::Printer::outputDeclaration(tree::TypedIdentity *typedIdentity
 		*mOutput << "const ";
 	}
 
-	if((boolean = dynamic_cast<tree::Bool *>(type)))
+	if((_void = dynamic_cast<tree::Void *>(type)))
+	{
+		if(isReference)
+		{
+			*mOutput << "void *" << cName->declarationName;
+		}
+		else
+		{
+			*mOutput << "void " << cName->declarationName;
+		}
+	}
+	else if((boolean = dynamic_cast<tree::Bool *>(type)))
 	{
 		if(isReference)
 		{

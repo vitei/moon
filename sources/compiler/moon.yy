@@ -726,7 +726,7 @@ function                :   function_prototype function_state TOKEN_EOS o_statem
 
 function_prototype      :   TOKEN_FUNCTION TOKEN_ID TOKEN_PARENTHESIS_OPEN o_arguments TOKEN_PARENTHESIS_CLOSE
                             {
-                                tree::Type *type = new tree::Int();
+                                tree::Type *type = new tree::Void();
                                 type->setLocation(@1);
 
                                 $$ = new tree::FunctionPrototype(type, std::string($2), $4);
@@ -929,7 +929,7 @@ reference_assignment    :   reference
 
 reference               :   TOKEN_REF TOKEN_ID
                             {
-                                tree::Type *type = new tree::Int();
+                                tree::Type *type = new tree::Void();
                                 type->setLocation(@1);
 
                                 $$ = new tree::Reference(type, std::string($2));
