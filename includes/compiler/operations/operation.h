@@ -65,7 +65,6 @@ namespace operation
 		PROCESS_ACTION(tree::Expression, tree::Cast, return_type, name) \
 		PROCESS_ACTION(tree::Expression, tree::FunctionCall, return_type, name) \
 		PROCESS_ACTION(tree::Expression, tree::Identifier, return_type, name) \
-		PROCESS_ACTION(tree::Expression, tree::NullReference, return_type, name) \
 		 \
 		PROCESS_ACTION(tree::Literal, tree::BoolLiteral, return_type, name) \
 		PROCESS_ACTION(tree::Literal, tree::IntLiteral, return_type, name) \
@@ -101,7 +100,6 @@ namespace operation
 		 \
 		PROCESS_ACTION(tree::TypedIdentity, tree::Constant, return_type, name) \
 		PROCESS_ACTION(tree::TypedIdentity, tree::FunctionPrototype, return_type, name) \
-		PROCESS_ACTION(tree::TypedIdentity, tree::Reference, return_type, name) \
 		PROCESS_ACTION(tree::TypedIdentity, tree::Variable, return_type, name) \
 		 \
 		PROCESS_ACTION(tree::UnaryExpression, tree::Not, return_type, name) \

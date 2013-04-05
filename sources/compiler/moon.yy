@@ -139,7 +139,6 @@
 %token<string> TOKEN_STRING
 
 /* Keywords */
-%token TOKEN_NULL
 %token TOKEN_TRUE
 %token TOKEN_FALSE
 %token TOKEN_END
@@ -150,7 +149,6 @@
 %token TOKEN_SHARED
 %token TOKEN_CONST
 %token TOKEN_VAR
-%token TOKEN_REF
 %token TOKEN_FUNCTION
 %token TOKEN_IF
 %token TOKEN_ELSE
@@ -187,7 +185,6 @@
 %type<statements> declarations
 %type<statement> declaration
 %type<statement> s_variable_statement
-%type<statement> s_reference_statement
 %type<statements> o_functions
 %type<statements> functions
 %type<statement> s_function
@@ -203,9 +200,6 @@
 %type<statement> variable_statement
 %type<expression> variable_assignment
 %type<identity> variable
-%type<statement> reference_statement
-%type<expression> reference_assignment
-%type<identity> reference
 %type<statement> execute_statement
 %type<expression> assign_or_function
 %type<expression> assignment
@@ -595,10 +589,6 @@ declaration             :   s_variable_statement
                             {
                                 $$ = $1;
                             }
-                        |   s_reference_statement
-                            {
-                                $$ = $1;
-                            }
                         |   define
                             {
                                 $$ = $1;
@@ -618,25 +608,6 @@ s_variable_statement    :   variable_statement
                                 $$->setLocation(@1);
                             }
                         |   TOKEN_SHARED variable_statement
-                            {
-                                $$ = new tree::SharedScoping($2);
-                                $$->setLocation(@1);
-                            }
-                        ;
-
-s_reference_statement   :   reference_statement
-                            {
-                                $$ = $1;
-                            }
-                        |   TOKEN_GLOBAL reference TOKEN_EOS
-                            {
-                                tree::Execute *execute = new tree::Execute($2);
-                                execute->setLocation(@2);
-
-                                $$ = new tree::GlobalScoping(execute);
-                                $$->setLocation(@1);
-                            }
-                        |   TOKEN_SHARED reference_statement
                             {
                                 $$ = new tree::SharedScoping($2);
                                 $$->setLocation(@1);
@@ -793,10 +764,6 @@ argument                :   TOKEN_ID
                             {
                                 $$ = $1;
                             }
-                        |   reference
-                            {
-                                $$ = $1;
-                            }
                         ;
 
 function_state          :   /* No state */
@@ -847,10 +814,6 @@ statements              :   statement
                         ;
 
 statement               :   variable_statement
-                            {
-                                $$ = $1;
-                            }
-                        |   reference_statement
                             {
                                 $$ = $1;
                             }
@@ -905,39 +868,6 @@ variable                :   TOKEN_VAR TOKEN_ID
                         |   TOKEN_VAR type TOKEN_CAST TOKEN_ID
                             {
                                 $$ = new tree::Variable($2, std::string($4));
-                                $$->setLocation(@1);
-                            }
-                        ;
-
-reference_statement     :   reference_assignment TOKEN_EOS
-                            {
-                                $$ = new tree::Execute($1);
-                                $$->setLocation(@1);
-                            }
-                        ;
-
-reference_assignment    :   reference
-                            {
-                                $$ = $1;
-                            }
-                        |   reference TOKEN_EQUALS expression
-                            {
-                                $$ = new tree::Assign($1, $3);
-                                $$->setLocation(@1);
-                            }
-                        ;
-
-reference               :   TOKEN_REF TOKEN_ID
-                            {
-                                tree::Type *type = new tree::Void();
-                                type->setLocation(@1);
-
-                                $$ = new tree::Reference(type, std::string($2));
-                                $$->setLocation(@1);
-                            }
-                        |   TOKEN_REF type TOKEN_CAST TOKEN_ID
-                            {
-                                $$ = new tree::Reference($2, std::string($4));
                                 $$->setLocation(@1);
                             }
                         ;
@@ -1298,11 +1228,6 @@ argument_expressions    :   expression
 expression_atom         :   name /* Constant */
                             {
                                 $$ = $1;
-                            }
-                        |   TOKEN_NULL
-                            {
-                                $$ = new tree::NullReference();
-                                $$->setLocation(@1);
                             }
                         |   TOKEN_TRUE
                             {

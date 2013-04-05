@@ -375,16 +375,6 @@ namespace tree
 #endif
 	};
 
-	class Reference : public TypedIdentity
-	{
-	public:
-		Reference(Type *type, std::string name) : TypedIdentity(type, name) {}
-
-#ifdef DEBUG
-		virtual void printNode() { LOG("Reference"); }
-#endif
-	};
-
 	class Cast : public Expression
 	{
 	public:
@@ -533,14 +523,6 @@ namespace tree
 	private:
 		Expression *mFunctionPrototype;
 		Expressions *mArguments;
-	};
-
-	class NullReference : public Expression
-	{
-	public:
-#ifdef DEBUG
-		virtual void printNode() { LOG("NullReference"); }
-#endif
 	};
 
 	class BoolLiteral : public Literal
