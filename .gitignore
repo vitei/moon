@@ -6,6 +6,9 @@ obj/*
 includes/generated
 generated_*
 
+# Generated documentation
+documentation/build
+
 # IDE files
 *.sublime-*
 
