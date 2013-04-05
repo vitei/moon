@@ -1,14 +1,5 @@
-MOON = ../bin/moon
-MOON_FLAGS = -B
+all: tests
 
-all: one
-
-one: one.c
-	@$(CC) $(CC_FLAGS) $(CXX_FLAGS) -o $@ $<
-
-%.c: %.moon $(MOON)
-	$(MOON) $(MOON_FLAGS) -o $@ $<
-
-clean:
-#	rm -rf *.o ../bin/compiler
-	rm -rf one
+tests:
+	@echo -n Running tests
+	@cucumber --format progress --no-multiline --no-source --no-snippets
