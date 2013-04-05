@@ -169,10 +169,8 @@ namespace tree
 		DISPATCH_ACTIONS(tree::Multiply, node, function) \
 		DISPATCH_ACTIONS(tree::NamedState, node, function) \
 		DISPATCH_ACTIONS(tree::Not, node, function) \
-		DISPATCH_ACTIONS(tree::NullReference, node, function) \
 		DISPATCH_ACTIONS(tree::Or, node, function) \
 		DISPATCH_ACTIONS(tree::Program, node, function) \
-		DISPATCH_ACTIONS(tree::Reference, node, function) \
 		DISPATCH_ACTIONS(tree::Return, node, function) \
 		DISPATCH_ACTIONS(tree::SetState, node, function) \
 		DISPATCH_ACTIONS(tree::SharedScoping, node, function) \

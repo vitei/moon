@@ -71,7 +71,7 @@ void MangleNames::visit(tree::Aggregate *aggregate)
 		tree::Identity *identity = i->second;
 		Mangled *cName;
 
-		if(dynamic_cast<tree::Variable *>(identity) || dynamic_cast<tree::Reference *>(identity))
+		if(dynamic_cast<tree::Variable *>(identity))
 		{
 			std::string mangledName = "moon_" + program->getName() + "_" + identity->getName();
 			cName = new Mangled(mangledName, "scope->" + mangledName);
@@ -101,7 +101,7 @@ void MangleNames::visit(tree::Use *use)
 		tree::Identity *identity = i->second;
 		Mangled *cName;
 
-		if(dynamic_cast<tree::Variable *>(identity) || dynamic_cast<tree::Reference *>(identity))
+		if(dynamic_cast<tree::Variable *>(identity))
 		{
 			std::string mangledName = "moon_" + program->getName() + "_" + use->getName() + "_" + identity->getName();
 			cName = new Mangled(mangledName, "scope->" + mangledName);
@@ -274,7 +274,7 @@ void OutputVariables::visit(tree::Program *program)
 	{
 		tree::Identity *identity = i->second;
 
-		if(dynamic_cast<tree::Variable *>(identity) || dynamic_cast<tree::Reference *>(identity))
+		if(dynamic_cast<tree::Variable *>(identity))
 		{
 			mPrinter->outputExtern(static_cast<tree::TypedIdentity *>(identity));
 		}
@@ -291,7 +291,7 @@ void OutputVariables::visit(tree::Aggregate *aggregate)
 	{
 		tree::Identity *identity = i->second;
 
-		if(dynamic_cast<tree::Variable *>(identity) || dynamic_cast<tree::Reference *>(identity))
+		if(dynamic_cast<tree::Variable *>(identity))
 		{
 			mPrinter->outputTabs();
 			mPrinter->outputDeclaration(static_cast<tree::TypedIdentity *>(identity));
@@ -308,7 +308,7 @@ void OutputVariables::visit(tree::Use *use)
 	{
 		tree::Identity *identity = i->second;
 
-		if(dynamic_cast<tree::Variable *>(identity) || dynamic_cast<tree::Reference *>(identity))
+		if(dynamic_cast<tree::Variable *>(identity))
 		{
 			mPrinter->outputTabs();
 			mPrinter->outputDeclaration(static_cast<tree::TypedIdentity *>(identity));
@@ -699,14 +699,6 @@ void generator::C::Printer::output(tree::Identity *identity)
 	*mOutput << cName->useName;
 }
 
-void generator::C::Printer::output(tree::Reference *reference)
-{
-	ASSERT(reference->getMetadata());
-	Mangled *cName = static_cast<Mangled *>(reference->getMetadata());
-
-	*mOutput << cName->useName;
-}
-
 void generator::C::Printer::output(tree::Cast *cast)
 {
 	tree::Type *type = cast->getType();
@@ -798,11 +790,6 @@ void generator::C::Printer::output(tree::FunctionCall *functionCall)
 	}
 
 	*mOutput << ")";
-}
-
-void generator::C::Printer::output(tree::NullReference *nullReference)
-{
-	*mOutput << "NULL";
 }
 
 void generator::C::Printer::output(tree::BoolLiteral *boolLiteral)
@@ -1144,7 +1131,6 @@ void generator::C::Printer::outputExtern(tree::TypedIdentity *typedIdentity)
 
 void generator::C::Printer::outputDeclaration(tree::TypedIdentity *typedIdentity, bool functionPrototype)
 {
-	bool isReference = dynamic_cast<tree::Reference *>(typedIdentity) != NULL;
 	bool isConstant = dynamic_cast<tree::Constant *>(typedIdentity);
 	tree::Type *type = typedIdentity->getType();
 	tree::Void *_void;
@@ -1164,87 +1150,55 @@ void generator::C::Printer::outputDeclaration(tree::TypedIdentity *typedIdentity
 
 	if((_void = dynamic_cast<tree::Void *>(type)))
 	{
-		if(isReference)
-		{
-			*mOutput << "void *" << cName->declarationName;
-		}
-		else
-		{
-			*mOutput << "void " << cName->declarationName;
-		}
+		*mOutput << "void " << cName->declarationName;
 	}
 	else if((boolean = dynamic_cast<tree::Bool *>(type)))
 	{
-		if(isReference)
-		{
-			*mOutput << "bool *" << cName->declarationName;
-		}
-		else
-		{
-			*mOutput << "bool " << cName->declarationName;
-		}
+		*mOutput << "bool " << cName->declarationName;
 	}
 	else if((integer = dynamic_cast<tree::Int *>(type)))
 	{
 		switch(integer->getSize())
 		{
 			case 8:
-				*mOutput << "char ";
+				*mOutput << "char " << cName->declarationName;
 				break;
 
 			case 16:
-				*mOutput << "short ";
+				*mOutput << "short " << cName->declarationName;
 				break;
 
 			case 32:
-				*mOutput << "long ";
+				*mOutput << "long " << cName->declarationName;
 				break;
 
 			case 64:
-				*mOutput << "long long ";
+				*mOutput << "long long " << cName->declarationName;
 				break;
 
 			default:
 				ERROR("FIXME");
 		}
-
-		if(isReference)
-		{
-			*mOutput << "*";
-		}
-
-		*mOutput << cName->declarationName;
 	}
 	else if((floatingPoint = dynamic_cast<tree::Float *>(type)))
 	{
 		switch(floatingPoint->getSize())
 		{
 			case 32:
-				*mOutput << "float ";
+				*mOutput << "float " << cName->declarationName;
 				break;
 
 			case 64:
-				*mOutput << "double ";
+				*mOutput << "double " << cName->declarationName;
 				break;
 
 			default:
 				ERROR("FIXME");
 		}
-
-		if(isReference)
-		{
-			*mOutput << "*";
-		}
-
-		*mOutput << cName->declarationName;
 	}
 	else if((string = dynamic_cast<tree::String *>(type)))
 	{
-		if(isReference)
-		{
-			*mOutput << "char **" << cName->declarationName;
-		}
-		else if(functionPrototype || isConstant)
+		if(functionPrototype || isConstant)
 		{
 			*mOutput << "char *" << cName->declarationName;
 		}

@@ -205,7 +205,6 @@
                             }
 
     /* Keywords */
-    "null"                  return TOKEN_NULL;
     "true"                  return TOKEN_TRUE;
     "false"                 return TOKEN_FALSE;
     "end"                   return TOKEN_END;
@@ -216,7 +215,6 @@
     "shared"                return TOKEN_SHARED;
     "const"                 return TOKEN_CONST;
     "var"                   return TOKEN_VAR;
-    "ref"                   return TOKEN_REF;
     "function"              return TOKEN_FUNCTION;
     "if"                    return TOKEN_IF;
     "else"                  return TOKEN_ELSE;

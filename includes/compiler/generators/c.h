@@ -32,13 +32,11 @@ namespace generator
 			void output(tree::Import *import);
 			void output(tree::FunctionPrototype *functionPrototype);
 			void output(tree::Identity *identity);
-			void output(tree::Reference *reference);
 			void output(tree::Cast *cast);
 			void output(tree::DirectAccess *directAccess);
 			void output(tree::MessageAccess *messageAccess);
 			void output(tree::ArrayAccess *arrayAccess);
 			void output(tree::FunctionCall *functionCall);
-			void output(tree::NullReference *nullReference);
 			void output(tree::BoolLiteral *boolLiteral);
 			void output(tree::IntLiteral *intLiteral);
 			void output(tree::FloatLiteral *floatLiteral);
