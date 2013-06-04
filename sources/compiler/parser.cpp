@@ -37,7 +37,15 @@ void parser::Data::parseUse(const std::string &name, const std::string &filename
 
 	addParsedUseFile(filename);
 
-	parse(lexer::Data::TYPE_USE, filename);
+	if(filename.rfind(".lmoon") == filename.length() - 6)
+	{
+		parse(lexer::Data::TYPE_LITERAL_USE, filename);
+	}
+	else
+	{
+		parse(lexer::Data::TYPE_USE, filename);
+	}
+
 	currentName = previousName;
 }
 

@@ -36,6 +36,7 @@
 %option bison-locations
 
 /* States */
+%x CODE
 %x PRIMED
 %x STRING_LITERAL
 %x STRING_LITERAL_ESCAPE
@@ -52,30 +53,43 @@
         switch(yyextra->type)
         {
         case lexer::Data::TYPE_USE:
+            BEGIN CODE;
+        case lexer::Data::TYPE_LITERAL_USE:
             return START_USE;
 
         case lexer::Data::TYPE_INCLUDE:
+            BEGIN CODE;
             return START_INCLUDE;
         }
     }
 %}
 
-    /* Skip whitespace... */
-[ \t]+                      yylloc->advance();
+    /* Literate moon */
 [\n\r]+                     {
+                                yylloc->advanceLine(yyleng);
+                                yylloc->advance();
+                            }
+">"                         BEGIN CODE;
+.                           ;
+
+<CODE>{
+    /* Skip whitespace... */
+    [ \t]+                  yylloc->advance();
+    [\n\r]+                 {
                                 yylloc->advanceLine(yyleng);
                                 yylloc->advance();
                             }
 
     /* Comments */
-"#"                         BEGIN LINE_COMMENT;
-"-#-"                       BEGIN BLOCK_COMMENT;
+    "#"                     BEGIN LINE_COMMENT;
+    "-#-"                   BEGIN BLOCK_COMMENT;
 
     /* Anything else primes the lexer */
-.                           {
+    .                       {
                                 BEGIN PRIMED;
                                 yyless(0);
                             }
+}
 
 <PRIMED>{
     /* Skip whitespace... */
@@ -86,11 +100,27 @@
                                 yylloc->advanceLine(yyleng);
                                 yylloc->advance();
 
-                                BEGIN INITIAL;
+                                if(yyextra->type == lexer::Data::TYPE_LITERAL_USE)
+                                {
+                                    BEGIN INITIAL;
+                                }
+                                else
+                                {
+                                    BEGIN CODE;
+                                }
+
                                 return TOKEN_EOS;
                             }
     <<EOF>>                 {
-                                BEGIN INITIAL;
+                                if(yyextra->type == lexer::Data::TYPE_LITERAL_USE)
+                                {
+                                    BEGIN INITIAL;
+                                }
+                                else
+                                {
+                                    BEGIN CODE;
+                                }
+
                                 return TOKEN_EOS;
                             }
     ";"                     return TOKEN_SEMICOLON;
@@ -252,12 +282,30 @@
 <STRING_LITERAL>{
     [\n\r]+                 {
                                 error::enqueue(*yylloc, "Premature end of string");
-                                BEGIN INITIAL;
+
+                                if(yyextra->type == lexer::Data::TYPE_LITERAL_USE)
+                                {
+                                    BEGIN INITIAL;
+                                }
+                                else
+                                {
+                                    BEGIN CODE;
+                                }
+
                                 return TOKEN_EOS;
                             }
     <<EOF>>                 {
                                 error::enqueue(*yylloc, "Premature end of string");
-                                BEGIN INITIAL;
+
+                                if(yyextra->type == lexer::Data::TYPE_LITERAL_USE)
+                                {
+                                    BEGIN INITIAL;
+                                }
+                                else
+                                {
+                                    BEGIN CODE;
+                                }
+
                                 return TOKEN_EOS;
                             }
 
@@ -274,12 +322,30 @@
 <STRING_LITERAL_ESCAPE>{
     [\n\r]+                 {
                                 error::enqueue(*yylloc, "Premature end of string");
-                                BEGIN INITIAL;
+
+                                if(yyextra->type == lexer::Data::TYPE_LITERAL_USE)
+                                {
+                                    BEGIN INITIAL;
+                                }
+                                else
+                                {
+                                    BEGIN CODE;
+                                }
+
                                 return TOKEN_EOS;
                             }
     <<EOF>>                 {
                                 error::enqueue(*yylloc, "Premature end of string");
-                                BEGIN INITIAL;
+
+                                if(yyextra->type == lexer::Data::TYPE_LITERAL_USE)
+                                {
+                                    BEGIN INITIAL;
+                                }
+                                else
+                                {
+                                    BEGIN CODE;
+                                }
+
                                 return TOKEN_EOS;
                             }
 
@@ -334,11 +400,27 @@
     /* Line Comments */
     [\n\r]+                 {
                                 yylloc->advanceLine(yyleng);
-                                BEGIN INITIAL;
+
+                                if(yyextra->type == lexer::Data::TYPE_LITERAL_USE)
+                                {
+                                    BEGIN INITIAL;
+                                }
+                                else
+                                {
+                                    BEGIN CODE;
+                                }
                             }
     <<EOF>>                 {
                                 yylloc->advanceLine(yyleng);
-                                BEGIN INITIAL;
+
+                                if(yyextra->type == lexer::Data::TYPE_LITERAL_USE)
+                                {
+                                    BEGIN INITIAL;
+                                }
+                                else
+                                {
+                                    BEGIN CODE;
+                                }
                             }
     .                       ;
 }
@@ -347,7 +429,15 @@
     /* Block Comments */
     "-#-"[ \t]*[\n\r]       {
                                 yylloc->advanceLine(1);
-                                BEGIN INITIAL;
+
+                                if(yyextra->type == lexer::Data::TYPE_LITERAL_USE)
+                                {
+                                    BEGIN INITIAL;
+                                }
+                                else
+                                {
+                                    BEGIN CODE;
+                                }
                             }
     [\n\r]+                 yylloc->advanceLine(yyleng);
     .                       ;

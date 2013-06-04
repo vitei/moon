@@ -60,7 +60,7 @@ void loader::filenameToUseName(char *name, const char *filename)
 
 	*nameCurrent = 0;
 
-	ASSERT(strcmp(filename, ".moon") == 0);
+	ASSERT(strcmp(filename, ".moon") == 0 || strcmp(filename, ".lmoon") == 0);
 }
 
 void loader::filenameToIncludeName(char *name, const char *filename)
@@ -102,7 +102,13 @@ void loader::useNameToFilename(char *filename, const char *name)
 		}
 	}
 
-	strcpy(filename, ".moon");
+	// Check for literate moon file first...
+	strcpy(filename, ".lmoon");
+
+	if(access(filename, R_OK) != 0)
+	{
+		strcpy(filename, ".moon");
+	}
 }
 
 void loader::includeNameToFilename(char *filename, const char *name)
