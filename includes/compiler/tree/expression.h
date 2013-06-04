@@ -348,7 +348,7 @@ namespace tree
 		}
 
 #ifdef DEBUG
-		virtual void printNode() { LOG("Identifier"); }
+		virtual void printNode() { LOG("Identifier: \"%s\"", mName.c_str()); }
 #endif
 
 	private:

@@ -43,7 +43,7 @@ void operation::TypeExpressions::visit(tree::BinaryExpression *binaryExpression)
 	if(!binaryExpression->getType())
 	{
 		// Check in-case unresolved
-		if(binaryExpression->getRHS())
+		if(binaryExpression->getLHS() && binaryExpression->getRHS())
 		{
 			tree::Type *lhsType = binaryExpression->getLHS()->getType();
 			tree::Type *rhsType = binaryExpression->getRHS()->getType();
@@ -96,7 +96,7 @@ void operation::TypeExpressions::visit(tree::Assign *assign)
 	if(!assign->getType())
 	{
 		// Check in-case unresolved
-		if(assign->getRHS())
+		if(assign->getLHS() && assign->getRHS())
 		{
 			tree::Type *lhsType = assign->getLHS()->getType();
 			tree::Type *rhsType = assign->getRHS()->getType();
