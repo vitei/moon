@@ -477,6 +477,14 @@ define                  :   import_statement
 
 import_statement        :   TOKEN_IMPORT function_prototype TOKEN_EOS
                             {
+                                if($2->getType() == NULL)
+                                {
+                                    tree::Void *type = new tree::Void();
+
+                                    type->setLocation(@2);
+                                    $2->setType(type);
+                                }
+
                                 $$ = new tree::Import($2);
                                 $$->setLocation(@1);
                             }
@@ -694,10 +702,7 @@ function                :   function_prototype function_state TOKEN_EOS o_statem
 
 function_prototype      :   TOKEN_FUNCTION TOKEN_ID TOKEN_PARENTHESIS_OPEN o_arguments TOKEN_PARENTHESIS_CLOSE
                             {
-                                tree::Type *type = new tree::Void();
-                                type->setLocation(@1);
-
-                                $$ = new tree::FunctionPrototype(type, std::string($2), $4);
+                                $$ = new tree::FunctionPrototype(NULL, std::string($2), $4);
                                 $$->setLocation(@1);
                             }
                         |   TOKEN_FUNCTION type TOKEN_CAST TOKEN_ID TOKEN_PARENTHESIS_OPEN o_arguments TOKEN_PARENTHESIS_CLOSE

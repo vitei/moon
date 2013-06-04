@@ -21,6 +21,7 @@ namespace operation
 		virtual void visit(tree::BooleanBinaryExpression *booleanBinaryExpression);
 		virtual void visit(tree::UnaryExpression *unaryExpression);
 		virtual void visit(tree::BooleanUnaryExpression *booleanUnaryExpression);
+		virtual void visit(tree::Function *function);
 		virtual void visit(tree::FunctionCall *functionCall);
 		virtual void visit(tree::Scope *scope);
 		virtual void visit(tree::If *ifStatement);
@@ -30,6 +31,7 @@ namespace operation
 	private:
 		TypeExpressions() : mReturnType(NULL) {}
 
+		tree::FunctionPrototype *mPrototype;
 		tree::Type *mReturnType;
 	};
 }

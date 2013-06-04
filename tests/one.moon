@@ -15,8 +15,12 @@ const STR_ONE = "One" # Some more text here...
 const STR_TWO = "Two"
 const STR_THREE = "Three"
 
-function float:test_add(float:one, int:two)
-	return one + two
+function test_add(float:one, float:two)
+	if(one < two)
+		return 1
+	else
+		return one + two
+	end
 end
 
 #global function main()
@@ -27,7 +31,8 @@ shared function main()
 
 	while localX < 10
 		printf("test some stuff for me...\n")
-		localX += 0.1
+		localX += 0.05
+		localX = test_add(localX, 0.05)
 	end
 
 	#positionX = 0
