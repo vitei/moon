@@ -14,6 +14,8 @@ namespace operation
 
 		virtual void visit(tree::Expression *expression);
 
+		virtual void setup(tree::Assign *assign);
+
 		virtual tree::Node *restructure(tree::Identifier *identifier);
 		virtual tree::Node *restructure(tree::Execute *execute);
 

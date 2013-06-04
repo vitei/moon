@@ -60,6 +60,26 @@ void operation::ResolveIdentities::visit(tree::Expression *expression)
 	}
 }
 
+void operation::ResolveIdentities::setup(tree::Assign *assign)
+{
+	if(dynamic_cast<tree::Identifier *>(assign->getLHS()))
+	{
+		tree::Identifier *identifier = static_cast<tree::Identifier *>(assign->getLHS());
+
+		try
+		{
+			getCurrentScope()->findIdentity(identifier);
+		}
+		catch(tree::Scope::NotFoundException &e)
+		{
+			tree::Variable *variable = new tree::Variable(NULL, identifier->getName());
+
+			variable->setLocation(identifier->getLocation());
+			getCurrentScope()->mapIdentity(variable);
+		}
+	}
+}
+
 tree::Node *operation::ResolveIdentities::restructure(tree::Identifier *identifier)
 {
 	tree::Node *r = NULL;
