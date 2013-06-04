@@ -88,7 +88,6 @@ tree::Node *operation::ResolveIdentities::restructure(tree::Identifier *identifi
 
 	try
 	{
-		identifier->printNode();
 		r = getCurrentScope()->findIdentity(identifier);
 	}
 	catch(tree::Scope::NotFoundException &e)
