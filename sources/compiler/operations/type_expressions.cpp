@@ -283,7 +283,7 @@ void operation::TypeExpressions::visit(tree::Return *returnStatement)
 	{
 		if(!mPrototype->getType())
 		{
-			if(!mReturnType || returnStatement->getReturn()->getType() > mReturnType)
+			if(!mReturnType || returnStatement->getReturn()->getType() < mReturnType)
 			{
 				mReturnType = returnStatement->getReturn()->getType();
 			}
