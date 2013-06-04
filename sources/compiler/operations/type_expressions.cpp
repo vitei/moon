@@ -41,10 +41,16 @@ void operation::TypeExpressions::visit(tree::BinaryExpression *binaryExpression)
 	ASSERT(!binaryExpression->getType());
 
 	// Check in-case unresolved
-	if(binaryExpression->getLHS() && binaryExpression->getRHS())
+	if(binaryExpression->getRHS())
 	{
 		tree::Type *lhsType = binaryExpression->getLHS()->getType();
 		tree::Type *rhsType = binaryExpression->getRHS()->getType();
+
+		if(lhsType == NULL)
+		{
+			lhsType = rhsType;
+			binaryExpression->getLHS()->setType(lhsType);
+		}
 
 		ASSERT(lhsType);
 		ASSERT(rhsType);
@@ -87,10 +93,16 @@ void operation::TypeExpressions::visit(tree::Assign *assign)
 	ASSERT(!assign->getType());
 
 	// Check in-case unresolved
-	if(assign->getLHS() && assign->getRHS())
+	if(assign->getRHS())
 	{
 		tree::Type *lhsType = assign->getLHS()->getType();
 		tree::Type *rhsType = assign->getRHS()->getType();
+
+		if(lhsType == NULL)
+		{
+			lhsType = rhsType;
+			assign->getLHS()->setType(lhsType);
+		}
 
 		ASSERT(lhsType);
 		ASSERT(rhsType);

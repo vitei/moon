@@ -510,10 +510,7 @@ constant_assignment     :   constant TOKEN_EQUALS expression
 
 constant                :   TOKEN_CONST TOKEN_NAME
                             {
-                                tree::Type *type = new tree::Int();
-                                type->setLocation(@1);
-
-                                $$ = new tree::Constant(type, std::string($2));
+                                $$ = new tree::Constant(NULL, std::string($2));
                                 $$->setLocation(@1);
                             }
                         |   TOKEN_CONST type TOKEN_CAST TOKEN_NAME
@@ -749,10 +746,7 @@ arguments               :   argument
 
 argument                :   TOKEN_ID
                             {
-                                tree::Type *type = new tree::Int();
-                                type->setLocation(@1);
-
-                                $$ = new tree::Variable(type, std::string($1));
+                                $$ = new tree::Variable(NULL, std::string($1));
                                 $$->setLocation(@1);
                             }
                         |   type TOKEN_CAST TOKEN_ID
@@ -859,10 +853,7 @@ variable_assignment     :   variable
 
 variable                :   TOKEN_VAR TOKEN_ID
                             {
-                                tree::Type *type = new tree::Int();
-                                type->setLocation(@1);
-
-                                $$ = new tree::Variable(type, std::string($2));
+                                $$ = new tree::Variable(NULL, std::string($2));
                                 $$->setLocation(@1);
                             }
                         |   TOKEN_VAR type TOKEN_CAST TOKEN_ID

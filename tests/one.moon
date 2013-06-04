@@ -11,13 +11,9 @@ var y = 20
 
 #global var x
 
-global ref string:test
-
-global ref moon
-
-const string:STR_ONE = "One" # Some more text here...
-const string:STR_TWO = "Two"
-const string:STR_THREE = "Three"
+const STR_ONE = "One" # Some more text here...
+const STR_TWO = "Two"
+const STR_THREE = "Three"
 
 function float:test_add(float:one, int:two)
 	return one + two
@@ -25,11 +21,12 @@ end
 
 #global function main()
 shared function main()
-	var float:localX = 0.0
+	var localX = 0.0
+	var localY = 2
 	#var string:test = STR_ONE + STR_TWO
 
 	while localX < 10
-		printf("test some stuff for me...")
+		printf("test some stuff for me...\n")
 		localX += 0.1
 	end
 
