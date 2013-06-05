@@ -9,7 +9,7 @@ namespace lexer
 		enum FileType
 		{
 			TYPE_USE,
-			TYPE_LITERAL_USE,
+			TYPE_LITERATE_USE,
 			TYPE_INCLUDE
 		};
 

@@ -54,7 +54,7 @@
         {
         case lexer::Data::TYPE_USE:
             BEGIN CODE;
-        case lexer::Data::TYPE_LITERAL_USE:
+        case lexer::Data::TYPE_LITERATE_USE:
             return START_USE;
 
         case lexer::Data::TYPE_INCLUDE:
@@ -69,7 +69,7 @@
                                 yylloc->advanceLine(yyleng);
                                 yylloc->advance();
                             }
-">"                         BEGIN CODE;
+^">"                        BEGIN CODE;
 .                           ;
 
 <CODE>{
@@ -78,6 +78,11 @@
     [\n\r]+                 {
                                 yylloc->advanceLine(yyleng);
                                 yylloc->advance();
+
+                                if(yyextra->type == lexer::Data::TYPE_LITERATE_USE)
+                                {
+                                    BEGIN INITIAL;
+                                }
                             }
 
     /* Comments */
@@ -100,7 +105,7 @@
                                 yylloc->advanceLine(yyleng);
                                 yylloc->advance();
 
-                                if(yyextra->type == lexer::Data::TYPE_LITERAL_USE)
+                                if(yyextra->type == lexer::Data::TYPE_LITERATE_USE)
                                 {
                                     BEGIN INITIAL;
                                 }
@@ -112,7 +117,7 @@
                                 return TOKEN_EOS;
                             }
     <<EOF>>                 {
-                                if(yyextra->type == lexer::Data::TYPE_LITERAL_USE)
+                                if(yyextra->type == lexer::Data::TYPE_LITERATE_USE)
                                 {
                                     BEGIN INITIAL;
                                 }
@@ -283,7 +288,7 @@
     [\n\r]+                 {
                                 error::enqueue(*yylloc, "Premature end of string");
 
-                                if(yyextra->type == lexer::Data::TYPE_LITERAL_USE)
+                                if(yyextra->type == lexer::Data::TYPE_LITERATE_USE)
                                 {
                                     BEGIN INITIAL;
                                 }
@@ -297,7 +302,7 @@
     <<EOF>>                 {
                                 error::enqueue(*yylloc, "Premature end of string");
 
-                                if(yyextra->type == lexer::Data::TYPE_LITERAL_USE)
+                                if(yyextra->type == lexer::Data::TYPE_LITERATE_USE)
                                 {
                                     BEGIN INITIAL;
                                 }
@@ -323,7 +328,7 @@
     [\n\r]+                 {
                                 error::enqueue(*yylloc, "Premature end of string");
 
-                                if(yyextra->type == lexer::Data::TYPE_LITERAL_USE)
+                                if(yyextra->type == lexer::Data::TYPE_LITERATE_USE)
                                 {
                                     BEGIN INITIAL;
                                 }
@@ -337,7 +342,7 @@
     <<EOF>>                 {
                                 error::enqueue(*yylloc, "Premature end of string");
 
-                                if(yyextra->type == lexer::Data::TYPE_LITERAL_USE)
+                                if(yyextra->type == lexer::Data::TYPE_LITERATE_USE)
                                 {
                                     BEGIN INITIAL;
                                 }
@@ -401,7 +406,7 @@
     [\n\r]+                 {
                                 yylloc->advanceLine(yyleng);
 
-                                if(yyextra->type == lexer::Data::TYPE_LITERAL_USE)
+                                if(yyextra->type == lexer::Data::TYPE_LITERATE_USE)
                                 {
                                     BEGIN INITIAL;
                                 }
@@ -413,7 +418,7 @@
     <<EOF>>                 {
                                 yylloc->advanceLine(yyleng);
 
-                                if(yyextra->type == lexer::Data::TYPE_LITERAL_USE)
+                                if(yyextra->type == lexer::Data::TYPE_LITERATE_USE)
                                 {
                                     BEGIN INITIAL;
                                 }
@@ -430,7 +435,7 @@
     "-#-"[ \t]*[\n\r]       {
                                 yylloc->advanceLine(1);
 
-                                if(yyextra->type == lexer::Data::TYPE_LITERAL_USE)
+                                if(yyextra->type == lexer::Data::TYPE_LITERATE_USE)
                                 {
                                     BEGIN INITIAL;
                                 }
