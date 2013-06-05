@@ -54,7 +54,7 @@ void MangleNames::visit(tree::Program *program)
 	for(tree::Identities::iterator i = program->getIdentities().begin(), end = program->getIdentities().end(); i != end; ++i)
 	{
 		tree::Identity *identity = i->second;
-		Mangled *cName = new Mangled("moon_" + program->getName() + "_" + identity->getName());
+		Mangled *cName = new Mangled("moon$$" + program->getName() + "_" + identity->getName());
 
 		identity->setMetadata(cName);
 	}
@@ -73,12 +73,12 @@ void MangleNames::visit(tree::Aggregate *aggregate)
 
 		if(dynamic_cast<tree::Variable *>(identity))
 		{
-			std::string mangledName = "moon_" + program->getName() + "_" + identity->getName();
+			std::string mangledName = "moon$$" + program->getName() + "_" + identity->getName();
 			cName = new Mangled(mangledName, "scope->" + mangledName);
 		}
 		else if(!dynamic_cast<tree::Function *>(identity))
 		{
-			cName = new Mangled("moon_" + program->getName() + "_" + identity->getName());
+			cName = new Mangled("moon$$" + program->getName() + "_" + identity->getName());
 		}
 		else
 		{
@@ -103,12 +103,12 @@ void MangleNames::visit(tree::Use *use)
 
 		if(dynamic_cast<tree::Variable *>(identity))
 		{
-			std::string mangledName = "moon_" + program->getName() + "_" + use->getName() + "_" + identity->getName();
+			std::string mangledName = "moon$$" + program->getName() + "_" + use->getName() + "_" + identity->getName();
 			cName = new Mangled(mangledName, "scope->" + mangledName);
 		}
 		else
 		{
-			cName = new Mangled("moon_" + program->getName() + "_" + use->getName() + "_" + identity->getName());
+			cName = new Mangled("moon$$" + program->getName() + "_" + use->getName() + "_" + identity->getName());
 		}
 
 		identity->setMetadata(cName);
@@ -1240,7 +1240,7 @@ void generator::C::Printer::outputVariablesEnd()
 void generator::C::Printer::outputNewBegin()
 {
 	outputTabs();
-	*mOutput << "struct " << mStructName << " *moon_" << mProgram->getName() << "New()" << std::endl;
+	*mOutput << "struct " << mStructName << " *moon$$" << mProgram->getName() << "New()" << std::endl;
 
 	outputTabs();
 	*mOutput << "{" << std::endl;
@@ -1273,7 +1273,7 @@ void generator::C::Printer::outputBootstrapMain()
 	increaseDepth();
 
 	outputTabs();
-	*mOutput << "moon_" << mProgram->getName() << "_main(moon_" << mProgram->getName() << "New());" << std::endl;
+	*mOutput << "moon$$" << mProgram->getName() << "_main(moon$$" << mProgram->getName() << "New());" << std::endl;
 
 	outputTabs();
 	*mOutput << "return 0;" << std::endl;
