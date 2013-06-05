@@ -143,7 +143,6 @@ namespace tree
 		DISPATCH_ACTIONS(tree::And, node, function) \
 		DISPATCH_ACTIONS(tree::AnonymousScope, node, function) \
 		DISPATCH_ACTIONS(tree::ArrayAccess, node, function) \
-		DISPATCH_ACTIONS(tree::Assign, node, function) \
 		DISPATCH_ACTIONS(tree::Bool, node, function) \
 		DISPATCH_ACTIONS(tree::BoolLiteral, node, function) \
 		DISPATCH_ACTIONS(tree::Cast, node, function) \
@@ -152,6 +151,7 @@ namespace tree
 		DISPATCH_ACTIONS(tree::DirectAccess, node, function) \
 		DISPATCH_ACTIONS(tree::Divide, node, function) \
 		DISPATCH_ACTIONS(tree::Equal, node, function) \
+		DISPATCH_ACTIONS(tree::Equals, node, function) \
 		DISPATCH_ACTIONS(tree::Execute, node, function) \
 		DISPATCH_ACTIONS(tree::Float, node, function) \
 		DISPATCH_ACTIONS(tree::FloatLiteral, node, function) \
@@ -177,6 +177,7 @@ namespace tree
 		DISPATCH_ACTIONS(tree::Multiply, node, function) \
 		DISPATCH_ACTIONS(tree::NamedState, node, function) \
 		DISPATCH_ACTIONS(tree::Not, node, function) \
+		DISPATCH_ACTIONS(tree::OperatorAssign, node, function) \
 		DISPATCH_ACTIONS(tree::Or, node, function) \
 		DISPATCH_ACTIONS(tree::Program, node, function) \
 		DISPATCH_ACTIONS(tree::Return, node, function) \

@@ -60,11 +60,13 @@ void operation::ResolveIdentities::visit(tree::Expression *expression)
 	}
 }
 
-void operation::ResolveIdentities::setup(tree::Assign *assign)
+void operation::ResolveIdentities::setup(tree::Equals *equals)
 {
-	if(dynamic_cast<tree::Identifier *>(assign->getLHS()))
+	LOG("ResolveIdentities::setup::Equals");
+
+	if(dynamic_cast<tree::Identifier *>(equals->getLHS()))
 	{
-		tree::Identifier *identifier = static_cast<tree::Identifier *>(assign->getLHS());
+		tree::Identifier *identifier = static_cast<tree::Identifier *>(equals->getLHS());
 
 		try
 		{

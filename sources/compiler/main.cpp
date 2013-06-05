@@ -235,6 +235,7 @@ int main(int argc, char *argv[])
 				}
 				else
 				{
+					operation::ExpandTree::run(&program);
 					operation::TypeExpressions::run(&program);
 
 					// If there are no errors we should be able to do code generation now!

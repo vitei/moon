@@ -325,6 +325,12 @@ namespace tree
 		Expression *mRHS;
 	};
 
+	class Assign : public BinaryExpression
+	{
+	protected:
+		Assign(Expression *lhs, Expression *rhs) : BinaryExpression(lhs, rhs) {}
+	};
+
 	class BooleanBinaryExpression : public BinaryExpression
 	{
 	protected:
@@ -618,14 +624,32 @@ namespace tree
 		std::string mValue;
 	};
 
-	class Assign : public BinaryExpression
+	class Equals : public Assign
 	{
 	public:
-		Assign(Expression *lhs, Expression *rhs) : BinaryExpression(lhs, rhs) {}
+		Equals(Expression *lhs, Expression *rhs) : Assign(lhs, rhs) {}
 
 #ifdef DEBUG
-		virtual void printNode() { LOG("Assign"); }
+		virtual void printNode() { LOG("Equals"); }
 #endif
+	};
+
+	class OperatorAssign : public Assign
+	{
+	public:
+		OperatorAssign(Expression *lhs, Expression *rhs, BinaryExpression *op) : Assign(lhs, rhs), mOperator(op) {}
+
+#ifdef DEBUG
+		virtual void printNode() { LOG("OperatorAssign"); }
+#endif
+
+		BinaryExpression *getOperator()
+		{
+			return mOperator;
+		}
+
+	private:
+		BinaryExpression *mOperator;
 	};
 
 	class LogicalOr : public BooleanBinaryExpression

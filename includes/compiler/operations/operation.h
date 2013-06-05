@@ -27,6 +27,8 @@ namespace operation
 		PROCESS_ACTION(tree::Expression, tree::Literal, return_type, name) \
 		PROCESS_ACTION(tree::Expression, tree::UnaryExpression, return_type, name) \
 		 \
+		PROCESS_ACTION(tree::BinaryExpression, tree::Assign, return_type, name) \
+		 \
 		PROCESS_ACTION(tree::BinaryExpression, tree::BooleanBinaryExpression, return_type, name) \
 		 \
 		PROCESS_ACTION(tree::UnaryExpression, tree::BooleanUnaryExpression, return_type, name) \
@@ -43,13 +45,15 @@ namespace operation
 		 \
 		PROCESS_ACTION(tree::BinaryExpression, tree::Add, return_type, name) \
 		PROCESS_ACTION(tree::BinaryExpression, tree::And, return_type, name) \
-		PROCESS_ACTION(tree::BinaryExpression, tree::Assign, return_type, name) \
 		PROCESS_ACTION(tree::BinaryExpression, tree::Divide, return_type, name) \
 		PROCESS_ACTION(tree::BinaryExpression, tree::Modulus, return_type, name) \
 		PROCESS_ACTION(tree::BinaryExpression, tree::Multiply, return_type, name) \
 		PROCESS_ACTION(tree::BinaryExpression, tree::Or, return_type, name) \
 		PROCESS_ACTION(tree::BinaryExpression, tree::Subtract, return_type, name) \
 		PROCESS_ACTION(tree::BinaryExpression, tree::Xor, return_type, name) \
+		 \
+		PROCESS_ACTION(tree::Assign, tree::Equals, return_type, name) \
+		PROCESS_ACTION(tree::Assign, tree::OperatorAssign, return_type, name) \
 		 \
 		PROCESS_ACTION(tree::BooleanBinaryExpression, tree::Equal, return_type, name) \
 		PROCESS_ACTION(tree::BooleanBinaryExpression, tree::GreaterEqual, return_type, name) \
