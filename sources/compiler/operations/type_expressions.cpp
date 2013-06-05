@@ -1,3 +1,4 @@
+#include "compiler/error.h"
 #include "compiler/operations.h"
 #include "compiler/tree.h"
 
@@ -45,45 +46,49 @@ void operation::TypeExpressions::visit(tree::BinaryExpression *binaryExpression)
 		// Check in-case unresolved
 		if(binaryExpression->getLHS() && binaryExpression->getRHS())
 		{
-			tree::Type *lhsType = binaryExpression->getLHS()->getType();
 			tree::Type *rhsType = binaryExpression->getRHS()->getType();
 
-			if(!lhsType)
+			if(rhsType)
 			{
-				lhsType = rhsType;
-				binaryExpression->getLHS()->setType(lhsType);
-			}
+				tree::Type *lhsType = binaryExpression->getLHS()->getType();
 
-			ASSERT(lhsType);
-			ASSERT(rhsType);
+				if(!lhsType)
+				{
+					lhsType = rhsType;
+					binaryExpression->getLHS()->setType(lhsType);
+				}
 
-			if(*lhsType > *rhsType)
-			{
-				if(*lhsType != *rhsType)
+				ASSERT(lhsType);
+				ASSERT(rhsType);
+
+				if(*lhsType > *rhsType)
+				{
+					if(*lhsType != *rhsType)
+					{
+#ifdef DEBUG
+						lhsType->printType();
+						rhsType->printType();
+#endif
+
+						binaryExpression->setRHS(createCast(lhsType, binaryExpression->getRHS()));
+					}
+
+					binaryExpression->setType(lhsType);
+				}
+				else
+				{
+					if(*lhsType != *rhsType)
 				{
 #ifdef DEBUG
-					lhsType->printType();
-					rhsType->printType();
+						lhsType->printType();
+						rhsType->printType();
 #endif
 
-					binaryExpression->setRHS(new tree::Cast(lhsType, binaryExpression->getRHS()));
+						binaryExpression->setLHS(createCast(rhsType, binaryExpression->getLHS()));
+					}
+
+					binaryExpression->setType(rhsType);
 				}
-
-				binaryExpression->setType(lhsType);
-			}
-			else
-			{
-				if(*lhsType != *rhsType)
-			{
-#ifdef DEBUG
-					lhsType->printType();
-					rhsType->printType();
-#endif
-
-					binaryExpression->setLHS(new tree::Cast(rhsType, binaryExpression->getLHS()));
-				}
-
-				binaryExpression->setType(rhsType);
 			}
 		}
 	}
@@ -98,29 +103,33 @@ void operation::TypeExpressions::visit(tree::Assign *assign)
 		// Check in-case unresolved
 		if(assign->getLHS() && assign->getRHS())
 		{
-			tree::Type *lhsType = assign->getLHS()->getType();
 			tree::Type *rhsType = assign->getRHS()->getType();
 
-			if(!lhsType)
+			if(rhsType)
 			{
-				lhsType = rhsType;
-				assign->getLHS()->setType(lhsType);
-			}
+				tree::Type *lhsType = assign->getLHS()->getType();
 
-			ASSERT(lhsType);
-			ASSERT(rhsType);
+				if(!lhsType)
+				{
+					lhsType = rhsType;
+					assign->getLHS()->setType(lhsType);
+				}
 
-			if(*lhsType != *rhsType)
-			{
+				ASSERT(lhsType);
+				ASSERT(rhsType);
+
+				if(*lhsType != *rhsType)
+				{
 #ifdef DEBUG
-				lhsType->printType();
-				rhsType->printType();
+					lhsType->printType();
+					rhsType->printType();
 #endif
 
-				assign->setRHS(new tree::Cast(lhsType, assign->getRHS()));
-			}
+					assign->setRHS(createCast(lhsType, assign->getRHS()));
+				}
 
-			assign->setType(lhsType);
+				assign->setType(lhsType);
+			}
 		}
 	}
 }
@@ -198,7 +207,7 @@ void operation::TypeExpressions::visit(tree::FunctionCall *functionCall)
 						expectedType->printType();
 #endif
 
-						*i = new tree::Cast(expectedType, *i);
+						*i = createCast(expectedType, *i);
 					}
 				}
 			}
@@ -253,7 +262,7 @@ void operation::TypeExpressions::visit(tree::If *ifStatement)
 		test->getType()->printType();
 #endif
 
-		ifStatement->setTest(new tree::Cast(new tree::Bool(), test));
+		ifStatement->setTest(createCast(new tree::Bool(), test));
 	}
 }
 
@@ -272,7 +281,7 @@ void operation::TypeExpressions::visit(tree::While *whileStatement)
 		test->getType()->printType();
 #endif
 
-		whileStatement->setTest(new tree::Cast(new tree::Bool(), test));
+		whileStatement->setTest(createCast(new tree::Bool(), test));
 	}
 }
 
@@ -290,7 +299,22 @@ void operation::TypeExpressions::visit(tree::Return *returnStatement)
 		}
 		else if(returnStatement->getReturn()->getType() != mPrototype->getType())
 		{
-			returnStatement->setReturn(new tree::Cast(mPrototype->getType(), returnStatement->getReturn()));
+			returnStatement->setReturn(createCast(mPrototype->getType(), returnStatement->getReturn()));
 		}
+	}
+}
+
+tree::Cast *operation::TypeExpressions::createCast(tree::Type *type, tree::Expression *expression)
+{
+	try
+	{
+		return new tree::Cast(type, expression);
+	}
+	catch(tree::Cast::InvalidException &e)
+	{
+		std::string error = "Cannot cast " + std::string(expression->getType()->getTypeName()) + " to " + std::string(type->getTypeName());
+
+		error::enqueue(expression->getLocation(), error);
+		return NULL;
 	}
 }

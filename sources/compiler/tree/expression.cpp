@@ -81,6 +81,17 @@ void tree::BinaryExpression::setRHS(Expression *rhs)
 	}
 }
 
+void tree::Cast::checkCast()
+{
+	if(getType() && getExpression())
+	{
+		if(*getExpression()->getType() > *getType())
+		{
+			throw tree::Cast::InvalidException(this);
+		}
+	}
+}
+
 void tree::FunctionCall::setFunctionPrototype(tree::Expression *functionPrototype)
 {
 	tree::FunctionPrototype *prototype;

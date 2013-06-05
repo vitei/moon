@@ -60,6 +60,14 @@ namespace tree
 				end.line += num;
 			}
 
+
+#ifdef DEBUG
+			void printLocation()
+			{
+				LOG("%u:%u to %u:%u in file \"%s\"", start.line, start.character, end.line, end.character, filename->c_str());
+			}
+#endif
+
 			std::string *filename;
 			Position start;
 			Position end;

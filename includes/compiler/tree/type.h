@@ -10,10 +10,14 @@ namespace tree
 
 	class Type : public Node
 	{
-#ifdef DEBUG
+
 	public:
+#ifdef DEBUG
+		virtual void printNode() { LOG("Type"); }
 		virtual void printType() = 0;
 #endif
+
+		virtual const char *getTypeName() = 0;
 
 	protected:
 		enum Internal
@@ -27,10 +31,6 @@ namespace tree
 		};
 
 		Type(Internal type) : mType(type) { /* Abstract class */ }
-
-#ifdef DEBUG
-		virtual void printNode() { LOG("Type"); }
-#endif
 
 	private:
 		friend bool operator == (Type &type1, Type &type2);
@@ -80,6 +80,11 @@ namespace tree
 	public:
 		Void() : Type(tree::Type::TYPE_VOID) {}
 
+		virtual const char *getTypeName()
+		{
+			return "void";
+		}
+
 #ifdef DEBUG
 		virtual void printType() { LOG("VOID"); }
 #endif
@@ -89,6 +94,11 @@ namespace tree
 	{
 	public:
 		Bool() : Type(tree::Type::TYPE_BOOL) {}
+
+		virtual const char *getTypeName()
+		{
+			return "boolean";
+		}
 
 #ifdef DEBUG
 		virtual void printType() { LOG("BOOL"); }
@@ -105,6 +115,11 @@ namespace tree
 		unsigned int getSize()
 		{
 			return mSize;
+		}
+
+		virtual const char *getTypeName()
+		{
+			return "integer";
 		}
 
 #ifdef DEBUG
@@ -127,6 +142,11 @@ namespace tree
 			return mSize;
 		}
 
+		virtual const char *getTypeName()
+		{
+			return "floating point";
+		}
+
 #ifdef DEBUG
 		virtual void printType() { LOG("FLOAT %d", mSize); }
 #endif
@@ -145,6 +165,11 @@ namespace tree
 		unsigned int getSize()
 		{
 			return mSize;
+		}
+
+		virtual const char *getTypeName()
+		{
+			return "string";
 		}
 
 #ifdef DEBUG

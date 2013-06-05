@@ -29,7 +29,7 @@ namespace tree
 			return mType;
 		}
 
-		void setType(Type *type)
+		virtual void setType(Type *type)
 		{
 			mType = type;
 		}
@@ -378,9 +378,29 @@ namespace tree
 	class Cast : public Expression
 	{
 	public:
+		class InvalidException : public tree::Expression::InvalidException
+		{
+		public:
+			InvalidException(Expression *_expression) : tree::Expression::InvalidException(_expression) {}
+
+			virtual void reset()
+			{
+				LOG("tree::Cast::InvalidException::reset");
+				//binaryExpression->setRHS(NULL);
+			}
+		};
+
 		Cast(Type *type, Expression *expression) : mExpression(expression)
 		{
 			setType(type);
+		}
+
+		void checkCast();
+
+		virtual void setType(Type *type)
+		{
+			Expression::setType(type);
+			checkCast();
 		}
 
 		Expression *getExpression()
@@ -391,6 +411,7 @@ namespace tree
 		void setExpression(Expression *expression)
 		{
 			mExpression = expression;
+			checkCast();
 		}
 
 		virtual void childAccept(operation::Operation *operation)

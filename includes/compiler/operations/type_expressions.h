@@ -28,6 +28,8 @@ namespace operation
 		virtual void visit(tree::While *whileStatement);
 		virtual void visit(tree::Return *returnStatement);
 
+		tree::Cast *createCast(tree::Type *type, tree::Expression *expression);
+
 	private:
 		TypeExpressions() : mReturnType(NULL) {}
 
