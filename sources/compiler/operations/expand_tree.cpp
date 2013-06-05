@@ -1,4 +1,3 @@
-#include <sstream>
 #include "compiler/operations.h"
 #include "compiler/tree.h"
 
