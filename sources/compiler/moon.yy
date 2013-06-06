@@ -148,8 +148,7 @@
 %token TOKEN_GLOBAL
 %token TOKEN_SHARED
 %token TOKEN_CONST
-%token TOKEN_VAR
-%token TOKEN_FUNCTION
+%token TOKEN_DEF
 %token TOKEN_IF
 %token TOKEN_ELSE
 %token TOKEN_WHILE
@@ -704,12 +703,12 @@ function                :   function_prototype function_state TOKEN_EOS o_statem
                             }
                         ;
 
-function_prototype      :   TOKEN_FUNCTION TOKEN_ID TOKEN_PARENTHESIS_OPEN o_arguments TOKEN_PARENTHESIS_CLOSE
+function_prototype      :   TOKEN_DEF TOKEN_ID TOKEN_PARENTHESIS_OPEN o_arguments TOKEN_PARENTHESIS_CLOSE
                             {
                                 $$ = new tree::FunctionPrototype(NULL, std::string($2), $4);
                                 $$->setLocation(@1);
                             }
-                        |   TOKEN_FUNCTION type TOKEN_CAST TOKEN_ID TOKEN_PARENTHESIS_OPEN o_arguments TOKEN_PARENTHESIS_CLOSE
+                        |   TOKEN_DEF type TOKEN_CAST TOKEN_ID TOKEN_PARENTHESIS_OPEN o_arguments TOKEN_PARENTHESIS_CLOSE
                             {
                                 $$ = new tree::FunctionPrototype($2, std::string($4), $6);
                                 $$->setLocation(@1);
@@ -856,12 +855,12 @@ variable_assignment     :   variable
                             }
                         ;
 
-variable                :   TOKEN_VAR TOKEN_ID
+variable                :   TOKEN_DEF TOKEN_ID
                             {
                                 $$ = new tree::Variable(NULL, std::string($2));
                                 $$->setLocation(@1);
                             }
-                        |   TOKEN_VAR type TOKEN_CAST TOKEN_ID
+                        |   TOKEN_DEF type TOKEN_CAST TOKEN_ID
                             {
                                 $$ = new tree::Variable($2, std::string($4));
                                 $$->setLocation(@1);

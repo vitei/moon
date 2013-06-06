@@ -249,8 +249,7 @@
     "global"                return TOKEN_GLOBAL;
     "shared"                return TOKEN_SHARED;
     "const"                 return TOKEN_CONST;
-    "var"                   return TOKEN_VAR;
-    "function"              return TOKEN_FUNCTION;
+    "def"                   return TOKEN_DEF;
     "if"                    return TOKEN_IF;
     "else"                  return TOKEN_ELSE;
     "while"                 return TOKEN_WHILE;

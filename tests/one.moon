@@ -1,37 +1,37 @@
 include output
 use Base
 
-import function printf(string:data)
+import def printf(string:data)
 
-#global var float:positionX
-#global var positionY
+#global def float:positionX
+#global def positionY
 
-var x = 5:020 % 20
-var y = 20
+def x = 5:020 % 20
+def y = 20
 
-#global var x
+#global def x
 
 const STR_ONE = "One" # Some more text here...
 const STR_TWO = "Two"
 const STR_THREE = "Three"
 
-function test_add(float:one, float:two)
+def test_add(float:one, float:two)
 	voom = 1
 
 	return voom if one < two else voom = one + two
 	return voom
 end
 
-#global function main()
-shared function main()
+#global def main()
+shared def main()
 	foom = 1
 	moo = foom + foom
 	localX = moo + moo
 	localY = 2
 
-	foom = test_add(1.2, 1.2)
+	foom = test_add(1.2, 1.2) while foom < 10
 
-	#var string:test = STR_ONE + STR_TWO
+	#def string:test = STR_ONE + STR_TWO
 
 	localZ = 0
 	if localY == 2
