@@ -201,6 +201,7 @@
 %type<expression> variable_assignment
 %type<identity> variable
 %type<statement> conditional_statement
+%type<statement> loop_statement
 %type<statement> single_statement
 %type<statement> execute_statement
 %type<expression> assign_or_function
@@ -823,6 +824,10 @@ statement               :   variable_statement
                             {
                                 $$ = $1;
                             }
+                        |   loop_statement
+                            {
+                                $$ = $1;
+                            }
                         |   single_statement TOKEN_EOS
                             {
                                 $$ = $1;
@@ -871,6 +876,13 @@ conditional_statement   :   single_statement TOKEN_IF expression TOKEN_EOS
                         |   single_statement TOKEN_IF expression TOKEN_ELSE single_statement TOKEN_EOS
                             {
                                 $$ = new tree::If($3, $1, $5);
+                                $$->setLocation(@2);
+                            }
+                        ;
+
+loop_statement          :   single_statement TOKEN_WHILE expression TOKEN_EOS
+                            {
+                                $$ = new tree::While($3, $1);
                                 $$->setLocation(@2);
                             }
                         ;
