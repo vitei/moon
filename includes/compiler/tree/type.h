@@ -10,7 +10,6 @@ namespace tree
 
 	class Type : public Node
 	{
-
 	public:
 #ifdef DEBUG
 		virtual void printNode() { LOG("Type"); }
@@ -33,42 +32,42 @@ namespace tree
 		Type(Internal type) : mType(type) { /* Abstract class */ }
 
 	private:
-		friend bool operator == (Type &type1, Type &type2);
-		friend bool operator != (Type &type1, Type &type2);
-		friend bool operator < (Type &type1, Type &type2);
-		friend bool operator <= (Type &type1, Type &type2);
-		friend bool operator > (Type &type1, Type &type2);
-		friend bool operator >= (Type &type1, Type &type2);
+		friend bool operator == (const Type &type1, const Type &type2);
+		friend bool operator != (const Type &type1, const Type &type2);
+		friend bool operator < (const Type &type1, const Type &type2);
+		friend bool operator <= (const Type &type1, const Type &type2);
+		friend bool operator > (const Type &type1, const Type &type2);
+		friend bool operator >= (const Type &type1, const Type &type2);
 
 		Internal mType;
 	};
 
-	inline bool operator == (Type &type1, Type &type2)
+	inline bool operator == (const Type &type1, const Type &type2)
 	{
 		return type1.mType == type2.mType;
 	}
 
-	inline bool operator != (Type &type1, Type &type2)
+	inline bool operator != (const Type &type1, const Type &type2)
 	{
 		return type1.mType != type2.mType;
 	}
 
-	inline bool operator < (Type &type1, Type &type2)
+	inline bool operator < (const Type &type1, const Type &type2)
 	{
 		return type1.mType < type2.mType;
 	}
 
-	inline bool operator <= (Type &type1, Type &type2)
+	inline bool operator <= (const Type &type1, const Type &type2)
 	{
 		return type1.mType <= type2.mType;
 	}
 
-	inline bool operator > (Type &type1, Type &type2)
+	inline bool operator > (const Type &type1, const Type &type2)
 	{
 		return type1.mType > type2.mType;
 	}
 
-	inline bool operator >= (Type &type1, Type &type2)
+	inline bool operator >= (const Type &type1, const Type &type2)
 	{
 		return type1.mType >= type2.mType;
 	}

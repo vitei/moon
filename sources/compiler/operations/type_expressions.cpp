@@ -15,12 +15,12 @@ void operation::TypeExpressions::visit(tree::BinaryExpression *binaryExpression)
 
 	ASSERT(binaryExpression->getType());
 
-	if(binaryExpression->getLHS() && binaryExpression->getLHS()->getType() != binaryExpression->getType())
+	if(binaryExpression->getLHS() && *binaryExpression->getLHS()->getType() != *binaryExpression->getType())
 	{
 		binaryExpression->setLHS(createCast(binaryExpression->getType(), binaryExpression->getLHS()));
 	}
 
-	if(binaryExpression->getRHS() && binaryExpression->getRHS()->getType() != binaryExpression->getType())
+	if(binaryExpression->getRHS() && *binaryExpression->getRHS()->getType() != *binaryExpression->getType())
 	{
 		binaryExpression->setRHS(createCast(binaryExpression->getType(), binaryExpression->getRHS()));
 	}
@@ -128,11 +128,18 @@ void operation::TypeExpressions::visit(tree::Return *returnStatement)
 
 	ASSERT(mPrototype->getType());
 
-	// Only bother with this if there is a prototype...
-	if(returnStatement->getReturn()->getType() != mPrototype->getType())
+	if(!returnStatement->getReturn())
+	{
+		if(*mPrototype->getType() != tree::Void())
+		{
+			std::string error = "All return statements for function \"" + mPrototype->getName() + "\" must return a value";
+			error::enqueue(returnStatement->getLocation(), error);
+		}
+	}
+	else if(*returnStatement->getReturn()->getType() != *mPrototype->getType())
 	{
 		returnStatement->setReturn(createCast(mPrototype->getType(), returnStatement->getReturn()));
-	}
+	} 
 }
 
 tree::Cast *operation::TypeExpressions::createCast(tree::Type *type, tree::Expression *expression)
@@ -143,9 +150,25 @@ tree::Cast *operation::TypeExpressions::createCast(tree::Type *type, tree::Expre
 	}
 	catch(tree::Cast::InvalidException &e)
 	{
-		std::string error = "Cannot cast " + std::string(expression->getType()->getTypeName()) + " to " + std::string(type->getTypeName());
+		if(dynamic_cast<tree::Void *>(expression->getType()))
+		{
+			ASSERT(dynamic_cast<tree::FunctionCall *>(expression));
 
-		error::enqueue(expression->getLocation(), error);
+			tree::FunctionCall *functionCall = static_cast<tree::FunctionCall *>(expression);
+
+			ASSERT(dynamic_cast<tree::FunctionPrototype *>(functionCall->getPrototype()));
+			
+			std::string error = "Function \"" + static_cast<tree::FunctionPrototype *>(functionCall->getPrototype())->getName() + "\" does not return a value";
+
+			error::enqueue(expression->getLocation(), error);
+		}
+		else
+		{
+			std::string error = "Cannot cast " + std::string(expression->getType()->getTypeName()) + " to " + std::string(type->getTypeName());
+
+			error::enqueue(expression->getLocation(), error);
+		}
+
 		return NULL;
 	}
 }

@@ -1,3 +1,4 @@
+#include "compiler/error.h"
 #include "compiler/operations.h"
 #include "compiler/tree.h"
 
@@ -157,7 +158,6 @@ void operation::ResolveTypes::visit(tree::Function *function)
 	}
 
 	visit(static_cast<tree::Scope *>(function));
-
 	mPrototype = NULL;
 }
 
@@ -170,17 +170,21 @@ void operation::ResolveTypes::visit(tree::Return *returnStatement)
 		// Ensure there was no ambiguity
 		if(mTypeResolution[mPrototype])
 		{
-			// Ensure this return will not generate ambiguity
-			if(returnStatement->getReturn()->getType())
+			// Check there is a return
+			if(returnStatement->getReturn())
 			{
-				if(*returnStatement->getReturn()->getType() > *mTypeResolution[mPrototype])
+				// Ensure this return will not generate ambiguity
+				if(returnStatement->getReturn()->getType())
 				{
-					mTypeResolution[mPrototype] = returnStatement->getReturn()->getType();
+					if(*returnStatement->getReturn()->getType() > *mTypeResolution[mPrototype])
+					{
+						mTypeResolution[mPrototype] = returnStatement->getReturn()->getType();
+					}
 				}
-			}
-			else
-			{
-				mTypeResolution[mPrototype] = NULL;
+				else
+				{
+					mTypeResolution[mPrototype] = NULL;
+				}
 			}
 		}
 	}

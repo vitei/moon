@@ -1112,8 +1112,17 @@ void generator::C::Printer::output(tree::While *whileStatement)
 void generator::C::Printer::output(tree::Return *returnStatement)
 {
 	outputTabs();
-	*mOutput << "return ";
-	dispatch(returnStatement->getReturn());
+
+	if(returnStatement->getReturn())
+	{
+		*mOutput << "return ";
+		dispatch(returnStatement->getReturn());
+	}
+	else
+	{
+		*mOutput << "return";
+	}
+
 	outputEOS();
 }
 

@@ -159,7 +159,7 @@ void operation::Restructure::dispatch(tree::FunctionCall *functionCall)
 		mNodeMap.pop();
 	}
 
-	functionCall->setFunctionPrototype(functionPrototype);
+	functionCall->setPrototype(functionPrototype);
 
 	tree::Expressions *expressions = functionCall->getArguments();
 

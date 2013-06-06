@@ -496,7 +496,7 @@ namespace tree
 			virtual void reset()
 			{
 				LOG("tree::FunctionCall::InvalidFunctionException::reset");
-				functionCall->setFunctionPrototype(NULL);
+				functionCall->setPrototype(NULL);
 			}
 		};
 
@@ -508,18 +508,18 @@ namespace tree
 			virtual void reset()
 			{
 				LOG("tree::FunctionCall::InvalidArgumentsException::reset");
-				functionCall->setFunctionPrototype(NULL);
+				functionCall->setPrototype(NULL);
 			}
 		};
 
-		FunctionCall(Identifier *functionPrototype, Expressions *arguments = NULL) : mFunctionPrototype(functionPrototype), mArguments(arguments) {}
+		FunctionCall(Identifier *functionPrototype, Expressions *arguments = NULL) : mPrototype(functionPrototype), mArguments(arguments) {}
 
 		Expression *getPrototype()
 		{
-			return mFunctionPrototype;
+			return mPrototype;
 		}
 
-		void setFunctionPrototype(Expression *functionPrototype);
+		void setPrototype(Expression *prototype);
 
 		Expressions *getArguments()
 		{
@@ -530,9 +530,9 @@ namespace tree
 		{
 			Expression::childAccept(operation);
 
-			if(mFunctionPrototype)
+			if(mPrototype)
 			{
-				mFunctionPrototype->accept(operation);
+				mPrototype->accept(operation);
 			}
 		}
 
@@ -548,7 +548,7 @@ namespace tree
 #endif
 
 	private:
-		Expression *mFunctionPrototype;
+		Expression *mPrototype;
 		Expressions *mArguments;
 	};
 

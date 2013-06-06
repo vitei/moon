@@ -1398,12 +1398,9 @@ while_statement         :   TOKEN_WHILE expression TOKEN_EOS o_statements TOKEN_
                             }
                         ;
 
-return_statement        :   TOKEN_RETURN                             // Use void type instead?? FIXME
+return_statement        :   TOKEN_RETURN
                             {
-                                tree::IntLiteral *returnValue = new tree::IntLiteral(0);
-                                returnValue->setLocation(@1);
-
-                                $$ = new tree::Return(returnValue);
+                                $$ = new tree::Return(NULL);
                                 $$->setLocation(@1);
                             }
                         |   TOKEN_RETURN expression

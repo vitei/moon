@@ -85,30 +85,30 @@ void tree::Cast::checkCast()
 {
 	if(getType() && getExpression())
 	{
-		if(*getExpression()->getType() > *getType())
+		if(*getExpression()->getType() == tree::Void() || *getExpression()->getType() > *getType())
 		{
 			throw tree::Cast::InvalidException(this);
 		}
 	}
 }
 
-void tree::FunctionCall::setFunctionPrototype(tree::Expression *functionPrototype)
+void tree::FunctionCall::setPrototype(tree::Expression *prototype)
 {
-	tree::FunctionPrototype *prototype;
+	tree::FunctionPrototype *p;
 
-	if(functionPrototype == NULL)
+	if(prototype == NULL)
 	{
-		mFunctionPrototype = NULL;
+		mPrototype = NULL;
 	}
-	else if(dynamic_cast<tree::Identifier *>(functionPrototype))
+	else if(dynamic_cast<tree::Identifier *>(prototype))
 	{
-		mFunctionPrototype = functionPrototype;
+		mPrototype = prototype;
 	}
-	else if((prototype = dynamic_cast<tree::FunctionPrototype *>(functionPrototype)))
+	else if((p = dynamic_cast<tree::FunctionPrototype *>(prototype)))
 	{
-		mFunctionPrototype = prototype;
+		mPrototype = p;
 
-		if((prototype->getArguments() || mArguments) && ((prototype->getArguments() && mArguments == NULL) || (prototype->getArguments() == NULL && mArguments) || prototype->getArguments()->size() != mArguments->size()))
+		if((p->getArguments() || mArguments) && ((p->getArguments() && mArguments == NULL) || (p->getArguments() == NULL && mArguments) || p->getArguments()->size() != mArguments->size()))
 		{
 			throw tree::FunctionCall::InvalidArgumentsException(this);
 		}
