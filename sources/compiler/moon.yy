@@ -200,6 +200,8 @@
 %type<statement> variable_statement
 %type<expression> variable_assignment
 %type<identity> variable
+%type<statement> conditional_statement
+%type<statement> single_statement
 %type<statement> execute_statement
 %type<expression> assign_or_function
 %type<expression> assignment
@@ -225,6 +227,7 @@
 %type<type> type
 %type<id> identifier
 %type<id> name
+%type<statement> block_statement
 %type<statement> if_statement
 %type<statement> while_statement
 %type<statement> return_statement
@@ -816,23 +819,15 @@ statement               :   variable_statement
                             {
                                 $$ = $1;
                             }
-                        |   execute_statement
+                        |   conditional_statement
                             {
                                 $$ = $1;
                             }
-                        |   if_statement
+                        |   single_statement TOKEN_EOS
                             {
                                 $$ = $1;
                             }
-                        |   while_statement
-                            {
-                                $$ = $1;
-                            }
-                        |   return_statement
-                            {
-                                $$ = $1;
-                            }
-                        |   state_statement
+                        |   block_statement
                             {
                                 $$ = $1;
                             }
@@ -868,7 +863,33 @@ variable                :   TOKEN_VAR TOKEN_ID
                             }
                         ;
 
-execute_statement       :   assign_or_function TOKEN_EOS
+conditional_statement   :   single_statement TOKEN_IF expression TOKEN_EOS
+                            {
+                                $$ = new tree::If($3, $1);
+                                $$->setLocation(@2);
+                            }
+                        |   single_statement TOKEN_IF expression TOKEN_ELSE single_statement TOKEN_EOS
+                            {
+                                $$ = new tree::If($3, $1, $5);
+                                $$->setLocation(@2);
+                            }
+                        ;
+
+single_statement        :   execute_statement
+                            {
+                                $$ = $1;
+                            }
+                        |   return_statement
+                            {
+                                $$ = $1;
+                            }
+                        |   state_statement
+                            {
+                                $$ = $1;
+                            }
+                        ;
+
+execute_statement       :   assign_or_function
                             {
                                 if($1)
                                 {
@@ -1317,6 +1338,16 @@ name                    :   TOKEN_NAME
                             }
                         ;
 
+block_statement         :   if_statement
+                            {
+                                $$ = $1;
+                            }
+                        |   while_statement
+                            {
+                                $$ = $1;
+                            }
+                        ;
+
 if_statement            :   TOKEN_IF expression TOKEN_EOS o_statements TOKEN_END TOKEN_EOS
                             {
                                 tree::AnonymousScope *trueStatements = new tree::AnonymousScope($4);
@@ -1356,7 +1387,7 @@ while_statement         :   TOKEN_WHILE expression TOKEN_EOS o_statements TOKEN_
                             }
                         ;
 
-return_statement        :   TOKEN_RETURN TOKEN_EOS                             // Use void type instead?? FIXME
+return_statement        :   TOKEN_RETURN                             // Use void type instead?? FIXME
                             {
                                 tree::IntLiteral *returnValue = new tree::IntLiteral(0);
                                 returnValue->setLocation(@1);
@@ -1364,14 +1395,14 @@ return_statement        :   TOKEN_RETURN TOKEN_EOS                             /
                                 $$ = new tree::Return(returnValue);
                                 $$->setLocation(@1);
                             }
-                        |   TOKEN_RETURN expression TOKEN_EOS
+                        |   TOKEN_RETURN expression
                             {
                                 $$ = new tree::Return($2);
                                 $$->setLocation(@1);
                             }
                         ;
 
-state_statement         :   TOKEN_STATE state TOKEN_EOS
+state_statement         :   TOKEN_STATE state
                             {
                                 $$ = new tree::SetState($2);
                                 $$->setLocation(@1);

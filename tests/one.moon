@@ -18,12 +18,8 @@ const STR_THREE = "Three"
 function test_add(float:one, float:two)
 	voom = 1
 
-	if(one < two)
-		return voom
-	else
-		voom = one + two
-		return voom
-	end
+	return voom if one < two else voom = one + two
+	return voom
 end
 
 #global function main()
@@ -33,7 +29,7 @@ shared function main()
 	localX = moo + moo
 	localY = 2
 
-	foom = 1.2
+	foom = test_add(1.2, 1.2)
 
 	#var string:test = STR_ONE + STR_TWO
 
