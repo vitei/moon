@@ -505,32 +505,6 @@ s_constant_statement    :   constant_statement
                             }
                         ;
 
-constant_statement      :   constant_assignment TOKEN_EOS
-                            {
-                                $$ = new tree::Execute($1);
-                                $$->setLocation(@1);
-                            }
-                        ;
-
-constant_assignment     :   constant TOKEN_EQUALS expression
-                            {
-                                $$ = new tree::Equals($1, $3);
-                                $$->setLocation(@1);
-                            }
-                        ;
-
-constant                :   TOKEN_CONST TOKEN_NAME
-                            {
-                                $$ = new tree::Constant(NULL, std::string($2));
-                                $$->setLocation(@1);
-                            }
-                        |   TOKEN_CONST type TOKEN_CAST TOKEN_NAME
-                            {
-                                $$ = new tree::Constant($2, std::string($4));
-                                $$->setLocation(@1);
-                            }
-                        ;
-
 o_declarations          :   /* Empty */
                             {
                                 $$ = NULL;
@@ -815,7 +789,11 @@ statements              :   statement
                             }
                         ;
 
-statement               :   variable_statement
+statement               :   constant_statement
+                            {
+                                $$ = $1;
+                            }
+                        |   variable_statement
                             {
                                 $$ = $1;
                             }
@@ -834,6 +812,32 @@ statement               :   variable_statement
                         |   block_statement
                             {
                                 $$ = $1;
+                            }
+                        ;
+
+constant_statement      :   constant_assignment TOKEN_EOS
+                            {
+                                $$ = new tree::Execute($1);
+                                $$->setLocation(@1);
+                            }
+                        ;
+
+constant_assignment     :   constant TOKEN_EQUALS expression
+                            {
+                                $$ = new tree::Equals($1, $3);
+                                $$->setLocation(@1);
+                            }
+                        ;
+
+constant                :   TOKEN_CONST TOKEN_NAME
+                            {
+                                $$ = new tree::Constant(NULL, std::string($2));
+                                $$->setLocation(@1);
+                            }
+                        |   TOKEN_CONST type TOKEN_CAST TOKEN_NAME
+                            {
+                                $$ = new tree::Constant($2, std::string($4));
+                                $$->setLocation(@1);
                             }
                         ;
 

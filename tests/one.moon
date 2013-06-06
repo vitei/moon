@@ -18,8 +18,8 @@ const STR_THREE = "Three"
 def test_add(float:one, float:two)
 	voom = 1
 
-#	return 2 if voom == 1
-	return
+	return 2 if voom == 1
+	return 1
 
 #	return voom if one < two else voom = one + two
 #	return voom
@@ -27,7 +27,9 @@ end
 
 #global def main()
 shared def main()
-	test = 1
+	const COOK = 1
+
+	test = COOK
 	test = test_add(1, 2)
 
 #	foom = 1

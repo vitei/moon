@@ -205,6 +205,7 @@ public:
 	static void run(generator::C::Printer *printer, tree::Program *program);
 
 	virtual void visit(tree::Scope *scope);
+	virtual void visit(tree::Function *function);
 	virtual void visit(tree::Assign *assign);
 
 private:
@@ -228,6 +229,11 @@ void OutputConstants::visit(tree::Scope *scope)
 	{
 		for(tree::Statements::iterator i = statements->begin(); i != statements->end(); (*i++)->accept(this));
 	}
+}
+
+void OutputConstants::visit(tree::Function *function)
+{
+	// Skip..
 }
 
 void OutputConstants::visit(tree::Assign *assign)
@@ -597,16 +603,19 @@ void generator::C::Printer::output(tree::Function *function)
 
 	for(tree::Identities::iterator i = function->getIdentities().begin(), end = function->getIdentities().end(); i != end; ++i)
 	{
+		if(!dynamic_cast<tree::Constant *>(i->second))
+		{
 #ifdef DEBUG
-		tree::TypedIdentity *typedIdentity = dynamic_cast<tree::TypedIdentity *>(i->second);
-		ASSERT(typedIdentity);
+			tree::TypedIdentity *typedIdentity = dynamic_cast<tree::TypedIdentity *>(i->second);
+			ASSERT(typedIdentity);
 #else
-		tree::TypedIdentity *typedIdentity = static_cast<tree::TypedIdentity *>(i->second);
+			tree::TypedIdentity *typedIdentity = static_cast<tree::TypedIdentity *>(i->second);
 #endif
 
-		outputTabs();
-		outputDeclaration(typedIdentity);
-		outputEOS();
+			outputTabs();
+			outputDeclaration(typedIdentity);
+			outputEOS();
+		}
 	}
 
 	decreaseDepth();
@@ -623,16 +632,19 @@ void generator::C::Printer::output(tree::AnonymousScope *anonymousScope)
 
 	for(tree::Identities::iterator i = anonymousScope->getIdentities().begin(), end = anonymousScope->getIdentities().end(); i != end; ++i)
 	{
+		if(!dynamic_cast<tree::Constant *>(i->second))
+		{
 #ifdef DEBUG
-		tree::TypedIdentity *typedIdentity = dynamic_cast<tree::TypedIdentity *>(i->second);
-		ASSERT(typedIdentity);
+			tree::TypedIdentity *typedIdentity = dynamic_cast<tree::TypedIdentity *>(i->second);
+			ASSERT(typedIdentity);
 #else
-		tree::TypedIdentity *typedIdentity = static_cast<tree::TypedIdentity *>(i->second);
+			tree::TypedIdentity *typedIdentity = static_cast<tree::TypedIdentity *>(i->second);
 #endif
 
-		outputTabs();
-		outputDeclaration(typedIdentity);
-		outputEOS();
+			outputTabs();
+			outputDeclaration(typedIdentity);
+			outputEOS();
+		}
 	}
 
 	decreaseDepth();
@@ -862,7 +874,17 @@ void generator::C::Printer::output(tree::StringLiteral *stringLiteral)
 
 void generator::C::Printer::output(tree::Assign *assign)
 {
-	dispatch(assign->getLHS());
+	tree::Constant *constant = dynamic_cast<tree::Constant *>(assign->getLHS());
+
+	if(constant)
+	{
+		outputDeclaration(constant);
+	}
+	else
+	{
+		dispatch(assign->getLHS());
+	}
+
 	*mOutput << " = ";
 	dispatch(assign->getRHS());
 }
