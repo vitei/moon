@@ -16,18 +16,33 @@ const STR_TWO = "Two"
 const STR_THREE = "Three"
 
 function test_add(float:one, float:two)
+	voom = 1
+
 	if(one < two)
-		return 1
+		return voom
 	else
-		return one + two
+		voom = one + two
+		return voom
 	end
 end
 
 #global function main()
 shared function main()
-	var localX = 0.0
-	var localY = 2
+	foom = 1
+	moo = foom + foom
+	localX = moo + moo
+	localY = 2
+
+	foom = 1.2
+
 	#var string:test = STR_ONE + STR_TWO
+
+	localZ = 0
+	if localY == 2
+		localZ = 1
+	else
+		localZ = 0.4
+	end
 
 	while localX < 10
 		printf("test some stuff for me...\n")
