@@ -2,12 +2,12 @@
 #define COMPILER_OPERATIONS_EXPAND_TREE_H
 
 #include "compiler/tree.h"
-#include "operation.h"
+#include "restructure.h"
 
 
 namespace operation
 {
-	class ExpandTree : public Operation
+	class ExpandTree : public Restructure
 	{
 	public:
 		static void run(tree::Program *program);

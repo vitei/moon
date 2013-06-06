@@ -17,5 +17,11 @@ tree::Node *operation::ExpandTree::restructure(tree::OperatorAssign *operatorAss
 	op->setLHS(operatorAssign->getLHS());
 	op->setRHS(operatorAssign->getRHS());
 
-	return new tree::Equals(operatorAssign->getLHS(), op);
+	op->setType(operatorAssign->getType());
+
+	tree::Equals *r = new tree::Equals(operatorAssign->getLHS(), op);
+
+	r->setType(operatorAssign->getLHS()->getType());
+
+	return r;
 }

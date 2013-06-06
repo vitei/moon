@@ -27,10 +27,31 @@ end
 
 #global def main()
 shared def main()
-	const COOK = 1
+	x = 1
 
-	test = COOK
-	test = test_add(1, 2)
+	while x < 30 # Need a for loop
+		printf("...")  if x % 3 != 0 && x % 5 != 0
+		printf("fizz") if x % 3 == 0
+		printf("buzz") if x % 5 == 0
+		printf("\n")
+
+		x += 1
+	end
+
+
+
+	#const COOK = 1
+
+	#test = COOK
+	#test = test_add(1, 2)
+
+	#if test == COOK
+	#	const MOO = 2
+
+	#	egg  =MOO
+	#end
+
+	#boombox = MOO
 
 #	foom = 1
 #	moo = foom + foom
