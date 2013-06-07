@@ -26,7 +26,8 @@ namespace tree
 			TYPE_INT,
 			TYPE_FLOAT,
 			TYPE_UDT,
-			TYPE_STRING
+			TYPE_STRING,
+			TYPE_ARRAY
 		};
 
 		Type(Internal type) : mType(type) { /* Abstract class */ }
@@ -176,6 +177,40 @@ namespace tree
 #endif
 
 	private:
+		unsigned int mSize;
+	};
+
+	class Array : public Type
+	{
+	public:
+		Array(Type *type, unsigned int size) : Type(tree::Type::TYPE_ARRAY), mType(type), mSize(size) {}
+
+		Type *getType()
+		{
+			return mType;
+		}
+
+		void setType(Type *type)
+		{
+			mType = type;
+		}
+
+		unsigned int getSize()
+		{
+			return mSize;
+		}
+
+		virtual const char *getTypeName()
+		{
+			return "array"; // FIXME
+		}
+
+#ifdef DEBUG
+		virtual void printType() { LOG("Array[%u]", mSize); }
+#endif
+
+	private:
+		Type *mType;
 		unsigned int mSize;
 	};
 }

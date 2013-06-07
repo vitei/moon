@@ -95,6 +95,7 @@ namespace operation
 		/*PROCESS_ACTION(tree::Statement, tree::SetState, return_type, name)*/ \
 		PROCESS_ACTION(tree::Statement, tree::While, return_type, name) \
 		 \
+		PROCESS_ACTION(tree::Type, tree::Array, return_type, name) \
 		PROCESS_ACTION(tree::Type, tree::Bool, return_type, name) \
 		PROCESS_ACTION(tree::Type, tree::Float, return_type, name) \
 		PROCESS_ACTION(tree::Type, tree::Int, return_type, name) \

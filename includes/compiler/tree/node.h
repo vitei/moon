@@ -142,6 +142,7 @@ namespace tree
 		DISPATCH_ACTIONS(tree::Aggregate, node, function) \
 		DISPATCH_ACTIONS(tree::And, node, function) \
 		DISPATCH_ACTIONS(tree::AnonymousScope, node, function) \
+		DISPATCH_ACTIONS(tree::Array, node, function) \
 		DISPATCH_ACTIONS(tree::ArrayAccess, node, function) \
 		DISPATCH_ACTIONS(tree::Bool, node, function) \
 		DISPATCH_ACTIONS(tree::BoolLiteral, node, function) \
