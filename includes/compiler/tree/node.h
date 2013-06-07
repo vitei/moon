@@ -147,7 +147,7 @@ namespace tree
 		DISPATCH_ACTIONS(tree::BoolLiteral, node, function) \
 		DISPATCH_ACTIONS(tree::Cast, node, function) \
 		DISPATCH_ACTIONS(tree::Constant, node, function) \
-		DISPATCH_ACTIONS(tree::DefaultState, node, function) \
+		/*DISPATCH_ACTIONS(tree::DefaultState, node, function)*/ \
 		DISPATCH_ACTIONS(tree::DirectAccess, node, function) \
 		DISPATCH_ACTIONS(tree::Divide, node, function) \
 		DISPATCH_ACTIONS(tree::Equal, node, function) \
@@ -175,13 +175,13 @@ namespace tree
 		DISPATCH_ACTIONS(tree::Minus, node, function) \
 		DISPATCH_ACTIONS(tree::Modulus, node, function) \
 		DISPATCH_ACTIONS(tree::Multiply, node, function) \
-		DISPATCH_ACTIONS(tree::NamedState, node, function) \
+		/*DISPATCH_ACTIONS(tree::NamedState, node, function)*/ \
 		DISPATCH_ACTIONS(tree::Not, node, function) \
 		DISPATCH_ACTIONS(tree::OperatorAssign, node, function) \
 		DISPATCH_ACTIONS(tree::Or, node, function) \
 		DISPATCH_ACTIONS(tree::Program, node, function) \
 		DISPATCH_ACTIONS(tree::Return, node, function) \
-		DISPATCH_ACTIONS(tree::SetState, node, function) \
+		/*DISPATCH_ACTIONS(tree::SetState, node, function)*/ \
 		DISPATCH_ACTIONS(tree::SharedScoping, node, function) \
 		DISPATCH_ACTIONS(tree::String, node, function) \
 		DISPATCH_ACTIONS(tree::StringLiteral, node, function) \

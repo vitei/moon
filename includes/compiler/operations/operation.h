@@ -15,7 +15,7 @@ namespace operation
 		 \
 		PROCESS_ACTION(tree::Node, tree::Expression, return_type, name) \
 		PROCESS_ACTION(tree::Node, tree::Statement, return_type, name) \
-		PROCESS_ACTION(tree::Node, tree::State, return_type, name) \
+		/*PROCESS_ACTION(tree::Node, tree::State, return_type, name)*/ \
 		PROCESS_ACTION(tree::Node, tree::Type, return_type, name) \
 		 \
 		PROCESS_ACTION(tree::Statement, tree::Scope, return_type, name) \
@@ -85,14 +85,14 @@ namespace operation
 		PROCESS_ACTION(tree::Scoping, tree::GlobalScoping, return_type, name) \
 		PROCESS_ACTION(tree::Scoping, tree::SharedScoping, return_type, name) \
 		 \
-		PROCESS_ACTION(tree::State, tree::DefaultState, return_type, name) \
-		PROCESS_ACTION(tree::State, tree::NamedState, return_type, name) \
+		/*PROCESS_ACTION(tree::State, tree::DefaultState, return_type, name)*/ \
+		/*PROCESS_ACTION(tree::State, tree::NamedState, return_type, name)*/ \
 		 \
 		PROCESS_ACTION(tree::Statement, tree::If, return_type, name) \
 		PROCESS_ACTION(tree::Statement, tree::Import, return_type, name) \
 		PROCESS_ACTION(tree::Statement, tree::Execute, return_type, name) \
 		PROCESS_ACTION(tree::Statement, tree::Return, return_type, name) \
-		PROCESS_ACTION(tree::Statement, tree::SetState, return_type, name) \
+		/*PROCESS_ACTION(tree::Statement, tree::SetState, return_type, name)*/ \
 		PROCESS_ACTION(tree::Statement, tree::While, return_type, name) \
 		 \
 		PROCESS_ACTION(tree::Type, tree::Bool, return_type, name) \

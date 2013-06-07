@@ -25,7 +25,7 @@ namespace operation
 		void dispatch(tree::Scoping *scoping);
 		void dispatch(tree::Execute *execute);
 		void dispatch(tree::Return *opReturn);
-		void dispatch(tree::SetState *setState);
+		//void dispatch(tree::SetState *setState);
 		void dispatch(tree::FunctionPrototype *functionPrototype);
 		void dispatch(tree::Function *function);
 		void dispatch(tree::Scope *scope);

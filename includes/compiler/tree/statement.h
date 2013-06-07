@@ -101,45 +101,45 @@ namespace tree
 		Expression *mReturn;
 	};
 
-	class SetState : public Statement
-	{
-	public:
-		SetState(State *state) : mState(state) {}
-
-		State *getState()
-		{
-			return mState;
-		}
-
-		void setState(State *state)
-		{
-			mState = state;
-		}
-
-		virtual void childAccept(operation::Operation *operation)
-		{
-			Statement::childAccept(operation);
-
-			if(mState)
-			{
-				mState->accept(operation);
-			}
-		}
-
-		virtual void accept(operation::Operation *operation)
-		{
-			setup(operation);
-			childAccept(operation);
-			visit(operation);
-		}
-
-#ifdef DEBUG
-		virtual void printNode() { LOG("SetState"); }
-#endif
-
-	private:
-		State *mState;
-	};
+//	class SetState : public Statement
+//	{
+//	public:
+//		SetState(State *state) : mState(state) {}
+//
+//		State *getState()
+//		{
+//			return mState;
+//		}
+//
+//		void setState(State *state)
+//		{
+//			mState = state;
+//		}
+//
+//		virtual void childAccept(operation::Operation *operation)
+//		{
+//			Statement::childAccept(operation);
+//
+//			if(mState)
+//			{
+//				mState->accept(operation);
+//			}
+//		}
+//
+//		virtual void accept(operation::Operation *operation)
+//		{
+//			setup(operation);
+//			childAccept(operation);
+//			visit(operation);
+//		}
+//
+//#ifdef DEBUG
+//		virtual void printNode() { LOG("SetState"); }
+//#endif
+//
+//	private:
+//		State *mState;
+//	};
 }
 
 #endif

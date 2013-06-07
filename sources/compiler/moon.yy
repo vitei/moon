@@ -78,7 +78,7 @@
     tree::Type *type;
     tree::Identifier *id;
     tree::FunctionPrototype *prototype;
-    tree::State *state;
+    /*tree::State *state;*/
 
     /* The lexer returns these... */
     long int integer;
@@ -153,8 +153,8 @@
 %token TOKEN_ELSE
 %token TOKEN_WHILE
 %token TOKEN_RETURN
-%token TOKEN_STATE
-%token TOKEN_RESET
+/*%token TOKEN_STATE*/
+/*%token TOKEN_RESET*/
 
 /* Built-In Types */
 %token TOKEN_TYPE_BOOL
@@ -192,7 +192,7 @@
 %type<expressions> o_arguments
 %type<expressions> arguments
 %type<expression> argument
-%type<state> function_state
+/*%type<state> function_state*/
 %type<statements> o_statements
 %type<statements> statements
 %type<statement> statement
@@ -231,8 +231,8 @@
 %type<statement> if_statement
 %type<statement> while_statement
 %type<statement> return_statement
-%type<statement> state_statement
-%type<state> state
+/*%type<statement> state_statement*/
+/*%type<state> state*/
 
 /* Start symbol */
 %start start
@@ -670,9 +670,9 @@ s_function              :   function
                             }
                         ;
 
-function                :   function_prototype function_state TOKEN_EOS o_statements TOKEN_END TOKEN_EOS /* FIXME, support states */
+function                :   function_prototype TOKEN_EOS o_statements TOKEN_END TOKEN_EOS /* FIXME, support states: function_prototype function_state TOKEN_EOS o_statements TOKEN_END TOKEN_EOS */
                             {
-                                $$ = new tree::Function($1, $4);
+                                $$ = new tree::Function($1, $3);
                                 $$->setLocation(@1);
                             }
                         ;
@@ -742,7 +742,7 @@ argument                :   TOKEN_ID
                             }
                         ;
 
-function_state          :   /* No state */
+/*function_state          :   *//* No state *//*
                             {
                                 $$ = NULL;
                             }
@@ -750,7 +750,7 @@ function_state          :   /* No state */
                             {
                                 $$ = $2;
                             }
-                        ;
+                        ;*/
 
 o_statements            :   /* Empty */
                             {
@@ -898,10 +898,11 @@ single_statement        :   execute_statement
                             {
                                 $$ = $1;
                             }
-                        |   state_statement
+
+                        /*|   state_statement
                             {
                                 $$ = $1;
-                            }
+                            }*/
                         ;
 
 execute_statement       :   assign_or_function
@@ -1414,14 +1415,14 @@ return_statement        :   TOKEN_RETURN
                             }
                         ;
 
-state_statement         :   TOKEN_STATE state
+/*state_statement         :   TOKEN_STATE state
                             {
                                 $$ = new tree::SetState($2);
                                 $$->setLocation(@1);
                             }
-                        ;
+                        ;*/
 
-state                   :   TOKEN_RESET
+/*state                   :   TOKEN_RESET
                             {
                                 $$ = new tree::DefaultState();
                                 $$->setLocation(@1);
@@ -1431,7 +1432,7 @@ state                   :   TOKEN_RESET
                                 $$ = new tree::NamedState($1);
                                 $$->setLocation(@1);
                             }
-                        ;
+                        ;*/
 
 %%
 

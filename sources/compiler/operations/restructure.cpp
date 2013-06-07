@@ -232,20 +232,20 @@ void operation::Restructure::dispatch(tree::Return *opReturn)
 	operation::Restructure::dispatch(static_cast<tree::Statement *>(opReturn));
 }
 
-void operation::Restructure::dispatch(tree::SetState *setState)
-{
-	tree::State *state = NULL;
-
-	if(setState->getState())
-	{
-		state = static_cast<tree::State *>(mNodeMap.top());
-		mNodeMap.pop();
-	}
-
-	setState->setState(state);
-
-	operation::Restructure::dispatch(static_cast<tree::Statement *>(setState));
-}
+//void operation::Restructure::dispatch(tree::SetState *setState)
+//{
+//	tree::State *state = NULL;
+//
+//	if(setState->getState())
+//	{
+//		state = static_cast<tree::State *>(mNodeMap.top());
+//		mNodeMap.pop();
+//	}
+//
+//	setState->setState(state);
+//
+//	operation::Restructure::dispatch(static_cast<tree::Statement *>(setState));
+//}
 
 void operation::Restructure::dispatch(tree::FunctionPrototype *functionPrototype)
 {

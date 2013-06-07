@@ -254,8 +254,8 @@
     "else"                  return TOKEN_ELSE;
     "while"                 return TOKEN_WHILE;
     "return"                return TOKEN_RETURN;
-    "state"                 return TOKEN_STATE;
-    "reset"                 return TOKEN_RESET;
+    /*"state"                 return TOKEN_STATE;*/
+    /*"reset"                 return TOKEN_RESET;*/
 
     /* Built-In Types */
     "bool"                  return TOKEN_TYPE_BOOL;
