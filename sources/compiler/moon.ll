@@ -264,6 +264,10 @@
     "string"                return TOKEN_TYPE_STRING;
 
     /* Identifiers */
+    "c."[A-Z][a-zA-Z0-9_]*  { // FIXME, this is a very hacky way to let us use C functions with upper-case names.
+                                strcpy(yylval->string, &yytext[2]);
+                                return TOKEN_ID;
+                            }
     [A-Z][a-zA-Z0-9_]*      {
                                 strcpy(yylval->string, yytext);
                                 return TOKEN_NAME;
