@@ -1,11 +1,11 @@
 # Common rules for compiling files
 
-$(OBJ_DIR)/%.o: %.cpp
+$(PLATFORM_OBJ_DIR)/%.o: %.cpp
 	@echo $(<:.cpp=.o): $<
 	@mkdir -p $(shell dirname $@)
 	@$(CXX) -c $(CPP_FLAGS) $(CXX_FLAGS) -MD -MF $(@:.o=.deps) -o $@ $<
 
-$(OBJ_DIR)/%.o: %.c
+$(PLATFORM_OBJ_DIR)/%.o: %.c
 	@echo $(<:.c=.o): $<
 	@mkdir -p $(shell dirname $@)
 	@$(CC) -c $(CPP_FLAGS) $(CC_FLAGS) -MD -MF $(@:.o=.deps) -o $@ $<

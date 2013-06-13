@@ -2,9 +2,11 @@ THIS_MAKEFILE_DIR:=$(shell DIRECTORY="$(dir $(realpath $(lastword $(MAKEFILE_LIS
 include $(THIS_MAKEFILE_DIR)/../../makefile.settings
 
 SOURCES := $(shell find $(THIS_MAKEFILE_DIR) -type f -name "*.cpp")
-OBJECTS := $(OBJ_DIR)/generated_lexer.o $(OBJ_DIR)/generated_parser.o
-OBJECTS += $(patsubst $(THIS_MAKEFILE_DIR)/%,$(OBJ_DIR)/%,$(SOURCES:.cpp=.o))
+OBJECTS := $(PLATFORM_OBJ_DIR)/generated_lexer.o $(PLATFORM_OBJ_DIR)/generated_parser.o
+OBJECTS += $(patsubst $(THIS_MAKEFILE_DIR)/%,$(PLATFORM_OBJ_DIR)/%,$(SOURCES:.cpp=.o))
 DEPS := $(OBJECTS:.o=.deps)
+
+COMPILER_FILENAME = moon$(EXE_EXTENSION)
 
 .INTERMEDIATE: generated_lexer.cpp generated_parser.cpp
 
@@ -15,34 +17,34 @@ all: compiler
 
 generated_parser.cpp: moon.yy moon.ll
 	@echo $@: $<
-	@mkdir -p $(INC_DIR)/generated
-	@$(BISON) $(BISON_FLAGS) --defines="$(INC_DIR)/generated/parser.h" -o generated_parser.cpp $<
+	@mkdir -p $(PLATFORM_INC_DIR)/generated
+	@$(BISON) $(BISON_FLAGS) --defines="$(PLATFORM_INC_DIR)/generated/parser.h" -o generated_parser.cpp $<
 
 generated_lexer.cpp: moon.ll moon.yy
 	@echo $@: $<
-	@mkdir -p $(INC_DIR)/generated
-	@$(FLEX) $(FLEX_FLAGS) --header-file="$(INC_DIR)/generated/lexer.h" -o generated_lexer.cpp $<
+	@mkdir -p $(PLATFORM_INC_DIR)/generated
+	@$(FLEX) $(FLEX_FLAGS) --header-file="$(PLATFORM_INC_DIR)/generated/lexer.h" -o generated_lexer.cpp $<
 
-$(OBJ_DIR)/generated_%.o: generated_%.cpp
+$(PLATFORM_OBJ_DIR)/generated_%.o: generated_%.cpp
 	@echo $(<:.cpp=.o): $< [Auto-generated]
 	@mkdir -p $(shell dirname $@)
-	@$(CXX) -c $(CPP_FLAGS) $(CXX_FLAGS) -I"$(INC_DIR)/generated" -MD -MF $(@:.o=.deps) -o $@ $<
+	@$(CXX) -c $(CPP_FLAGS) $(CXX_FLAGS) -I"$(PLATFORM_INC_DIR)/generated" -MD -MF $(@:.o=.deps) -o $@ $<
 
-$(OBJ_DIR)/generated_lexer.o: generated_parser.cpp
-$(OBJ_DIR)/generated_parser.o: generated_lexer.cpp
+$(PLATFORM_OBJ_DIR)/generated_lexer.o: generated_parser.cpp
+$(PLATFORM_OBJ_DIR)/generated_parser.o: generated_lexer.cpp
 
 # Rules
 include $(MOON_ROOT_DIR)/makefile.rules
 
-$(BIN_DIR)/moon: $(OBJECTS)
+$(PLATFORM_BIN_DIR)/$(COMPILER_FILENAME): $(OBJECTS)
 	@mkdir -p $(shell dirname $@)
 	@$(CXX) $(CPP_FLAGS) $(CXX_FLAGS) -o $@ $^
 
-compiler: $(BIN_DIR)/moon
+compiler: $(PLATFORM_BIN_DIR)/$(COMPILER_FILENAME)
 
 clean:
 	@rm -rf generated_*
-	@rm -rf $(INC_DIR)/generated
+	@rm -rf $(PLATFORM_INC_DIR)/generated
 	@rm -rf $(DEPS)
 	@rm -rf $(OBJECTS)
-	@rm -rf $(BIN_DIR)/moon
+	@rm -rf $(PLATFORM_BIN_DIR)/$(COMPILER_FILENAME)

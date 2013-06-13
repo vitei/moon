@@ -1,9 +1,9 @@
 MOON = ../bin/moon
 MOON_FLAGS = -B
 
-all: one
+all: one$(EXE_EXTENSION)
 
-one: one.c
+one$(EXE_EXTENSION): one.c
 	@$(CC) $(CC_FLAGS) $(CXX_FLAGS) -o $@ $<
 
 %.c: %.moon $(MOON)

@@ -4,12 +4,35 @@ BIN_DIR = $(MOON_ROOT_DIR)/bin
 INC_DIR = $(MOON_ROOT_DIR)/includes
 OBJ_DIR = $(MOON_ROOT_DIR)/obj
 
+ifeq ($(OS),Windows_NT)
+	CPP_FLAGS = -D WIN32
+	PLATFORM_NAME = win
+	EXE_EXTENSION = .exe
+else
+	UNAME_S := $(shell uname -s)
+
+	ifeq ($(UNAME_S),Linux)
+		CPP_FLAGS = -D LINUX
+		PLATFORM_NAME = lin
+	endif
+	ifeq ($(UNAME_S),Darwin)
+		CPP_FLAGS = -D OSX
+		PLATFORM_NAME = osx
+	endif
+
+	EXE_EXTENSION = 
+endif
+
+PLATFORM_BIN_DIR = $(BIN_DIR)/$(PLATFORM_NAME)
+PLATFORM_INC_DIR = $(INC_DIR)/$(PLATFORM_NAME)
+PLATFORM_OBJ_DIR = $(OBJ_DIR)/$(PLATFORM_NAME)
+
 BISON = bison
 BISON_FLAGS = --verbose
 
 CC = clang
 CC_FLAGS = 
-CPP_FLAGS = -I"$(INC_DIR)" -include"common.h"
+CPP_FLAGS += -I"$(INC_DIR)" -I"$(PLATFORM_INC_DIR)" -include"common.h"
 
 CXX = clang++
 CXX_FLAGS = 
@@ -22,3 +45,4 @@ DEBUG ?= 0
 ifeq ($(DEBUG), 1)
 	CPP_FLAGS += -g -DDEBUG
 endif
+

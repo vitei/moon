@@ -4,6 +4,9 @@ obj/*
 
 # Intermediate files
 includes/generated
+includes/win/generated
+includes/lin/generated
+includes/osx/generated
 generated_*
 
 # IDE files
