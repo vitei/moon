@@ -264,6 +264,7 @@ private:
 
 	void visitScope(tree::Scope *scope);
 
+	std::vector<tree::TypedIdentity *> mIdentities;
 	generator::C::Printer *mPrinter;
 };
 
@@ -286,8 +287,17 @@ void OutputVariables::visit(tree::Program *program)
 		}
 	}
 
-	mPrinter->outputVariablesBegin();
 	visitScope(program);
+
+	mPrinter->outputVariablesBegin();
+
+	for(std::vector<tree::TypedIdentity *>::iterator i = mIdentities.begin(), e = mIdentities.end(); i != e; ++i)
+	{
+		mPrinter->outputTabs();
+		mPrinter->outputDeclaration(*i);
+		mPrinter->outputEOS();
+	}
+
 	mPrinter->outputVariablesEnd();
 }
 
@@ -299,9 +309,7 @@ void OutputVariables::visit(tree::Aggregate *aggregate)
 
 		if(dynamic_cast<tree::Variable *>(identity))
 		{
-			mPrinter->outputTabs();
-			mPrinter->outputDeclaration(static_cast<tree::TypedIdentity *>(identity));
-			mPrinter->outputEOS();
+			mIdentities.push_back(static_cast<tree::TypedIdentity *>(identity));
 		}
 	}
 
@@ -316,9 +324,7 @@ void OutputVariables::visit(tree::Use *use)
 
 		if(dynamic_cast<tree::Variable *>(identity))
 		{
-			mPrinter->outputTabs();
-			mPrinter->outputDeclaration(static_cast<tree::TypedIdentity *>(identity));
-			mPrinter->outputEOS();
+			mIdentities.push_back(static_cast<tree::TypedIdentity *>(identity));
 		}
 	}
 }
