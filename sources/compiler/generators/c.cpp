@@ -150,7 +150,7 @@ void MangleNames::visit(tree::Function *function)
 
 void MangleNames::visit(tree::AnonymousScope *anonymousScope)
 {
-	tree::Function *function;
+	tree::Function *function = NULL;
 
 	for(tree::Scope *nextScope = anonymousScope->getParent(); nextScope && !function; function = dynamic_cast<tree::Function *>(nextScope), nextScope = nextScope->getParent())
 		;
@@ -159,6 +159,7 @@ void MangleNames::visit(tree::AnonymousScope *anonymousScope)
 
 	tree::FunctionPrototype *prototype = function->getPrototype();
 
+	ASSERT(prototype);
 	ASSERT(prototype->getMetadata());
 	Mangled *cPrototypeName = static_cast<Mangled *>(prototype->getMetadata());
 
