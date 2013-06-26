@@ -1338,6 +1338,30 @@ type                    :   TOKEN_TYPE_BOOL
                                 $$ = new tree::UDT($1);                       // UDTs force this class to be needed?? FIXME
                                 $$->setLocation(@1);
                             }*/
+
+
+                        |   type TOKEN_BRACKETS_OPEN TOKEN_INTEGER TOKEN_BRACKETS_CLOSE
+                            {
+                                tree::Array *array = dynamic_cast<tree::Array *>($1);
+
+                                if(array)
+                                {
+                                    for(tree::Array *nextArray = dynamic_cast<tree::Array *>(array->getType()); nextArray; array = nextArray, nextArray = dynamic_cast<tree::Array *>(array->getType()))
+                                        ;
+
+                                    tree::Array *childArray = new tree::Array(array->getType(), $3);
+                                    childArray->setLocation(@2);
+
+                                    array->setType(childArray);
+
+                                    $$ = $1;
+                                }
+                                else
+                                {
+                                    $$ = new tree::Array($1, $3);
+                                    $$->setLocation(@2);
+                                }
+                            }
                         ;
 
 identifier              :   TOKEN_ID

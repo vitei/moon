@@ -1171,12 +1171,6 @@ void generator::C::Printer::outputDeclaration(tree::TypedIdentity *typedIdentity
 {
 	bool isConstant = dynamic_cast<tree::Constant *>(typedIdentity);
 	tree::Type *type = typedIdentity->getType();
-	tree::Void *_void;
-	tree::Bool *boolean;
-	tree::Int *integer;
-	tree::Float *floatingPoint;
-	tree::String *string;
-	tree::UDT *udt;
 
 	ASSERT(typedIdentity->getMetadata());
 	Mangled *cName = static_cast<Mangled *>(typedIdentity->getMetadata());
@@ -1186,32 +1180,53 @@ void generator::C::Printer::outputDeclaration(tree::TypedIdentity *typedIdentity
 		*mOutput << "const ";
 	}
 
-	if((_void = dynamic_cast<tree::Void *>(type)))
+	outputType(type);
+
+	if(dynamic_cast<tree::String *>(type) && (functionPrototype || isConstant))
 	{
-		*mOutput << "void " << cName->declarationName;
+		*mOutput << " *" << cName->declarationName; // FIXME, this isn't good...
 	}
-	else if((boolean = dynamic_cast<tree::Bool *>(type)))
+	else
 	{
-		*mOutput << "bool " << cName->declarationName;
+		*mOutput << " " << cName->declarationName;
+		outputDimensions(type);
+	}
+}
+
+void generator::C::Printer::outputType(tree::Type *type)
+{
+	tree::Int *integer;
+	tree::Float *floatingPoint;
+	tree::Array *array;
+
+	ASSERT(type);
+
+	if(dynamic_cast<tree::Void *>(type))
+	{
+		*mOutput << "void";
+	}
+	else if(dynamic_cast<tree::Bool *>(type))
+	{
+		*mOutput << "bool";
 	}
 	else if((integer = dynamic_cast<tree::Int *>(type)))
 	{
 		switch(integer->getSize())
 		{
 			case 8:
-				*mOutput << "char " << cName->declarationName;
+				*mOutput << "char";
 				break;
 
 			case 16:
-				*mOutput << "short " << cName->declarationName;
+				*mOutput << "short";
 				break;
 
 			case 32:
-				*mOutput << "long " << cName->declarationName;
+				*mOutput << "long";
 				break;
 
 			case 64:
-				*mOutput << "long long " << cName->declarationName;
+				*mOutput << "long long";
 				break;
 
 			default:
@@ -1223,35 +1238,48 @@ void generator::C::Printer::outputDeclaration(tree::TypedIdentity *typedIdentity
 		switch(floatingPoint->getSize())
 		{
 			case 32:
-				*mOutput << "float " << cName->declarationName;
+				*mOutput << "float";
 				break;
 
 			case 64:
-				*mOutput << "double " << cName->declarationName;
+				*mOutput << "double";
 				break;
 
 			default:
 				ERROR("FIXME");
 		}
 	}
-	else if((string = dynamic_cast<tree::String *>(type)))
+	else if(dynamic_cast<tree::String *>(type))
 	{
-		if(functionPrototype || isConstant)
-		{
-			*mOutput << "char *" << cName->declarationName;
-		}
-		else
-		{
-			*mOutput << "char " << cName->declarationName << "[" << string->getSize() << "]";
-		}
+		*mOutput << "char";
 	}
-	else if((udt = dynamic_cast<tree::UDT *>(type)))
+	else if(dynamic_cast<tree::UDT *>(type))
 	{
 		ERROR("FIXME");
+	}
+	else if((array = dynamic_cast<tree::Array *>(type)))
+	{
+		outputType(array->getType()); // FIXME, this could actually just be a loop...
 	}
 	else
 	{
 		ERROR("Unknown type");
+	}
+}
+
+void generator::C::Printer::outputDimensions(tree::Type *type)
+{
+	tree::String *string;
+	tree::Array *array;
+
+	if((string = dynamic_cast<tree::String *>(type)))
+	{
+		*mOutput << "[" << string->getSize() << "]";
+	}
+	else if((array = dynamic_cast<tree::Array *>(type)))
+	{
+		*mOutput << "[" << array->getSize() << "]";
+		outputDimensions(array->getType());
 	}
 }
 
