@@ -745,6 +745,9 @@ void generator::C::Printer::output(tree::Cast *cast)
 	}
 	else
 	{
+#ifdef DEBUG
+		type->printType();
+#endif
 		ERROR("Unknown type");
 	}
 
@@ -765,7 +768,10 @@ void generator::C::Printer::output(tree::MessageAccess *messageAccess)
 
 void generator::C::Printer::output(tree::ArrayAccess *arrayAccess)
 {
-	ERROR("FIXME");
+	dispatch(arrayAccess->getContainer());
+	*mOutput << "[";
+	dispatch(arrayAccess->getTarget());
+	*mOutput << "]";
 }
 
 void generator::C::Printer::output(tree::FunctionCall *functionCall)
@@ -1263,6 +1269,9 @@ void generator::C::Printer::outputType(tree::Type *type)
 	}
 	else
 	{
+#ifdef DEBUG
+		type->printType();
+#endif
 		ERROR("Unknown type");
 	}
 }

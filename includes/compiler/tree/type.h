@@ -183,7 +183,9 @@ namespace tree
 	class Array : public Type
 	{
 	public:
-		Array(Type *type, unsigned int size) : Type(tree::Type::TYPE_ARRAY), mType(type), mSize(size) {}
+		static const long long UNDEFINED_SIZE = -1;
+
+		Array(Type *type, long long size = UNDEFINED_SIZE) : Type(tree::Type::TYPE_ARRAY), mType(type), mSize(size) {}
 
 		Type *getType()
 		{
@@ -195,7 +197,7 @@ namespace tree
 			mType = type;
 		}
 
-		unsigned int getSize()
+		long long getSize()
 		{
 			return mSize;
 		}
@@ -206,12 +208,12 @@ namespace tree
 		}
 
 #ifdef DEBUG
-		virtual void printType() { LOG("Array[%u]", mSize); }
+		virtual void printType() { LOG("Array[%lld]", mSize); if(mType) { mType->printType(); } }
 #endif
 
 	private:
 		Type *mType;
-		unsigned int mSize;
+		long long mSize;
 	};
 }
 

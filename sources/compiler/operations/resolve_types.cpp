@@ -31,7 +31,16 @@ void operation::ResolveTypes::visit(tree::ArrayAccess *arrayAccess)
 	if(!arrayAccess->getType())
 	{
 		ASSERT(arrayAccess->getContainer());
-		arrayAccess->setType(arrayAccess->getContainer()->getType());
+
+		tree::Type *type = arrayAccess->getContainer()->getType();
+
+		if(type)
+		{
+			ASSERT(dynamic_cast<tree::Array *>(type));
+
+			tree::Array *arrayType = static_cast<tree::Array *>(type);
+			arrayAccess->setType(arrayType->getType());
+		}
 	}
 }
 
