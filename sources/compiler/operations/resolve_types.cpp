@@ -145,6 +145,13 @@ void operation::ResolveTypes::visit(tree::FunctionCall *functionCall)
 {
 	LOG("ResolveTypes::visit::FunctionCall");
 
+	tree::Expressions *arguments = functionCall->getArguments();
+
+	if(arguments)
+	{
+		for(tree::Expressions::iterator i = arguments->begin(), end = arguments->end(); i != end; (*i++)->accept(this));
+	}
+
 	if(!functionCall->getType())
 	{
 		ASSERT(functionCall->getPrototype());
