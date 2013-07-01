@@ -229,27 +229,30 @@ int main(int argc, char *argv[])
 				{
 					operation::ResolveTypes::run(&program);
 
-					if(generateDefines)
+					if(error::count() == 0)
 					{
-						// If there are no errors we should be able to generate the defines
-						if(error::count() == 0)
+						if(generateDefines)
 						{
-							// ...
+							// If there are no errors we should be able to generate the defines
+							if(error::count() == 0)
+							{
+								// ...
+							}
 						}
-					}
-					else
-					{
-						operation::ExpandTree::run(&program);
-						operation::TypeExpressions::run(&program);
-
-						// If there are no errors we should be able to do code generation now!
-						if(error::count() == 0)
+						else
 						{
-							std::ofstream outputFile;
+							operation::ExpandTree::run(&program);
+							operation::TypeExpressions::run(&program);
 
-							outputFile.open(outputFilename.c_str());
-							sGenerator->run(outputFile, &program);
-							outputFile.close();
+							// If there are no errors we should be able to do code generation now!
+							if(error::count() == 0)
+							{
+								std::ofstream outputFile;
+
+								outputFile.open(outputFilename.c_str());
+								sGenerator->run(outputFile, &program);
+								outputFile.close();
+							}
 						}
 					}
 				}

@@ -157,7 +157,7 @@ tree::Cast *operation::TypeExpressions::createCast(tree::Type *type, tree::Expre
 			tree::FunctionCall *functionCall = static_cast<tree::FunctionCall *>(expression);
 
 			ASSERT(dynamic_cast<tree::FunctionPrototype *>(functionCall->getPrototype()));
-			
+
 			std::string error = "Function \"" + static_cast<tree::FunctionPrototype *>(functionCall->getPrototype())->getName() + "\" does not return a value";
 
 			error::enqueue(expression->getLocation(), error);

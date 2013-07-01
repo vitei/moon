@@ -28,18 +28,23 @@ void operation::ResolveTypes::visit(tree::ArrayAccess *arrayAccess)
 {
 	LOG("ResolveTypes::visit::ArrayAccess");
 
-	if(!arrayAccess->getType())
+	if(!arrayAccess->getType() && arrayAccess->getContainer())
 	{
-		ASSERT(arrayAccess->getContainer());
-
 		tree::Type *type = arrayAccess->getContainer()->getType();
 
 		if(type)
 		{
-			ASSERT(dynamic_cast<tree::Array *>(type));
+			tree::Array *arrayType = dynamic_cast<tree::Array *>(type);
 
-			tree::Array *arrayType = static_cast<tree::Array *>(type);
-			arrayAccess->setType(arrayType->getType());
+			if(arrayType)
+			{
+				arrayAccess->setType(arrayType->getType());
+			}
+			else
+			{
+				error::enqueue(arrayAccess->getLocation(), "Expression result is not an array");
+				arrayAccess->setContainer(NULL);
+			}
 		}
 	}
 }
@@ -84,19 +89,22 @@ void operation::ResolveTypes::visit(tree::Assign *assign)
 
 	if(!lhsType)
 	{
-		if(mTypeResolution.find(lhs) == mTypeResolution.end())
+		if(dynamic_cast<tree::TypedIdentity *>(lhs))
 		{
-			mTypeResolution[lhs] = assign->getRHS()->getType();
-		}
-		else if(mTypeResolution[lhs])
-		{
-			if(!rhsType)
+			if(mTypeResolution.find(lhs) == mTypeResolution.end())
 			{
-				mTypeResolution[lhs] = NULL;
+				mTypeResolution[lhs] = assign->getRHS()->getType();
 			}
-			else if(*rhsType > *mTypeResolution[lhs])
+			else if(mTypeResolution[lhs])
 			{
-				mTypeResolution[lhs] = rhsType;
+				if(!rhsType)
+				{
+					mTypeResolution[lhs] = NULL;
+				}
+				else if(*rhsType > *mTypeResolution[lhs])
+				{
+					mTypeResolution[lhs] = rhsType;
+				}
 			}
 		}
 	}

@@ -1013,7 +1013,7 @@ assignee                :   identifier
                         |   assignee TOKEN_BRACKETS_OPEN expression TOKEN_BRACKETS_CLOSE
                             {
                                 $$ = new tree::ArrayAccess($1, $3);
-                                $$->setLocation(@1);
+                                $$->setLocation(@2);
                             }
                         ;
 
