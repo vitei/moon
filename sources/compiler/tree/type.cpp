@@ -24,11 +24,15 @@ bool tree::Float::canCast(const tree::Type &from) const
 
 bool tree::String::canCast(const tree::Type &from) const
 {
-	/*if(dynamic_cast<tree::Bool *>(&from) ||
-	   dynamic_cast<tree::Int *>(&from))
+	const tree::String *string;
+
+	if((string = dynamic_cast<const tree::String *>(&from)))
 	{
-		return true;
-	}*/
+		if(string->getSize() <= getSize())
+		{
+			return true;
+		}
+	}
 
 	return false;
 }

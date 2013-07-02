@@ -181,7 +181,7 @@ namespace tree
 
 		bool canCast(const Type &from) const;
 
-		unsigned int getSize()
+		unsigned int getSize() const
 		{
 			return mSize;
 		}
@@ -202,7 +202,7 @@ namespace tree
 
 			if(string)
 			{
-				return true;//mSize == string->mSize;
+				return mSize == string->mSize;
 			}
 			else
 			{
