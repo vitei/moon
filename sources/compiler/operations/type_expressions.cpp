@@ -17,12 +17,12 @@ void operation::TypeExpressions::visit(tree::BinaryExpression *binaryExpression)
 
 	if(binaryExpression->getLHS() && *binaryExpression->getLHS()->getType() != *binaryExpression->getType())
 	{
-		binaryExpression->setLHS(createCast(binaryExpression->getType(), binaryExpression->getLHS()));
+		binaryExpression->setLHS(createCast(binaryExpression->getLocation(), binaryExpression->getType(), binaryExpression->getLHS()));
 	}
 
 	if(binaryExpression->getRHS() && *binaryExpression->getRHS()->getType() != *binaryExpression->getType())
 	{
-		binaryExpression->setRHS(createCast(binaryExpression->getType(), binaryExpression->getRHS()));
+		binaryExpression->setRHS(createCast(binaryExpression->getLocation(), binaryExpression->getType(), binaryExpression->getRHS()));
 	}
 }
 
@@ -61,7 +61,7 @@ void operation::TypeExpressions::visit(tree::FunctionCall *functionCall)
 			// Check the types in-case unresolved
 			if(*expectedType != *actualType)
 			{
-				*i = createCast(expectedType, *i);
+				*i = createCast((*i)->getLocation(), expectedType, *i);
 			}
 		}
 	}
@@ -99,7 +99,7 @@ void operation::TypeExpressions::visit(tree::If *ifStatement)
 		test->getType()->printType();
 #endif
 
-		ifStatement->setTest(createCast(new tree::Bool(), test));
+		ifStatement->setTest(createCast(test->getLocation(), new tree::Bool(), test));
 	}
 }
 
@@ -118,7 +118,7 @@ void operation::TypeExpressions::visit(tree::While *whileStatement)
 		test->getType()->printType();
 #endif
 
-		whileStatement->setTest(createCast(new tree::Bool(), test));
+		whileStatement->setTest(createCast(test->getLocation(), new tree::Bool(), test));
 	}
 }
 
@@ -138,11 +138,11 @@ void operation::TypeExpressions::visit(tree::Return *returnStatement)
 	}
 	else if(*returnStatement->getReturn()->getType() != *mPrototype->getType())
 	{
-		returnStatement->setReturn(createCast(mPrototype->getType(), returnStatement->getReturn()));
+		returnStatement->setReturn(createCast(returnStatement->getLocation(), mPrototype->getType(), returnStatement->getReturn()));
 	} 
 }
 
-tree::Cast *operation::TypeExpressions::createCast(tree::Type *type, tree::Expression *expression)
+tree::Cast *operation::TypeExpressions::createCast(const tree::Node::Location &castLocation, tree::Type *type, tree::Expression *expression)
 {
 	try
 	{
@@ -160,13 +160,13 @@ tree::Cast *operation::TypeExpressions::createCast(tree::Type *type, tree::Expre
 
 			std::string error = "Function \"" + static_cast<tree::FunctionPrototype *>(functionCall->getPrototype())->getName() + "\" does not return a value";
 
-			error::enqueue(expression->getLocation(), error);
+			error::enqueue(castLocation, error);
 		}
 		else
 		{
 			std::string error = "Cannot cast " + std::string(expression->getType()->getTypeName()) + " to " + std::string(type->getTypeName());
 
-			error::enqueue(expression->getLocation(), error);
+			error::enqueue(castLocation, error);
 		}
 
 		return NULL;
