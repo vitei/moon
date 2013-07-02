@@ -30,7 +30,24 @@ void operation::TypeExpressions::visit(tree::BooleanBinaryExpression *booleanBin
 {
 	LOG("TypeExpressions::visit::BooleanBinaryExpression");
 
-	// These will always be boolean so we put this empty function in to skip them...
+	// Check the left and right types are the same
+	if(booleanBinaryExpression->getLHS() && booleanBinaryExpression->getRHS())
+	{
+		tree::Type *typeA = booleanBinaryExpression->getLHS()->getType();
+		tree::Type *typeB = booleanBinaryExpression->getRHS()->getType();
+
+		if(*typeA != *typeB)
+		{
+			if(typeA->canCast(*typeB))
+			{
+				booleanBinaryExpression->setRHS(createCast(booleanBinaryExpression->getLocation(), typeA, booleanBinaryExpression->getRHS()));
+			}
+			else
+			{
+				booleanBinaryExpression->setLHS(createCast(booleanBinaryExpression->getLocation(), typeB, booleanBinaryExpression->getLHS()));
+			}
+		}
+	}
 }
 
 void operation::TypeExpressions::visit(tree::FunctionCall *functionCall)
