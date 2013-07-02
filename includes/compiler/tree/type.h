@@ -20,7 +20,7 @@ namespace tree
 
 		virtual const char *getTypeName() const = 0;
 
-		virtual bool canCast(const Type &to) const
+		virtual bool canCast(const Type &from) const
 		{
 			return false;
 		}
@@ -95,6 +95,8 @@ namespace tree
 
 		Int(unsigned int Size = DEFAULT_SIZE) : mSize(Size) {}
 
+		bool canCast(const Type &from) const;
+
 		unsigned int getSize()
 		{
 			return mSize;
@@ -134,6 +136,8 @@ namespace tree
 		static const unsigned int DEFAULT_SIZE = 32;
 
 		Float(unsigned int Size = DEFAULT_SIZE) : mSize(Size) {}
+
+		bool canCast(const Type &from) const;
 
 		unsigned int getSize()
 		{
@@ -175,6 +179,8 @@ namespace tree
 
 		String(unsigned int Size = DEFAULT_SIZE) : mSize(Size) {}
 
+		bool canCast(const Type &from) const;
+
 		unsigned int getSize()
 		{
 			return mSize;
@@ -196,7 +202,7 @@ namespace tree
 
 			if(string)
 			{
-				return mSize == string->mSize;
+				return true;//mSize == string->mSize;
 			}
 			else
 			{
@@ -214,6 +220,8 @@ namespace tree
 		static const unsigned long UNDEFINED_SIZE = 0;
 
 		Array(Type *type, unsigned long size = UNDEFINED_SIZE) : mType(type), mSize(size) {}
+
+		bool canCast(const Type &from) const;
 
 		Type *getType()
 		{
