@@ -13,6 +13,15 @@ namespace tree
 	class Type : public Node
 	{
 	public:
+		class InvalidException : public std::exception
+		{
+		public:
+			Type *type;
+
+		protected:
+			InvalidException(Type *_type) : type(_type) { /* Abstract class */ }
+		};
+
 #ifdef DEBUG
 		virtual void printNode() { LOG("Type"); }
 		virtual void printType() = 0;
@@ -219,7 +228,14 @@ namespace tree
 	public:
 		static const unsigned long UNDEFINED_SIZE = 0;
 
-		Array(Type *type, unsigned long size = UNDEFINED_SIZE) : mType(type), mSize(size) {}
+		class InvalidSizeException : public tree::Type::InvalidException
+		{
+		public:
+			InvalidSizeException(Type *_type) : InvalidException(_type) {}
+		};
+
+		Array(Type *type) : mType(type), mSize(UNDEFINED_SIZE) {}
+		Array(Type *type, long long size);
 
 		bool canCast(const Type &from) const;
 

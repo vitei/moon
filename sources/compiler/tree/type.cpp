@@ -37,6 +37,14 @@ bool tree::String::canCast(const tree::Type &from) const
 	return false;
 }
 
+tree::Array::Array(Type *type, long long size) : mType(type), mSize(size)
+{
+	if(mSize <= 0)
+	{
+		throw tree::Array::InvalidSizeException(this);
+	}
+}
+
 bool tree::Array::canCast(const tree::Type &from) const
 {
 	/*if(dynamic_cast<tree::Bool *>(&from) ||
