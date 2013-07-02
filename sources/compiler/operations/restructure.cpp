@@ -282,36 +282,7 @@ void operation::Restructure::dispatch(tree::Function *function)
 
 	function->setPrototype(functionPrototype);
 
-	tree::Statements *statements = function->getStatements();
-
-	if(statements)
-	{
-		tree::Scope *currentScope = mCurrentScope;
-
-		mCurrentScope = function;
-
-		for(tree::Statements::iterator i = statements->begin(); i != statements->end();)
-		{
-			(*i)->accept(this);
-
-			tree::Statement *statement = static_cast<tree::Statement *>(mNodeMap.top());
-			mNodeMap.pop();
-
-			if(statement)
-			{
-				*i = statement;
-				++i;
-			}
-			else
-			{
-				i = statements->erase(i);
-			}
-		}
-
-		mCurrentScope = currentScope;
-	}
-
-	operation::Restructure::dispatch(static_cast<tree::Statement *>(function));
+	operation::Restructure::dispatch(static_cast<tree::Scope *>(function));
 }
 
 void operation::Restructure::dispatch(tree::Scope *scope)
