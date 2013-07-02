@@ -1,6 +1,8 @@
 #ifndef COMPILER_TREE_TYPE_H
 #define COMPILER_TREE_TYPE_H
 
+#include <string>
+#include <sstream>
 #include "node.h"
 
 
@@ -230,7 +232,21 @@ namespace tree
 
 		virtual const char *getTypeName() const
 		{
-			return "array"; // FIXME
+			std::stringstream typeName;
+
+			tree::Type *baseType;
+
+			for(const tree::Array *i = this; i; baseType = i->mType, i = dynamic_cast<const tree::Array *>(baseType))
+				;
+
+			typeName << baseType->getTypeName();
+
+			for(const tree::Array *i = this; i; i = dynamic_cast<const tree::Array *>(i->mType))
+			{
+				typeName << "[" << i->mSize << "]";
+			}
+
+			return typeName.str().c_str(); // FIXME, is this unsafe??
 		}
 
 #ifdef DEBUG
