@@ -683,9 +683,9 @@ function_prototype      :   TOKEN_DEF TOKEN_ID TOKEN_PARENTHESIS_OPEN o_argument
                                 $$ = new tree::FunctionPrototype(NULL, std::string($2), $4);
                                 $$->setLocation(@1);
                             }
-                        |   TOKEN_DEF type TOKEN_CAST TOKEN_ID TOKEN_PARENTHESIS_OPEN o_arguments TOKEN_PARENTHESIS_CLOSE
+                        |   TOKEN_DEF TOKEN_ID TOKEN_PARENTHESIS_OPEN o_arguments TOKEN_PARENTHESIS_CLOSE TOKEN_CAST type
                             {
-                                $$ = new tree::FunctionPrototype($2, std::string($4), $6);
+                                $$ = new tree::FunctionPrototype($7, std::string($2), $4);
                                 $$->setLocation(@1);
                             }
                         ;
@@ -732,9 +732,9 @@ argument                :   TOKEN_ID
                                 $$ = new tree::Variable(NULL, std::string($1));
                                 $$->setLocation(@1);
                             }
-                        |   type TOKEN_CAST TOKEN_ID
+                        |   TOKEN_ID TOKEN_CAST type
                             {
-                                $$ = new tree::Variable($1, std::string($3));
+                                $$ = new tree::Variable($3, std::string($1));
                                 $$->setLocation(@1);
                             }
                         |   variable
@@ -835,9 +835,9 @@ constant                :   TOKEN_CONST TOKEN_NAME
                                 $$ = new tree::Constant(NULL, std::string($2));
                                 $$->setLocation(@1);
                             }
-                        |   TOKEN_CONST type TOKEN_CAST TOKEN_NAME
+                        |   TOKEN_CONST TOKEN_NAME TOKEN_CAST type
                             {
-                                $$ = new tree::Constant($2, std::string($4));
+                                $$ = new tree::Constant($4, std::string($2));
                                 $$->setLocation(@1);
                             }
                         ;
@@ -865,9 +865,9 @@ variable                :   TOKEN_DEF TOKEN_ID
                                 $$ = new tree::Variable(NULL, std::string($2));
                                 $$->setLocation(@1);
                             }
-                        |   TOKEN_DEF type TOKEN_CAST TOKEN_ID
+                        |   TOKEN_DEF TOKEN_ID TOKEN_CAST type
                             {
-                                $$ = new tree::Variable($2, std::string($4));
+                                $$ = new tree::Variable($4, std::string($2));
                                 $$->setLocation(@1);
                             }
                         ;

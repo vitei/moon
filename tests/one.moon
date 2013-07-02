@@ -1,24 +1,26 @@
 include output
 use Base
 
-import def printf(string:data)
+import def printf(data:string, param1:int)
 
 #global def float:positionX
 #global def positionY
 
-def x = 5:020 % 20
+#def x = 5:020 % 20
 def y = 20
 
 #global def x
 
+-#-
 const STR_ONE = "One" # Some more text here...
 const STR_TWO = "Two"
 const STR_THREE = "Three"
+-#-
 
-def test_add(float:one, float:two)
+def test_add(one:float, two:float):int
 	voom = 1
 
-	return 2 if voom == 1
+	return 2 if one == 1
 	return 1
 
 #	return voom if one < two else voom = one + two
@@ -27,17 +29,69 @@ end
 
 #global def main()
 shared def main()
+	def ccc:int[30]
+	def ccx:int[20][30]
+
+	#	ccc = 3
+
+	#	def xxxx : int[10]
+	#	def yyyy : float[10]
+
+	#	yyyy = xxxx
+	#	xxxx = yyyy
+
+
+#	def float[20][30]:ccx
+
+#	x[1] = 10
+#	ccc = 1[1]
+
+	#def int[0]:notallowed
+	#def int[-1]:notallowed
+
+	#	ccc = ccx
+	#	ccx = ccc
+
+	#	ccc = ccx[0]
+
+	def dd:float
+	dd = 1.0
+
+	#########################################
+	y = 0
+	while y < 20
+		x = 0
+		while x < 30
+			ccx[y][x] = 10
+			x += 1
+		end
+		y += 1
+	end
+	#########################################
+
+
+	yyy = true
+	yyy = 1
+	yyy = 3.2
+	test_add(yyy, dd)
+
 	x = 1
-
-	while x < 30 # Need a for loop
-		printf("...")  if x % 3 != 0 && x % 5 != 0
-		printf("fizz") if x % 3 == 0
-		printf("buzz") if x % 5 == 0
-		printf("\n")
-
+	while x < 30
+		ccc[x] = x
+		ccc[x - 1] += x
 		x += 1
 	end
 
+	x = 0
+	while x < 30 # Need a for loop
+		printf("XXX: %u\n", ccc[x])
+		#printf("...")  if x % 3 != 0 && x % 5 != 0
+		#printf("fizz") if x % 3 == 0
+		#printf("buzz") if x % 5 == 0
+		#printf("\n")
+
+		x += 1
+	end
 
 
 	#const COOK = 1
