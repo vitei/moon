@@ -24,7 +24,7 @@ void operation::Restructure::dispatch(tree::Expression *expression)
 
 	expression->setType(type);
 
-	operation::Restructure::dispatch(static_cast<tree::Node *>(expression));
+	dispatch(static_cast<tree::Node *>(expression));
 }
 
 void operation::Restructure::dispatch(tree::Access *access)
@@ -47,7 +47,7 @@ void operation::Restructure::dispatch(tree::Access *access)
 	access->setContainer(container);
 	access->setTarget(target);
 
-	operation::Restructure::dispatch(static_cast<tree::Expression *>(access));
+	dispatch(static_cast<tree::Expression *>(access));
 }
 
 void operation::Restructure::dispatch(tree::UnaryExpression *unaryExpression)
@@ -62,7 +62,7 @@ void operation::Restructure::dispatch(tree::UnaryExpression *unaryExpression)
 
 	unaryExpression->setExpression(expression);
 
-	operation::Restructure::dispatch(static_cast<tree::Expression *>(unaryExpression));
+	dispatch(static_cast<tree::Expression *>(unaryExpression));
 }
 
 void operation::Restructure::dispatch(tree::BinaryExpression *binaryExpression)
@@ -85,7 +85,7 @@ void operation::Restructure::dispatch(tree::BinaryExpression *binaryExpression)
 	binaryExpression->setLHS(lhs);
 	binaryExpression->setRHS(rhs);
 
-	operation::Restructure::dispatch(static_cast<tree::Expression *>(binaryExpression));
+	dispatch(static_cast<tree::Expression *>(binaryExpression));
 }
 
 void operation::Restructure::dispatch(tree::Cast *cast)
@@ -100,7 +100,7 @@ void operation::Restructure::dispatch(tree::Cast *cast)
 
 	cast->setExpression(expression);
 
-	operation::Restructure::dispatch(static_cast<tree::Expression *>(cast));
+	dispatch(static_cast<tree::Expression *>(cast));
 }
 
 void operation::Restructure::dispatch(tree::If *ifStatement)
@@ -131,7 +131,7 @@ void operation::Restructure::dispatch(tree::If *ifStatement)
 	ifStatement->setTrueStatement(trueStatement);
 	ifStatement->setFalseStatement(falseStatement);
 
-	operation::Restructure::dispatch(static_cast<tree::Statement *>(ifStatement));
+	dispatch(static_cast<tree::Statement *>(ifStatement));
 }
 
 void operation::Restructure::dispatch(tree::Import *import)
@@ -146,7 +146,7 @@ void operation::Restructure::dispatch(tree::Import *import)
 
 	import->setPrototype(functionPrototype);
 
-	operation::Restructure::dispatch(static_cast<tree::Statement *>(import));
+	dispatch(static_cast<tree::Statement *>(import));
 }
 
 void operation::Restructure::dispatch(tree::FunctionCall *functionCall)
@@ -184,7 +184,7 @@ void operation::Restructure::dispatch(tree::FunctionCall *functionCall)
 		}
 	}
 
-	operation::Restructure::dispatch(static_cast<tree::Expression *>(functionCall));
+	dispatch(static_cast<tree::Expression *>(functionCall));
 }
 
 void operation::Restructure::dispatch(tree::Scoping *scoping)
@@ -199,7 +199,7 @@ void operation::Restructure::dispatch(tree::Scoping *scoping)
 
 	scoping->setScoped(statement);
 
-	operation::Restructure::dispatch(static_cast<tree::Statement *>(scoping));
+	dispatch(static_cast<tree::Statement *>(scoping));
 }
 
 void operation::Restructure::dispatch(tree::Execute *execute)
@@ -214,7 +214,7 @@ void operation::Restructure::dispatch(tree::Execute *execute)
 
 	execute->setExpression(expression);
 
-	operation::Restructure::dispatch(static_cast<tree::Statement *>(execute));
+	dispatch(static_cast<tree::Statement *>(execute));
 }
 
 void operation::Restructure::dispatch(tree::Return *opReturn)
@@ -229,7 +229,7 @@ void operation::Restructure::dispatch(tree::Return *opReturn)
 
 	opReturn->setReturn(expression);
 
-	operation::Restructure::dispatch(static_cast<tree::Statement *>(opReturn));
+	dispatch(static_cast<tree::Statement *>(opReturn));
 }
 
 //void operation::Restructure::dispatch(tree::SetState *setState)
@@ -272,7 +272,7 @@ void operation::Restructure::dispatch(tree::FunctionPrototype *functionPrototype
 		}
 	}
 
-	operation::Restructure::dispatch(static_cast<tree::TypedIdentity *>(functionPrototype));
+	dispatch(static_cast<tree::TypedIdentity *>(functionPrototype));
 }
 
 void operation::Restructure::dispatch(tree::Function *function)
@@ -282,7 +282,7 @@ void operation::Restructure::dispatch(tree::Function *function)
 
 	function->setPrototype(functionPrototype);
 
-	operation::Restructure::dispatch(static_cast<tree::Scope *>(function));
+	dispatch(static_cast<tree::Scope *>(function));
 }
 
 void operation::Restructure::dispatch(tree::Scope *scope)
@@ -316,7 +316,7 @@ void operation::Restructure::dispatch(tree::Scope *scope)
 		mCurrentScope = currentScope;
 	}
 
-	operation::Restructure::dispatch(static_cast<tree::Statement *>(scope));
+	dispatch(static_cast<tree::Statement *>(scope));
 }
 
 void operation::Restructure::dispatch(tree::While *whileStatement)
@@ -339,5 +339,5 @@ void operation::Restructure::dispatch(tree::While *whileStatement)
 	whileStatement->setTest(test);
 	whileStatement->setLoopStatement(loopStatement);
 
-	operation::Restructure::dispatch(static_cast<tree::Statement *>(whileStatement));
+	dispatch(static_cast<tree::Statement *>(whileStatement));
 }

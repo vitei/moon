@@ -7,7 +7,60 @@
 void operation::ResolveIdentities::run(tree::Program *program)
 {
 	operation::ResolveIdentities operation;
-	program->accept(&operation);
+	//program->accept(&operation);
+
+	if(program->getStatements())
+	{
+		operation.add(program);
+		operation.process();
+	}
+}
+
+void operation::ResolveIdentities::add(tree::Scope *scope)
+{
+	mVisitNext.push(scope);
+}
+
+void operation::ResolveIdentities::process()
+{
+	while(!mVisitNext.empty())
+	{
+		tree::Scope *scope = mVisitNext.front();
+		mVisitNext.pop();
+
+		tree::Statements *statements = scope->getStatements();
+
+		if(statements)
+		{
+			mCurrentScope = scope;
+
+			for(tree::Statements::iterator i = statements->begin(); i != statements->end();)
+			{
+				(*i)->accept(this);
+
+				tree::Statement *statement = static_cast<tree::Statement *>(mNodeMap.top());
+				mNodeMap.pop();
+
+				if(statement)
+				{
+					*i = statement;
+					++i;
+				}
+				else
+				{
+					i = statements->erase(i);
+				}
+			}
+		}
+	}
+}
+
+void operation::ResolveIdentities::dispatch(tree::Scope *scope)
+{
+	LOG("ResolveIdentities::dispatch::Scope");
+
+	add(scope);
+	operation::Restructure::dispatch(static_cast<tree::Statement *>(scope));
 }
 
 void operation::ResolveIdentities::visit(tree::Expression *expression)
