@@ -17,11 +17,12 @@ namespace tree
 		class InvalidException : public std::exception
 		{
 		public:
-			InvalidException(Expression *_expression) : expression(_expression) {}
-
 			virtual void reset() = 0;
 
 			Expression *expression;
+
+		protected:
+			InvalidException(Expression *_expression) : expression(_expression) { /* Abstract class */ }
 		};
 
 		Type *getType()
