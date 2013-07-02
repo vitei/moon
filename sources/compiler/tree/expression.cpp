@@ -84,32 +84,18 @@ void tree::BinaryExpression::setRHS(Expression *rhs)
 void tree::Cast::checkCast()
 {
 	tree::Expression *expression = getExpression();
+
+	ASSERT(expression);
+
 	tree::Type *typeA = getType();
+	tree::Type *typeB = expression->getType();
 
-	if(typeA && expression)
+	ASSERT(typeA);
+	ASSERT(typeB);
+
+	if(!typeA->canCast(*typeB))
 	{
-		tree::Type *typeB = expression->getType();
-
-		if(*typeB == tree::Void() || *typeB > *typeA)
-		{
-			throw tree::Cast::InvalidException(this);
-		}
-		else
-		{
-			tree::Array *arrayA = dynamic_cast<tree::Array *>(typeA);
-			tree::Array *arrayB = dynamic_cast<tree::Array *>(typeB);
-
-			if(arrayA || arrayB)
-			{
-				if(!arrayA || !arrayB ||
-				   (arrayA->getSize() != arrayB->getSize() &&
-				    arrayA->getSize() != tree::Array::UNDEFINED_SIZE &&
-				    arrayB->getSize() != tree::Array::UNDEFINED_SIZE))
-				{
-					throw tree::Cast::InvalidException(this);
-				}
-			}
-		}
+		throw tree::Cast::InvalidException(this);
 	}
 }
 

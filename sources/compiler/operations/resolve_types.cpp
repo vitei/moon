@@ -70,7 +70,7 @@ void operation::ResolveTypes::visit(tree::BinaryExpression *binaryExpression)
 			ASSERT(lhsType);
 			ASSERT(rhsType);
 
-			binaryExpression->setType(*lhsType > *rhsType ? lhsType : rhsType);
+			binaryExpression->setType(lhsType->canCast(*rhsType) ? lhsType : rhsType);
 		}
 	}
 }
@@ -101,7 +101,7 @@ void operation::ResolveTypes::visit(tree::Assign *assign)
 				{
 					mTypeResolution[lhs] = NULL;
 				}
-				else if(*rhsType > *mTypeResolution[lhs])
+				else if(rhsType->canCast(*mTypeResolution[lhs]))
 				{
 					mTypeResolution[lhs] = rhsType;
 				}
@@ -200,9 +200,10 @@ void operation::ResolveTypes::visit(tree::Return *returnStatement)
 				// Ensure this return will not generate ambiguity
 				if(returnStatement->getReturn()->getType())
 				{
-					if(*returnStatement->getReturn()->getType() > *mTypeResolution[mPrototype])
+					tree::Type *returnType = returnStatement->getReturn()->getType();
+					if(returnType->canCast(*mTypeResolution[mPrototype]))
 					{
-						mTypeResolution[mPrototype] = returnStatement->getReturn()->getType();
+						mTypeResolution[mPrototype] = returnType;
 					}
 				}
 				else

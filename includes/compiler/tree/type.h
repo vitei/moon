@@ -16,61 +16,30 @@ namespace tree
 		virtual void printType() = 0;
 #endif
 
-		virtual const char *getTypeName() = 0;
+		virtual const char *getTypeName() const = 0;
+
+		virtual bool canCast(const Type &to) const
+		{
+			return false;
+		}
 
 	protected:
-		enum Internal
-		{
-			TYPE_VOID,
-			TYPE_BOOL,
-			TYPE_INT,
-			TYPE_FLOAT,
-			TYPE_UDT,
-			TYPE_STRING,
-			TYPE_ARRAY
-		};
+		Type() { /* Abstract class */ }
 
-		Type(Internal type) : mType(type) { /* Abstract class */ }
+		virtual bool equals(const Type &type) const = 0;
 
 	private:
 		friend bool operator == (const Type &type1, const Type &type2);
-		friend bool operator != (const Type &type1, const Type &type2);
-		friend bool operator < (const Type &type1, const Type &type2);
-		friend bool operator <= (const Type &type1, const Type &type2);
-		friend bool operator > (const Type &type1, const Type &type2);
-		friend bool operator >= (const Type &type1, const Type &type2);
-
-		Internal mType;
 	};
 
 	inline bool operator == (const Type &type1, const Type &type2)
 	{
-		return type1.mType == type2.mType;
+		return type1.equals(type2);
 	}
 
 	inline bool operator != (const Type &type1, const Type &type2)
 	{
-		return type1.mType != type2.mType;
-	}
-
-	inline bool operator < (const Type &type1, const Type &type2)
-	{
-		return type1.mType < type2.mType;
-	}
-
-	inline bool operator <= (const Type &type1, const Type &type2)
-	{
-		return type1.mType <= type2.mType;
-	}
-
-	inline bool operator > (const Type &type1, const Type &type2)
-	{
-		return type1.mType > type2.mType;
-	}
-
-	inline bool operator >= (const Type &type1, const Type &type2)
-	{
-		return type1.mType >= type2.mType;
+		return !(type1 == type2);
 	}
 
 	/* ---- ONLY CONCRETE CLASSES BELOW HERE ---- */
@@ -78,9 +47,9 @@ namespace tree
 	class Void : public Type
 	{
 	public:
-		Void() : Type(tree::Type::TYPE_VOID) {}
+		Void() {}
 
-		virtual const char *getTypeName()
+		virtual const char *getTypeName() const
 		{
 			return "void";
 		}
@@ -88,14 +57,20 @@ namespace tree
 #ifdef DEBUG
 		virtual void printType() { LOG("VOID"); }
 #endif
+
+	protected:
+		virtual bool equals(const Type &type) const
+		{
+			return dynamic_cast<const Void *>(&type) != 0;
+		}
 	};
 
 	class Bool : public Type
 	{
 	public:
-		Bool() : Type(tree::Type::TYPE_BOOL) {}
+		Bool() {}
 
-		virtual const char *getTypeName()
+		virtual const char *getTypeName() const
 		{
 			return "boolean";
 		}
@@ -103,6 +78,12 @@ namespace tree
 #ifdef DEBUG
 		virtual void printType() { LOG("BOOL"); }
 #endif
+
+	protected:
+		virtual bool equals(const Type &type) const
+		{
+			return dynamic_cast<const Bool *>(&type) != 0;
+		}
 	};
 
 	class Int : public Type
@@ -110,14 +91,14 @@ namespace tree
 	public:
 		static const unsigned int DEFAULT_SIZE = 32;
 
-		Int(unsigned int Size = DEFAULT_SIZE) : Type(tree::Type::TYPE_INT), mSize(Size) {}
+		Int(unsigned int Size = DEFAULT_SIZE) : mSize(Size) {}
 
 		unsigned int getSize()
 		{
 			return mSize;
 		}
 
-		virtual const char *getTypeName()
+		virtual const char *getTypeName() const
 		{
 			return "integer";
 		}
@@ -125,6 +106,21 @@ namespace tree
 #ifdef DEBUG
 		virtual void printType() { LOG("INT %d", mSize); }
 #endif
+
+	protected:
+		virtual bool equals(const Type &type) const
+		{
+			const Int *integer = dynamic_cast<const Int *>(&type);
+
+			if(integer)
+			{
+				return mSize == integer->mSize;
+			}
+			else
+			{
+				return false;
+			}
+		}
 
 	private:
 		unsigned int mSize;
@@ -135,14 +131,14 @@ namespace tree
 	public:
 		static const unsigned int DEFAULT_SIZE = 32;
 
-		Float(unsigned int Size = DEFAULT_SIZE) : Type(tree::Type::TYPE_FLOAT), mSize(Size) {}
+		Float(unsigned int Size = DEFAULT_SIZE) : mSize(Size) {}
 
 		unsigned int getSize()
 		{
 			return mSize;
 		}
 
-		virtual const char *getTypeName()
+		virtual const char *getTypeName() const
 		{
 			return "floating point";
 		}
@@ -150,6 +146,21 @@ namespace tree
 #ifdef DEBUG
 		virtual void printType() { LOG("FLOAT %d", mSize); }
 #endif
+
+	protected:
+		virtual bool equals(const Type &type) const
+		{
+			const Float *floatingPoint = dynamic_cast<const Float *>(&type);
+
+			if(floatingPoint)
+			{
+				return mSize == floatingPoint->mSize;
+			}
+			else
+			{
+				return false;
+			}
+		}
 
 	private:
 		unsigned int mSize;
@@ -160,14 +171,14 @@ namespace tree
 	public:
 		static const unsigned int DEFAULT_SIZE = 256;
 
-		String(unsigned int Size = DEFAULT_SIZE) : Type(tree::Type::TYPE_STRING), mSize(Size) {}
+		String(unsigned int Size = DEFAULT_SIZE) : mSize(Size) {}
 
 		unsigned int getSize()
 		{
 			return mSize;
 		}
 
-		virtual const char *getTypeName()
+		virtual const char *getTypeName() const
 		{
 			return "string";
 		}
@@ -175,6 +186,21 @@ namespace tree
 #ifdef DEBUG
 		virtual void printType() { LOG("STRING %d", mSize); }
 #endif
+
+	protected:
+		virtual bool equals(const Type &type) const
+		{
+			const String *string = dynamic_cast<const String *>(&type);
+
+			if(string)
+			{
+				return mSize == string->mSize;
+			}
+			else
+			{
+				return false;
+			}
+		}
 
 	private:
 		unsigned int mSize;
@@ -185,7 +211,7 @@ namespace tree
 	public:
 		static const long long UNDEFINED_SIZE = -1;
 
-		Array(Type *type, long long size = UNDEFINED_SIZE) : Type(tree::Type::TYPE_ARRAY), mType(type), mSize(size) {}
+		Array(Type *type, long long size = UNDEFINED_SIZE) : mType(type), mSize(size) {}
 
 		Type *getType()
 		{
@@ -202,7 +228,7 @@ namespace tree
 			return mSize;
 		}
 
-		virtual const char *getTypeName()
+		virtual const char *getTypeName() const
 		{
 			return "array"; // FIXME
 		}
@@ -210,6 +236,21 @@ namespace tree
 #ifdef DEBUG
 		virtual void printType() { LOG("Array[%lld]", mSize); if(mType) { mType->printType(); } }
 #endif
+
+	protected:
+		virtual bool equals(const Type &type) const
+		{
+			const Array *array = dynamic_cast<const Array *>(&type);
+
+			if(array)
+			{
+				return mSize == array->mSize && (*mType == *array->mType);
+			}
+			else
+			{
+				return false;
+			}
+		}
 
 	private:
 		Type *mType;
