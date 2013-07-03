@@ -87,15 +87,18 @@ void tree::Cast::checkCast()
 
 	ASSERT(expression);
 
-	tree::Type *typeA = getType();
 	tree::Type *typeB = expression->getType();
 
-	ASSERT(typeA);
-	ASSERT(typeB);
-
-	if(!typeA->canCast(*typeB))
+	if(typeB)
 	{
-		throw tree::Cast::InvalidException(this);
+		tree::Type *typeA = getType();
+
+		ASSERT(typeA);
+
+		if(!typeA->canCast(*typeB))
+		{
+			throw tree::Cast::InvalidException(this);
+		}
 	}
 }
 

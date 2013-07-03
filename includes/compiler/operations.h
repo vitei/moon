@@ -1,6 +1,7 @@
 #ifndef COMPILER_OPERATIONS_H
 #define COMPILER_OPERATIONS_H
 
+#include "operations/check_typecasting.h"
 #include "operations/expand_tree.h"
 #include "operations/map_identities.h"
 #include "operations/resolve_identities.h"

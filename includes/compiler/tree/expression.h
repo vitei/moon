@@ -407,7 +407,7 @@ namespace tree
 		virtual void setType(Type *type)
 		{
 			Expression::setType(type);
-			checkCast();
+			//checkCast();
 		}
 
 		Expression *getExpression()
@@ -418,7 +418,7 @@ namespace tree
 		void setExpression(Expression *expression)
 		{
 			mExpression = expression;
-			checkCast();
+			//checkCast();
 		}
 
 		virtual void childAccept(operation::Operation *operation)

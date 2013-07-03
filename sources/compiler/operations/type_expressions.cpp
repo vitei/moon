@@ -17,12 +17,18 @@ void operation::TypeExpressions::visit(tree::BinaryExpression *binaryExpression)
 
 	if(binaryExpression->getLHS() && *binaryExpression->getLHS()->getType() != *binaryExpression->getType())
 	{
-		binaryExpression->setLHS(createCast(binaryExpression->getLocation(), binaryExpression->getType(), binaryExpression->getLHS()));
+		tree::Cast *cast = new tree::Cast(binaryExpression->getType(), binaryExpression->getLHS());
+
+		cast->setLocation(binaryExpression->getLocation());
+		binaryExpression->setLHS(cast);
 	}
 
 	if(binaryExpression->getRHS() && *binaryExpression->getRHS()->getType() != *binaryExpression->getType())
 	{
-		binaryExpression->setRHS(createCast(binaryExpression->getLocation(), binaryExpression->getType(), binaryExpression->getRHS()));
+		tree::Cast *cast = new tree::Cast(binaryExpression->getType(), binaryExpression->getRHS());
+
+		cast->setLocation(binaryExpression->getLocation());
+		binaryExpression->setRHS(cast);
 	}
 }
 
@@ -40,11 +46,17 @@ void operation::TypeExpressions::visit(tree::BooleanBinaryExpression *booleanBin
 		{
 			if(typeA->canCast(*typeB))
 			{
-				booleanBinaryExpression->setRHS(createCast(booleanBinaryExpression->getLocation(), typeA, booleanBinaryExpression->getRHS()));
+				tree::Cast *cast = new tree::Cast(typeA, booleanBinaryExpression->getRHS());
+
+				cast->setLocation(booleanBinaryExpression->getLocation());
+				booleanBinaryExpression->setRHS(cast);
 			}
 			else
 			{
-				booleanBinaryExpression->setLHS(createCast(booleanBinaryExpression->getLocation(), typeB, booleanBinaryExpression->getLHS()));
+				tree::Cast *cast = new tree::Cast(typeB, booleanBinaryExpression->getLHS());
+
+				cast->setLocation(booleanBinaryExpression->getLocation());
+				booleanBinaryExpression->setLHS(cast);
 			}
 		}
 	}
@@ -78,7 +90,10 @@ void operation::TypeExpressions::visit(tree::FunctionCall *functionCall)
 			// Check the types in-case unresolved
 			if(*expectedType != *actualType)
 			{
-				*i = createCast((*i)->getLocation(), expectedType, *i);
+				tree::Cast *cast = new tree::Cast(expectedType, *i);
+
+				cast->setLocation((*i)->getLocation());
+				*i = cast;
 			}
 		}
 	}
@@ -116,7 +131,10 @@ void operation::TypeExpressions::visit(tree::If *ifStatement)
 		test->getType()->printType();
 #endif
 
-		ifStatement->setTest(createCast(test->getLocation(), new tree::Bool(), test));
+		tree::Cast *cast = new tree::Cast(new tree::Bool(), test);
+
+		cast->setLocation(test->getLocation());
+		ifStatement->setTest(cast);
 	}
 }
 
@@ -135,7 +153,10 @@ void operation::TypeExpressions::visit(tree::While *whileStatement)
 		test->getType()->printType();
 #endif
 
-		whileStatement->setTest(createCast(test->getLocation(), new tree::Bool(), test));
+		tree::Cast *cast = new tree::Cast(new tree::Bool(), test);
+
+		cast->setLocation(test->getLocation());
+		whileStatement->setTest(cast);
 	}
 }
 
@@ -155,37 +176,10 @@ void operation::TypeExpressions::visit(tree::Return *returnStatement)
 	}
 	else if(*returnStatement->getReturn()->getType() != *mPrototype->getType())
 	{
-		returnStatement->setReturn(createCast(returnStatement->getLocation(), mPrototype->getType(), returnStatement->getReturn()));
+		tree::Cast *cast = new tree::Cast(mPrototype->getType(), returnStatement->getReturn());
+
+		cast->setLocation(returnStatement->getLocation());
+		returnStatement->setReturn(cast);
 	} 
 }
 
-tree::Cast *operation::TypeExpressions::createCast(const tree::Node::Location &castLocation, tree::Type *type, tree::Expression *expression)
-{
-	try
-	{
-		return new tree::Cast(type, expression);
-	}
-	catch(tree::Cast::InvalidException &e)
-	{
-		if(dynamic_cast<tree::Void *>(expression->getType()))
-		{
-			ASSERT(dynamic_cast<tree::FunctionCall *>(expression));
-
-			tree::FunctionCall *functionCall = static_cast<tree::FunctionCall *>(expression);
-
-			ASSERT(dynamic_cast<tree::FunctionPrototype *>(functionCall->getPrototype()));
-
-			std::string error = "Function \"" + static_cast<tree::FunctionPrototype *>(functionCall->getPrototype())->getName() + "\" does not return a value";
-
-			error::enqueue(castLocation, error);
-		}
-		else
-		{
-			std::string error = "Cannot cast " + std::string(expression->getType()->getTypeName()) + " to " + std::string(type->getTypeName());
-
-			error::enqueue(castLocation, error);
-		}
-
-		return NULL;
-	}
-}
