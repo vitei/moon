@@ -1175,20 +1175,16 @@ void generator::C::Printer::outputExtern(tree::TypedIdentity *typedIdentity)
 
 void generator::C::Printer::outputDeclaration(tree::TypedIdentity *typedIdentity, bool functionPrototype)
 {
-	bool isConstant = dynamic_cast<tree::Constant *>(typedIdentity);
+	ASSERT(!dynamic_cast<tree::Constant *>(typedIdentity));
+
 	tree::Type *type = typedIdentity->getType();
 
 	ASSERT(typedIdentity->getMetadata());
 	Mangled *cName = static_cast<Mangled *>(typedIdentity->getMetadata());
 
-	if(isConstant)
-	{
-		*mOutput << "const ";
-	}
-
 	outputType(type);
 
-	if(dynamic_cast<tree::String *>(type) && (functionPrototype || isConstant))
+	if(dynamic_cast<tree::String *>(type) && functionPrototype)
 	{
 		*mOutput << " *" << cName->declarationName; // FIXME, this isn't good...
 	}
