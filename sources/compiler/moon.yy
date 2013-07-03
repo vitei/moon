@@ -1354,24 +1354,32 @@ type                    :   TOKEN_TYPE_BOOL
 
                         |   type TOKEN_BRACKETS_OPEN TOKEN_INTEGER TOKEN_BRACKETS_CLOSE
                             {
-                                tree::Array *array = dynamic_cast<tree::Array *>($1);
-
-                                if(array)
+                                try
                                 {
-                                    for(tree::Array *nextArray = dynamic_cast<tree::Array *>(array->getType()); nextArray; array = nextArray, nextArray = dynamic_cast<tree::Array *>(array->getType()))
-                                        ;
+                                    tree::Array *array = dynamic_cast<tree::Array *>($1);
 
-                                    tree::Array *childArray = new tree::Array(array->getType(), $3);
-                                    childArray->setLocation(@2);
+                                    if(array)
+                                    {
+                                        for(tree::Array *nextArray = dynamic_cast<tree::Array *>(array->getType()); nextArray; array = nextArray, nextArray = dynamic_cast<tree::Array *>(array->getType()))
+                                            ;
 
-                                    array->setType(childArray);
+                                        tree::Array *childArray = new tree::Array(array->getType(), $3);
+                                        childArray->setLocation(@2);
 
-                                    $$ = $1;
+                                        array->setType(childArray);
+
+                                        $$ = $1;
+                                    }
+                                    else
+                                    {
+                                        $$ = new tree::Array($1, $3);
+                                        $$->setLocation(@2);
+                                    }
                                 }
-                                else
+                                catch(tree::Array::InvalidSizeException &e)
                                 {
-                                    $$ = new tree::Array($1, $3);
-                                    $$->setLocation(@2);
+                                    error::enqueue(@3, "Invalid array size");
+                                    $$ = NULL;
                                 }
                             }
                         ;
