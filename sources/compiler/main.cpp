@@ -248,14 +248,19 @@ int main(int argc, char *argv[])
 							{
 								operation::CheckTypecasting::run(&program);
 
-								// If there are no errors we should be able to do code generation now!
 								if(error::count() == 0)
 								{
-									std::ofstream outputFile;
+									operation::ComputeConstants::run(&program);
 
-									outputFile.open(outputFilename.c_str());
-									sGenerator->run(outputFile, &program);
-									outputFile.close();
+									// If there are no errors we should be able to do code generation now!
+									if(error::count() == 0)
+									{
+										std::ofstream outputFile;
+
+										outputFile.open(outputFilename.c_str());
+										sGenerator->run(outputFile, &program);
+										outputFile.close();
+									}
 								}
 							}
 						}
