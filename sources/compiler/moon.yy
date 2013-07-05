@@ -826,7 +826,7 @@ constant_statement      :   constant_assignment TOKEN_EOS
 constant_assignment     :   constant TOKEN_EQUALS expression
                             {
                                 $$ = new tree::Equals($1, $3);
-                                $$->setLocation(@1);
+                                $$->setLocation(@2);
                             }
                         ;
 
@@ -856,7 +856,7 @@ variable_assignment     :   variable
                         |   variable TOKEN_EQUALS expression
                             {
                                 $$ = new tree::Equals($1, $3);
-                                $$->setLocation(@1);
+                                $$->setLocation(@2);
                             }
                         ;
 
@@ -1030,7 +1030,7 @@ l_or_expression         :   l_and_expression
                         |   l_or_expression TOKEN_LOGICAL_OR l_and_expression
                             {
                                 $$ = new tree::LogicalOr($1, $3);
-                                $$->setLocation(@1);
+                                $$->setLocation(@2);
                             }
                         ;
 
@@ -1041,7 +1041,7 @@ l_and_expression        :   or_expression
                         |   l_and_expression TOKEN_LOGICAL_AND or_expression
                             {
                                 $$ = new tree::LogicalAnd($1, $3);
-                                $$->setLocation(@1);
+                                $$->setLocation(@2);
                             }
                         ;
 
@@ -1052,7 +1052,7 @@ or_expression           :   xor_expression
                         |   or_expression TOKEN_OR xor_expression
                             {
                                 $$ = new tree::Or($1, $3);
-                                $$->setLocation(@1);
+                                $$->setLocation(@2);
                             }
                         ;
 
@@ -1063,7 +1063,7 @@ xor_expression          :   and_expression
                         |   xor_expression TOKEN_XOR and_expression
                             {
                                 $$ = new tree::Xor($1, $3);
-                                $$->setLocation(@1);
+                                $$->setLocation(@2);
                             }
                         ;
 
@@ -1074,7 +1074,7 @@ and_expression          :   eq_expression
                         |   and_expression TOKEN_AND eq_expression
                             {
                                 $$ = new tree::And($1, $3);
-                                $$->setLocation(@1);
+                                $$->setLocation(@2);
                             }
                         ;
 
@@ -1085,12 +1085,12 @@ eq_expression           :   rel_expression
                         |   eq_expression TOKEN_EQ rel_expression
                             {
                                 $$ = new tree::Equal($1, $3);
-                                $$->setLocation(@1);
+                                $$->setLocation(@2);
                             }
                         |   eq_expression TOKEN_NE rel_expression
                             {
                                 $$ = new tree::Unequal($1, $3);
-                                $$->setLocation(@1);
+                                $$->setLocation(@2);
                             }
                         ;
 
@@ -1101,22 +1101,22 @@ rel_expression          :   add_expression
                         |   rel_expression TOKEN_LT add_expression
                             {
                                 $$ = new tree::LessThan($1, $3);
-                                $$->setLocation(@1);
+                                $$->setLocation(@2);
                             }
                         |   rel_expression TOKEN_LE add_expression
                             {
                                 $$ = new tree::LessEqual($1, $3);
-                                $$->setLocation(@1);
+                                $$->setLocation(@2);
                             }
                         |   rel_expression TOKEN_GT add_expression
                             {
                                 $$ = new tree::GreaterThan($1, $3);
-                                $$->setLocation(@1);
+                                $$->setLocation(@2);
                             }
                         |   rel_expression TOKEN_GE add_expression
                             {
                                 $$ = new tree::GreaterEqual($1, $3);
-                                $$->setLocation(@1);
+                                $$->setLocation(@2);
                             }
                         ;
 
@@ -1127,12 +1127,12 @@ add_expression          :   mult_expression
                         |   add_expression TOKEN_ADD mult_expression
                             {
                                 $$ = new tree::Add($1, $3);
-                                $$->setLocation(@1);
+                                $$->setLocation(@2);
                             }
                         |   add_expression TOKEN_SUBTRACT mult_expression
                             {
                                 $$ = new tree::Subtract($1, $3);
-                                $$->setLocation(@1);
+                                $$->setLocation(@2);
                             }
                         ;
 
@@ -1143,17 +1143,17 @@ mult_expression         :   cast_expression
                         |   mult_expression TOKEN_MULTIPLY cast_expression
                             {
                                 $$ = new tree::Multiply($1, $3);
-                                $$->setLocation(@1);
+                                $$->setLocation(@2);
                             }
                         |   mult_expression TOKEN_DIVIDE cast_expression
                             {
                                 $$ = new tree::Divide($1, $3);
-                                $$->setLocation(@1);
+                                $$->setLocation(@2);
                             }
                         |   mult_expression TOKEN_MODULUS cast_expression
                             {
                                 $$ = new tree::Modulus($1, $3);
-                                $$->setLocation(@1);
+                                $$->setLocation(@2);
                             }
                         ;
 
