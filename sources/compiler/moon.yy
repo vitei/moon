@@ -1161,10 +1161,10 @@ cast_expression         :   unary_expression
                             {
                                 $$ = $1;
                             }
-                        |   type TOKEN_CAST expression_atom
+                        |   expression_atom TOKEN_CAST type
                             {
-                                $$ = new tree::Cast($1, $3);
-                                $$->setLocation(@1);
+                                $$ = new tree::Cast($3, $1);
+                                $$->setLocation(@2);
                             }
                         ;
 
