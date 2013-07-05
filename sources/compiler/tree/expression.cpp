@@ -95,7 +95,7 @@ void tree::Cast::checkCast()
 
 		ASSERT(typeA);
 
-		if(!typeA->canCast(*typeB))
+		if(!typeA->canCast(*typeB, mAutoCast))
 		{
 			throw tree::Cast::InvalidException(this);
 		}

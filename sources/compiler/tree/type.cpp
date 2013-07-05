@@ -1,17 +1,39 @@
 #include "compiler/tree.h"
 
 
-bool tree::Int::canCast(const tree::Type &from) const
+bool tree::Bool::canCast(const tree::Type &from, bool autoCast) const
 {
-	if(dynamic_cast<const tree::Bool *>(&from))
+	if(!autoCast)
 	{
-		return true;
+		if(dynamic_cast<const tree::Int *>(&from) ||
+		   dynamic_cast<const tree::Float *>(&from) ||
+		   dynamic_cast<const tree::String *>(&from))
+		{
+			return true;
+		}
 	}
 
 	return false;
 }
 
-bool tree::Float::canCast(const tree::Type &from) const
+bool tree::Int::canCast(const tree::Type &from, bool autoCast) const
+{
+	if(dynamic_cast<const tree::Bool *>(&from))
+	{
+		return true;
+	}
+	else if(!autoCast)
+	{
+		if(dynamic_cast<const tree::Float *>(&from))
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
+bool tree::Float::canCast(const tree::Type &from, bool autoCast) const
 {
 	if(dynamic_cast<const tree::Bool *>(&from) ||
 	   dynamic_cast<const tree::Int *>(&from))
@@ -22,7 +44,7 @@ bool tree::Float::canCast(const tree::Type &from) const
 	return false;
 }
 
-bool tree::String::canCast(const tree::Type &from) const
+bool tree::String::canCast(const tree::Type &from, bool autoCast) const
 {
 	const tree::String *string;
 
@@ -45,7 +67,7 @@ tree::Array::Array(Type *type, long long size) : mType(type), mSize(size)
 	}
 }
 
-bool tree::Array::canCast(const tree::Type &from) const
+bool tree::Array::canCast(const tree::Type &from, bool autoCast) const
 {
 	/*if(dynamic_cast<tree::Bool *>(&from) ||
 	   dynamic_cast<tree::Int *>(&from))

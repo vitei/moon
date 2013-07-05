@@ -397,7 +397,7 @@ namespace tree
 			}
 		};
 
-		Cast(Type *type, Expression *expression) : mExpression(expression)
+		Cast(Type *type, Expression *expression, bool autoCast = false) : mExpression(expression), mAutoCast(autoCast)
 		{
 			setType(type);
 		}
@@ -419,6 +419,11 @@ namespace tree
 		{
 			mExpression = expression;
 			//checkCast();
+		}
+
+		bool getAutoCast() const
+		{
+			return mAutoCast;
 		}
 
 		virtual void childAccept(operation::Operation *operation)
@@ -444,6 +449,7 @@ namespace tree
 
 	private:
 		Expression *mExpression;
+		bool mAutoCast;
 	};
 
 	class DirectAccess : public Access

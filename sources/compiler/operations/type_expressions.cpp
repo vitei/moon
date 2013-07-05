@@ -17,7 +17,7 @@ void operation::TypeExpressions::visit(tree::BinaryExpression *binaryExpression)
 
 	if(binaryExpression->getLHS() && *binaryExpression->getLHS()->getType() != *binaryExpression->getType())
 	{
-		tree::Cast *cast = new tree::Cast(binaryExpression->getType(), binaryExpression->getLHS());
+		tree::Cast *cast = new tree::Cast(binaryExpression->getType(), binaryExpression->getLHS(), true);
 
 		cast->setLocation(binaryExpression->getLocation());
 		binaryExpression->setLHS(cast);
@@ -25,7 +25,7 @@ void operation::TypeExpressions::visit(tree::BinaryExpression *binaryExpression)
 
 	if(binaryExpression->getRHS() && *binaryExpression->getRHS()->getType() != *binaryExpression->getType())
 	{
-		tree::Cast *cast = new tree::Cast(binaryExpression->getType(), binaryExpression->getRHS());
+		tree::Cast *cast = new tree::Cast(binaryExpression->getType(), binaryExpression->getRHS(), true);
 
 		cast->setLocation(binaryExpression->getLocation());
 		binaryExpression->setRHS(cast);
@@ -44,16 +44,16 @@ void operation::TypeExpressions::visit(tree::BooleanBinaryExpression *booleanBin
 
 		if(*typeA != *typeB)
 		{
-			if(typeA->canCast(*typeB))
+			if(typeA->canCast(*typeB, true))
 			{
-				tree::Cast *cast = new tree::Cast(typeA, booleanBinaryExpression->getRHS());
+				tree::Cast *cast = new tree::Cast(typeA, booleanBinaryExpression->getRHS(), true);
 
 				cast->setLocation(booleanBinaryExpression->getLocation());
 				booleanBinaryExpression->setRHS(cast);
 			}
 			else
 			{
-				tree::Cast *cast = new tree::Cast(typeB, booleanBinaryExpression->getLHS());
+				tree::Cast *cast = new tree::Cast(typeB, booleanBinaryExpression->getLHS(), true);
 
 				cast->setLocation(booleanBinaryExpression->getLocation());
 				booleanBinaryExpression->setLHS(cast);
@@ -90,7 +90,7 @@ void operation::TypeExpressions::visit(tree::FunctionCall *functionCall)
 			// Check the types in-case unresolved
 			if(*expectedType != *actualType)
 			{
-				tree::Cast *cast = new tree::Cast(expectedType, *i);
+				tree::Cast *cast = new tree::Cast(expectedType, *i, true);
 
 				cast->setLocation((*i)->getLocation());
 				*i = cast;
@@ -131,7 +131,7 @@ void operation::TypeExpressions::visit(tree::If *ifStatement)
 		test->getType()->printType();
 #endif
 
-		tree::Cast *cast = new tree::Cast(new tree::Bool(), test);
+		tree::Cast *cast = new tree::Cast(new tree::Bool(), test, true);
 
 		cast->setLocation(test->getLocation());
 		ifStatement->setTest(cast);
@@ -153,7 +153,7 @@ void operation::TypeExpressions::visit(tree::While *whileStatement)
 		test->getType()->printType();
 #endif
 
-		tree::Cast *cast = new tree::Cast(new tree::Bool(), test);
+		tree::Cast *cast = new tree::Cast(new tree::Bool(), test, true);
 
 		cast->setLocation(test->getLocation());
 		whileStatement->setTest(cast);
@@ -176,7 +176,7 @@ void operation::TypeExpressions::visit(tree::Return *returnStatement)
 	}
 	else if(*returnStatement->getReturn()->getType() != *mPrototype->getType())
 	{
-		tree::Cast *cast = new tree::Cast(mPrototype->getType(), returnStatement->getReturn());
+		tree::Cast *cast = new tree::Cast(mPrototype->getType(), returnStatement->getReturn(), true);
 
 		cast->setLocation(returnStatement->getLocation());
 		returnStatement->setReturn(cast);
