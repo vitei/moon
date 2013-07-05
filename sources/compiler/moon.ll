@@ -7,7 +7,7 @@
  */
 
 %{
-    #include <sstream>
+    #include <string>
 
     #include "compiler/error.h"
     #include "compiler/lexer.h"
@@ -174,41 +174,49 @@
                                 yylval->real = (float)atof(yytext);
                                 return TOKEN_FLOAT;
                             }
-    "b:"[0-1]+              {
-                                yylval->integer = strtol(yytext + 2, NULL, 2);
+    [0-1]+":b"              {
+                                char *castPos = strchr(yytext, ':');
+                                *castPos = 0;
+                                yylval->integer = strtol(yytext, NULL, 2);
+
                                 return TOKEN_INTEGER;
                             }
-    "o:"[0-8]+              {
-                                yylval->integer = strtol(yytext + 2, NULL, 8);
+    [0-8]+"o:"              {
+                                char *castPos = strchr(yytext, ':');
+                                *castPos = 0;
+                                yylval->integer = strtol(yytext, NULL, 8);
+
                                 return TOKEN_INTEGER;
                             }
-    "h:"[0-9A-Fa-f]+        {
-                                yylval->integer = strtol(yytext + 2, NULL, 16);
+    [0-9A-Fa-f]+"h:"        {
+                                char *castPos = strchr(yytext, ':');
+                                *castPos = 0;
+                                yylval->integer = strtol(yytext, NULL, 16);
+
                                 return TOKEN_INTEGER;
                             }
-    [0-9]+":"[0-9A-Za-z]+   {
-                                char *numString = strchr(yytext, ':');
+    [0-9A-Za-z]+":"[0-9]+   {
+                                char *baseString = strchr(yytext, ':');
 
                                 // Get rid of the ":"
-                                *numString++ = 0;
+                                *baseString++ = 0;
 
-                                int base = atoi(yytext);
+                                int base = atoi(baseString);
 
                                 if(base >= 2 && base <= 36)
                                 {
                                     yylval->integer = 0;
 
-                                    for(char *i = numString; *i; i++)
+                                    for(char *i = yytext; *i; i++)
                                     {
                                         if(*i != '0')
                                         {
-                                            yylval->integer = strtol(numString, NULL, base);
+                                            yylval->integer = strtol(yytext, NULL, base);
 
                                             if(!yylval->integer)
                                             {
-                                                std::ostringstream errorStream;
-                                                errorStream << "Invalid number \"" << numString << "\" for base " << base;
-                                                error::enqueue(*yylloc, errorStream.str());
+                                                std::string error = std::string("Invalid number \"") + yytext + "\" for base " + baseString;
+                                                error::enqueue(*yylloc, error);
                                             }
 
                                             break;
