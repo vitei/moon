@@ -16,6 +16,17 @@ bool tree::Bool::canCast(const tree::Type &from, bool autoCast) const
 	return false;
 }
 
+bool tree::Bool::canPerform(const Operation &operation) const
+{
+	if(dynamic_cast<const tree::Assign *>(&operation) ||
+	   dynamic_cast<const tree::BooleanBinaryOperation *>(&operation))
+	{
+		return true;
+	}
+
+	return false;
+}
+
 bool tree::Int::canCast(const tree::Type &from, bool autoCast) const
 {
 	if(dynamic_cast<const tree::Bool *>(&from))
@@ -33,10 +44,45 @@ bool tree::Int::canCast(const tree::Type &from, bool autoCast) const
 	return false;
 }
 
+bool tree::Int::canPerform(const Operation &operation) const
+{
+	if(dynamic_cast<const tree::Assign *>(&operation) ||
+	   dynamic_cast<const tree::Or *>(&operation) ||
+	   dynamic_cast<const tree::Xor *>(&operation) ||
+	   dynamic_cast<const tree::And *>(&operation) ||
+	   dynamic_cast<const tree::Add *>(&operation) ||
+	   dynamic_cast<const tree::Subtract *>(&operation) ||
+	   dynamic_cast<const tree::Multiply *>(&operation) ||
+	   dynamic_cast<const tree::Divide *>(&operation) ||
+	   dynamic_cast<const tree::Modulus *>(&operation) ||
+	   dynamic_cast<const tree::Not *>(&operation) ||
+	   dynamic_cast<const tree::Minus *>(&operation))
+	{
+		return true;
+	}
+
+	return false;
+}
+
 bool tree::Float::canCast(const tree::Type &from, bool autoCast) const
 {
 	if(dynamic_cast<const tree::Bool *>(&from) ||
 	   dynamic_cast<const tree::Int *>(&from))
+	{
+		return true;
+	}
+
+	return false;
+}
+
+bool tree::Float::canPerform(const Operation &operation) const
+{
+	if(dynamic_cast<const tree::Assign *>(&operation) ||
+	   dynamic_cast<const tree::Add *>(&operation) ||
+	   dynamic_cast<const tree::Subtract *>(&operation) ||
+	   dynamic_cast<const tree::Multiply *>(&operation) ||
+	   dynamic_cast<const tree::Divide *>(&operation) ||
+	   dynamic_cast<const tree::Minus *>(&operation))
 	{
 		return true;
 	}

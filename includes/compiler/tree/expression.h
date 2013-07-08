@@ -208,6 +208,8 @@ namespace tree
 
 			virtual void reset()
 			{
+				LOG("tree::Operation::NotAllowedException::reset");
+				expression->setType(NULL);
 			}
 		};
 

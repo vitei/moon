@@ -36,7 +36,7 @@ namespace tree
 			return false;
 		}
 
-		virtual bool canPerform(Operation *operation) const
+		virtual bool canPerform(const Operation &operation) const
 		{
 			return false;
 		}
@@ -88,7 +88,8 @@ namespace tree
 	public:
 		Bool() {}
 
-		virtual bool canCast(const Type &from, bool autoCast = false) const;
+		bool canCast(const Type &from, bool autoCast = false) const;
+		bool canPerform(const Operation &operation) const;
 
 		virtual const char *getTypeName() const
 		{
@@ -114,6 +115,7 @@ namespace tree
 		Int(unsigned int Size = DEFAULT_SIZE) : mSize(Size) {}
 
 		bool canCast(const Type &from, bool autoCast = false) const;
+		bool canPerform(const Operation &operation) const;
 
 		unsigned int getSize()
 		{
@@ -156,6 +158,7 @@ namespace tree
 		Float(unsigned int Size = DEFAULT_SIZE) : mSize(Size) {}
 
 		bool canCast(const Type &from, bool autoCast = false) const;
+		bool canPerform(const Operation &operation) const;
 
 		unsigned int getSize()
 		{

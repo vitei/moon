@@ -35,7 +35,7 @@ void tree::Access::setTarget(Expression *target)
 
 void tree::Operation::setType(Type *type)
 {
-	if(type == NULL || type->canPerform(this))
+	if(type == NULL || type->canPerform(*this))
 	{
 		tree::Expression::setType(type);
 	}
