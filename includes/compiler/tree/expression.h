@@ -198,7 +198,21 @@ namespace tree
 		}
 	};
 
-	class Operation : public Expression {};
+	class Operation : public Expression
+	{
+	public:
+		class NotAllowedException : public tree::Expression::InvalidException
+		{
+		public:
+			NotAllowedException(Operation *_operation) : tree::Expression::InvalidException(_operation) {}
+
+			virtual void reset()
+			{
+			}
+		};
+
+		virtual void setType(Type *type);
+	};
 
 	class UnaryOperation : public Operation
 	{

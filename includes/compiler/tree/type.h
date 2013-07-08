@@ -8,6 +8,8 @@
 
 namespace tree
 {
+	class Operation;
+
 	/* ---- ONLY ABSTRACT CLASSES BELOW HERE ---- */
 
 	class Type : public Node
@@ -30,6 +32,11 @@ namespace tree
 		virtual const char *getTypeName() const = 0;
 
 		virtual bool canCast(const Type &from, bool autoCast = false) const
+		{
+			return false;
+		}
+
+		virtual bool canPerform(Operation *operation) const
 		{
 			return false;
 		}

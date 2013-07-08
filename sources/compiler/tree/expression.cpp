@@ -33,6 +33,18 @@ void tree::Access::setTarget(Expression *target)
 	}
 }
 
+void tree::Operation::setType(Type *type)
+{
+	if(type == NULL || type->canPerform(this))
+	{
+		tree::Expression::setType(type);
+	}
+	else
+	{
+		throw tree::Operation::NotAllowedException(this);
+	}
+}
+
 void tree::UnaryOperation::setExpression(Expression *expression)
 {
 	if(expression == NULL)
