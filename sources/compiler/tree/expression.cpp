@@ -128,3 +128,70 @@ void tree::FunctionCall::setPrototype(tree::Expression *prototype)
 		throw tree::FunctionCall::InvalidFunctionException(this);
 	}
 }
+
+tree::BoolLiteral::BoolLiteral(tree::Literal *literal) : Literal(new Bool())
+{
+	tree::IntLiteral *intLiteral;
+	tree::FloatLiteral *floatLiteral;
+	tree::StringLiteral *stringLiteral;
+
+	if((intLiteral = dynamic_cast<tree::IntLiteral *>(literal)))
+	{
+		mValue = (intLiteral->getValue() != 0);
+	}
+	else if((floatLiteral = dynamic_cast<tree::FloatLiteral *>(literal)))
+	{
+		mValue = (floatLiteral->getValue() != 0.0f);
+	}
+	else if((stringLiteral = dynamic_cast<tree::StringLiteral *>(literal)))
+	{
+		mValue = (stringLiteral->getValue() != "");
+	}
+	else
+	{
+		throw tree::BoolLiteral::InvalidException(literal);
+	}
+}
+
+tree::IntLiteral::IntLiteral(tree::Literal *literal) : Literal(new Int())
+{
+	tree::BoolLiteral *boolLiteral;
+	tree::FloatLiteral *floatLiteral;
+
+	if((boolLiteral = dynamic_cast<tree::BoolLiteral *>(literal)))
+	{
+		mValue = boolLiteral->getValue() ? 1 : 0;
+	}
+	else if((floatLiteral = dynamic_cast<tree::FloatLiteral *>(literal)))
+	{
+		mValue = (int)floatLiteral->getValue();
+	}
+	else
+	{
+		throw tree::IntLiteral::InvalidException(literal);
+	}
+}
+
+tree::FloatLiteral::FloatLiteral(tree::Literal *literal) : Literal(new Float())
+{
+	tree::BoolLiteral *boolLiteral;
+	tree::IntLiteral *intLiteral;
+
+	if((boolLiteral = dynamic_cast<tree::BoolLiteral *>(literal)))
+	{
+		mValue = boolLiteral->getValue() ? 1.0f : 0.0f;
+	}
+	else if((intLiteral = dynamic_cast<tree::IntLiteral *>(literal)))
+	{
+		mValue = (float)intLiteral->getValue();
+	}
+	else
+	{
+		throw tree::FloatLiteral::InvalidException(literal);
+	}
+}
+
+tree::StringLiteral::StringLiteral(tree::Literal *literal) : Literal(new String())
+{
+	throw tree::StringLiteral::InvalidException(literal);
+}

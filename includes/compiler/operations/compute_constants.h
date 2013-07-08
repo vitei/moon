@@ -12,7 +12,7 @@ namespace operation
 	public:
 		static void run(tree::Program *program);
 
-		virtual tree::Node *restructure(tree::Constant *constant);
+		virtual tree::Node *restructure(tree::Cast *cast);
 
 	private:
 		ComputeConstants() {}

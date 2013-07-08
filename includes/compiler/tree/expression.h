@@ -25,7 +25,7 @@ namespace tree
 			InvalidException(Expression *_expression) : expression(_expression) { /* Abstract class */ }
 		};
 
-		Type *getType()
+		Type *getType() const
 		{
 			return mType;
 		}
@@ -181,6 +181,15 @@ namespace tree
 
 	class Literal : public Expression
 	{
+	public:
+		class InvalidException : public tree::Expression::InvalidException
+		{
+		public:
+			InvalidException(Literal *_literal) : tree::Expression::InvalidException(_literal) {}
+
+			virtual void reset() {}
+		};
+
 	protected:
 		Literal(Type *type)
 		{
@@ -563,8 +572,9 @@ namespace tree
 	{
 	public:
 		BoolLiteral(bool value) : Literal(new Bool()), mValue(value) {}
+		BoolLiteral(Literal *literal);
 
-		bool getValue()
+		bool getValue() const
 		{
 			return mValue;
 		}
@@ -581,8 +591,9 @@ namespace tree
 	{
 	public:
 		IntLiteral(int value) : Literal(new Int()), mValue(value) {}
+		IntLiteral(Literal *literal);
 
-		int getValue()
+		int getValue() const
 		{
 			return mValue;
 		}
@@ -599,8 +610,9 @@ namespace tree
 	{
 	public:
 		FloatLiteral(float value) : Literal(new Float()), mValue(value) {}
+		FloatLiteral(Literal *literal);
 
-		float getValue()
+		float getValue() const
 		{
 			return mValue;
 		}
@@ -617,8 +629,9 @@ namespace tree
 	{
 	public:
 		StringLiteral(std::string value) : Literal(new String(value.length())), mValue(value) {}
+		StringLiteral(Literal *literal);
 
-		std::string getValue()
+		const std::string getValue() const
 		{
 			return mValue;
 		}
