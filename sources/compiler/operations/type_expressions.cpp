@@ -9,54 +9,54 @@ void operation::TypeExpressions::run(tree::Program *program)
 	program->accept(&operation);
 }
 
-void operation::TypeExpressions::visit(tree::BinaryExpression *binaryExpression)
+void operation::TypeExpressions::visit(tree::BinaryOperation *binaryOperation)
 {
-	LOG("TypeExpressions::visit::BinaryExpression");
+	LOG("TypeExpressions::visit::BinaryOperation");
 
-	ASSERT(binaryExpression->getType());
+	ASSERT(binaryOperation->getType());
 
-	if(binaryExpression->getLHS() && *binaryExpression->getLHS()->getType() != *binaryExpression->getType())
+	if(binaryOperation->getLHS() && *binaryOperation->getLHS()->getType() != *binaryOperation->getType())
 	{
-		tree::Cast *cast = new tree::Cast(binaryExpression->getType(), binaryExpression->getLHS(), true);
+		tree::Cast *cast = new tree::Cast(binaryOperation->getType(), binaryOperation->getLHS(), true);
 
-		cast->setLocation(binaryExpression->getLocation());
-		binaryExpression->setLHS(cast);
+		cast->setLocation(binaryOperation->getLocation());
+		binaryOperation->setLHS(cast);
 	}
 
-	if(binaryExpression->getRHS() && *binaryExpression->getRHS()->getType() != *binaryExpression->getType())
+	if(binaryOperation->getRHS() && *binaryOperation->getRHS()->getType() != *binaryOperation->getType())
 	{
-		tree::Cast *cast = new tree::Cast(binaryExpression->getType(), binaryExpression->getRHS(), true);
+		tree::Cast *cast = new tree::Cast(binaryOperation->getType(), binaryOperation->getRHS(), true);
 
-		cast->setLocation(binaryExpression->getLocation());
-		binaryExpression->setRHS(cast);
+		cast->setLocation(binaryOperation->getLocation());
+		binaryOperation->setRHS(cast);
 	}
 }
 
-void operation::TypeExpressions::visit(tree::BooleanBinaryExpression *booleanBinaryExpression)
+void operation::TypeExpressions::visit(tree::BooleanBinaryOperation *booleanBinaryOperation)
 {
-	LOG("TypeExpressions::visit::BooleanBinaryExpression");
+	LOG("TypeExpressions::visit::BooleanBinaryOperation");
 
 	// Check the left and right types are the same
-	if(booleanBinaryExpression->getLHS() && booleanBinaryExpression->getRHS())
+	if(booleanBinaryOperation->getLHS() && booleanBinaryOperation->getRHS())
 	{
-		tree::Type *typeA = booleanBinaryExpression->getLHS()->getType();
-		tree::Type *typeB = booleanBinaryExpression->getRHS()->getType();
+		tree::Type *typeA = booleanBinaryOperation->getLHS()->getType();
+		tree::Type *typeB = booleanBinaryOperation->getRHS()->getType();
 
 		if(*typeA != *typeB)
 		{
 			if(typeA->canCast(*typeB, true))
 			{
-				tree::Cast *cast = new tree::Cast(typeA, booleanBinaryExpression->getRHS(), true);
+				tree::Cast *cast = new tree::Cast(typeA, booleanBinaryOperation->getRHS(), true);
 
-				cast->setLocation(booleanBinaryExpression->getLocation());
-				booleanBinaryExpression->setRHS(cast);
+				cast->setLocation(booleanBinaryOperation->getLocation());
+				booleanBinaryOperation->setRHS(cast);
 			}
 			else
 			{
-				tree::Cast *cast = new tree::Cast(typeB, booleanBinaryExpression->getLHS(), true);
+				tree::Cast *cast = new tree::Cast(typeB, booleanBinaryOperation->getLHS(), true);
 
-				cast->setLocation(booleanBinaryExpression->getLocation());
-				booleanBinaryExpression->setLHS(cast);
+				cast->setLocation(booleanBinaryOperation->getLocation());
+				booleanBinaryOperation->setLHS(cast);
 			}
 		}
 	}

@@ -198,21 +198,23 @@ namespace tree
 		}
 	};
 
-	class UnaryExpression : public Expression
+	class Operation : public Expression {};
+
+	class UnaryOperation : public Operation
 	{
 	public:
 		class InvalidException : public tree::Expression::InvalidException
 		{
 		public:
-			InvalidException(UnaryExpression *_unaryExpression) : tree::Expression::InvalidException(_unaryExpression->getExpression()), unaryExpression(_unaryExpression) {}
+			InvalidException(UnaryOperation *_unaryOperation) : tree::Expression::InvalidException(_unaryOperation->getExpression()), unaryOperation(_unaryOperation) {}
 
 			virtual void reset()
 			{
-				LOG("tree::UnaryExpression::InvalidException::reset");
-				unaryExpression->setExpression(NULL);
+				LOG("tree::UnaryOperation::InvalidException::reset");
+				unaryOperation->setExpression(NULL);
 			}
 
-			UnaryExpression *unaryExpression;
+			UnaryOperation *unaryOperation;
 		};
 
 		Expression *getExpression()
@@ -240,54 +242,54 @@ namespace tree
 		}
 
 	protected:
-		UnaryExpression(Expression *expression) : mExpression(expression) { /* Abstract class */ }
+		UnaryOperation(Expression *expression) : mExpression(expression) { /* Abstract class */ }
 
 	private:
 		Expression *mExpression;
 	};
 
-	class BooleanUnaryExpression : public UnaryExpression
+	class BooleanUnaryOperation : public UnaryOperation
 	{
 	protected:
-		BooleanUnaryExpression(Expression *expression) : UnaryExpression(expression)
+		BooleanUnaryOperation(Expression *expression) : UnaryOperation(expression)
 		{
 			/* Abstract class */
 			setType(new Bool());
 		}
 	};
 
-	class BinaryExpression : public Expression
+	class BinaryOperation : public Operation
 	{
 	public:
 		class InvalidException : public tree::Expression::InvalidException
 		{
 		public:
-			InvalidException(Expression *_expression, BinaryExpression *_binaryExpression) : tree::Expression::InvalidException(_expression), binaryExpression(_binaryExpression) {}
+			InvalidException(Expression *_expression, BinaryOperation *_binaryOperation) : tree::Expression::InvalidException(_expression), binaryOperation(_binaryOperation) {}
 
-			BinaryExpression *binaryExpression;
+			BinaryOperation *binaryOperation;
 		};
 
-		class InvalidLHSException : public tree::BinaryExpression::InvalidException
+		class InvalidLHSException : public tree::BinaryOperation::InvalidException
 		{
 		public:
-			InvalidLHSException(BinaryExpression *_binaryExpression) : tree::BinaryExpression::InvalidException(_binaryExpression->getLHS(), _binaryExpression) {}
+			InvalidLHSException(BinaryOperation *_binaryOperation) : tree::BinaryOperation::InvalidException(_binaryOperation->getLHS(), _binaryOperation) {}
 
 			virtual void reset()
 			{
-				LOG("tree::BinaryExpression::InvalidLHSException::reset");
-				binaryExpression->setLHS(NULL);
+				LOG("tree::BinaryOperation::InvalidLHSException::reset");
+				binaryOperation->setLHS(NULL);
 			}
 		};
 
-		class InvalidRHSException : public tree::BinaryExpression::InvalidException
+		class InvalidRHSException : public tree::BinaryOperation::InvalidException
 		{
 		public:
-			InvalidRHSException(BinaryExpression *_binaryExpression) : tree::BinaryExpression::InvalidException(_binaryExpression->getRHS(), _binaryExpression) {}
+			InvalidRHSException(BinaryOperation *_binaryOperation) : tree::BinaryOperation::InvalidException(_binaryOperation->getRHS(), _binaryOperation) {}
 
 			virtual void reset()
 			{
-				LOG("tree::BinaryExpression::InvalidRHSException::reset");
-				binaryExpression->setRHS(NULL);
+				LOG("tree::BinaryOperation::InvalidRHSException::reset");
+				binaryOperation->setRHS(NULL);
 			}
 		};
 
@@ -328,23 +330,23 @@ namespace tree
 		}
 
 	protected:
-		BinaryExpression(Expression *lhs, Expression *rhs) : mLHS(lhs), mRHS(rhs) { /* Abstract class */ }
+		BinaryOperation(Expression *lhs, Expression *rhs) : mLHS(lhs), mRHS(rhs) { /* Abstract class */ }
 
 	private:
 		Expression *mLHS;
 		Expression *mRHS;
 	};
 
-	class Assign : public BinaryExpression
+	class Assign : public BinaryOperation
 	{
 	protected:
-		Assign(Expression *lhs, Expression *rhs) : BinaryExpression(lhs, rhs) {}
+		Assign(Expression *lhs, Expression *rhs) : BinaryOperation(lhs, rhs) {}
 	};
 
-	class BooleanBinaryExpression : public BinaryExpression
+	class BooleanBinaryOperation : public BinaryOperation
 	{
 	protected:
-		BooleanBinaryExpression(Expression *lhs, Expression *rhs) : BinaryExpression(lhs, rhs)
+		BooleanBinaryOperation(Expression *lhs, Expression *rhs) : BinaryOperation(lhs, rhs)
 		{
 			/* Abstract class */
 			setType(new Bool());
@@ -657,205 +659,205 @@ namespace tree
 	class OperatorAssign : public Assign
 	{
 	public:
-		OperatorAssign(Expression *lhs, Expression *rhs, BinaryExpression *op) : Assign(lhs, rhs), mOperator(op) {}
+		OperatorAssign(Expression *lhs, Expression *rhs, BinaryOperation *op) : Assign(lhs, rhs), mOperator(op) {}
 
 #ifdef DEBUG
 		virtual void printNode() { LOG("OperatorAssign"); }
 #endif
 
-		BinaryExpression *getOperator()
+		BinaryOperation *getOperator()
 		{
 			return mOperator;
 		}
 
 	private:
-		BinaryExpression *mOperator;
+		BinaryOperation *mOperator;
 	};
 
-	class LogicalOr : public BooleanBinaryExpression
+	class LogicalOr : public BooleanBinaryOperation
 	{
 	public:
-		LogicalOr(Expression *lhs, Expression *rhs) : BooleanBinaryExpression(lhs, rhs) {}
+		LogicalOr(Expression *lhs, Expression *rhs) : BooleanBinaryOperation(lhs, rhs) {}
 
 #ifdef DEBUG
 		virtual void printNode() { LOG("LogicalOr"); }
 #endif
 	};
 
-	class LogicalAnd : public BooleanBinaryExpression
+	class LogicalAnd : public BooleanBinaryOperation
 	{
 	public:
-		LogicalAnd(Expression *lhs, Expression *rhs) : BooleanBinaryExpression(lhs, rhs) {}
+		LogicalAnd(Expression *lhs, Expression *rhs) : BooleanBinaryOperation(lhs, rhs) {}
 
 #ifdef DEBUG
 		virtual void printNode() { LOG("LogicalAnd"); }
 #endif
 	};
 
-	class Or : public BinaryExpression
+	class Or : public BinaryOperation
 	{
 	public:
-		Or(Expression *lhs, Expression *rhs) : BinaryExpression(lhs, rhs) {}
+		Or(Expression *lhs, Expression *rhs) : BinaryOperation(lhs, rhs) {}
 
 #ifdef DEBUG
 		virtual void printNode() { LOG("Or"); }
 #endif
 	};
 
-	class Xor : public BinaryExpression
+	class Xor : public BinaryOperation
 	{
 	public:
-		Xor(Expression *lhs, Expression *rhs) : BinaryExpression(lhs, rhs) {}
+		Xor(Expression *lhs, Expression *rhs) : BinaryOperation(lhs, rhs) {}
 
 #ifdef DEBUG
 		virtual void printNode() { LOG("Xor"); }
 #endif
 	};
 
-	class And : public BinaryExpression
+	class And : public BinaryOperation
 	{
 	public:
-		And(Expression *lhs, Expression *rhs) : BinaryExpression(lhs, rhs) {}
+		And(Expression *lhs, Expression *rhs) : BinaryOperation(lhs, rhs) {}
 
 #ifdef DEBUG
 		virtual void printNode() { LOG("And"); }
 #endif
 	};
 
-	class Equal : public BooleanBinaryExpression
+	class Equal : public BooleanBinaryOperation
 	{
 	public:
-		Equal(Expression *lhs, Expression *rhs) : BooleanBinaryExpression(lhs, rhs) {}
+		Equal(Expression *lhs, Expression *rhs) : BooleanBinaryOperation(lhs, rhs) {}
 
 #ifdef DEBUG
 		virtual void printNode() { LOG("Equal"); }
 #endif
 	};
 
-	class Unequal : public BooleanBinaryExpression
+	class Unequal : public BooleanBinaryOperation
 	{
 	public:
-		Unequal(Expression *lhs, Expression *rhs) : BooleanBinaryExpression(lhs, rhs) {}
+		Unequal(Expression *lhs, Expression *rhs) : BooleanBinaryOperation(lhs, rhs) {}
 
 #ifdef DEBUG
 		virtual void printNode() { LOG("Unequal"); }
 #endif
 	};
 
-	class LessThan : public BooleanBinaryExpression
+	class LessThan : public BooleanBinaryOperation
 	{
 	public:
-		LessThan(Expression *lhs, Expression *rhs) : BooleanBinaryExpression(lhs, rhs) {}
+		LessThan(Expression *lhs, Expression *rhs) : BooleanBinaryOperation(lhs, rhs) {}
 
 #ifdef DEBUG
 		virtual void printNode() { LOG("LessThan"); }
 #endif
 	};
 
-	class LessEqual : public BooleanBinaryExpression
+	class LessEqual : public BooleanBinaryOperation
 	{
 	public:
-		LessEqual(Expression *lhs, Expression *rhs) : BooleanBinaryExpression(lhs, rhs) {}
+		LessEqual(Expression *lhs, Expression *rhs) : BooleanBinaryOperation(lhs, rhs) {}
 
 #ifdef DEBUG
 		virtual void printNode() { LOG("LessEqual"); }
 #endif
 	};
 
-	class GreaterThan : public BooleanBinaryExpression
+	class GreaterThan : public BooleanBinaryOperation
 	{
 	public:
-		GreaterThan(Expression *lhs, Expression *rhs) : BooleanBinaryExpression(lhs, rhs) {}
+		GreaterThan(Expression *lhs, Expression *rhs) : BooleanBinaryOperation(lhs, rhs) {}
 
 #ifdef DEBUG
 		virtual void printNode() { LOG("GreaterThan"); }
 #endif
 	};
 
-	class GreaterEqual : public BooleanBinaryExpression
+	class GreaterEqual : public BooleanBinaryOperation
 	{
 	public:
-		GreaterEqual(Expression *lhs, Expression *rhs) : BooleanBinaryExpression(lhs, rhs) {}
+		GreaterEqual(Expression *lhs, Expression *rhs) : BooleanBinaryOperation(lhs, rhs) {}
 
 #ifdef DEBUG
 		virtual void printNode() { LOG("GreaterEqual"); }
 #endif
 	};
 
-	class Add : public BinaryExpression
+	class Add : public BinaryOperation
 	{
 	public:
-		Add(Expression *lhs, Expression *rhs) : BinaryExpression(lhs, rhs) {}
+		Add(Expression *lhs, Expression *rhs) : BinaryOperation(lhs, rhs) {}
 
 #ifdef DEBUG
 		virtual void printNode() { LOG("Add"); }
 #endif
 	};
 
-	class Subtract : public BinaryExpression
+	class Subtract : public BinaryOperation
 	{
 	public:
-		Subtract(Expression *lhs, Expression *rhs) : BinaryExpression(lhs, rhs) {}
+		Subtract(Expression *lhs, Expression *rhs) : BinaryOperation(lhs, rhs) {}
 
 #ifdef DEBUG
 		virtual void printNode() { LOG("Subtract"); }
 #endif
 	};
 
-	class Multiply : public BinaryExpression
+	class Multiply : public BinaryOperation
 	{
 	public:
-		Multiply(Expression *lhs, Expression *rhs) : BinaryExpression(lhs, rhs) {}
+		Multiply(Expression *lhs, Expression *rhs) : BinaryOperation(lhs, rhs) {}
 
 #ifdef DEBUG
 		virtual void printNode() { LOG("Multiply"); }
 #endif
 	};
 
-	class Divide : public BinaryExpression
+	class Divide : public BinaryOperation
 	{
 	public:
-		Divide(Expression *lhs, Expression *rhs) : BinaryExpression(lhs, rhs) {}
+		Divide(Expression *lhs, Expression *rhs) : BinaryOperation(lhs, rhs) {}
 
 #ifdef DEBUG
 		virtual void printNode() { LOG("Divide"); }
 #endif
 	};
 
-	class Modulus : public BinaryExpression
+	class Modulus : public BinaryOperation
 	{
 	public:
-		Modulus(Expression *lhs, Expression *rhs) : BinaryExpression(lhs, rhs) {}
+		Modulus(Expression *lhs, Expression *rhs) : BinaryOperation(lhs, rhs) {}
 
 #ifdef DEBUG
 		virtual void printNode() { LOG("Modulus"); }
 #endif
 	};
 
-	class LogicalNot : public BooleanUnaryExpression
+	class LogicalNot : public BooleanUnaryOperation
 	{
 	public:
-		LogicalNot(Expression *expression) : BooleanUnaryExpression(expression) {}
+		LogicalNot(Expression *expression) : BooleanUnaryOperation(expression) {}
 
 #ifdef DEBUG
 		virtual void printNode() { LOG("LogicalNot"); }
 #endif
 	};
 
-	class Not : public UnaryExpression
+	class Not : public UnaryOperation
 	{
 	public:
-		Not(Expression *expression) : UnaryExpression(expression) {}
+		Not(Expression *expression) : UnaryOperation(expression) {}
 
 #ifdef DEBUG
 		virtual void printNode() { LOG("Not"); }
 #endif
 	};
 
-	class Minus : public UnaryExpression
+	class Minus : public UnaryOperation
 	{
 	public:
-		Minus(Expression *expression) : UnaryExpression(expression) {}
+		Minus(Expression *expression) : UnaryOperation(expression) {}
 
 #ifdef DEBUG
 		virtual void printNode() { LOG("Minus"); }

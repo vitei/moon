@@ -12,7 +12,7 @@ tree::Node *operation::ExpandTree::restructure(tree::OperatorAssign *operatorAss
 {
 	LOG("ExpandTree::restructure::OperatorAssign");
 
-	tree::BinaryExpression *op = operatorAssign->getOperator();
+	tree::BinaryOperation *op = operatorAssign->getOperator();
 
 	op->setLHS(operatorAssign->getLHS());
 	op->setRHS(operatorAssign->getRHS());

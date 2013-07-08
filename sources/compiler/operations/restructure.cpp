@@ -50,42 +50,42 @@ void operation::Restructure::dispatch(tree::Access *access)
 	dispatch(static_cast<tree::Expression *>(access));
 }
 
-void operation::Restructure::dispatch(tree::UnaryExpression *unaryExpression)
+void operation::Restructure::dispatch(tree::UnaryOperation *unaryOperation)
 {
 	tree::Expression *expression = NULL;
 
-	if(unaryExpression->getExpression())
+	if(unaryOperation->getExpression())
 	{
 		expression = static_cast<tree::Expression *>(mNodeMap.top());
 		mNodeMap.pop();
 	}
 
-	unaryExpression->setExpression(expression);
+	unaryOperation->setExpression(expression);
 
-	dispatch(static_cast<tree::Expression *>(unaryExpression));
+	dispatch(static_cast<tree::Expression *>(unaryOperation));
 }
 
-void operation::Restructure::dispatch(tree::BinaryExpression *binaryExpression)
+void operation::Restructure::dispatch(tree::BinaryOperation *binaryOperation)
 {
 	tree::Expression *lhs = NULL;
 	tree::Expression *rhs = NULL;
 
-	if(binaryExpression->getRHS())
+	if(binaryOperation->getRHS())
 	{
 		rhs = static_cast<tree::Expression *>(mNodeMap.top());
 		mNodeMap.pop();
 	}
 
-	if(binaryExpression->getLHS())
+	if(binaryOperation->getLHS())
 	{
 		lhs = static_cast<tree::Expression *>(mNodeMap.top());
 		mNodeMap.pop();
 	}
 
-	binaryExpression->setLHS(lhs);
-	binaryExpression->setRHS(rhs);
+	binaryOperation->setLHS(lhs);
+	binaryOperation->setRHS(rhs);
 
-	dispatch(static_cast<tree::Expression *>(binaryExpression));
+	dispatch(static_cast<tree::Expression *>(binaryOperation));
 }
 
 void operation::Restructure::dispatch(tree::Cast *cast)

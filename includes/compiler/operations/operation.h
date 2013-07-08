@@ -22,16 +22,17 @@ namespace operation
 		PROCESS_ACTION(tree::Statement, tree::Scoping, return_type, name) \
 		 \
 		PROCESS_ACTION(tree::Expression, tree::Access, return_type, name) \
-		PROCESS_ACTION(tree::Expression, tree::BinaryExpression, return_type, name) \
 		PROCESS_ACTION(tree::Expression, tree::Identity, return_type, name) \
 		PROCESS_ACTION(tree::Expression, tree::Literal, return_type, name) \
-		PROCESS_ACTION(tree::Expression, tree::UnaryExpression, return_type, name) \
+		PROCESS_ACTION(tree::Expression, tree::Operation, return_type, name) \
 		 \
-		PROCESS_ACTION(tree::BinaryExpression, tree::Assign, return_type, name) \
+		PROCESS_ACTION(tree::Operation, tree::BinaryOperation, return_type, name) \
+		PROCESS_ACTION(tree::Operation, tree::UnaryOperation, return_type, name) \
 		 \
-		PROCESS_ACTION(tree::BinaryExpression, tree::BooleanBinaryExpression, return_type, name) \
+		PROCESS_ACTION(tree::BinaryOperation, tree::Assign, return_type, name) \
+		PROCESS_ACTION(tree::BinaryOperation, tree::BooleanBinaryOperation, return_type, name) \
 		 \
-		PROCESS_ACTION(tree::UnaryExpression, tree::BooleanUnaryExpression, return_type, name) \
+		PROCESS_ACTION(tree::UnaryOperation, tree::BooleanUnaryOperation, return_type, name) \
 		 \
 		PROCESS_ACTION(tree::Identity, tree::TypedIdentity, return_type, name) \
 		 \
@@ -43,28 +44,28 @@ namespace operation
 		PROCESS_ACTION(tree::Access, tree::DirectAccess, return_type, name) \
 		PROCESS_ACTION(tree::Access, tree::MessageAccess, return_type, name) \
 		 \
-		PROCESS_ACTION(tree::BinaryExpression, tree::Add, return_type, name) \
-		PROCESS_ACTION(tree::BinaryExpression, tree::And, return_type, name) \
-		PROCESS_ACTION(tree::BinaryExpression, tree::Divide, return_type, name) \
-		PROCESS_ACTION(tree::BinaryExpression, tree::Modulus, return_type, name) \
-		PROCESS_ACTION(tree::BinaryExpression, tree::Multiply, return_type, name) \
-		PROCESS_ACTION(tree::BinaryExpression, tree::Or, return_type, name) \
-		PROCESS_ACTION(tree::BinaryExpression, tree::Subtract, return_type, name) \
-		PROCESS_ACTION(tree::BinaryExpression, tree::Xor, return_type, name) \
+		PROCESS_ACTION(tree::BinaryOperation, tree::Add, return_type, name) \
+		PROCESS_ACTION(tree::BinaryOperation, tree::And, return_type, name) \
+		PROCESS_ACTION(tree::BinaryOperation, tree::Divide, return_type, name) \
+		PROCESS_ACTION(tree::BinaryOperation, tree::Modulus, return_type, name) \
+		PROCESS_ACTION(tree::BinaryOperation, tree::Multiply, return_type, name) \
+		PROCESS_ACTION(tree::BinaryOperation, tree::Or, return_type, name) \
+		PROCESS_ACTION(tree::BinaryOperation, tree::Subtract, return_type, name) \
+		PROCESS_ACTION(tree::BinaryOperation, tree::Xor, return_type, name) \
 		 \
 		PROCESS_ACTION(tree::Assign, tree::Equals, return_type, name) \
 		PROCESS_ACTION(tree::Assign, tree::OperatorAssign, return_type, name) \
 		 \
-		PROCESS_ACTION(tree::BooleanBinaryExpression, tree::Equal, return_type, name) \
-		PROCESS_ACTION(tree::BooleanBinaryExpression, tree::GreaterEqual, return_type, name) \
-		PROCESS_ACTION(tree::BooleanBinaryExpression, tree::GreaterThan, return_type, name) \
-		PROCESS_ACTION(tree::BooleanBinaryExpression, tree::LessEqual, return_type, name) \
-		PROCESS_ACTION(tree::BooleanBinaryExpression, tree::LessThan, return_type, name) \
-		PROCESS_ACTION(tree::BooleanBinaryExpression, tree::LogicalAnd, return_type, name) \
-		PROCESS_ACTION(tree::BooleanBinaryExpression, tree::LogicalOr, return_type, name) \
-		PROCESS_ACTION(tree::BooleanBinaryExpression, tree::Unequal, return_type, name) \
+		PROCESS_ACTION(tree::BooleanBinaryOperation, tree::Equal, return_type, name) \
+		PROCESS_ACTION(tree::BooleanBinaryOperation, tree::GreaterEqual, return_type, name) \
+		PROCESS_ACTION(tree::BooleanBinaryOperation, tree::GreaterThan, return_type, name) \
+		PROCESS_ACTION(tree::BooleanBinaryOperation, tree::LessEqual, return_type, name) \
+		PROCESS_ACTION(tree::BooleanBinaryOperation, tree::LessThan, return_type, name) \
+		PROCESS_ACTION(tree::BooleanBinaryOperation, tree::LogicalAnd, return_type, name) \
+		PROCESS_ACTION(tree::BooleanBinaryOperation, tree::LogicalOr, return_type, name) \
+		PROCESS_ACTION(tree::BooleanBinaryOperation, tree::Unequal, return_type, name) \
 		 \
-		PROCESS_ACTION(tree::BooleanUnaryExpression, tree::LogicalNot, return_type, name) \
+		PROCESS_ACTION(tree::BooleanUnaryOperation, tree::LogicalNot, return_type, name) \
 		 \
 		PROCESS_ACTION(tree::Expression, tree::Cast, return_type, name) \
 		PROCESS_ACTION(tree::Expression, tree::FunctionCall, return_type, name) \
@@ -107,8 +108,8 @@ namespace operation
 		PROCESS_ACTION(tree::TypedIdentity, tree::FunctionPrototype, return_type, name) \
 		PROCESS_ACTION(tree::TypedIdentity, tree::Variable, return_type, name) \
 		 \
-		PROCESS_ACTION(tree::UnaryExpression, tree::Not, return_type, name) \
-		PROCESS_ACTION(tree::UnaryExpression, tree::Minus, return_type, name)
+		PROCESS_ACTION(tree::UnaryOperation, tree::Not, return_type, name) \
+		PROCESS_ACTION(tree::UnaryOperation, tree::Minus, return_type, name)
 
 	class Operation
 	{

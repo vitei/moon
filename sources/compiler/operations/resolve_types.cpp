@@ -49,28 +49,28 @@ void operation::ResolveTypes::visit(tree::ArrayAccess *arrayAccess)
 	}
 }
 
-void operation::ResolveTypes::visit(tree::BinaryExpression *binaryExpression)
+void operation::ResolveTypes::visit(tree::BinaryOperation *binaryOperation)
 {
-	LOG("ResolveTypes::visit::BinaryExpression");
+	LOG("ResolveTypes::visit::BinaryOperation");
 
-	if(!binaryExpression->getType())
+	if(!binaryOperation->getType())
 	{
-		ASSERT(binaryExpression->getLHS());
-		ASSERT(binaryExpression->getRHS());
+		ASSERT(binaryOperation->getLHS());
+		ASSERT(binaryOperation->getRHS());
 
-		tree::Type *lhsType = binaryExpression->getLHS()->getType();
-		tree::Type *rhsType = binaryExpression->getRHS()->getType();
+		tree::Type *lhsType = binaryOperation->getLHS()->getType();
+		tree::Type *rhsType = binaryOperation->getRHS()->getType();
 
 		if(!lhsType || !rhsType)
 		{
-			binaryExpression->setType(NULL);
+			binaryOperation->setType(NULL);
 		}
 		else
 		{
 			ASSERT(lhsType);
 			ASSERT(rhsType);
 
-			binaryExpression->setType(lhsType->canCast(*rhsType) ? lhsType : rhsType);
+			binaryOperation->setType(lhsType->canCast(*rhsType) ? lhsType : rhsType);
 		}
 	}
 }
@@ -114,31 +114,31 @@ void operation::ResolveTypes::visit(tree::Assign *assign)
 	}
 }
 
-void operation::ResolveTypes::visit(tree::BooleanBinaryExpression *booleanBinaryExpression)
+void operation::ResolveTypes::visit(tree::BooleanBinaryOperation *booleanBinaryOperation)
 {
-	LOG("ResolveTypes::visit::BooleanBinaryExpression");
+	LOG("ResolveTypes::visit::BooleanBinaryOperation");
 
-	ASSERT(booleanBinaryExpression->getType());
-	ASSERT(dynamic_cast<tree::Bool *>(booleanBinaryExpression->getType()));
+	ASSERT(booleanBinaryOperation->getType());
+	ASSERT(dynamic_cast<tree::Bool *>(booleanBinaryOperation->getType()));
 }
 
-void operation::ResolveTypes::visit(tree::UnaryExpression *unaryExpression)
+void operation::ResolveTypes::visit(tree::UnaryOperation *unaryOperation)
 {
-	LOG("ResolveTypes::visit::UnaryExpression");
+	LOG("ResolveTypes::visit::UnaryOperation");
 
-	if(!unaryExpression->getType())
+	if(!unaryOperation->getType())
 	{
-		ASSERT(unaryExpression->getExpression());
-		unaryExpression->setType(unaryExpression->getExpression()->getType());
+		ASSERT(unaryOperation->getExpression());
+		unaryOperation->setType(unaryOperation->getExpression()->getType());
 	}
 }
 
-void operation::ResolveTypes::visit(tree::BooleanUnaryExpression *booleanUnaryExpression)
+void operation::ResolveTypes::visit(tree::BooleanUnaryOperation *booleanUnaryOperation)
 {
-	LOG("ResolveTypes::visit::BooleanUnaryExpression");
+	LOG("ResolveTypes::visit::BooleanUnaryOperation");
 
-	ASSERT(booleanUnaryExpression->getType());
-	ASSERT(dynamic_cast<tree::Bool *>(booleanUnaryExpression->getType()));
+	ASSERT(booleanUnaryOperation->getType());
+	ASSERT(dynamic_cast<tree::Bool *>(booleanUnaryOperation->getType()));
 }
 
 void operation::ResolveTypes::visit(tree::FunctionCall *functionCall)

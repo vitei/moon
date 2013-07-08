@@ -12,8 +12,8 @@ namespace operation
 	public:
 		static void run(tree::Program *program);
 
-		virtual void visit(tree::BinaryExpression *binaryExpression);
-		virtual void visit(tree::BooleanBinaryExpression *booleanBinaryExpression);
+		virtual void visit(tree::BinaryOperation *binaryOperation);
+		virtual void visit(tree::BooleanBinaryOperation *booleanBinaryOperation);
 		virtual void visit(tree::FunctionCall *functionCall);
 		virtual void visit(tree::Scope *scope);
 		virtual void visit(tree::Function *function);

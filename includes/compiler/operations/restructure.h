@@ -16,8 +16,8 @@ namespace operation
 		virtual void dispatch(tree::Node *node);
 		virtual void dispatch(tree::Expression *expression);
 		virtual void dispatch(tree::Access *access);
-		virtual void dispatch(tree::UnaryExpression *unaryExpression);
-		virtual void dispatch(tree::BinaryExpression *binaryExpression);
+		virtual void dispatch(tree::UnaryOperation *unaryOperation);
+		virtual void dispatch(tree::BinaryOperation *binaryOperation);
 		virtual void dispatch(tree::Cast *cast);
 		virtual void dispatch(tree::If *ifStatement);
 		virtual void dispatch(tree::Import *import);

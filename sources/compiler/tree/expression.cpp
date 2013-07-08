@@ -33,7 +33,7 @@ void tree::Access::setTarget(Expression *target)
 	}
 }
 
-void tree::UnaryExpression::setExpression(Expression *expression)
+void tree::UnaryOperation::setExpression(Expression *expression)
 {
 	if(expression == NULL)
 	{
@@ -45,11 +45,11 @@ void tree::UnaryExpression::setExpression(Expression *expression)
 	}
 	else
 	{
-		throw tree::UnaryExpression::InvalidException(this);
+		throw tree::UnaryOperation::InvalidException(this);
 	}
 }
 
-void tree::BinaryExpression::setLHS(Expression *lhs)
+void tree::BinaryOperation::setLHS(Expression *lhs)
 {
 	if(lhs == NULL)
 	{
@@ -61,11 +61,11 @@ void tree::BinaryExpression::setLHS(Expression *lhs)
 	}
 	else
 	{
-		throw tree::BinaryExpression::InvalidLHSException(this);
+		throw tree::BinaryOperation::InvalidLHSException(this);
 	}
 }
 
-void tree::BinaryExpression::setRHS(Expression *rhs)
+void tree::BinaryOperation::setRHS(Expression *rhs)
 {
 	if(rhs == NULL)
 	{
@@ -77,7 +77,7 @@ void tree::BinaryExpression::setRHS(Expression *rhs)
 	}
 	else
 	{
-		throw tree::BinaryExpression::InvalidRHSException(this);
+		throw tree::BinaryOperation::InvalidRHSException(this);
 	}
 }
 
