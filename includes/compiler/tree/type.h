@@ -29,7 +29,7 @@ namespace tree
 		virtual void printType() = 0;
 #endif
 
-		virtual const char *getTypeName() const = 0;
+		virtual const char *getTypeName() const = 0; // FIXME, typeName() ???
 
 		virtual bool canCast(const Type &from, bool autoCast = false) const
 		{
