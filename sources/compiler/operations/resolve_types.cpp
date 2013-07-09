@@ -63,14 +63,14 @@ void operation::ResolveTypes::visit(tree::BinaryOperation *binaryOperation)
 
 		if(!lhsType || !rhsType)
 		{
-			binaryOperation->setType(NULL);
+			setOperationType(binaryOperation, NULL);
 		}
 		else
 		{
 			ASSERT(lhsType);
 			ASSERT(rhsType);
 
-			binaryOperation->setType(lhsType->canCast(*rhsType) ? lhsType : rhsType);
+			setOperationType(binaryOperation, lhsType->canCast(*rhsType) ? lhsType : rhsType);
 		}
 	}
 }
@@ -110,7 +110,7 @@ void operation::ResolveTypes::visit(tree::Assign *assign)
 	}
 	else
 	{
-		assign->setType(lhsType);
+		setOperationType(assign, lhsType);
 	}
 }
 
@@ -129,7 +129,7 @@ void operation::ResolveTypes::visit(tree::UnaryOperation *unaryOperation)
 	if(!unaryOperation->getType())
 	{
 		ASSERT(unaryOperation->getExpression());
-		unaryOperation->setType(unaryOperation->getExpression()->getType());
+		setOperationType(unaryOperation, unaryOperation->getExpression()->getType());
 	}
 }
 
@@ -217,19 +217,35 @@ void operation::ResolveTypes::visit(tree::Return *returnStatement)
 
 bool operation::ResolveTypes::resolve()
 {
-	if(mTypeResolution.begin() != mTypeResolution.end())
+	if(error::count() == 0) // FIXME, better way to do this??? ()
 	{
-		for(std::map<tree::Expression *, tree::Type *>::iterator i = mTypeResolution.begin(), e = mTypeResolution.end(); i != e; ++i)
+		if(mTypeResolution.begin() != mTypeResolution.end())
 		{
-			i->first->setType(i->second);
+			for(std::map<tree::Expression *, tree::Type *>::iterator i = mTypeResolution.begin(), e = mTypeResolution.end(); i != e; ++i)
+			{
+				i->first->setType(i->second);
+			}
+
+			LOG("ResolveTypes new pass required...");
+
+			return false;
 		}
-
-		LOG("ResolveTypes new pass required...");
-
-		return false;
 	}
-	else
+
+	return true;
+}
+
+void operation::ResolveTypes::setOperationType(tree::Operation *operation, tree::Type *type)
+{
+	try
 	{
-		return true;
+		operation->setType(type);
+	}
+	catch(tree::Operation::NotAllowedException &e)
+	{
+		std::string error = std::string("Operation is not valid for ") + type->getTypeName() + " type";
+		error::enqueue(e.expression->getLocation(), error);
+
+		e.reset();
 	}
 }

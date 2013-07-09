@@ -27,6 +27,8 @@ namespace operation
 
 		bool resolve();
 
+		void setOperationType(tree::Operation *operation, tree::Type *type);
+
 	private:
 		ResolveTypes(): mPrototype(NULL) {}
 
