@@ -13,6 +13,8 @@ namespace operation
 		static void run(tree::Program *program);
 
 		virtual tree::Node *restructure(tree::Cast *cast);
+		virtual tree::Node *restructure(tree::BinaryOperation *binaryOperation);
+		virtual tree::Node *restructure(tree::UnaryOperation *unaryOperation);
 
 	private:
 		ComputeConstants() {}

@@ -207,3 +207,531 @@ tree::StringLiteral::StringLiteral(tree::Literal *literal) : Literal(new String(
 {
 	throw tree::StringLiteral::InvalidException(literal);
 }
+
+tree::Literal *tree::LogicalOr::calculate() const
+{
+	ASSERT(dynamic_cast<tree::Literal *>(getLHS()));
+	ASSERT(dynamic_cast<tree::Literal *>(getRHS()));
+	ASSERT(*getLHS()->getType() == *getLHS()->getType());
+
+	tree::BoolLiteral *booleanLHS;
+
+	if((booleanLHS = dynamic_cast<tree::BoolLiteral *>(getLHS())))
+	{
+		tree::BoolLiteral *booleanRHS = static_cast<tree::BoolLiteral *>(getRHS());
+
+		return new tree::BoolLiteral(booleanLHS->getValue() || booleanRHS->getValue());
+	}
+	else
+	{
+		ERROR("Invalid type");
+	}
+}
+
+tree::Literal *tree::LogicalAnd::calculate() const
+{
+	ASSERT(dynamic_cast<tree::Literal *>(getLHS()));
+	ASSERT(dynamic_cast<tree::Literal *>(getRHS()));
+	ASSERT(*getLHS()->getType() == *getLHS()->getType());
+
+	tree::BoolLiteral *booleanLHS;
+
+	if((booleanLHS = dynamic_cast<tree::BoolLiteral *>(getLHS())))
+	{
+		tree::BoolLiteral *booleanRHS = static_cast<tree::BoolLiteral *>(getRHS());
+
+		return new tree::BoolLiteral(booleanLHS->getValue() && booleanRHS->getValue());
+	}
+	else
+	{
+		ERROR("Invalid type");
+	}
+}
+
+tree::Literal *tree::Or::calculate() const
+{
+	ASSERT(dynamic_cast<tree::Literal *>(getLHS()));
+	ASSERT(dynamic_cast<tree::Literal *>(getRHS()));
+	ASSERT(*getLHS()->getType() == *getLHS()->getType());
+
+	tree::IntLiteral *intLHS;
+
+	if((intLHS = dynamic_cast<tree::IntLiteral *>(getLHS())))
+	{
+		tree::IntLiteral *intRHS = static_cast<tree::IntLiteral *>(getRHS());
+
+		return new tree::IntLiteral(intLHS->getValue() | intRHS->getValue());
+	}
+	else
+	{
+		ERROR("Invalid type");
+	}
+}
+
+tree::Literal *tree::Xor::calculate() const
+{
+	ASSERT(dynamic_cast<tree::Literal *>(getLHS()));
+	ASSERT(dynamic_cast<tree::Literal *>(getRHS()));
+	ASSERT(*getLHS()->getType() == *getLHS()->getType());
+
+	tree::IntLiteral *intLHS;
+
+	if((intLHS = dynamic_cast<tree::IntLiteral *>(getLHS())))
+	{
+		tree::IntLiteral *intRHS = static_cast<tree::IntLiteral *>(getRHS());
+
+		return new tree::IntLiteral(intLHS->getValue() ^ intRHS->getValue());
+	}
+	else
+	{
+		ERROR("Invalid type");
+	}
+}
+
+tree::Literal *tree::Equal::calculate() const
+{
+	ASSERT(dynamic_cast<tree::Literal *>(getLHS()));
+	ASSERT(dynamic_cast<tree::Literal *>(getRHS()));
+	ASSERT(*getLHS()->getType() == *getLHS()->getType());
+
+	tree::BoolLiteral *boolLHS;
+	tree::IntLiteral *intLHS;
+	tree::FloatLiteral *floatLHS;
+	tree::StringLiteral *stringLHS;
+
+	if((boolLHS = dynamic_cast<tree::BoolLiteral *>(getLHS())))
+	{
+		tree::BoolLiteral *boolRHS = static_cast<tree::BoolLiteral *>(getRHS());
+
+		return new tree::BoolLiteral(boolLHS->getValue() == boolRHS->getValue());
+	}
+	else if((intLHS = dynamic_cast<tree::IntLiteral *>(getLHS())))
+	{
+		tree::IntLiteral *intRHS = static_cast<tree::IntLiteral *>(getRHS());
+
+		return new tree::BoolLiteral(intLHS->getValue() == intRHS->getValue());
+	}
+	else if((floatLHS = dynamic_cast<tree::FloatLiteral *>(getLHS())))
+	{
+		tree::FloatLiteral *floatRHS = static_cast<tree::FloatLiteral *>(getRHS());
+
+		return new tree::BoolLiteral(floatLHS->getValue() == floatRHS->getValue());
+	}
+	else if((stringLHS = dynamic_cast<tree::StringLiteral *>(getLHS())))
+	{
+		tree::StringLiteral *stringRHS = static_cast<tree::StringLiteral *>(getRHS());
+
+		return new tree::BoolLiteral(stringLHS->getValue() == stringRHS->getValue());
+	}
+	else
+	{
+		ERROR("Invalid type");
+	}
+}
+
+tree::Literal *tree::Unequal::calculate() const
+{
+	ASSERT(dynamic_cast<tree::Literal *>(getLHS()));
+	ASSERT(dynamic_cast<tree::Literal *>(getRHS()));
+	ASSERT(*getLHS()->getType() == *getLHS()->getType());
+
+	tree::BoolLiteral *boolLHS;
+	tree::IntLiteral *intLHS;
+	tree::FloatLiteral *floatLHS;
+	tree::StringLiteral *stringLHS;
+
+	if((boolLHS = dynamic_cast<tree::BoolLiteral *>(getLHS())))
+	{
+		tree::BoolLiteral *boolRHS = static_cast<tree::BoolLiteral *>(getRHS());
+
+		return new tree::BoolLiteral(boolLHS->getValue() != boolRHS->getValue());
+	}
+	else if((intLHS = dynamic_cast<tree::IntLiteral *>(getLHS())))
+	{
+		tree::IntLiteral *intRHS = static_cast<tree::IntLiteral *>(getRHS());
+
+		return new tree::BoolLiteral(intLHS->getValue() != intRHS->getValue());
+	}
+	else if((floatLHS = dynamic_cast<tree::FloatLiteral *>(getLHS())))
+	{
+		tree::FloatLiteral *floatRHS = static_cast<tree::FloatLiteral *>(getRHS());
+
+		return new tree::BoolLiteral(floatLHS->getValue() != floatRHS->getValue());
+	}
+	else if((stringLHS = dynamic_cast<tree::StringLiteral *>(getLHS())))
+	{
+		tree::StringLiteral *stringRHS = static_cast<tree::StringLiteral *>(getRHS());
+
+		return new tree::BoolLiteral(stringLHS->getValue() != stringRHS->getValue());
+	}
+	else
+	{
+		ERROR("Invalid type");
+	}
+}
+
+tree::Literal *tree::LessThan::calculate() const
+{
+	ASSERT(dynamic_cast<tree::Literal *>(getLHS()));
+	ASSERT(dynamic_cast<tree::Literal *>(getRHS()));
+	ASSERT(*getLHS()->getType() == *getLHS()->getType());
+
+	tree::BoolLiteral *boolLHS;
+	tree::IntLiteral *intLHS;
+	tree::FloatLiteral *floatLHS;
+	tree::StringLiteral *stringLHS;
+
+	if((boolLHS = dynamic_cast<tree::BoolLiteral *>(getLHS())))
+	{
+		tree::BoolLiteral *boolRHS = static_cast<tree::BoolLiteral *>(getRHS());
+
+		return new tree::BoolLiteral(boolLHS->getValue() < boolRHS->getValue());
+	}
+	else if((intLHS = dynamic_cast<tree::IntLiteral *>(getLHS())))
+	{
+		tree::IntLiteral *intRHS = static_cast<tree::IntLiteral *>(getRHS());
+
+		return new tree::BoolLiteral(intLHS->getValue() < intRHS->getValue());
+	}
+	else if((floatLHS = dynamic_cast<tree::FloatLiteral *>(getLHS())))
+	{
+		tree::FloatLiteral *floatRHS = static_cast<tree::FloatLiteral *>(getRHS());
+
+		return new tree::BoolLiteral(floatLHS->getValue() < floatRHS->getValue());
+	}
+	else if((stringLHS = dynamic_cast<tree::StringLiteral *>(getLHS())))
+	{
+		tree::StringLiteral *stringRHS = static_cast<tree::StringLiteral *>(getRHS());
+
+		return new tree::BoolLiteral(stringLHS->getValue() < stringRHS->getValue());
+	}
+	else
+	{
+		ERROR("Invalid type");
+	}
+}
+
+tree::Literal *tree::LessEqual::calculate() const
+{
+	ASSERT(dynamic_cast<tree::Literal *>(getLHS()));
+	ASSERT(dynamic_cast<tree::Literal *>(getRHS()));
+	ASSERT(*getLHS()->getType() == *getLHS()->getType());
+
+	tree::BoolLiteral *boolLHS;
+	tree::IntLiteral *intLHS;
+	tree::FloatLiteral *floatLHS;
+	tree::StringLiteral *stringLHS;
+
+	if((boolLHS = dynamic_cast<tree::BoolLiteral *>(getLHS())))
+	{
+		tree::BoolLiteral *boolRHS = static_cast<tree::BoolLiteral *>(getRHS());
+
+		return new tree::BoolLiteral(boolLHS->getValue() <= boolRHS->getValue());
+	}
+	else if((intLHS = dynamic_cast<tree::IntLiteral *>(getLHS())))
+	{
+		tree::IntLiteral *intRHS = static_cast<tree::IntLiteral *>(getRHS());
+
+		return new tree::BoolLiteral(intLHS->getValue() <= intRHS->getValue());
+	}
+	else if((floatLHS = dynamic_cast<tree::FloatLiteral *>(getLHS())))
+	{
+		tree::FloatLiteral *floatRHS = static_cast<tree::FloatLiteral *>(getRHS());
+
+		return new tree::BoolLiteral(floatLHS->getValue() <= floatRHS->getValue());
+	}
+	else if((stringLHS = dynamic_cast<tree::StringLiteral *>(getLHS())))
+	{
+		tree::StringLiteral *stringRHS = static_cast<tree::StringLiteral *>(getRHS());
+
+		return new tree::BoolLiteral(stringLHS->getValue() <= stringRHS->getValue());
+	}
+	else
+	{
+		ERROR("Invalid type");
+	}
+}
+
+tree::Literal *tree::GreaterThan::calculate() const
+{
+	ASSERT(dynamic_cast<tree::Literal *>(getLHS()));
+	ASSERT(dynamic_cast<tree::Literal *>(getRHS()));
+	ASSERT(*getLHS()->getType() == *getLHS()->getType());
+
+	tree::BoolLiteral *boolLHS;
+	tree::IntLiteral *intLHS;
+	tree::FloatLiteral *floatLHS;
+	tree::StringLiteral *stringLHS;
+
+	if((boolLHS = dynamic_cast<tree::BoolLiteral *>(getLHS())))
+	{
+		tree::BoolLiteral *boolRHS = static_cast<tree::BoolLiteral *>(getRHS());
+
+		return new tree::BoolLiteral(boolLHS->getValue() > boolRHS->getValue());
+	}
+	else if((intLHS = dynamic_cast<tree::IntLiteral *>(getLHS())))
+	{
+		tree::IntLiteral *intRHS = static_cast<tree::IntLiteral *>(getRHS());
+
+		return new tree::BoolLiteral(intLHS->getValue() > intRHS->getValue());
+	}
+	else if((floatLHS = dynamic_cast<tree::FloatLiteral *>(getLHS())))
+	{
+		tree::FloatLiteral *floatRHS = static_cast<tree::FloatLiteral *>(getRHS());
+
+		return new tree::BoolLiteral(floatLHS->getValue() > floatRHS->getValue());
+	}
+	else if((stringLHS = dynamic_cast<tree::StringLiteral *>(getLHS())))
+	{
+		tree::StringLiteral *stringRHS = static_cast<tree::StringLiteral *>(getRHS());
+
+		return new tree::BoolLiteral(stringLHS->getValue() > stringRHS->getValue());
+	}
+	else
+	{
+		ERROR("Invalid type");
+	}
+}
+
+tree::Literal *tree::GreaterEqual::calculate() const
+{
+	ASSERT(dynamic_cast<tree::Literal *>(getLHS()));
+	ASSERT(dynamic_cast<tree::Literal *>(getRHS()));
+	ASSERT(*getLHS()->getType() == *getLHS()->getType());
+
+	tree::BoolLiteral *boolLHS;
+	tree::IntLiteral *intLHS;
+	tree::FloatLiteral *floatLHS;
+	tree::StringLiteral *stringLHS;
+
+	if((boolLHS = dynamic_cast<tree::BoolLiteral *>(getLHS())))
+	{
+		tree::BoolLiteral *boolRHS = static_cast<tree::BoolLiteral *>(getRHS());
+
+		return new tree::BoolLiteral(boolLHS->getValue() >= boolRHS->getValue());
+	}
+	else if((intLHS = dynamic_cast<tree::IntLiteral *>(getLHS())))
+	{
+		tree::IntLiteral *intRHS = static_cast<tree::IntLiteral *>(getRHS());
+
+		return new tree::BoolLiteral(intLHS->getValue() >= intRHS->getValue());
+	}
+	else if((floatLHS = dynamic_cast<tree::FloatLiteral *>(getLHS())))
+	{
+		tree::FloatLiteral *floatRHS = static_cast<tree::FloatLiteral *>(getRHS());
+
+		return new tree::BoolLiteral(floatLHS->getValue() >= floatRHS->getValue());
+	}
+	else if((stringLHS = dynamic_cast<tree::StringLiteral *>(getLHS())))
+	{
+		tree::StringLiteral *stringRHS = static_cast<tree::StringLiteral *>(getRHS());
+
+		return new tree::BoolLiteral(stringLHS->getValue() >= stringRHS->getValue());
+	}
+	else
+	{
+		ERROR("Invalid type");
+	}
+}
+
+tree::Literal *tree::And::calculate() const
+{
+	ASSERT(dynamic_cast<tree::Literal *>(getLHS()));
+	ASSERT(dynamic_cast<tree::Literal *>(getRHS()));
+	ASSERT(*getLHS()->getType() == *getLHS()->getType());
+
+	tree::IntLiteral *intLHS;
+
+	if((intLHS = dynamic_cast<tree::IntLiteral *>(getLHS())))
+	{
+		tree::IntLiteral *intRHS = static_cast<tree::IntLiteral *>(getRHS());
+
+		return new tree::IntLiteral(intLHS->getValue() & intRHS->getValue());
+	}
+	else
+	{
+		ERROR("Invalid type");
+	}
+}
+
+tree::Literal *tree::Add::calculate() const
+{
+	ASSERT(dynamic_cast<tree::Literal *>(getLHS()));
+	ASSERT(dynamic_cast<tree::Literal *>(getRHS()));
+	ASSERT(*getLHS()->getType() == *getLHS()->getType());
+
+	tree::IntLiteral *intLHS;
+	tree::FloatLiteral *floatLHS;
+
+	if((intLHS = dynamic_cast<tree::IntLiteral *>(getLHS())))
+	{
+		tree::IntLiteral *intRHS = static_cast<tree::IntLiteral *>(getRHS());
+
+		return new tree::IntLiteral(intLHS->getValue() + intRHS->getValue());
+	}
+	else if((floatLHS = dynamic_cast<tree::FloatLiteral *>(getLHS())))
+	{
+		tree::FloatLiteral *floatRHS = static_cast<tree::FloatLiteral *>(getRHS());
+
+		return new tree::FloatLiteral(floatLHS->getValue() + floatRHS->getValue());
+	}
+	else
+	{
+		ERROR("Invalid type");
+	}
+}
+
+tree::Literal *tree::Subtract::calculate() const
+{
+	ASSERT(dynamic_cast<tree::Literal *>(getLHS()));
+	ASSERT(dynamic_cast<tree::Literal *>(getRHS()));
+	ASSERT(*getLHS()->getType() == *getLHS()->getType());
+
+	tree::IntLiteral *intLHS;
+	tree::FloatLiteral *floatLHS;
+
+	if((intLHS = dynamic_cast<tree::IntLiteral *>(getLHS())))
+	{
+		tree::IntLiteral *intRHS = static_cast<tree::IntLiteral *>(getRHS());
+
+		return new tree::IntLiteral(intLHS->getValue() - intRHS->getValue());
+	}
+	else if((floatLHS = dynamic_cast<tree::FloatLiteral *>(getLHS())))
+	{
+		tree::FloatLiteral *floatRHS = static_cast<tree::FloatLiteral *>(getRHS());
+
+		return new tree::FloatLiteral(floatLHS->getValue() - floatRHS->getValue());
+	}
+	else
+	{
+		ERROR("Invalid type");
+	}
+}
+
+tree::Literal *tree::Multiply::calculate() const
+{
+	ASSERT(dynamic_cast<tree::Literal *>(getLHS()));
+	ASSERT(dynamic_cast<tree::Literal *>(getRHS()));
+	ASSERT(*getLHS()->getType() == *getLHS()->getType());
+
+	tree::IntLiteral *intLHS;
+	tree::FloatLiteral *floatLHS;
+
+	if((intLHS = dynamic_cast<tree::IntLiteral *>(getLHS())))
+	{
+		tree::IntLiteral *intRHS = static_cast<tree::IntLiteral *>(getRHS());
+
+		return new tree::IntLiteral(intLHS->getValue() * intRHS->getValue());
+	}
+	else if((floatLHS = dynamic_cast<tree::FloatLiteral *>(getLHS())))
+	{
+		tree::FloatLiteral *floatRHS = static_cast<tree::FloatLiteral *>(getRHS());
+
+		return new tree::FloatLiteral(floatLHS->getValue() * floatRHS->getValue());
+	}
+	else
+	{
+		ERROR("Invalid type");
+	}
+}
+
+tree::Literal *tree::Divide::calculate() const
+{
+	ASSERT(dynamic_cast<tree::Literal *>(getLHS()));
+	ASSERT(dynamic_cast<tree::Literal *>(getRHS()));
+	ASSERT(*getLHS()->getType() == *getLHS()->getType());
+
+	tree::IntLiteral *intLHS;
+	tree::FloatLiteral *floatLHS;
+
+	if((intLHS = dynamic_cast<tree::IntLiteral *>(getLHS())))
+	{
+		tree::IntLiteral *intRHS = static_cast<tree::IntLiteral *>(getRHS());
+
+		return new tree::IntLiteral(intLHS->getValue() / intRHS->getValue());
+	}
+	else if((floatLHS = dynamic_cast<tree::FloatLiteral *>(getLHS())))
+	{
+		tree::FloatLiteral *floatRHS = static_cast<tree::FloatLiteral *>(getRHS());
+
+		return new tree::FloatLiteral(floatLHS->getValue() / floatRHS->getValue());
+	}
+	else
+	{
+		ERROR("Invalid type");
+	}
+}
+
+tree::Literal *tree::Modulus::calculate() const
+{
+	ASSERT(dynamic_cast<tree::Literal *>(getLHS()));
+	ASSERT(dynamic_cast<tree::Literal *>(getRHS()));
+	ASSERT(*getLHS()->getType() == *getLHS()->getType());
+
+	tree::IntLiteral *intLHS;
+
+	if((intLHS = dynamic_cast<tree::IntLiteral *>(getLHS())))
+	{
+		tree::IntLiteral *intRHS = static_cast<tree::IntLiteral *>(getRHS());
+
+		return new tree::IntLiteral(intLHS->getValue() % intRHS->getValue());
+	}
+	else
+	{
+		ERROR("Invalid type");
+	}
+}
+
+tree::Literal *tree::LogicalNot::calculate() const
+{
+	ASSERT(dynamic_cast<tree::Literal *>(getExpression()));
+
+	tree::BoolLiteral *boolExpression;
+
+	if((boolExpression = dynamic_cast<tree::BoolLiteral *>(getExpression())))
+	{
+		return new tree::BoolLiteral(!boolExpression->getValue());
+	}
+	else
+	{
+		ERROR("Invalid type");
+	}
+}
+
+tree::Literal *tree::Not::calculate() const
+{
+	ASSERT(dynamic_cast<tree::Literal *>(getExpression()));
+
+	tree::IntLiteral *intExpression;
+
+	if((intExpression = dynamic_cast<tree::IntLiteral *>(getExpression())))
+	{
+		return new tree::IntLiteral(~intExpression->getValue());
+	}
+	else
+	{
+		ERROR("Invalid type");
+	}
+
+}
+
+tree::Literal *tree::Minus::calculate() const
+{
+	ASSERT(dynamic_cast<tree::Literal *>(getExpression()));
+
+	tree::IntLiteral *intExpression;
+	tree::FloatLiteral *floatExpression;
+
+	if((intExpression = dynamic_cast<tree::IntLiteral *>(getExpression())))
+	{
+		return new tree::IntLiteral(-intExpression->getValue());
+	}
+	else if((floatExpression = dynamic_cast<tree::FloatLiteral *>(getExpression())))
+	{
+		return new tree::FloatLiteral(-floatExpression->getValue());
+	}
+	else
+	{
+		ERROR("Invalid type");
+	}
+}

@@ -19,7 +19,8 @@ bool tree::Bool::canCast(const tree::Type &from, bool autoCast) const
 bool tree::Bool::canPerform(const Operation &operation) const
 {
 	if(dynamic_cast<const tree::Assign *>(&operation) ||
-	   dynamic_cast<const tree::BooleanBinaryOperation *>(&operation))
+	   dynamic_cast<const tree::BooleanBinaryOperation *>(&operation) ||
+	   dynamic_cast<const tree::BooleanUnaryOperation *>(&operation))
 	{
 		return true;
 	}
