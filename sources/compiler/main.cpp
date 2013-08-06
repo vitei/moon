@@ -220,50 +220,44 @@ int main(int argc, char *argv[])
 				// The program has been made...
 				tree::Program program(name, &aggregates);
 
-				// We may now perform operations on it...
-				operation::ScopeParents::run(&program);
-				operation::MapIdentities::run(&program);
-				operation::ResolveIdentities::run(&program);
+				// The list of operations to perform...
+				void (*operations[])(tree::Program *program) = {
+					operation::ScopeParents::run,
+					operation::MapIdentities::run,
+					operation::ResolveIdentities::run,
+					operation::ResolveTypes::run,
+					operation::ExpandTree::run,
+					operation::TypeExpressions::run,
+					operation::CheckTypecasting::run,
+					operation::ComputeConstants::run,
+					NULL
+				};
 
+				for(unsigned char i = 0; operations[i]; i++)
+				{
+					operations[i](&program);
+
+					if(error::count() != 0)
+					{
+						LOG("Errors encountered in stage %u", i);
+						break;
+					}
+				}
+
+				// If there are no errors we should be able to do code generation now
 				if(error::count() == 0)
 				{
-					operation::ResolveTypes::run(&program);
-
-					if(error::count() == 0)
+					if(generateDefines)
 					{
-						if(generateDefines)
-						{
-							// If there are no errors we should be able to generate the defines
-							if(error::count() == 0)
-							{
-								// ...
-							}
-						}
-						else
-						{
-							operation::ExpandTree::run(&program);
-							operation::TypeExpressions::run(&program);
+						// ...
+					}
+					else
+					{
+						std::ofstream outputFile;
 
-							if(error::count() == 0)
-							{
-								operation::CheckTypecasting::run(&program);
-
-								if(error::count() == 0)
-								{
-									operation::ComputeConstants::run(&program);
-
-									// If there are no errors we should be able to do code generation now!
-									if(error::count() == 0)
-									{
-										std::ofstream outputFile;
-
-										outputFile.open(outputFilename.c_str());
-										sGenerator->run(outputFile, &program);
-										outputFile.close();
-									}
-								}
-							}
-						}
+						outputFile.open(outputFilename.c_str());
+						sGenerator->run(outputFile, &program);
+						outputFile.close();
 					}
 				}
 			}
