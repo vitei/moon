@@ -1,5 +1,5 @@
 /*
- * moon.yy
+ * moon.y
  * Bison grammar for moon
  *
  * Unfortunately, nice-looking Bison is really hard to write. (Although it's easier than Flex...)

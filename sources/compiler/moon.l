@@ -1,5 +1,5 @@
 /*
- * moon.ll
+ * moon.l
  * Flex parser for moon
  *
  * Unfortunately, nice-looking Flex is really REALLY hard to write. :(

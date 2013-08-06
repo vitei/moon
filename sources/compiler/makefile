@@ -15,12 +15,12 @@ all: compiler
 # Dependencies
 -include $(DEPS)
 
-generated_parser.cpp: moon.yy moon.ll
+generated_parser.cpp: moon.y moon.l
 	@echo $@: $<
 	@mkdir -p $(PLATFORM_INC_DIR)/generated
 	@$(BISON) $(BISON_FLAGS) --defines="$(PLATFORM_INC_DIR)/generated/parser.h" -o generated_parser.cpp $<
 
-generated_lexer.cpp: moon.ll moon.yy
+generated_lexer.cpp: moon.l moon.y
 	@echo $@: $<
 	@mkdir -p $(PLATFORM_INC_DIR)/generated
 	@$(FLEX) $(FLEX_FLAGS) --header-file="$(PLATFORM_INC_DIR)/generated/lexer.h" -o generated_lexer.cpp $<
