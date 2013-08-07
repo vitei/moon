@@ -355,19 +355,6 @@ namespace tree
 		Expression *mRHS;
 	};
 
-	class Assign : public BinaryOperation
-	{
-	public:
-		virtual Literal *calculate() const
-		{
-			ERROR("Should not be called");
-			return NULL;
-		}
-
-	protected:
-		Assign(Expression *lhs, Expression *rhs) : BinaryOperation(lhs, rhs) {}
-	};
-
 	class BooleanBinaryOperation : public BinaryOperation
 	{
 	protected:
@@ -671,32 +658,20 @@ namespace tree
 		std::string mValue;
 	};
 
-	class Equals : public Assign
+	class Assign : public BinaryOperation
 	{
 	public:
-		Equals(Expression *lhs, Expression *rhs) : Assign(lhs, rhs) {}
+		Assign(Expression *lhs, Expression *rhs) : BinaryOperation(lhs, rhs) {}
 
-#ifdef DEBUG
-		virtual void printNode() { LOG("Equals"); }
-#endif
-	};
-
-	class OperatorAssign : public Assign
-	{
-	public:
-		OperatorAssign(Expression *lhs, Expression *rhs, BinaryOperation *op) : Assign(lhs, rhs), mOperator(op) {}
-
-#ifdef DEBUG
-		virtual void printNode() { LOG("OperatorAssign"); }
-#endif
-
-		BinaryOperation *getOperator()
+		virtual Literal *calculate() const
 		{
-			return mOperator;
+			ERROR("Should not be called"); // FIXME, this is probably better as a special binary operation that CAN calculate??
+			return NULL;
 		}
 
-	private:
-		BinaryOperation *mOperator;
+#ifdef DEBUG
+		virtual void printNode() { LOG("Assign"); }
+#endif
 	};
 
 	class LogicalOr : public BooleanBinaryOperation

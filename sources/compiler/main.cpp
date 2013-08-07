@@ -226,7 +226,6 @@ int main(int argc, char *argv[])
 					operation::MapIdentities::run,
 					operation::ResolveIdentities::run,
 					operation::ResolveTypes::run,
-					operation::ExpandTree::run,
 					operation::TypeExpressions::run,
 					operation::CheckTypecasting::run,
 					operation::ComputeConstants::run,

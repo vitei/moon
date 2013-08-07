@@ -825,7 +825,7 @@ constant_statement      :   constant_assignment TOKEN_EOS
 
 constant_assignment     :   constant TOKEN_EQUALS expression
                             {
-                                $$ = new tree::Equals($1, $3);
+                                $$ = new tree::Assign($1, $3);
                                 $$->setLocation(@2);
                             }
                         ;
@@ -855,7 +855,7 @@ variable_assignment     :   variable
                             }
                         |   variable TOKEN_EQUALS expression
                             {
-                                $$ = new tree::Equals($1, $3);
+                                $$ = new tree::Assign($1, $3);
                                 $$->setLocation(@2);
                             }
                         ;
@@ -937,7 +937,7 @@ assign_or_function      :   assignment
 
 assignment              :   assignee TOKEN_EQUALS expression
                             {
-                                $$ = new tree::Equals($1, $3);
+                                $$ = new tree::Assign($1, $3);
                                 $$->setLocation(@2);
                             }
                         |   assignee TOKEN_OR_EQUALS expression
@@ -945,63 +945,63 @@ assignment              :   assignee TOKEN_EQUALS expression
                                 tree::Or *orExpression = new tree::Or(NULL, NULL);
                                 orExpression->setLocation(@2);
 
-                                $$ = new tree::OperatorAssign($1, $3, orExpression);
+                                $$ = new tree::Assign($1, orExpression);
                                 $$->setLocation(@2);
                             }
                         |   assignee TOKEN_XOR_EQUALS expression
                             {
-                                tree::Xor *xorExpression = new tree::Xor(NULL, NULL);
+                                tree::Xor *xorExpression = new tree::Xor($1, $3);
                                 xorExpression->setLocation(@2);
 
-                                $$ = new tree::OperatorAssign($1, $3, xorExpression);
+                                $$ = new tree::Assign($1, xorExpression);
                                 $$->setLocation(@2);
                             }
                         |   assignee TOKEN_AND_EQUALS expression
                             {
-                                tree::And *andExpression = new tree::And(NULL, NULL);
+                                tree::And *andExpression = new tree::And($1, $3);
                                 andExpression->setLocation(@2);
 
-                                $$ = new tree::OperatorAssign($1, $3, andExpression);
+                                $$ = new tree::Assign($1, andExpression);
                                 $$->setLocation(@2);
                             }
                         |   assignee TOKEN_ADD_EQUALS expression
                             {
-                                tree::Add *add = new tree::Add(NULL, NULL);
+                                tree::Add *add = new tree::Add($1, $3);
                                 add->setLocation(@2);
 
-                                $$ = new tree::OperatorAssign($1, $3, add);
+                                $$ = new tree::Assign($1, add);
                                 $$->setLocation(@2);
                             }
                         |   assignee TOKEN_SUBTRACT_EQUALS expression
                             {
-                                tree::Subtract *subtract = new tree::Subtract(NULL, NULL);
+                                tree::Subtract *subtract = new tree::Subtract($1, $3);
                                 subtract->setLocation(@2);
 
-                                $$ = new tree::OperatorAssign($1, $3, subtract);
+                                $$ = new tree::Assign($1, subtract);
                                 $$->setLocation(@2);
                             }
                         |   assignee TOKEN_MULTIPLY_EQUALS expression
                             {
-                                tree::Multiply *multiply = new tree::Multiply(NULL, NULL);
+                                tree::Multiply *multiply = new tree::Multiply($1, $3);
                                 multiply->setLocation(@2);
 
-                                $$ = new tree::OperatorAssign($1, $3, multiply);
+                                $$ = new tree::Assign($1, multiply);
                                 $$->setLocation(@2);
                             }
                         |   assignee TOKEN_DIVIDE_EQUALS expression
                             {
-                                tree::Divide *divide = new tree::Divide(NULL, NULL);
+                                tree::Divide *divide = new tree::Divide($1, $3);
                                 divide->setLocation(@2);
 
-                                $$ = new tree::OperatorAssign($1, $3, divide);
+                                $$ = new tree::Assign($1, divide);
                                 $$->setLocation(@2);
                             }
                         |   assignee TOKEN_MODULUS_EQUALS expression
                             {
-                                tree::Modulus *modulus = new tree::Modulus(NULL, NULL);
+                                tree::Modulus *modulus = new tree::Modulus($1, $3);
                                 modulus->setLocation(@2);
 
-                                $$ = new tree::OperatorAssign($1, $3, modulus);
+                                $$ = new tree::Assign($1, modulus);
                                 $$->setLocation(@2);
                             }
                         ;

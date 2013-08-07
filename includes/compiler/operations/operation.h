@@ -53,9 +53,6 @@ namespace operation
 		PROCESS_ACTION(tree::BinaryOperation, tree::Subtract, return_type, name) \
 		PROCESS_ACTION(tree::BinaryOperation, tree::Xor, return_type, name) \
 		 \
-		PROCESS_ACTION(tree::Assign, tree::Equals, return_type, name) \
-		PROCESS_ACTION(tree::Assign, tree::OperatorAssign, return_type, name) \
-		 \
 		PROCESS_ACTION(tree::BooleanBinaryOperation, tree::Equal, return_type, name) \
 		PROCESS_ACTION(tree::BooleanBinaryOperation, tree::GreaterEqual, return_type, name) \
 		PROCESS_ACTION(tree::BooleanBinaryOperation, tree::GreaterThan, return_type, name) \
