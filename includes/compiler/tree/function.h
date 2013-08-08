@@ -84,7 +84,6 @@ namespace tree
 		}
 
 		virtual void checkIdentity(Identity *identity);
-		void mapParameterIdentity(Identity *identity);
 		virtual Identity *findIdentity(Identifier *identifier);
 
 #ifdef DEBUG
@@ -93,9 +92,7 @@ namespace tree
 
 	private:
 		Scope *mOriginalScope;
-
 		FunctionPrototype *mPrototype;
-		Identities mParameterIdentities;
 	};
 }
 
