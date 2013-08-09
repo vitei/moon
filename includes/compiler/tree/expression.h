@@ -623,7 +623,7 @@ namespace tree
 		{
 			Expression::childAccept(operation);
 
-			if(getRHS())
+			if(mRHS)
 			{
 				mRHS->accept(operation);
 			}
