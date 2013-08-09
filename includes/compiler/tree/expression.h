@@ -350,7 +350,6 @@ namespace tree
 	protected:
 		BinaryOperation(Expression *lhs, Expression *rhs) : mLHS(lhs), mRHS(rhs) { /* Abstract class */ }
 
-	private:
 		Expression *mLHS;
 		Expression *mRHS;
 	};
@@ -667,6 +666,21 @@ namespace tree
 		{
 			ERROR("Should not be called"); // FIXME, this is probably better as a special binary operation that CAN calculate??
 			return NULL;
+		}
+
+		virtual void childAccept(operation::Operation *operation)
+		{
+			Expression::childAccept(operation);
+
+			if(getRHS())
+			{
+				mRHS->accept(operation);
+			}
+
+			if(mLHS)
+			{
+				mLHS->accept(operation);
+			}
 		}
 
 #ifdef DEBUG

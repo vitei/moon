@@ -88,6 +88,29 @@ void operation::Restructure::dispatch(tree::BinaryOperation *binaryOperation)
 	dispatch(static_cast<tree::Expression *>(binaryOperation));
 }
 
+void operation::Restructure::dispatch(tree::Assign *assign)
+{
+	tree::Expression *lhs = NULL;
+	tree::Expression *rhs = NULL;
+
+	if(assign->getLHS())
+	{
+		lhs = static_cast<tree::Expression *>(mNodeMap.top());
+		mNodeMap.pop();
+	}
+
+	if(assign->getRHS())
+	{
+		rhs = static_cast<tree::Expression *>(mNodeMap.top());
+		mNodeMap.pop();
+	}
+
+	assign->setLHS(lhs);
+	assign->setRHS(rhs);
+
+	dispatch(static_cast<tree::Expression *>(assign));
+}
+
 void operation::Restructure::dispatch(tree::Cast *cast)
 {
 	tree::Expression *expression = NULL;
