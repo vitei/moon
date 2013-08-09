@@ -675,6 +675,9 @@ function                :   function_prototype TOKEN_EOS o_statements TOKEN_END 
                             {
                                 $$ = new tree::Function($1, $3);
                                 $$->setLocation(@1);
+
+                                // FIXME: this might be better done elsewhere??
+                                static_cast<tree::FunctionPrototype *>($1)->setFunction(static_cast<tree::Function *>($$));
                             }
                         ;
 
@@ -942,7 +945,7 @@ assignment              :   assignee TOKEN_EQUALS expression
                             }
                         |   assignee TOKEN_OR_EQUALS expression
                             {
-                                tree::Or *orExpression = new tree::Or(NULL, NULL);
+                                tree::Or *orExpression = new tree::Or($1, $3);
                                 orExpression->setLocation(@2);
 
                                 $$ = new tree::Assign($1, orExpression);

@@ -7,50 +7,69 @@
 void operation::ResolveIdentities::run(tree::Program *program)
 {
 	operation::ResolveIdentities operation;
-	//program->accept(&operation);
 
 	if(program->getStatements())
 	{
-		operation.add(program);
+		operation.add(NULL, program);
 		operation.process();
 	}
 }
 
-void operation::ResolveIdentities::add(tree::Scope *scope)
+void operation::ResolveIdentities::add(tree::Scope *parentScope, tree::Scope *scope)
 {
-	mVisitNext.push(scope);
+	// We do this so that "shared" functions are placed into their effective scopes when processed.
+	mVisitList[parentScope].push(scope);
 }
 
 void operation::ResolveIdentities::process()
 {
-	while(!mVisitNext.empty())
+	std::queue<tree::Scope *> processNext;
+
+	processNext.push(NULL);
+
+	while(!processNext.empty())
 	{
-		tree::Scope *scope = mVisitNext.front();
-		mVisitNext.pop();
+		tree::Scope *scanScope = processNext.front();
+		processNext.pop();
 
-		tree::Statements *statements = scope->getStatements();
+		std::queue<tree::Scope *> &visitNext = mVisitList[scanScope];
 
-		if(statements)
+		while(!visitNext.empty())
 		{
-			mCurrentScope = scope;
+			mCurrentScope = visitNext.front();
+			visitNext.pop();
 
-			for(tree::Statements::iterator i = statements->begin(); i != statements->end();)
+			tree::Function *function = dynamic_cast<tree::Function *>(mCurrentScope);
+
+			if(function)
 			{
-				(*i)->accept(this);
+				processFunctionParameters(function);
+			}
 
-				tree::Statement *statement = static_cast<tree::Statement *>(mNodeMap.top());
-				mNodeMap.pop();
+			tree::Statements *statements = mCurrentScope->getStatements();
 
-				if(statement)
+			if(statements)
+			{
+				for(tree::Statements::iterator i = statements->begin(); i != statements->end();)
 				{
-					*i = statement;
-					++i;
-				}
-				else
-				{
-					i = statements->erase(i);
+					(*i)->accept(this);
+
+					tree::Statement *statement = static_cast<tree::Statement *>(mNodeMap.top());
+					mNodeMap.pop();
+
+					if(statement)
+					{
+						*i = statement;
+						++i;
+					}
+					else
+					{
+						i = statements->erase(i);
+					}
 				}
 			}
+
+			processNext.push(mCurrentScope);
 		}
 	}
 }
@@ -59,11 +78,62 @@ void operation::ResolveIdentities::dispatch(tree::Scope *scope)
 {
 	LOG("ResolveIdentities::dispatch::Scope");
 
-	add(scope);
+	add(mCurrentScope, scope);
 	operation::Restructure::dispatch(static_cast<tree::Statement *>(scope));
 }
 
-void operation::ResolveIdentities::visit(tree::Expression *expression)
+void operation::ResolveIdentities::dispatch(tree::Function *function)
+{
+	LOG("ResolveIdentities::dispatch::Function");
+
+	add(function->getOriginalScope() ? function->getOriginalScope() : mCurrentScope, function);
+	operation::Restructure::dispatch(static_cast<tree::Statement *>(function));
+}
+
+void operation::ResolveIdentities::visit(tree::Identity *identity)
+{
+	LOG("ResolveIdentities::visit::Identity");
+
+	try
+	{
+		mCurrentScope->mapIdentity(identity);
+	}
+	catch(tree::Scope::ExistsException &e)
+	{
+		std::string error = "The identifier \"" + e.identity->getName() + "\" is already defined";
+		error::enqueue(e.conflictingIdentity->getLocation(), e.identity->getLocation(), error);
+	}
+
+	operation::Restructure::visit(identity);
+}
+
+/*void operation::ResolveIdentities::visit(tree::FunctionPrototype *functionPrototype)
+{
+	LOG("ResolveIdentities::visit::FunctionPrototype");
+
+	ASSERT(mCurrentScope);
+
+	mapIdentity(functionPrototype);
+
+	// Little hack to change the current scope for the function parameters
+	tree::Scope *tmp = mCurrentScope;
+
+	mCurrentScope = functionPrototype->getFunction();
+	operation::Restructure::visit(functionPrototype);
+	mCurrentScope = tmp;
+}*/
+
+
+/*
+void operation::ResolveIdentities::dispatch(tree::Scope *scope)
+{
+	LOG("ResolveIdentities::dispatch::Scope");
+
+	add(scope);
+	operation::Restructure::dispatch(static_cast<tree::Statement *>(scope));
+}*/
+
+/*void operation::ResolveIdentities::visit(tree::Expression *expression)
 {
 	LOG("ResolveIdentities::visit::Expression");
 
@@ -111,9 +181,9 @@ void operation::ResolveIdentities::visit(tree::Expression *expression)
 			mNodeMap = nodeMapClone;
 		}
 	}
-}
+}*/
 
-void operation::ResolveIdentities::setup(tree::Assign *assign)
+/*void operation::ResolveIdentities::setup(tree::Assign *assign)
 {
 	LOG("ResolveIdentities::setup::Assign");
 
@@ -133,9 +203,9 @@ void operation::ResolveIdentities::setup(tree::Assign *assign)
 			getCurrentScope()->mapIdentity(variable);
 		}
 	}
-}
+}*/
 
-tree::Node *operation::ResolveIdentities::restructure(tree::Identifier *identifier)
+/*tree::Node *operation::ResolveIdentities::restructure(tree::Identifier *identifier)
 {
 	tree::Node *r = NULL;
 
@@ -154,9 +224,9 @@ tree::Node *operation::ResolveIdentities::restructure(tree::Identifier *identifi
 	//delete identifier; // Can't do this here as it'll cause problems if an exception is thrown...
 
 	return r;
-}
+}*/
 
-tree::Node *operation::ResolveIdentities::restructure(tree::Execute *execute)
+/*tree::Node *operation::ResolveIdentities::restructure(tree::Execute *execute)
 {
 	LOG("ResolveIdentities::restructure::Execute");
 
@@ -171,4 +241,4 @@ tree::Node *operation::ResolveIdentities::restructure(tree::Execute *execute)
 	{
 		return execute;
 	}
-}
+}*/

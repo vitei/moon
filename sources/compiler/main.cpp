@@ -223,12 +223,11 @@ int main(int argc, char *argv[])
 				// The list of operations to perform...
 				void (*operations[])(tree::Program *program) = {
 					operation::ScopeParents::run,
-					operation::MapIdentities::run,
 					operation::ResolveIdentities::run,
-					operation::ResolveTypes::run,
-					operation::TypeExpressions::run,
-					operation::CheckTypecasting::run,
-					operation::ComputeConstants::run,
+					//operation::ResolveTypes::run,
+					//operation::TypeExpressions::run,
+					//operation::CheckTypecasting::run,
+					//operation::ComputeConstants::run,
 					NULL
 				};
 

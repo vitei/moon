@@ -61,6 +61,11 @@ namespace tree
 			mPrototype = prototype;
 		}
 
+		Scope *getOriginalScope() const
+		{
+			return mOriginalScope;
+		}
+
 		void setOriginalScope(Scope *originalScope)
 		{
 			mOriginalScope = originalScope;
