@@ -188,6 +188,74 @@ namespace tree
 		DISPATCH_ACTIONS(tree::While, node, function) \
 		DISPATCH_ACTIONS(tree::Xor, node, function) \
 		ERROR("Unknown concrete class");
+
+	#define ASSIGN_ACTIONS(dst, class, node, function) \
+		if(dynamic_cast<class *>(node)) \
+		{ \
+			dst = function(static_cast<class *>(node)); \
+		}
+
+	#define GENERATE_ASSIGN(dst, node, function) \
+		ASSERT(node); \
+		ASSIGN_ACTIONS(dst, tree::Add, node, function) \
+		else ASSIGN_ACTIONS(dst, tree::Aggregate, node, function) \
+		else ASSIGN_ACTIONS(dst, tree::And, node, function) \
+		else ASSIGN_ACTIONS(dst, tree::AnonymousScope, node, function) \
+		else ASSIGN_ACTIONS(dst, tree::Array, node, function) \
+		else ASSIGN_ACTIONS(dst, tree::ArrayAccess, node, function) \
+		else ASSIGN_ACTIONS(dst, tree::Assign, node, function) \
+		else ASSIGN_ACTIONS(dst, tree::Bool, node, function) \
+		else ASSIGN_ACTIONS(dst, tree::BoolLiteral, node, function) \
+		else ASSIGN_ACTIONS(dst, tree::Cast, node, function) \
+		else ASSIGN_ACTIONS(dst, tree::Constant, node, function) \
+		/*DISPATCH_ACTIONS(tree::DefaultState, node, function)*/ \
+		else ASSIGN_ACTIONS(dst, tree::DirectAccess, node, function) \
+		else ASSIGN_ACTIONS(dst, tree::Divide, node, function) \
+		else ASSIGN_ACTIONS(dst, tree::Equal, node, function) \
+		else ASSIGN_ACTIONS(dst, tree::Execute, node, function) \
+		else ASSIGN_ACTIONS(dst, tree::Float, node, function) \
+		else ASSIGN_ACTIONS(dst, tree::FloatLiteral, node, function) \
+		else ASSIGN_ACTIONS(dst, tree::Function, node, function) \
+		else ASSIGN_ACTIONS(dst, tree::FunctionCall, node, function) \
+		else ASSIGN_ACTIONS(dst, tree::FunctionPrototype, node, function) \
+		else ASSIGN_ACTIONS(dst, tree::GlobalScoping, node, function) \
+		else ASSIGN_ACTIONS(dst, tree::GreaterEqual, node, function) \
+		else ASSIGN_ACTIONS(dst, tree::GreaterThan, node, function) \
+		else ASSIGN_ACTIONS(dst, tree::Identifier, node, function) \
+		else ASSIGN_ACTIONS(dst, tree::If, node, function) \
+		else ASSIGN_ACTIONS(dst, tree::Import, node, function) \
+		else ASSIGN_ACTIONS(dst, tree::Int, node, function) \
+		else ASSIGN_ACTIONS(dst, tree::IntLiteral, node, function) \
+		else ASSIGN_ACTIONS(dst, tree::LessEqual, node, function) \
+		else ASSIGN_ACTIONS(dst, tree::LessThan, node, function) \
+		else ASSIGN_ACTIONS(dst, tree::LogicalAnd, node, function) \
+		else ASSIGN_ACTIONS(dst, tree::LogicalNot, node, function) \
+		else ASSIGN_ACTIONS(dst, tree::LogicalOr, node, function) \
+		else ASSIGN_ACTIONS(dst, tree::MessageAccess, node, function) \
+		else ASSIGN_ACTIONS(dst, tree::Minus, node, function) \
+		else ASSIGN_ACTIONS(dst, tree::Modulus, node, function) \
+		else ASSIGN_ACTIONS(dst, tree::Multiply, node, function) \
+		/*DISPATCH_ACTIONS(tree::NamedState, node, function)*/ \
+		else ASSIGN_ACTIONS(dst, tree::Not, node, function) \
+		else ASSIGN_ACTIONS(dst, tree::Or, node, function) \
+		else ASSIGN_ACTIONS(dst, tree::Program, node, function) \
+		else ASSIGN_ACTIONS(dst, tree::Return, node, function) \
+		/*DISPATCH_ACTIONS(tree::SetState, node, function)*/ \
+		else ASSIGN_ACTIONS(dst, tree::SharedScoping, node, function) \
+		else ASSIGN_ACTIONS(dst, tree::String, node, function) \
+		else ASSIGN_ACTIONS(dst, tree::StringLiteral, node, function) \
+		else ASSIGN_ACTIONS(dst, tree::Subtract, node, function) \
+		else ASSIGN_ACTIONS(dst, tree::UDT, node, function) \
+		else ASSIGN_ACTIONS(dst, tree::Unequal, node, function) \
+		else ASSIGN_ACTIONS(dst, tree::Use, node, function) \
+		else ASSIGN_ACTIONS(dst, tree::Variable, node, function) \
+		else ASSIGN_ACTIONS(dst, tree::Void, node, function) \
+		else ASSIGN_ACTIONS(dst, tree::While, node, function) \
+		else ASSIGN_ACTIONS(dst, tree::Xor, node, function) \
+		else \
+		{ \
+			ERROR("Unknown concrete class"); \
+		}
 }
 
 #endif

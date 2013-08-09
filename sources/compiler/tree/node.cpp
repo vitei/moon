@@ -1,12 +1,15 @@
 #include "compiler/operations.h"
 #include "compiler/tree.h"
 
-
 void tree::Node::accept(operation::Operation *operation)
 {
 	setup(operation);
 
-	if(operation->doProcessChildren(this))
+	bool canProcessChildren = false;
+
+	GENERATE_ASSIGN(canProcessChildren, this, operation->doProcessChildren)
+
+	if(canProcessChildren)
 	{
 		childAccept(operation);
 	}
