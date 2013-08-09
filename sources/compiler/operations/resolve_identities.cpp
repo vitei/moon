@@ -107,33 +107,7 @@ void operation::ResolveIdentities::visit(tree::Identity *identity)
 	operation::Restructure::visit(identity);
 }
 
-/*void operation::ResolveIdentities::visit(tree::FunctionPrototype *functionPrototype)
-{
-	LOG("ResolveIdentities::visit::FunctionPrototype");
-
-	ASSERT(mCurrentScope);
-
-	mapIdentity(functionPrototype);
-
-	// Little hack to change the current scope for the function parameters
-	tree::Scope *tmp = mCurrentScope;
-
-	mCurrentScope = functionPrototype->getFunction();
-	operation::Restructure::visit(functionPrototype);
-	mCurrentScope = tmp;
-}*/
-
-
-/*
-void operation::ResolveIdentities::dispatch(tree::Scope *scope)
-{
-	LOG("ResolveIdentities::dispatch::Scope");
-
-	add(scope);
-	operation::Restructure::dispatch(static_cast<tree::Statement *>(scope));
-}*/
-
-/*void operation::ResolveIdentities::visit(tree::Expression *expression)
+void operation::ResolveIdentities::visit(tree::Expression *expression)
 {
 	LOG("ResolveIdentities::visit::Expression");
 
@@ -181,31 +155,31 @@ void operation::ResolveIdentities::dispatch(tree::Scope *scope)
 			mNodeMap = nodeMapClone;
 		}
 	}
-}*/
+}
 
-/*void operation::ResolveIdentities::setup(tree::Assign *assign)
+void operation::ResolveIdentities::visit(tree::Assign *assign)
 {
-	LOG("ResolveIdentities::setup::Assign");
+	LOG("ResolveIdentities::visit::Assign");
 
-	if(dynamic_cast<tree::Identifier *>(assign->getLHS()))
+	// FIXME!!!!
+	//static_cast<tree::Expression *>(assign)->childAccept(this);
+
+	if(assign->getRHS())
 	{
-		tree::Identifier *identifier = static_cast<tree::Identifier *>(assign->getLHS());
-
-		try
-		{
-			getCurrentScope()->findIdentity(identifier);
-		}
-		catch(tree::Scope::NotFoundException &e)
-		{
-			tree::Variable *variable = new tree::Variable(NULL, identifier->getName());
-
-			variable->setLocation(identifier->getLocation());
-			getCurrentScope()->mapIdentity(variable);
-		}
+		assign->getRHS()->accept(this);
 	}
-}*/
 
-/*tree::Node *operation::ResolveIdentities::restructure(tree::Identifier *identifier)
+	if(assign->getLHS())
+	{
+		mCanCreateIdentifier = true;
+		assign->getLHS()->accept(this);
+		mCanCreateIdentifier = false;
+	}
+
+	operation::Restructure::visit(static_cast<tree::Expression *>(assign));
+}
+
+tree::Node *operation::ResolveIdentities::restructure(tree::Identifier *identifier)
 {
 	tree::Node *r = NULL;
 
@@ -217,28 +191,23 @@ void operation::ResolveIdentities::dispatch(tree::Scope *scope)
 	}
 	catch(tree::Scope::NotFoundException &e)
 	{
-		std::string error = "The identifier \"" + e.identifier->getName() + "\" does not exist";
-		error::enqueue(e.identifier->getLocation(), error);
+		if(mCanCreateIdentifier)
+		{
+			tree::Variable *variable = new tree::Variable(NULL, identifier->getName());
+
+			variable->setLocation(identifier->getLocation());
+			getCurrentScope()->mapIdentity(variable);
+
+			r = variable;
+		}
+		else
+		{
+			std::string error = "The identifier \"" + e.identifier->getName() + "\" does not exist";
+			error::enqueue(e.identifier->getLocation(), error);
+		}
 	}
 
 	//delete identifier; // Can't do this here as it'll cause problems if an exception is thrown...
 
 	return r;
-}*/
-
-/*tree::Node *operation::ResolveIdentities::restructure(tree::Execute *execute)
-{
-	LOG("ResolveIdentities::restructure::Execute");
-
-	// If this was just a declaration statement then we can get rid of it.
-	// FIXME, when default types are added this will be redundant...
-	if(dynamic_cast<tree::Identity *>(execute->getExpression()))
-	{
-		delete execute;
-		return NULL;
-	}
-	else
-	{
-		return execute;
-	}
-}*/
+}

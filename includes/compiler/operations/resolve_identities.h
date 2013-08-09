@@ -21,18 +21,17 @@ namespace operation
 		virtual void dispatch(tree::Function *function);
 
 		virtual void visit(tree::Identity *identity);
-		//virtual void visit(tree::FunctionPrototype *functionPrototype);
+		virtual void visit(tree::Expression *expression);
+		virtual void visit(tree::Assign *assign);
 
-		////virtual void visit(tree::Expression *expression);
+		virtual tree::Node *restructure(tree::Identifier *identifier);
 
-		//virtual void setup(tree::Assign *assign);
-
-		////virtual tree::Node *restructure(tree::Identifier *identifier);
-		//virtual tree::Node *restructure(tree::Execute *execute);
+		virtual bool doProcessChildren(tree::Assign *assign) { return false; }
 
 	private:
-		ResolveIdentities() {}
+		ResolveIdentities() : mCanCreateIdentifier(false) {}
 
+		bool mCanCreateIdentifier;
 		std::map< tree::Scope *, std::queue<tree::Scope *> > mVisitList;
 	};
 }
