@@ -247,40 +247,14 @@ void operation::Restructure::dispatch(tree::Return *opReturn)
 //	operation::Restructure::dispatch(static_cast<tree::Statement *>(setState));
 //}
 
-void operation::Restructure::dispatch(tree::FunctionPrototype *functionPrototype)
-{
-	tree::Expressions *expressions = functionPrototype->getArguments();
-
-	if(expressions)
-	{
-		for(tree::Expressions::iterator i = expressions->begin(); i != expressions->end();)
-		{
-			(*i)->accept(this);
-
-			tree::Expression *expression = static_cast<tree::Expression *>(mNodeMap.top());
-			mNodeMap.pop();
-
-			if(expression)
-			{
-				*i = expression;
-				++i;
-			}
-			else
-			{
-				i = expressions->erase(i);
-			}
-		}
-	}
-
-	dispatch(static_cast<tree::TypedIdentity *>(functionPrototype));
-}
-
 void operation::Restructure::dispatch(tree::Function *function)
 {
 	tree::FunctionPrototype *functionPrototype = static_cast<tree::FunctionPrototype *>(mNodeMap.top());
 	mNodeMap.pop();
 
 	function->setPrototype(functionPrototype);
+
+	processFunctionParameters(function);
 
 	dispatch(static_cast<tree::Scope *>(function));
 }
@@ -340,4 +314,40 @@ void operation::Restructure::dispatch(tree::While *whileStatement)
 	whileStatement->setLoopStatement(loopStatement);
 
 	dispatch(static_cast<tree::Statement *>(whileStatement));
+}
+
+void operation::Restructure::processFunctionParameters(tree::Function *function)
+{
+	tree::FunctionPrototype *functionPrototype = function->getPrototype();
+
+	if(functionPrototype)
+	{
+		tree::Expressions *expressions = functionPrototype->getArguments();
+		tree::Scope *currentScope = mCurrentScope;
+
+		mCurrentScope = function;
+
+		if(expressions)
+		{
+			for(tree::Expressions::iterator i = expressions->begin(); i != expressions->end();)
+			{
+				(*i)->accept(this);
+
+				tree::Expression *expression = static_cast<tree::Expression *>(mNodeMap.top());
+				mNodeMap.pop();
+
+				if(expression)
+				{
+					*i = expression;
+					++i;
+				}
+				else
+				{
+					i = expressions->erase(i);
+				}
+			}
+		}
+
+		mCurrentScope = currentScope;
+	}
 }

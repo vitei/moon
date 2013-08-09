@@ -26,7 +26,6 @@ namespace operation
 		virtual void dispatch(tree::Execute *execute);
 		virtual void dispatch(tree::Return *opReturn);
 		//void dispatch(tree::SetState *setState);
-		virtual void dispatch(tree::FunctionPrototype *functionPrototype);
 		virtual void dispatch(tree::Function *function);
 		virtual void dispatch(tree::Scope *scope);
 		virtual void dispatch(tree::While *whileStatement);
@@ -36,6 +35,8 @@ namespace operation
 
 	protected:
 		Restructure() : mCurrentScope(NULL) { /* Abstract class */ }
+
+		void processFunctionParameters(tree::Function *function);
 
 		tree::Scope *getCurrentScope()
 		{
