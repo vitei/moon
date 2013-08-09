@@ -9,7 +9,10 @@ void tree::Scope::checkIdentity(Identity *identity)
 
 	if(previousValue != mIdentities.end())
 	{
-		throw tree::Scope::ExistsException(identity, previousValue->second);
+		if(identity != previousValue->second)
+		{
+			throw tree::Scope::ExistsException(identity, previousValue->second);
+		}
 	}
 	else if(mParent)
 	{
