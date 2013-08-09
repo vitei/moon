@@ -81,13 +81,6 @@ namespace tree
 			}
 		}
 
-		virtual void accept(operation::Operation *operation)
-		{
-			setup(operation);
-			childAccept(operation);
-			visit(operation);
-		}
-
 		virtual void checkIdentity(Identity *identity);
 		virtual Identity *findIdentity(Identifier *identifier);
 

@@ -114,6 +114,9 @@ namespace operation
 		virtual void setup(tree::Node *node) {}
 		PROCESS_ACTIONS(void, setup)
 
+		virtual bool doProcessChildren(tree::Node *node) { return true; }
+		PROCESS_ACTIONS(bool, doProcessChildren)
+
 		virtual void visit(tree::Node *node) {}
 		PROCESS_ACTIONS(void, visit)
 

@@ -75,13 +75,7 @@ namespace tree
 
 		virtual void childAccept(operation::Operation *operation) {}
 
-		virtual void accept(operation::Operation *operation)
-		{
-			setup(operation);
-			childAccept(operation);
-			visit(operation);
-		}
-
+		void accept(operation::Operation *operation);
 		void setup(operation::Operation *operation);
 		void visit(operation::Operation *operation);
 		Node *restructure(operation::Restructure *operation);

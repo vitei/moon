@@ -66,13 +66,6 @@ namespace tree
 			}
 		}
 
-		virtual void accept(operation::Operation *operation)
-		{
-			setup(operation);
-			childAccept(operation);
-			visit(operation);
-		}
-
 #ifdef DEBUG
 		virtual void printNode() { LOG("If"); }
 #endif

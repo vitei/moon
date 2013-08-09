@@ -45,13 +45,6 @@ namespace tree
 			}
 		}
 
-		virtual void accept(operation::Operation *operation)
-		{
-			setup(operation);
-			childAccept(operation);
-			visit(operation);
-		}
-
 	protected:
 		Expression() : mType(NULL) { /* Abstract class */ }
 
@@ -72,13 +65,6 @@ namespace tree
 		void setName(std::string &name)
 		{
 			mName = name;
-		}
-
-		virtual void accept(operation::Operation *operation)
-		{
-			setup(operation);
-			childAccept(operation);
-			visit(operation);
 		}
 
 	protected:
@@ -164,13 +150,6 @@ namespace tree
 			}
 		}
 
-		virtual void accept(operation::Operation *operation)
-		{
-			setup(operation);
-			childAccept(operation);
-			visit(operation);
-		}
-
 	protected:
 		Access(Expression *container, Expression *target) : mContainer(container), mTarget(target) { /* Abstract class */ }
 
@@ -252,13 +231,6 @@ namespace tree
 			}
 		}
 
-		virtual void accept(operation::Operation *operation)
-		{
-			setup(operation);
-			childAccept(operation);
-			visit(operation);
-		}
-
 	protected:
 		UnaryOperation(Expression *expression) : mExpression(expression) { /* Abstract class */ }
 
@@ -338,13 +310,6 @@ namespace tree
 			{
 				mRHS->accept(operation);
 			}
-		}
-
-		virtual void accept(operation::Operation *operation)
-		{
-			setup(operation);
-			childAccept(operation);
-			visit(operation);
 		}
 
 	protected:
@@ -458,13 +423,6 @@ namespace tree
 			}
 		}
 
-		virtual void accept(operation::Operation *operation)
-		{
-			setup(operation);
-			childAccept(operation);
-			visit(operation);
-		}
-
 #ifdef DEBUG
 		virtual void printNode() { LOG("Cast"); }
 #endif
@@ -563,13 +521,6 @@ namespace tree
 			{
 				mPrototype->accept(operation);
 			}
-		}
-
-		virtual void accept(operation::Operation *operation)
-		{
-			setup(operation);
-			childAccept(operation);
-			visit(operation);
 		}
 
 #ifdef DEBUG

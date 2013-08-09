@@ -32,13 +32,6 @@ namespace tree
 			}
 		}
 
-		virtual void accept(operation::Operation *operation)
-		{
-			setup(operation);
-			childAccept(operation);
-			visit(operation);
-		}
-
 	protected:
 		Scoping(Statement *scoped) : mScoped(scoped) { /* Abstract class */ }
 

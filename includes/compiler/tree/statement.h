@@ -46,13 +46,6 @@ namespace tree
 			}
 		}
 
-		virtual void accept(operation::Operation *operation)
-		{
-			setup(operation);
-			childAccept(operation);
-			visit(operation);
-		}
-
 #ifdef DEBUG
 		virtual void printNode() { LOG("Execute"); }
 #endif
@@ -86,13 +79,6 @@ namespace tree
 			}
 		}
 
-		virtual void accept(operation::Operation *operation)
-		{
-			setup(operation);
-			childAccept(operation);
-			visit(operation);
-		}
-
 #ifdef DEBUG
 		virtual void printNode() { LOG("Return"); }
 #endif
@@ -124,13 +110,6 @@ namespace tree
 //			{
 //				mState->accept(operation);
 //			}
-//		}
-//
-//		virtual void accept(operation::Operation *operation)
-//		{
-//			setup(operation);
-//			childAccept(operation);
-//			visit(operation);
 //		}
 //
 //#ifdef DEBUG
