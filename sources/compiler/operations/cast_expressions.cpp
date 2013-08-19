@@ -13,22 +13,32 @@ void operation::CastExpressions::visit(tree::BinaryOperation *binaryOperation)
 {
 	LOG("CastExpressions::visit::BinaryOperation");
 
-	ASSERT(binaryOperation->getType());
+	ASSERT(binaryOperation->getLHS());
+	ASSERT(binaryOperation->getRHS());
 
-	if(binaryOperation->getLHS() && *binaryOperation->getLHS()->getType() != *binaryOperation->getType())
+	if(binaryOperation->getType())
 	{
-		tree::Cast *cast = new tree::Cast(binaryOperation->getType(), binaryOperation->getLHS(), true);
+		if(binaryOperation->getLHS()->getType())
+		{
+			if(*binaryOperation->getLHS()->getType() != *binaryOperation->getType())
+			{
+				tree::Cast *cast = new tree::Cast(binaryOperation->getType(), binaryOperation->getLHS(), true);
 
-		cast->setLocation(binaryOperation->getLocation());
-		binaryOperation->setLHS(cast);
-	}
+				cast->setLocation(binaryOperation->getLocation());
+				binaryOperation->setLHS(cast);
+			}
+		}
 
-	if(binaryOperation->getRHS() && *binaryOperation->getRHS()->getType() != *binaryOperation->getType())
-	{
-		tree::Cast *cast = new tree::Cast(binaryOperation->getType(), binaryOperation->getRHS(), true);
+		if(binaryOperation->getRHS()->getType())
+		{
+			if(*binaryOperation->getRHS()->getType() != *binaryOperation->getType())
+			{
+				tree::Cast *cast = new tree::Cast(binaryOperation->getType(), binaryOperation->getRHS(), true);
 
-		cast->setLocation(binaryOperation->getLocation());
-		binaryOperation->setRHS(cast);
+				cast->setLocation(binaryOperation->getLocation());
+				binaryOperation->setRHS(cast);
+			}
+		}
 	}
 }
 
@@ -36,12 +46,14 @@ void operation::CastExpressions::visit(tree::BooleanBinaryOperation *booleanBina
 {
 	LOG("CastExpressions::visit::BooleanBinaryOperation");
 
-	// Check the left and right types are the same
-	if(booleanBinaryOperation->getLHS() && booleanBinaryOperation->getRHS())
-	{
-		tree::Type *typeA = booleanBinaryOperation->getLHS()->getType();
-		tree::Type *typeB = booleanBinaryOperation->getRHS()->getType();
+	ASSERT(booleanBinaryOperation->getLHS());
+	ASSERT(booleanBinaryOperation->getRHS());
 
+	tree::Type *typeA = booleanBinaryOperation->getLHS()->getType();
+	tree::Type *typeB = booleanBinaryOperation->getRHS()->getType();
+
+	if(typeA && typeB)
+	{
 		if(*typeA != *typeB)
 		{
 			if(typeA->canCast(*typeB, true))
@@ -66,7 +78,6 @@ void operation::CastExpressions::visit(tree::FunctionCall *functionCall)
 {
 	LOG("CastExpressions::visit::FunctionCall");
 
-	ASSERT(functionCall->getType());
 	ASSERT(functionCall->getPrototype());
 
 	tree::FunctionPrototype *functionPrototype = static_cast<tree::FunctionPrototype *>(functionCall->getPrototype());
@@ -84,16 +95,16 @@ void operation::CastExpressions::visit(tree::FunctionCall *functionCall)
 			tree::Type *expectedType = (*j)->getType();
 			tree::Type *actualType = (*i)->getType();
 
-			ASSERT(expectedType);
-			ASSERT(actualType);
-
-			// Check the types in-case unresolved
-			if(*expectedType != *actualType)
+			if(expectedType && actualType)
 			{
-				tree::Cast *cast = new tree::Cast(expectedType, *i, true);
+				// Check the types in-case unresolved
+				if(*expectedType != *actualType)
+				{
+					tree::Cast *cast = new tree::Cast(expectedType, *i, true);
 
-				cast->setLocation((*i)->getLocation());
-				*i = cast;
+					cast->setLocation((*i)->getLocation());
+					*i = cast;
+				}
 			}
 		}
 	}
@@ -123,18 +134,22 @@ void operation::CastExpressions::visit(tree::If *ifStatement)
 	tree::Expression *test = ifStatement->getTest();
 
 	ASSERT(test);
-	ASSERT(test->getType());
 
-	if(!dynamic_cast<tree::Bool *>(test->getType()))
+	tree::Type *type = test->getType();
+
+	if(type)
 	{
+		if(!dynamic_cast<tree::Bool *>(type))
+		{
 #ifdef DEBUG
-		test->getType()->printType();
+			type->printType();
 #endif
 
-		tree::Cast *cast = new tree::Cast(new tree::Bool(), test, true);
+			tree::Cast *cast = new tree::Cast(new tree::Bool(), test, true);
 
-		cast->setLocation(test->getLocation());
-		ifStatement->setTest(cast);
+			cast->setLocation(test->getLocation());
+			ifStatement->setTest(cast);
+		}
 	}
 }
 
@@ -145,18 +160,22 @@ void operation::CastExpressions::visit(tree::While *whileStatement)
 	tree::Expression *test = whileStatement->getTest();
 
 	ASSERT(test);
-	ASSERT(test->getType());
 
-	if(!dynamic_cast<tree::Bool *>(test->getType()))
+	tree::Type *type = test->getType();
+
+	if(type)
 	{
+		if(!dynamic_cast<tree::Bool *>(type))
+		{
 #ifdef DEBUG
-		test->getType()->printType();
+			type->printType();
 #endif
 
-		tree::Cast *cast = new tree::Cast(new tree::Bool(), test, true);
+			tree::Cast *cast = new tree::Cast(new tree::Bool(), test, true);
 
-		cast->setLocation(test->getLocation());
-		whileStatement->setTest(cast);
+			cast->setLocation(test->getLocation());
+			whileStatement->setTest(cast);
+		}
 	}
 }
 
@@ -164,22 +183,33 @@ void operation::CastExpressions::visit(tree::Return *returnStatement)
 {
 	LOG("CastExpressions::visit::Return");
 
-	ASSERT(mPrototype->getType());
+	tree::Type *type = mPrototype->getType();
+	tree::Expression *returnExpression = returnStatement->getReturn();
 
-	if(!returnStatement->getReturn())
+	if(type)
 	{
-		if(*mPrototype->getType() != tree::Void())
+		if(!returnExpression)
 		{
-			std::string error = "All return statements for function \"" + mPrototype->getName() + "\" must return a value";
-			error::enqueue(returnStatement->getLocation(), error);
+			if(*type != tree::Void())
+			{
+				std::string error = "All return statements for function \"" + mPrototype->getName() + "\" must return a value";
+				error::enqueue(returnStatement->getLocation(), error);
+			}
 		}
+		else
+		{
+			tree::Type *returnType = returnExpression->getType();
+
+			if(returnType)
+			{
+				if(*returnType != *type)
+				{
+					tree::Cast *cast = new tree::Cast(type, returnExpression, true);
+
+					cast->setLocation(returnStatement->getLocation());
+					returnStatement->setReturn(cast);
+				}
+			}
+		} 
 	}
-	else if(*returnStatement->getReturn()->getType() != *mPrototype->getType())
-	{
-		tree::Cast *cast = new tree::Cast(mPrototype->getType(), returnStatement->getReturn(), true);
-
-		cast->setLocation(returnStatement->getLocation());
-		returnStatement->setReturn(cast);
-	} 
 }
-

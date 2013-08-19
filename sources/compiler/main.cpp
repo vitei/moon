@@ -224,10 +224,12 @@ int main(int argc, char *argv[])
 				void (*operations[])(tree::Program *program) = {
 					operation::ScopeParents::run,
 					operation::ResolveIdentities::run,
-					//operation::ResolveTypes::run,
-					//operation::TypeExpressions::run,
-					//operation::CheckTypecasting::run,
-					//operation::ComputeConstants::run,
+
+					operation::ResolveTypes::run,
+					operation::CastExpressions::run,
+					/*operation::CheckTypecasting::run,
+					operation::ComputeConstants::run,*/
+
 					NULL
 				};
 
