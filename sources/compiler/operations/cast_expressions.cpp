@@ -3,15 +3,15 @@
 #include "compiler/tree.h"
 
 
-void operation::TypeExpressions::run(tree::Program *program)
+void operation::CastExpressions::run(tree::Program *program)
 {
-	operation::TypeExpressions operation;
+	operation::CastExpressions operation;
 	program->accept(&operation);
 }
 
-void operation::TypeExpressions::visit(tree::BinaryOperation *binaryOperation)
+void operation::CastExpressions::visit(tree::BinaryOperation *binaryOperation)
 {
-	LOG("TypeExpressions::visit::BinaryOperation");
+	LOG("CastExpressions::visit::BinaryOperation");
 
 	ASSERT(binaryOperation->getType());
 
@@ -32,9 +32,9 @@ void operation::TypeExpressions::visit(tree::BinaryOperation *binaryOperation)
 	}
 }
 
-void operation::TypeExpressions::visit(tree::BooleanBinaryOperation *booleanBinaryOperation)
+void operation::CastExpressions::visit(tree::BooleanBinaryOperation *booleanBinaryOperation)
 {
-	LOG("TypeExpressions::visit::BooleanBinaryOperation");
+	LOG("CastExpressions::visit::BooleanBinaryOperation");
 
 	// Check the left and right types are the same
 	if(booleanBinaryOperation->getLHS() && booleanBinaryOperation->getRHS())
@@ -62,9 +62,9 @@ void operation::TypeExpressions::visit(tree::BooleanBinaryOperation *booleanBina
 	}
 }
 
-void operation::TypeExpressions::visit(tree::FunctionCall *functionCall)
+void operation::CastExpressions::visit(tree::FunctionCall *functionCall)
 {
-	LOG("TypeExpressions::visit::FunctionCall");
+	LOG("CastExpressions::visit::FunctionCall");
 
 	ASSERT(functionCall->getType());
 	ASSERT(functionCall->getPrototype());
@@ -99,7 +99,7 @@ void operation::TypeExpressions::visit(tree::FunctionCall *functionCall)
 	}
 }
 
-void operation::TypeExpressions::visit(tree::Scope *scope)
+void operation::CastExpressions::visit(tree::Scope *scope)
 {
 	tree::Statements *statements = scope->getStatements();
 
@@ -109,16 +109,16 @@ void operation::TypeExpressions::visit(tree::Scope *scope)
 	}
 }
 
-void operation::TypeExpressions::visit(tree::Function *function)
+void operation::CastExpressions::visit(tree::Function *function)
 {
 	mPrototype = function->getPrototype();
 	visit(static_cast<tree::Scope *>(function));
 	mPrototype = NULL;
 }
 
-void operation::TypeExpressions::visit(tree::If *ifStatement)
+void operation::CastExpressions::visit(tree::If *ifStatement)
 {
-	LOG("TypeExpressions::setup::If");
+	LOG("CastExpressions::setup::If");
 
 	tree::Expression *test = ifStatement->getTest();
 
@@ -138,9 +138,9 @@ void operation::TypeExpressions::visit(tree::If *ifStatement)
 	}
 }
 
-void operation::TypeExpressions::visit(tree::While *whileStatement)
+void operation::CastExpressions::visit(tree::While *whileStatement)
 {
-	LOG("TypeExpressions::visit::While");
+	LOG("CastExpressions::visit::While");
 
 	tree::Expression *test = whileStatement->getTest();
 
@@ -160,9 +160,9 @@ void operation::TypeExpressions::visit(tree::While *whileStatement)
 	}
 }
 
-void operation::TypeExpressions::visit(tree::Return *returnStatement)
+void operation::CastExpressions::visit(tree::Return *returnStatement)
 {
-	LOG("TypeExpressions::visit::Return");
+	LOG("CastExpressions::visit::Return");
 
 	ASSERT(mPrototype->getType());
 

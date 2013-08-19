@@ -1,5 +1,5 @@
-#ifndef COMPILER_OPERATIONS_TYPE_EXPRESSIONS_H
-#define COMPILER_OPERATIONS_TYPE_EXPRESSIONS_H
+#ifndef COMPILER_OPERATIONS_CAST_EXPRESSIONS_H
+#define COMPILER_OPERATIONS_CAST_EXPRESSIONS_H
 
 #include "compiler/tree.h"
 #include "operation.h"
@@ -7,7 +7,7 @@
 
 namespace operation
 {
-	class TypeExpressions : public Operation
+	class CastExpressions : public Operation
 	{
 	public:
 		static void run(tree::Program *program);
@@ -22,7 +22,7 @@ namespace operation
 		virtual void visit(tree::Return *returnStatement);
 
 	private:
-		TypeExpressions() : mPrototype(NULL) {}
+		CastExpressions() : mPrototype(NULL) {}
 
 		tree::FunctionPrototype *mPrototype;
 	};
