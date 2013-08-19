@@ -5,12 +5,8 @@
 
 void operation::ResolveTypes::run(tree::Program *program)
 {
-	for(bool resolved = false; !resolved;)
-	{
-		operation::ResolveTypes operation;
-		program->accept(&operation);
-		resolved = operation.resolve();
-	}
+	operation::ResolveTypes operation;
+	program->accept(&operation);
 }
 
 void operation::ResolveTypes::visit(tree::Access *access)
@@ -20,7 +16,13 @@ void operation::ResolveTypes::visit(tree::Access *access)
 	if(!access->getType())
 	{
 		ASSERT(access->getTarget());
-		access->setType(access->getTarget()->getType());
+
+		tree::Type *type = access->getTarget()->getType();
+
+		if(type)
+		{
+			access->setType(type);
+		}
 	}
 }
 
@@ -28,8 +30,10 @@ void operation::ResolveTypes::visit(tree::ArrayAccess *arrayAccess)
 {
 	LOG("ResolveTypes::visit::ArrayAccess");
 
-	if(!arrayAccess->getType() && arrayAccess->getContainer())
+	if(!arrayAccess->getType())
 	{
+		ASSERT(arrayAccess->getContainer());
+
 		tree::Type *type = arrayAccess->getContainer()->getType();
 
 		if(type)
@@ -61,15 +65,8 @@ void operation::ResolveTypes::visit(tree::BinaryOperation *binaryOperation)
 		tree::Type *lhsType = binaryOperation->getLHS()->getType();
 		tree::Type *rhsType = binaryOperation->getRHS()->getType();
 
-		if(!lhsType || !rhsType)
+		if(lhsType && rhsType)
 		{
-			setOperationType(binaryOperation, NULL);
-		}
-		else
-		{
-			ASSERT(lhsType);
-			ASSERT(rhsType);
-
 			setOperationType(binaryOperation, lhsType->canCast(*rhsType) ? lhsType : rhsType);
 		}
 	}
@@ -79,38 +76,16 @@ void operation::ResolveTypes::visit(tree::Assign *assign)
 {
 	LOG("ResolveTypes::visit::Assign");
 
-	tree::Expression *lhs = assign->getLHS();
-
-	ASSERT(lhs);
-	ASSERT(assign->getRHS());
-
-	tree::Type *lhsType = lhs->getType();
-	tree::Type *rhsType = assign->getRHS()->getType();
-
-	if(!lhsType)
+	if(!assign->getType())
 	{
-		if(dynamic_cast<tree::TypedIdentity *>(lhs))
+		ASSERT(assign->getLHS());
+
+		tree::Type *lhsType = assign->getLHS()->getType();
+
+		if(lhsType)
 		{
-			if(mTypeResolution.find(lhs) == mTypeResolution.end())
-			{
-				mTypeResolution[lhs] = assign->getRHS()->getType();
-			}
-			else if(mTypeResolution[lhs])
-			{
-				if(!rhsType)
-				{
-					mTypeResolution[lhs] = NULL;
-				}
-				else if(rhsType->canCast(*mTypeResolution[lhs]))
-				{
-					mTypeResolution[lhs] = rhsType;
-				}
-			}
+			setOperationType(assign, lhsType);
 		}
-	}
-	else
-	{
-		setOperationType(assign, lhsType);
 	}
 }
 
@@ -129,7 +104,13 @@ void operation::ResolveTypes::visit(tree::UnaryOperation *unaryOperation)
 	if(!unaryOperation->getType())
 	{
 		ASSERT(unaryOperation->getExpression());
-		setOperationType(unaryOperation, unaryOperation->getExpression()->getType());
+
+		tree::Type *type = unaryOperation->getExpression()->getType();
+
+		if(type)
+		{
+			setOperationType(unaryOperation, type);
+		}
 	}
 }
 
@@ -157,7 +138,12 @@ void operation::ResolveTypes::visit(tree::FunctionCall *functionCall)
 		ASSERT(functionCall->getPrototype());
 
 		tree::FunctionPrototype *functionPrototype = static_cast<tree::FunctionPrototype *>(functionCall->getPrototype());
-		functionCall->setType(functionPrototype->getType());
+		tree::Type *type = functionPrototype->getType();
+
+		if(type)
+		{
+			functionCall->setType(type);
+		}
 	}
 }
 
@@ -169,70 +155,6 @@ void operation::ResolveTypes::visit(tree::Scope *scope)
 	{
 		for(tree::Statements::iterator i = statements->begin(), end = statements->end(); i != end; (*i++)->accept(this));
 	}
-}
-
-void operation::ResolveTypes::visit(tree::Function *function)
-{
-	LOG("ResolveTypes::visit::Function");
-
-	if(function->getPrototype() && function->getPrototype()->getType() == NULL)
-	{
-		mPrototype = function->getPrototype();
-		mTypeResolution[mPrototype] = new tree::Void();
-	}
-
-	visit(static_cast<tree::Scope *>(function));
-	mPrototype = NULL;
-}
-
-void operation::ResolveTypes::visit(tree::Return *returnStatement)
-{
-	LOG("ResolveTypes::visit::Return");
-
-	if(mPrototype)
-	{
-		// Ensure there was no ambiguity
-		if(mTypeResolution[mPrototype])
-		{
-			// Check there is a return
-			if(returnStatement->getReturn())
-			{
-				// Ensure this return will not generate ambiguity
-				if(returnStatement->getReturn()->getType())
-				{
-					tree::Type *returnType = returnStatement->getReturn()->getType();
-					if(returnType->canCast(*mTypeResolution[mPrototype]))
-					{
-						mTypeResolution[mPrototype] = returnType;
-					}
-				}
-				else
-				{
-					mTypeResolution[mPrototype] = NULL;
-				}
-			}
-		}
-	}
-}
-
-bool operation::ResolveTypes::resolve()
-{
-	if(error::count() == 0) // FIXME, better way to do this??? ()
-	{
-		if(mTypeResolution.begin() != mTypeResolution.end())
-		{
-			for(std::map<tree::Expression *, tree::Type *>::iterator i = mTypeResolution.begin(), e = mTypeResolution.end(); i != e; ++i)
-			{
-				i->first->setType(i->second);
-			}
-
-			LOG("ResolveTypes new pass required...");
-
-			return false;
-		}
-	}
-
-	return true;
 }
 
 void operation::ResolveTypes::setOperationType(tree::Operation *operation, tree::Type *type)

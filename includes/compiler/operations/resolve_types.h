@@ -1,7 +1,6 @@
 #ifndef COMPILER_OPERATIONS_RESOLVE_TYPES_H
 #define COMPILER_OPERATIONS_RESOLVE_TYPES_H
 
-#include <map>
 #include "compiler/tree.h"
 #include "operation.h"
 
@@ -22,18 +21,11 @@ namespace operation
 		virtual void visit(tree::BooleanUnaryOperation *booleanUnaryOperation);
 		virtual void visit(tree::FunctionCall *functionCall);
 		virtual void visit(tree::Scope *scope);
-		virtual void visit(tree::Function *function);
-		virtual void visit(tree::Return *returnStatement);
-
-		bool resolve();
 
 		void setOperationType(tree::Operation *operation, tree::Type *type);
 
 	private:
-		ResolveTypes(): mPrototype(NULL) {}
-
-		tree::FunctionPrototype *mPrototype;
-		std::map<tree::Expression *, tree::Type *> mTypeResolution;
+		ResolveTypes() {}
 	};
 }
 
