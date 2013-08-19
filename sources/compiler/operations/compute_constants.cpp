@@ -8,6 +8,26 @@ void operation::ComputeConstants::run(tree::Program *program)
 	program->accept(&operation);
 }
 
+tree::Node *operation::ComputeConstants::restructure(tree::Assign *assign)
+{
+	LOG("ComputeConstants::restructure::Assign");
+
+	tree::Constant *constant = dynamic_cast<tree::Constant *>(assign->getLHS());
+	
+	if(constant)
+	{
+		tree::Literal *literal = dynamic_cast<tree::Literal *>(assign->getRHS());
+
+		if(literal)
+		{
+			constant->setValue(literal);
+			return NULL;
+		}
+	}
+
+	return assign;
+}
+
 tree::Node *operation::ComputeConstants::restructure(tree::Cast *cast)
 {
 	LOG("ComputeConstants::restructure::Cast");
@@ -38,6 +58,22 @@ tree::Node *operation::ComputeConstants::restructure(tree::Cast *cast)
 	return cast;
 }
 
+tree::Node *operation::ComputeConstants::restructure(tree::Constant *constant)
+{
+	LOG("ComputeConstants::restructure::Constant");
+
+	tree::Literal *literal = constant->getValue();
+	
+	if(literal)
+	{
+		return literal;
+	}
+	else
+	{
+		return constant;
+	}
+}
+
 tree::Node *operation::ComputeConstants::restructure(tree::BinaryOperation *binaryOperation)
 {
 	LOG("ComputeConstants::restructure::BinaryOperation");
@@ -47,6 +83,9 @@ tree::Node *operation::ComputeConstants::restructure(tree::BinaryOperation *bina
 	if(lhsLiteral)
 	{
 		tree::Literal *rhsLiteral = dynamic_cast<tree::Literal *>(binaryOperation->getRHS());
+
+		ASSERT(lhsLiteral->getType());
+		ASSERT(rhsLiteral->getType());
 
 		if(rhsLiteral && *lhsLiteral->getType() == *rhsLiteral->getType())
 		{

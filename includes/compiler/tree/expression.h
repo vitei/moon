@@ -352,11 +352,24 @@ namespace tree
 	class Constant : public TypedIdentity
 	{
 	public:
-		Constant(Type *type, std::string name) : TypedIdentity(type, name) {}
+		Constant(Type *type, std::string name) : TypedIdentity(type, name), mValue(NULL) {}
+
+		Literal *getValue()
+		{
+			return mValue;
+		}
+
+		void setValue(Literal *value)
+		{
+			mValue = value;
+		}
 
 #ifdef DEBUG
 		virtual void printNode() { LOG("Constant"); }
 #endif
+
+	private:
+		Literal *mValue;
 	};
 
 	class Variable : public TypedIdentity

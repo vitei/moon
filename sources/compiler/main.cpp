@@ -227,6 +227,7 @@ int main(int argc, char *argv[])
 
 					operation::ResolveTypes::run,
 					operation::CastExpressions::run,
+					operation::ComputeConstants::run,
 					/*operation::CheckTypecasting::run,
 					operation::ComputeConstants::run,*/
 
