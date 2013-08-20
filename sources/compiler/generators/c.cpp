@@ -193,57 +193,6 @@ void MangleNames::visit(tree::Import *import)
 	}
 }
 
-class OutputConstants : public operation::Operation
-{
-public:
-	static void run(generator::C::Printer *printer, tree::Program *program);
-
-	virtual void visit(tree::Scope *scope);
-	virtual void visit(tree::Function *function);
-	virtual void visit(tree::Assign *assign);
-
-private:
-	OutputConstants() {}
-
-	generator::C::Printer *mPrinter;
-};
-
-void OutputConstants::run(generator::C::Printer *printer, tree::Program *program)
-{
-	OutputConstants operation;
-	operation.mPrinter = printer;
-	program->accept(&operation);
-}
-
-void OutputConstants::visit(tree::Scope *scope)
-{
-	tree::Statements *statements = scope->getStatements();
-
-	if(statements)
-	{
-		for(tree::Statements::iterator i = statements->begin(); i != statements->end(); (*i++)->accept(this));
-	}
-}
-
-void OutputConstants::visit(tree::Function *function)
-{
-	// Skip..
-}
-
-void OutputConstants::visit(tree::Assign *assign)
-{
-	tree::Constant *constant = dynamic_cast<tree::Constant *>(assign->getLHS());
-
-	if(constant)
-	{
-		mPrinter->outputTabs();
-		mPrinter->outputDeclaration(constant);
-		mPrinter->outputRaw(" = ");
-		mPrinter->dispatch(assign->getRHS());
-		mPrinter->outputEOS();
-	}
-}
-
 class OutputVariables : public operation::Operation
 {
 public:
@@ -482,13 +431,12 @@ void OutputNew::outputScope(tree::Scope *scope)
 	{
 		for(tree::Statements::iterator i = statements->begin(); i != statements->end(); ++i)
 		{
-			tree::Execute *execute;
-			tree::Assign *assign;
+			// Only assign expressions should be output here
+			tree::Execute *execute = dynamic_cast<tree::Execute *>(*i);
 
-			// Only non-constant-assigning expressions should be output here
-			if((execute = dynamic_cast<tree::Execute *>(*i)) && !((assign = dynamic_cast<tree::Assign *>(execute->getExpression())) && dynamic_cast<tree::Constant *>(assign->getLHS())))
+			if(execute && dynamic_cast<tree::Assign *>(execute->getExpression()))
 			{
-				mPrinter->dispatch(*i);
+				mPrinter->dispatch(execute);
 			}
 		}
 	}
@@ -535,7 +483,6 @@ void generator::C::generate(tree::Program *program)
 	mPrinter.outputTabs();
 	mPrinter.outputPragma("#include <stdbool.h>");
 
-	outputConstants(program);
 	outputVariables(program);
 	outputFunctions(program);
 	outputNew(program);
@@ -549,11 +496,6 @@ void generator::C::generate(tree::Program *program)
 void generator::C::mangleNames(tree::Program *program)
 {
 	MangleNames::run(program);
-}
-
-void generator::C::outputConstants(tree::Program *program)
-{
-	OutputConstants::run(&mPrinter, program);
 }
 
 void generator::C::outputVariables(tree::Program *program)
@@ -893,17 +835,7 @@ void generator::C::Printer::output(tree::StringLiteral *stringLiteral)
 
 void generator::C::Printer::output(tree::Assign *assign)
 {
-	tree::Constant *constant = dynamic_cast<tree::Constant *>(assign->getLHS());
-
-	if(constant)
-	{
-		outputDeclaration(constant);
-	}
-	else
-	{
-		dispatch(assign->getLHS());
-	}
-
+	dispatch(assign->getLHS());
 	*mOutput << " = ";
 	dispatch(assign->getRHS());
 }
@@ -1181,8 +1113,6 @@ void generator::C::Printer::outputExtern(tree::TypedIdentity *typedIdentity)
 
 void generator::C::Printer::outputDeclaration(tree::TypedIdentity *typedIdentity, bool functionPrototype)
 {
-	ASSERT(!dynamic_cast<tree::Constant *>(typedIdentity));
-
 	tree::Type *type = typedIdentity->getType();
 
 	ASSERT(typedIdentity->getMetadata());

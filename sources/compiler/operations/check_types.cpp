@@ -34,12 +34,8 @@ void operation::CheckTypes::visit(tree::Constant *constant)
 {
 	LOG("CheckTypes::visit::Constant");
 
-	if(!constant->getValue())
-	{
-		throw IncompleteException();
-	}
-
-	visit(static_cast<tree::TypedIdentity *>(constant));
+	// There should be no constants left in the tree...
+	throw IncompleteException();
 }
 
 void operation::CheckTypes::visit(tree::FunctionCall *functionCall)
@@ -54,6 +50,8 @@ void operation::CheckTypes::visit(tree::FunctionCall *functionCall)
 
 void operation::CheckTypes::visit(tree::Function *function)
 {
+	LOG("CheckTypes::visit::Function");
+
 	ASSERT(function->getPrototype());
 
 	tree::Expressions *expressions = function->getPrototype()->getArguments();

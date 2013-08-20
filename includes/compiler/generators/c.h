@@ -129,7 +129,6 @@ namespace generator
 		virtual void generate(tree::Program *program);
 
 		void mangleNames(tree::Program *program);
-		void outputConstants(tree::Program *program);
 		void outputVariables(tree::Program *program);
 		void outputFunctions(tree::Program *program);
 		void outputNew(tree::Program *program);
