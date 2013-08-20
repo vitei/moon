@@ -26,8 +26,6 @@ void operation::CheckTypes::visit(tree::TypedIdentity *typedIdentity)
 
 	if(!typedIdentity->getType())
 	{
-		typedIdentity->printNode();
-		LOG("%s", typedIdentity->getName().c_str());
 		throw IncompleteException();
 	}
 }
@@ -38,8 +36,6 @@ void operation::CheckTypes::visit(tree::Constant *constant)
 
 	if(!constant->getValue())
 	{
-		constant->printNode();
-		LOG("%s", constant->getName().c_str());
 		throw IncompleteException();
 	}
 

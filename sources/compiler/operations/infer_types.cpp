@@ -9,7 +9,10 @@ void operation::InferTypes::run(tree::Program *program)
 
 	for(std::map<tree::TypedIdentity *, tree::Type *>::iterator i = operation.mTypeResolution.begin(), e = operation.mTypeResolution.end(); i != e; ++i)
 	{
-		i->first->setType(i->second);
+		if(i->second)
+		{
+			i->first->setType(i->second);
+		}
 	}
 }
 
@@ -38,19 +41,48 @@ void operation::InferTypes::visit(tree::Assign *assign)
 
 	ASSERT(lhs);
 
+	lhs->accept(this);
+
 	tree::TypedIdentity *identity = dynamic_cast<tree::TypedIdentity *>(lhs);
 
 	if(identity && !identity->getType())
 	{
 		ASSERT(assign->getRHS());
-		tree::Type *rhsType = assign->getRHS()->getType();
 
-		if(   !rhsType                                                                     // If this type is not resolved then flag we can't process it
-		   || mTypeResolution.find(identity) == mTypeResolution.end()                      // If this identity hasn't been added yet then add it
-		   || (mTypeResolution[identity] && rhsType->canCast(*mTypeResolution[identity]))) // If there is a current type and the RHS type can handle it then use the RHS type
+		mAssignIdentity = identity;
+		mSelfReference = false;
+
+		assign->getRHS()->accept(this);
+
+		mAssignIdentity = NULL;
+
+		if(!mSelfReference)
 		{
-			mTypeResolution[identity] = rhsType;
+			tree::Type *rhsType = assign->getRHS()->getType();
+
+			if(   !rhsType                                                                     // If this type is not resolved then flag we can't process it
+			   || mTypeResolution.find(identity) == mTypeResolution.end()                      // If this identity hasn't been added yet then add it
+			   || (mTypeResolution[identity] && rhsType->canCast(*mTypeResolution[identity]))) // If there is a current type and the RHS type can handle it then use the RHS type
+			{
+				mTypeResolution[identity] = rhsType;
+			}
 		}
+	}
+	else
+	{
+		// FIXME, is this required???
+		ASSERT(assign->getRHS());
+		assign->getRHS()->accept(this);
+	}
+}
+
+void operation::InferTypes::visit(tree::Identity *identity)
+{
+	LOG("InferTypes::visit::Identity");
+
+	if(mAssignIdentity && mAssignIdentity == identity)
+	{
+		mSelfReference = true;
 	}
 }
 
