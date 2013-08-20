@@ -14,6 +14,8 @@
 
 const char *DIRECTORY_SEPARATORS = " ,:";
 
+typedef void (*TreeOperation)(tree::Program *program);
+
 enum Generators
 {
 	GENERATOR_C,
@@ -26,6 +28,36 @@ static parser::Data sParserData; // Debug filenames are maintained by this so it
 static generator::C sCGenerator;
 static generator::Generator *sGenerator;
 static generator::Generator *sGenerators[GENERATOR_MAX];
+
+void doOperations(tree::Program &program, TreeOperation *operations)
+{
+	for(unsigned char i = 0; operations[i]; i++)
+	{
+		operations[i](&program);
+
+		if(error::count() != 0)
+		{
+			LOG("Errors encountered in stage %u", i);
+			break;
+		}
+	}
+}
+
+void fillInTree(tree::Program *program)
+{
+	// The list of operations to perform...
+	TreeOperation operations[] = {
+		operation::ResolveTypes::run,
+		operation::CastExpressions::run,
+		operation::ComputeConstants::run,
+		operation::InferTypes::run,
+
+		NULL
+	};
+
+	doOperations(*program, operations);
+}
+
 
 int main(int argc, char *argv[])
 {
@@ -221,29 +253,19 @@ int main(int argc, char *argv[])
 				tree::Program program(name, &aggregates);
 
 				// The list of operations to perform...
-				void (*operations[])(tree::Program *program) = {
+				TreeOperation operations[] = {
 					operation::ScopeParents::run,
 					operation::ResolveIdentities::run,
 
-					operation::ResolveTypes::run,
-					operation::CastExpressions::run,
-					operation::ComputeConstants::run,
+					fillInTree,
+
 					/*operation::CheckTypecasting::run,
 					operation::ComputeConstants::run,*/
 
 					NULL
 				};
 
-				for(unsigned char i = 0; operations[i]; i++)
-				{
-					operations[i](&program);
-
-					if(error::count() != 0)
-					{
-						LOG("Errors encountered in stage %u", i);
-						break;
-					}
-				}
+				doOperations(program, operations);
 
 				// If there are no errors we should be able to do code generation now
 				if(error::count() == 0)
