@@ -3,6 +3,7 @@
 
 #include "operations/cast_expressions.h"
 #include "operations/check_typecasting.h"
+#include "operations/check_types.h"
 #include "operations/compute_constants.h"
 #include "operations/infer_types.h"
 #include "operations/resolve_identities.h"

@@ -43,19 +43,23 @@ void doOperations(tree::Program &program, TreeOperation *operations)
 	}
 }
 
-void fillInTree(tree::Program *program)
+void typeProgram(tree::Program *program)
 {
 	// The list of operations to perform...
 	TreeOperation operations[] = {
 		operation::ResolveTypes::run,
 		operation::CastExpressions::run,
-		operation::ComputeConstants::run,
 		operation::InferTypes::run,
+		operation::ComputeConstants::run,
 
 		NULL
 	};
 
-	doOperations(*program, operations);
+	do
+	{
+		doOperations(*program, operations);
+	}
+	while(!operation::CheckTypes::run(program));
 }
 
 
@@ -257,10 +261,9 @@ int main(int argc, char *argv[])
 					operation::ScopeParents::run,
 					operation::ResolveIdentities::run,
 
-					fillInTree,
+					typeProgram,
 
-					/*operation::CheckTypecasting::run,
-					operation::ComputeConstants::run,*/
+					operation::CheckTypecasting::run,
 
 					NULL
 				};
