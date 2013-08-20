@@ -56,6 +56,7 @@ void MangleNames::visit(tree::Program *program)
 		tree::Identity *identity = i->second;
 		Mangled *cName = new Mangled("moon$$" + program->getName() + "_" + identity->getName());
 
+		ASSERT(!identity->getMetadata());
 		identity->setMetadata(cName);
 	}
 
@@ -85,6 +86,7 @@ void MangleNames::visit(tree::Aggregate *aggregate)
 			ERROR("Unknown identity type");
 		}
 
+		ASSERT(!identity->getMetadata());
 		identity->setMetadata(cName);
 	}
 
@@ -111,6 +113,7 @@ void MangleNames::visit(tree::Use *use)
 			cName = new Mangled("moon$$" + program->getName() + "_" + use->getName() + "_" + identity->getName());
 		}
 
+		ASSERT(!identity->getMetadata());
 		identity->setMetadata(cName);
 	}
 
@@ -126,22 +129,12 @@ void MangleNames::visit(tree::Function *function)
 
 	tree::Expressions *arguments = prototype->getArguments();
 
-	if(arguments)
-	{
-		for(tree::Expressions::iterator i = arguments->begin(), end = arguments->end(); i != end; ++i)
-		{
-			tree::Identity *identity = static_cast<tree::Identity *>(*i);
-			Mangled *cName = new Mangled(cPrototypeName->useName + "_" + identity->getName());
-
-			identity->setMetadata(cName);
-		}
-	}
-
 	for(tree::Identities::iterator i = function->getIdentities().begin(), end = function->getIdentities().end(); i != end; ++i)
 	{
 		tree::Identity *identity = i->second;
 		Mangled *cName = new Mangled(cPrototypeName->useName + "_" + identity->getName());
 
+		ASSERT(!identity->getMetadata());
 		identity->setMetadata(cName);
 	}
 
@@ -600,7 +593,10 @@ void generator::C::Printer::output(tree::Scope *scope)
 
 void generator::C::Printer::output(tree::Function *function)
 {
-	output(function->getPrototype());
+	tree::FunctionPrototype *prototype = function->getPrototype();
+	tree::Expressions *arguments = prototype->getArguments();
+
+	output(prototype);
 	*mOutput << std::endl;
 
 	outputTabs();
@@ -610,18 +606,28 @@ void generator::C::Printer::output(tree::Function *function)
 
 	for(tree::Identities::iterator i = function->getIdentities().begin(), end = function->getIdentities().end(); i != end; ++i)
 	{
-		if(!dynamic_cast<tree::Constant *>(i->second))
+		bool argumentExists = false;
+
+		if(arguments)
 		{
+			argumentExists = std::find(arguments->begin(), arguments->end(), i->second) != arguments->end(); // FIXME, inefficient
+		}
+
+		if(!argumentExists)
+		{
+			if(!dynamic_cast<tree::Constant *>(i->second))
+			{
 #ifdef DEBUG
-			tree::TypedIdentity *typedIdentity = dynamic_cast<tree::TypedIdentity *>(i->second);
-			ASSERT(typedIdentity);
+				tree::TypedIdentity *typedIdentity = dynamic_cast<tree::TypedIdentity *>(i->second);
+				ASSERT(typedIdentity);
 #else
-			tree::TypedIdentity *typedIdentity = static_cast<tree::TypedIdentity *>(i->second);
+				tree::TypedIdentity *typedIdentity = static_cast<tree::TypedIdentity *>(i->second);
 #endif
 
-			outputTabs();
-			outputDeclaration(typedIdentity);
-			outputEOS();
+				outputTabs();
+				outputDeclaration(typedIdentity);
+				outputEOS();
+			}
 		}
 	}
 
