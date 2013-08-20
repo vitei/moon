@@ -1,15 +1,15 @@
-#include "compiler/error.h"
 #include "compiler/operations.h"
 #include "compiler/tree.h"
 
 
 void operation::InferTypes::run(tree::Program *program)
 {
-	for(bool resolved = false; !resolved;)
+	operation::InferTypes operation;
+	program->accept(&operation);
+
+	for(std::map<tree::TypedIdentity *, tree::Type *>::iterator i = operation.mTypeResolution.begin(), e = operation.mTypeResolution.end(); i != e; ++i)
 	{
-		operation::InferTypes operation;
-		program->accept(&operation);
-		resolved = operation.resolve();
+		i->first->setType(i->second);
 	}
 }
 
@@ -30,128 +30,47 @@ void operation::InferTypes::visit(tree::Access *access)
 	}
 }
 
-/*void operation::ResolveTypes::visit(tree::ArrayAccess *arrayAccess)
+void operation::InferTypes::visit(tree::Assign *assign)
 {
-	LOG("ResolveTypes::visit::ArrayAccess");
+	LOG("InferTypes::visit::Assign");
 
-	if(!arrayAccess->getType())
+	tree::Expression *lhs = assign->getLHS();
+
+	ASSERT(lhs);
+
+	tree::TypedIdentity *identity = dynamic_cast<tree::TypedIdentity *>(lhs);
+
+	if(identity && !identity->getType())
 	{
-		ASSERT(arrayAccess->getContainer());
+		ASSERT(assign->getRHS());
+		tree::Type *rhsType = assign->getRHS()->getType();
 
-		tree::Type *type = arrayAccess->getContainer()->getType();
-
-		if(type)
+		if(   !rhsType                                                                     // If this type is not resolved then flag we can't process it
+		   || mTypeResolution.find(identity) == mTypeResolution.end()                      // If this identity hasn't been added yet then add it
+		   || (mTypeResolution[identity] && rhsType->canCast(*mTypeResolution[identity]))) // If there is a current type and the RHS type can handle it then use the RHS type
 		{
-			tree::Array *arrayType = dynamic_cast<tree::Array *>(type);
-
-			if(arrayType)
-			{
-				arrayAccess->setType(arrayType->getType());
-			}
-			else
-			{
-				error::enqueue(arrayAccess->getLocation(), "Expression result is not an array");
-				arrayAccess->setContainer(NULL);
-			}
+			mTypeResolution[identity] = rhsType;
 		}
 	}
 }
 
-void operation::ResolveTypes::visit(tree::BinaryOperation *binaryOperation)
+void operation::InferTypes::visit(tree::Function *function)
 {
-	LOG("ResolveTypes::visit::BinaryOperation");
+	LOG("InferTypes::visit::Function");
 
-	if(!binaryOperation->getType())
+	mPrototype = function->getPrototype();
+	ASSERT(mPrototype);
+
+	if(!mPrototype->getType())
 	{
-		ASSERT(binaryOperation->getLHS());
-		ASSERT(binaryOperation->getRHS());
-
-		tree::Type *lhsType = binaryOperation->getLHS()->getType();
-		tree::Type *rhsType = binaryOperation->getRHS()->getType();
-
-		if(lhsType && rhsType)
-		{
-			setOperationType(binaryOperation, lhsType->canCast(*rhsType) ? lhsType : rhsType);
-		}
-	}
-}
-
-void operation::ResolveTypes::visit(tree::Assign *assign)
-{
-	LOG("ResolveTypes::visit::Assign");
-
-	if(!assign->getType())
-	{
-		ASSERT(assign->getLHS());
-
-		tree::Type *lhsType = assign->getLHS()->getType();
-
-		if(lhsType)
-		{
-			setOperationType(assign, lhsType);
-		}
-	}
-}
-
-void operation::ResolveTypes::visit(tree::BooleanBinaryOperation *booleanBinaryOperation)
-{
-	LOG("ResolveTypes::visit::BooleanBinaryOperation");
-
-	ASSERT(booleanBinaryOperation->getType());
-	ASSERT(dynamic_cast<tree::Bool *>(booleanBinaryOperation->getType()));
-}
-
-void operation::ResolveTypes::visit(tree::UnaryOperation *unaryOperation)
-{
-	LOG("ResolveTypes::visit::UnaryOperation");
-
-	if(!unaryOperation->getType())
-	{
-		ASSERT(unaryOperation->getExpression());
-
-		tree::Type *type = unaryOperation->getExpression()->getType();
-
-		if(type)
-		{
-			setOperationType(unaryOperation, type);
-		}
-	}
-}
-
-void operation::ResolveTypes::visit(tree::BooleanUnaryOperation *booleanUnaryOperation)
-{
-	LOG("ResolveTypes::visit::BooleanUnaryOperation");
-
-	ASSERT(booleanUnaryOperation->getType());
-	ASSERT(dynamic_cast<tree::Bool *>(booleanUnaryOperation->getType()));
-}
-
-void operation::ResolveTypes::visit(tree::FunctionCall *functionCall)
-{
-	LOG("ResolveTypes::visit::FunctionCall");
-
-	tree::Expressions *arguments = functionCall->getArguments();
-
-	if(arguments)
-	{
-		for(tree::Expressions::iterator i = arguments->begin(), end = arguments->end(); i != end; (*i++)->accept(this));
+		mTypeResolution[mPrototype] = new tree::Void();
 	}
 
-	if(!functionCall->getType())
-	{
-		ASSERT(functionCall->getPrototype());
-
-		tree::FunctionPrototype *functionPrototype = static_cast<tree::FunctionPrototype *>(functionCall->getPrototype());
-		tree::Type *type = functionPrototype->getType();
-
-		if(type)
-		{
-			functionCall->setType(type);
-		}
-	}
+	visit(static_cast<tree::Scope *>(function));
+	mPrototype = NULL;
 }
 
-void operation::ResolveTypes::visit(tree::Scope *scope)
+void operation::InferTypes::visit(tree::Scope *scope)
 {
 	tree::Statements *statements = scope->getStatements();
 
@@ -161,22 +80,20 @@ void operation::ResolveTypes::visit(tree::Scope *scope)
 	}
 }
 
-void operation::ResolveTypes::setOperationType(tree::Operation *operation, tree::Type *type)
+void operation::InferTypes::visit(tree::Return *returnStatement)
 {
-	try
-	{
-		operation->setType(type);
-	}
-	catch(tree::Operation::NotAllowedException &e)
-	{
-		std::string error = std::string("Operation is not valid for ") + type->getTypeName() + " type";
-		error::enqueue(e.expression->getLocation(), error);
+	LOG("InferTypes::visit::Return");
 
-		e.reset();
-	}
-}*/
+	// Check if we need to infer the return type
+	if(!mPrototype->getType())
+	{
+		ASSERT(returnStatement->getReturn());
+		tree::Type *returnType = returnStatement->getReturn()->getType();
 
-bool operation::InferTypes::resolve()
-{
-	return false;
+		if(   !returnType                                                                         // If this type is not resolved then flag we can't process it
+		   || (mTypeResolution[mPrototype] && returnType->canCast(*mTypeResolution[mPrototype]))) // If there is a current type and the return type can handle it then use the return type
+		{
+			mTypeResolution[mPrototype] = returnType;
+		}
+	}
 }
