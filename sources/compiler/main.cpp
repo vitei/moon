@@ -264,6 +264,8 @@ int main(int argc, char *argv[])
 
 					typeProgram,
 
+					// FIXME, need an operation here to get all variable definition statements and assign suitable default values.
+
 					operation::CheckTypecasting::run,
 
 					NULL
