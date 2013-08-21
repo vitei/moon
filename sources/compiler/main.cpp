@@ -51,6 +51,7 @@ void typeProgram(tree::Program *program)
 		operation::CastExpressions::run,
 		operation::InferTypes::run,
 		operation::ComputeConstants::run,
+		operation::RemoveDeadNodes::run,
 
 		NULL
 	};
