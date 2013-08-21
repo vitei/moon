@@ -13,7 +13,7 @@ tree::Node *operation::ComputeConstants::restructure(tree::Assign *assign)
 	LOG("ComputeConstants::restructure::Assign");
 
 	tree::Constant *constant = dynamic_cast<tree::Constant *>(assign->getLHS());
-	
+
 	if(constant)
 	{
 		tree::Literal *literal = dynamic_cast<tree::Literal *>(assign->getRHS());
