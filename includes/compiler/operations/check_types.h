@@ -12,7 +12,7 @@ namespace operation
 	public:
 		static bool run(tree::Program *program);
 
-		virtual void visit(tree::Type *type);
+		virtual void visit(tree::SizedType *sizedType);
 		virtual void visit(tree::TypedIdentity *typedIdentity);
 		virtual void visit(tree::Constant *constant);
 		virtual void visit(tree::FunctionCall *functionCall);

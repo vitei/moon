@@ -1,6 +1,21 @@
 #include "compiler/tree.h"
 
 
+bool tree::SizedType::isResolved() const
+{
+	return !mSize || dynamic_cast<tree::IntLiteral *>(mSize);
+}
+
+void tree::SizedType::childAccept(operation::Operation *operation)
+{
+	Type::childAccept(operation);
+
+	if(mSize)
+	{
+		mSize->accept(operation);
+	}
+}
+
 bool tree::Void::equals(const Type &type) const
 {
 	return dynamic_cast<const Void *>(&type) != 0;
@@ -90,21 +105,6 @@ bool tree::Int::equals(const Type &type) const
 	}
 }
 
-bool tree::Int::isResolved() const
-{
-	return !mSize || dynamic_cast<tree::IntLiteral *>(mSize);
-}
-
-void tree::Int::childAccept(operation::Operation *operation)
-{
-	Type::childAccept(operation);
-
-	if(mSize)
-	{
-		mSize->accept(operation);
-	}
-}
-
 bool tree::Float::canCast(const tree::Type &from, bool autoCast) const
 {
 	if(dynamic_cast<const tree::Bool *>(&from) ||
@@ -146,21 +146,6 @@ bool tree::Float::equals(const Type &type) const
 	}
 }
 
-bool tree::Float::isResolved() const
-{
-	return !mSize || dynamic_cast<tree::IntLiteral *>(mSize);
-}
-
-void tree::Float::childAccept(operation::Operation *operation)
-{
-	Type::childAccept(operation);
-
-	if(mSize)
-	{
-		mSize->accept(operation);
-	}
-}
-
 bool tree::String::canCast(const tree::Type &from, bool autoCast) const
 {
 	const tree::String *string;
@@ -187,21 +172,6 @@ bool tree::String::equals(const Type &type) const
 	else
 	{
 		return false;
-	}
-}
-
-bool tree::String::isResolved() const
-{
-	return !mSize || dynamic_cast<tree::IntLiteral *>(mSize); // FIXME, combine these...
-}
-
-void tree::String::childAccept(operation::Operation *operation)
-{
-	Type::childAccept(operation);
-
-	if(mSize)
-	{
-		mSize->accept(operation);
 	}
 }
 
@@ -239,15 +209,10 @@ bool tree::Array::equals(const Type &type) const
 
 void tree::Array::childAccept(operation::Operation *operation)
 {
-	Type::childAccept(operation);
+	SizedType::childAccept(operation);
 
 	if(mType)
 	{
 		mType->accept(operation);
-	}
-
-	if(mSize)
-	{
-		mSize->accept(operation);
 	}
 }

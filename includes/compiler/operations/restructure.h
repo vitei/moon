@@ -31,9 +31,7 @@ namespace operation
 		virtual void dispatch(tree::Scope *scope);
 		virtual void dispatch(tree::While *whileStatement);
 
-		virtual void dispatch(tree::Int *integer);
-		virtual void dispatch(tree::Float *floatingPoint);
-		virtual void dispatch(tree::String *string);
+		virtual void dispatch(tree::SizedType *string);
 		virtual void dispatch(tree::Array *array);
 
 		virtual tree::Node *restructure(tree::Node *node) { return node; }

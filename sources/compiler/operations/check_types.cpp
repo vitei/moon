@@ -20,11 +20,11 @@ bool operation::CheckTypes::run(tree::Program *program)
 	}
 }
 
-void operation::CheckTypes::visit(tree::Type *type)
+void operation::CheckTypes::visit(tree::SizedType *sizedType)
 {
-	LOG("CheckTypes::visit::Type");
+	LOG("CheckTypes::visit::SizedType");
 
-	if(!type->isResolved())
+	if(!sizedType->isResolved())
 	{
 		throw IncompleteException();
 	}

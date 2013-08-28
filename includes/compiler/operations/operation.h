@@ -18,13 +18,12 @@ namespace operation
 		/*PROCESS_ACTION(tree::Node, tree::State, return_type, name)*/ \
 		PROCESS_ACTION(tree::Node, tree::Type, return_type, name) \
 		 \
-		PROCESS_ACTION(tree::Statement, tree::Scope, return_type, name) \
-		PROCESS_ACTION(tree::Statement, tree::Scoping, return_type, name) \
-		 \
 		PROCESS_ACTION(tree::Expression, tree::Access, return_type, name) \
 		PROCESS_ACTION(tree::Expression, tree::Identity, return_type, name) \
 		PROCESS_ACTION(tree::Expression, tree::Literal, return_type, name) \
 		PROCESS_ACTION(tree::Expression, tree::Operation, return_type, name) \
+		 \
+		PROCESS_ACTION(tree::Identity, tree::TypedIdentity, return_type, name) \
 		 \
 		PROCESS_ACTION(tree::Operation, tree::BinaryOperation, return_type, name) \
 		PROCESS_ACTION(tree::Operation, tree::UnaryOperation, return_type, name) \
@@ -34,15 +33,22 @@ namespace operation
 		 \
 		PROCESS_ACTION(tree::UnaryOperation, tree::BooleanUnaryOperation, return_type, name) \
 		 \
-		PROCESS_ACTION(tree::Identity, tree::TypedIdentity, return_type, name) \
+		PROCESS_ACTION(tree::Statement, tree::Scope, return_type, name) \
+		PROCESS_ACTION(tree::Statement, tree::Scoping, return_type, name) \
 		 \
 		PROCESS_ACTION(tree::Scope, tree::NamedScope, return_type, name) \
+		 \
+		PROCESS_ACTION(tree::Type, tree::SizedType, return_type, name) \
 		 \
 		/* ---- ONLY CONCRETE CLASSES BELOW HERE ---- */ \
 		 \
 		PROCESS_ACTION(tree::Access, tree::ArrayAccess, return_type, name) \
 		PROCESS_ACTION(tree::Access, tree::DirectAccess, return_type, name) \
 		PROCESS_ACTION(tree::Access, tree::MessageAccess, return_type, name) \
+		 \
+		PROCESS_ACTION(tree::TypedIdentity, tree::Constant, return_type, name) \
+		PROCESS_ACTION(tree::TypedIdentity, tree::FunctionPrototype, return_type, name) \
+		PROCESS_ACTION(tree::TypedIdentity, tree::Variable, return_type, name) \
 		 \
 		PROCESS_ACTION(tree::BinaryOperation, tree::Add, return_type, name) \
 		PROCESS_ACTION(tree::BinaryOperation, tree::And, return_type, name) \
@@ -93,17 +99,14 @@ namespace operation
 		/*PROCESS_ACTION(tree::Statement, tree::SetState, return_type, name)*/ \
 		PROCESS_ACTION(tree::Statement, tree::While, return_type, name) \
 		 \
-		PROCESS_ACTION(tree::Type, tree::Array, return_type, name) \
 		PROCESS_ACTION(tree::Type, tree::Bool, return_type, name) \
-		PROCESS_ACTION(tree::Type, tree::Float, return_type, name) \
-		PROCESS_ACTION(tree::Type, tree::Int, return_type, name) \
-		PROCESS_ACTION(tree::Type, tree::String, return_type, name) \
 		PROCESS_ACTION(tree::Type, tree::UDT, return_type, name) /* FIXME */ \
 		PROCESS_ACTION(tree::Type, tree::Void, return_type, name) \
 		 \
-		PROCESS_ACTION(tree::TypedIdentity, tree::Constant, return_type, name) \
-		PROCESS_ACTION(tree::TypedIdentity, tree::FunctionPrototype, return_type, name) \
-		PROCESS_ACTION(tree::TypedIdentity, tree::Variable, return_type, name) \
+		PROCESS_ACTION(tree::SizedType, tree::Array, return_type, name) \
+		PROCESS_ACTION(tree::SizedType, tree::Float, return_type, name) \
+		PROCESS_ACTION(tree::SizedType, tree::Int, return_type, name) \
+		PROCESS_ACTION(tree::SizedType, tree::String, return_type, name) \
 		 \
 		PROCESS_ACTION(tree::UnaryOperation, tree::Not, return_type, name) \
 		PROCESS_ACTION(tree::UnaryOperation, tree::Minus, return_type, name)

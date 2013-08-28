@@ -42,11 +42,6 @@ namespace tree
 			return false;
 		}
 
-		virtual bool isResolved() const
-		{
-			return true;
-		}
-
 	protected:
 		Type() { /* Abstract class */ }
 
@@ -65,6 +60,29 @@ namespace tree
 	{
 		return !(type1 == type2);
 	}
+
+	class SizedType : public Type
+	{
+	public:
+		SizedType(Expression *size = NULL) : mSize(size) {}
+
+		Expression *getSize() const
+		{
+			return mSize;
+		}
+
+		void setSize(Expression *size)
+		{
+			mSize = size;
+		}
+
+		virtual bool isResolved() const;
+
+		virtual void childAccept(operation::Operation *operation);
+
+	protected:
+		Expression *mSize;
+	};
 
 	/* ---- ONLY CONCRETE CLASSES BELOW HERE ---- */
 
@@ -107,26 +125,15 @@ namespace tree
 		virtual bool equals(const Type &type) const;
 	};
 
-	class Int : public Type
+	class Int : public SizedType
 	{
 	public:
 		static const unsigned int DEFAULT_SIZE = 32;
 
-		Int() : mSize(NULL) {}
-		Int(Expression *size) : mSize(size) {}
+		Int(Expression *size = NULL) : SizedType(size) {}
 
 		bool canCast(const Type &from, bool autoCast = false) const;
 		bool canPerform(const Operation &operation) const;
-
-		Expression *getSize() const
-		{
-			return mSize;
-		}
-
-		void setSize(Expression *size)
-		{
-			mSize = size;
-		}
 
 		virtual const char *getTypeName() const
 		{
@@ -137,37 +144,19 @@ namespace tree
 		virtual void printType() { LOG("INT %d", /*mSize*/0); } // FIXME
 #endif
 
-		virtual bool isResolved() const;
-
-		virtual void childAccept(operation::Operation *operation);
-
 	protected:
 		virtual bool equals(const Type &type) const;
-
-	private:
-		Expression *mSize;
 	};
 
-	class Float : public Type
+	class Float : public SizedType
 	{
 	public:
 		static const unsigned int DEFAULT_SIZE = 32;
 
-		Float() : mSize(NULL) {}
-		Float(Expression *size) : mSize(size) {}
+		Float(Expression *size = NULL) : SizedType(size) {}
 
 		bool canCast(const Type &from, bool autoCast = false) const;
 		bool canPerform(const Operation &operation) const;
-
-		Expression *getSize() const
-		{
-			return mSize;
-		}
-
-		void setSize(Expression *size)
-		{
-			mSize = size;
-		}
 
 		virtual const char *getTypeName() const
 		{
@@ -178,36 +167,18 @@ namespace tree
 		virtual void printType() { LOG("FLOAT %d", /*mSize*/0); } // FIXME
 #endif
 
-		virtual bool isResolved() const;
-
-		virtual void childAccept(operation::Operation *operation);
-
 	protected:
 		virtual bool equals(const Type &type) const;
-
-	private:
-		Expression *mSize;
 	};
 
-	class String : public Type
+	class String : public SizedType
 	{
 	public:
 		static const unsigned int DEFAULT_SIZE = 32;
 
-		String() : mSize(NULL) {}
-		String(Expression *size) : mSize(size) {}
+		String(Expression *size = NULL) : SizedType(size) {}
 
 		bool canCast(const Type &from, bool autoCast = false) const;
-
-		Expression *getSize() const
-		{
-			return mSize;
-		}
-
-		void setSize(Expression *size)
-		{
-			mSize = size;
-		}
 
 		virtual const char *getTypeName() const
 		{
@@ -218,18 +189,11 @@ namespace tree
 		virtual void printType() { LOG("STRING %d", /*mSize*/0); } // FIXME
 #endif
 
-		virtual bool isResolved() const;
-
-		virtual void childAccept(operation::Operation *operation);
-
 	protected:
 		virtual bool equals(const Type &type) const;
-
-	private:
-		Expression *mSize;
 	};
 
-	class Array : public Type
+	class Array : public SizedType
 	{
 	public:
 		/*class InvalidSizeException : public tree::Type::InvalidException
@@ -239,7 +203,7 @@ namespace tree
 		};*/
 
 		//Array(Type *type);
-		Array(Type *type, Expression *size) : mType(type), mSize(size) {}
+		Array(Type *type, Expression *size) : SizedType(size), mType(type) {}
 
 		bool canCast(const Type &from, bool autoCast = false) const;
 
@@ -251,16 +215,6 @@ namespace tree
 		void setType(Type *type)
 		{
 			mType = type;
-		}
-
-		Expression *getSize() const
-		{
-			return mSize;
-		}
-
-		void setSize(Expression *size)
-		{
-			mSize = size;
 		}
 
 		virtual const char *getTypeName() const
@@ -293,7 +247,6 @@ namespace tree
 
 	private:
 		Type *mType;
-		Expression *mSize;
 	};
 }
 

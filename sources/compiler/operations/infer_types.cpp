@@ -60,10 +60,15 @@ void operation::InferTypes::visit(tree::Assign *assign)
 		{
 			tree::Type *rhsType = assign->getRHS()->getType();
 
-			// If the type is not resolved yet then we can't be sure about any type inference.
-			if(rhsType && !rhsType->isResolved())
+			if(rhsType)
 			{
-				rhsType = NULL;
+				tree::SizedType *sizedType = dynamic_cast<tree::SizedType *>(rhsType);
+
+				// If the type is not resolved yet then we can't be sure about any type inference.
+				if(sizedType && !sizedType->isResolved())
+				{
+					rhsType = NULL;
+				}
 			}
 
 			if(   !rhsType                                                                     // If this type is not resolved then flag we can't process it

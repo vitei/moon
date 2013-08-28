@@ -375,61 +375,24 @@ void operation::Restructure::processFunctionParameters(tree::Function *function)
 	}
 }
 
-void operation::Restructure::dispatch(tree::Int *integer)
+void operation::Restructure::dispatch(tree::SizedType *sizedType)
 {
 	tree::Expression *size = NULL;
 
-	if(integer->getSize())
+	if(sizedType->getSize())
 	{
 		size = static_cast<tree::Expression *>(mNodeMap.top());
 		mNodeMap.pop();
 	}
 
-	integer->setSize(size);
+	sizedType->setSize(size);
 
-	dispatch(static_cast<tree::Type *>(integer));
-}
-
-void operation::Restructure::dispatch(tree::Float *floatingPoint)
-{
-	tree::Expression *size = NULL;
-
-	if(floatingPoint->getSize())
-	{
-		size = static_cast<tree::Expression *>(mNodeMap.top());
-		mNodeMap.pop();
-	}
-
-	floatingPoint->setSize(size);
-
-	dispatch(static_cast<tree::Type *>(floatingPoint));
-}
-
-void operation::Restructure::dispatch(tree::String *string)
-{
-	tree::Expression *size = NULL;
-
-	if(string->getSize())
-	{
-		size = static_cast<tree::Expression *>(mNodeMap.top());
-		mNodeMap.pop();
-	}
-
-	string->setSize(size);
-
-	dispatch(static_cast<tree::Type *>(string));
+	dispatch(static_cast<tree::Type *>(sizedType));
 }
 
 void operation::Restructure::dispatch(tree::Array *array)
 {
 	tree::Type *type = NULL;
-	tree::Expression *size = NULL;
-
-	if(array->getSize())
-	{
-		size = static_cast<tree::Expression *>(mNodeMap.top());
-		mNodeMap.pop();
-	}
 
 	if(array->getType())
 	{
@@ -438,7 +401,6 @@ void operation::Restructure::dispatch(tree::Array *array)
 	}
 
 	array->setType(type);
-	array->setSize(size);
 
-	dispatch(static_cast<tree::Type *>(array));
+	dispatch(static_cast<tree::SizedType *>(array));
 }

@@ -19,9 +19,14 @@ void operation::ResolveTypes::visit(tree::Access *access)
 
 		tree::Type *type = access->getTarget()->getType();
 
-		if(type && type->isResolved())
+		if(type)
 		{
-			access->setType(type);
+			tree::SizedType *sizedType = dynamic_cast<tree::SizedType *>(type);
+
+			if(!sizedType || sizedType->isResolved())
+			{
+				access->setType(type);
+			}
 		}
 	}
 }
@@ -36,18 +41,23 @@ void operation::ResolveTypes::visit(tree::ArrayAccess *arrayAccess)
 
 		tree::Type *type = arrayAccess->getContainer()->getType();
 
-		if(type && type->isResolved())
+		if(type)
 		{
-			tree::Array *arrayType = dynamic_cast<tree::Array *>(type);
+			tree::SizedType *sizedType = dynamic_cast<tree::SizedType *>(type);
 
-			if(arrayType)
+			if(!sizedType || sizedType->isResolved())
 			{
-				arrayAccess->setType(arrayType->getType());
-			}
-			else
-			{
-				error::enqueue(arrayAccess->getLocation(), "Expression result is not an array");
-				arrayAccess->setContainer(NULL);
+				tree::Array *arrayType = dynamic_cast<tree::Array *>(type);
+
+				if(arrayType)
+				{
+					arrayAccess->setType(arrayType->getType());
+				}
+				else
+				{
+					error::enqueue(arrayAccess->getLocation(), "Expression result is not an array");
+					arrayAccess->setContainer(NULL);
+				}
 			}
 		}
 	}
@@ -65,9 +75,15 @@ void operation::ResolveTypes::visit(tree::BinaryOperation *binaryOperation)
 		tree::Type *lhsType = binaryOperation->getLHS()->getType();
 		tree::Type *rhsType = binaryOperation->getRHS()->getType();
 
-		if(lhsType && lhsType->isResolved() && rhsType && rhsType->isResolved())
+		if(lhsType && rhsType)
 		{
-			setOperationType(binaryOperation, lhsType->canCast(*rhsType) ? lhsType : rhsType);
+			tree::SizedType *sizedLHSType = dynamic_cast<tree::SizedType *>(lhsType);
+			tree::SizedType *sizedRHSType = dynamic_cast<tree::SizedType *>(rhsType);
+
+			if((!sizedLHSType || sizedLHSType->isResolved()) && (!sizedRHSType || sizedRHSType->isResolved()))
+			{
+				setOperationType(binaryOperation, lhsType->canCast(*rhsType) ? lhsType : rhsType);
+			}
 		}
 	}
 }
@@ -82,9 +98,14 @@ void operation::ResolveTypes::visit(tree::Assign *assign)
 
 		tree::Type *lhsType = assign->getLHS()->getType();
 
-		if(lhsType && lhsType->isResolved())
+		if(lhsType)
 		{
-			setOperationType(assign, lhsType);
+			tree::SizedType *sizedType = dynamic_cast<tree::SizedType *>(lhsType);
+
+			if(!sizedType || sizedType->isResolved())
+			{
+				setOperationType(assign, lhsType);
+			}
 		}
 	}
 }
@@ -107,9 +128,14 @@ void operation::ResolveTypes::visit(tree::UnaryOperation *unaryOperation)
 
 		tree::Type *type = unaryOperation->getExpression()->getType();
 
-		if(type && type->isResolved())
+		if(type)
 		{
-			setOperationType(unaryOperation, type);
+			tree::SizedType *sizedType = dynamic_cast<tree::SizedType *>(type);
+
+			if(!sizedType || sizedType->isResolved())
+			{
+				setOperationType(unaryOperation, type);
+			}
 		}
 	}
 }
@@ -140,9 +166,14 @@ void operation::ResolveTypes::visit(tree::FunctionCall *functionCall)
 		tree::FunctionPrototype *functionPrototype = static_cast<tree::FunctionPrototype *>(functionCall->getPrototype());
 		tree::Type *type = functionPrototype->getType();
 
-		if(type && type->isResolved())
+		if(type)
 		{
-			functionCall->setType(type);
+			tree::SizedType *sizedType = dynamic_cast<tree::SizedType *>(type);
+
+			if(!sizedType || sizedType->isResolved())
+			{
+				functionCall->setType(type);
+			}
 		}
 	}
 }
