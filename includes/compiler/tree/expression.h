@@ -175,7 +175,22 @@ namespace tree
 			/* Abstract class */
 			setType(type);
 		}
+
+		virtual bool equals(const Literal &literal) const = 0;
+
+	private:
+		friend bool operator == (const Literal &literal1, const Literal &literal2);
 	};
+
+	inline bool operator == (const Literal &literal1, const Literal &literal2)
+	{
+		return literal1.equals(literal2);
+	}
+
+	inline bool operator != (const Literal &literal1, const Literal &literal2)
+	{
+		return !(literal1 == literal2);
+	}
 
 	class Operation : public Expression
 	{
@@ -560,6 +575,9 @@ namespace tree
 		virtual void printNode() { LOG("BoolLiteral"); }
 #endif
 
+	protected:
+		virtual bool equals(const Literal &literal) const;
+
 	private:
 		bool mValue;
 	};
@@ -570,6 +588,7 @@ namespace tree
 		IntLiteral(int value) : Literal(new Int()), mValue(value) {}
 		IntLiteral(Literal *literal);
 
+
 		int getValue() const
 		{
 			return mValue;
@@ -578,6 +597,9 @@ namespace tree
 #ifdef DEBUG
 		virtual void printNode() { LOG("IntLiteral"); }
 #endif
+
+	protected:
+		virtual bool equals(const Literal &literal) const;
 
 	private:
 		int mValue;
@@ -598,6 +620,9 @@ namespace tree
 		virtual void printNode() { LOG("FloatLiteral"); }
 #endif
 
+	protected:
+		virtual bool equals(const Literal &literal) const;
+
 	private:
 		float mValue;
 	};
@@ -605,7 +630,7 @@ namespace tree
 	class StringLiteral : public Literal
 	{
 	public:
-		StringLiteral(std::string value) : Literal(new String(value.length())), mValue(value) {}
+		StringLiteral(std::string value) : Literal(new String(new IntLiteral(value.length()))), mValue(value) {}
 		StringLiteral(Literal *literal);
 
 		const std::string getValue() const
@@ -616,6 +641,9 @@ namespace tree
 #ifdef DEBUG
 		virtual void printNode() { LOG("StringLiteral"); }
 #endif
+
+	protected:
+		virtual bool equals(const Literal &literal) const;
 
 	private:
 		std::string mValue;

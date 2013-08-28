@@ -19,7 +19,7 @@ void operation::ResolveTypes::visit(tree::Access *access)
 
 		tree::Type *type = access->getTarget()->getType();
 
-		if(type)
+		if(type && type->isResolved())
 		{
 			access->setType(type);
 		}
@@ -36,7 +36,7 @@ void operation::ResolveTypes::visit(tree::ArrayAccess *arrayAccess)
 
 		tree::Type *type = arrayAccess->getContainer()->getType();
 
-		if(type)
+		if(type && type->isResolved())
 		{
 			tree::Array *arrayType = dynamic_cast<tree::Array *>(type);
 
@@ -65,7 +65,7 @@ void operation::ResolveTypes::visit(tree::BinaryOperation *binaryOperation)
 		tree::Type *lhsType = binaryOperation->getLHS()->getType();
 		tree::Type *rhsType = binaryOperation->getRHS()->getType();
 
-		if(lhsType && rhsType)
+		if(lhsType && lhsType->isResolved() && rhsType && rhsType->isResolved())
 		{
 			setOperationType(binaryOperation, lhsType->canCast(*rhsType) ? lhsType : rhsType);
 		}
@@ -82,7 +82,7 @@ void operation::ResolveTypes::visit(tree::Assign *assign)
 
 		tree::Type *lhsType = assign->getLHS()->getType();
 
-		if(lhsType)
+		if(lhsType && lhsType->isResolved())
 		{
 			setOperationType(assign, lhsType);
 		}
@@ -107,7 +107,7 @@ void operation::ResolveTypes::visit(tree::UnaryOperation *unaryOperation)
 
 		tree::Type *type = unaryOperation->getExpression()->getType();
 
-		if(type)
+		if(type && type->isResolved())
 		{
 			setOperationType(unaryOperation, type);
 		}
@@ -140,7 +140,7 @@ void operation::ResolveTypes::visit(tree::FunctionCall *functionCall)
 		tree::FunctionPrototype *functionPrototype = static_cast<tree::FunctionPrototype *>(functionCall->getPrototype());
 		tree::Type *type = functionPrototype->getType();
 
-		if(type)
+		if(type && type->isResolved())
 		{
 			functionCall->setType(type);
 		}

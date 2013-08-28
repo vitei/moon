@@ -1,6 +1,11 @@
 #include "compiler/tree.h"
 
 
+bool tree::Void::equals(const Type &type) const
+{
+	return dynamic_cast<const Void *>(&type) != 0;
+}
+
 bool tree::Bool::canCast(const tree::Type &from, bool autoCast) const
 {
 	if(!autoCast)
@@ -28,9 +33,15 @@ bool tree::Bool::canPerform(const Operation &operation) const
 	return false;
 }
 
+bool tree::Bool::equals(const Type &type) const
+{
+	return dynamic_cast<const Bool *>(&type) != 0;
+}
+
 bool tree::Int::canCast(const tree::Type &from, bool autoCast) const
 {
-	if(dynamic_cast<const tree::Bool *>(&from))
+	if(dynamic_cast<const tree::Bool *>(&from) ||
+	   dynamic_cast<const tree::Int *>(&from)) // FIXME, needs size
 	{
 		return true;
 	}
@@ -65,10 +76,40 @@ bool tree::Int::canPerform(const Operation &operation) const
 	return false;
 }
 
+bool tree::Int::equals(const Type &type) const
+{
+	const Int *integer = dynamic_cast<const Int *>(&type);
+
+	if(integer)
+	{
+		return mSize == integer->mSize; // FIXME
+	}
+	else
+	{
+		return false;
+	}
+}
+
+bool tree::Int::isResolved() const
+{
+	return !mSize || dynamic_cast<tree::IntLiteral *>(mSize);
+}
+
+void tree::Int::childAccept(operation::Operation *operation)
+{
+	Type::childAccept(operation);
+
+	if(mSize)
+	{
+		mSize->accept(operation);
+	}
+}
+
 bool tree::Float::canCast(const tree::Type &from, bool autoCast) const
 {
 	if(dynamic_cast<const tree::Bool *>(&from) ||
-	   dynamic_cast<const tree::Int *>(&from))
+	   dynamic_cast<const tree::Int *>(&from) ||
+	   dynamic_cast<const tree::Float *>(&from)) // FIXME, needs size
 	{
 		return true;
 	}
@@ -91,28 +132,82 @@ bool tree::Float::canPerform(const Operation &operation) const
 	return false;
 }
 
+bool tree::Float::equals(const Type &type) const
+{
+	const Float *floatingPoint = dynamic_cast<const Float *>(&type);
+
+	if(floatingPoint)
+	{
+		return mSize == floatingPoint->mSize; // FIXME
+	}
+	else
+	{
+		return false;
+	}
+}
+
+bool tree::Float::isResolved() const
+{
+	return !mSize || dynamic_cast<tree::IntLiteral *>(mSize);
+}
+
+void tree::Float::childAccept(operation::Operation *operation)
+{
+	Type::childAccept(operation);
+
+	if(mSize)
+	{
+		mSize->accept(operation);
+	}
+}
+
 bool tree::String::canCast(const tree::Type &from, bool autoCast) const
 {
 	const tree::String *string;
 
-	if((string = dynamic_cast<const tree::String *>(&from)))
+	if((string = dynamic_cast<const tree::String *>(&from))/* && string->getSize() <= getSize()*/) // FIXME
 	{
-		if(string->getSize() <= getSize())
-		{
-			return true;
-		}
+		return true;
 	}
 
 	return false;
 }
 
-tree::Array::Array(Type *type, long long size) : mType(type), mSize(size)
+bool tree::String::equals(const Type &type) const
 {
-	if(mSize <= 0)
+	const String *string = dynamic_cast<const String *>(&type);
+
+	if(string)
 	{
-		throw tree::Array::InvalidSizeException(this);
+		tree::Literal *aSize = dynamic_cast<tree::Literal *>(mSize);
+		tree::Literal *bSize = dynamic_cast<tree::Literal *>(string->mSize);
+
+		return aSize && bSize && *aSize == *bSize;
+	}
+	else
+	{
+		return false;
 	}
 }
+
+bool tree::String::isResolved() const
+{
+	return !mSize || dynamic_cast<tree::IntLiteral *>(mSize); // FIXME, combine these...
+}
+
+void tree::String::childAccept(operation::Operation *operation)
+{
+	Type::childAccept(operation);
+
+	if(mSize)
+	{
+		mSize->accept(operation);
+	}
+}
+
+/*tree::Array::Array(Type *type) : mType(type)
+{
+}*/
 
 bool tree::Array::canCast(const tree::Type &from, bool autoCast) const
 {
@@ -125,5 +220,34 @@ bool tree::Array::canCast(const tree::Type &from, bool autoCast) const
 	return false;
 }
 
+bool tree::Array::equals(const Type &type) const
+{
+	const Array *array = dynamic_cast<const Array *>(&type);
 
+	if(array)
+	{
+		tree::Literal *aSize = dynamic_cast<tree::Literal *>(mSize);
+		tree::Literal *bSize = dynamic_cast<tree::Literal *>(array->mSize);
 
+		return aSize && bSize && *aSize == *bSize && (*mType == *array->mType);
+	}
+	else
+	{
+		return false;
+	}
+}
+
+void tree::Array::childAccept(operation::Operation *operation)
+{
+	Type::childAccept(operation);
+
+	if(mType)
+	{
+		mType->accept(operation);
+	}
+
+	if(mSize)
+	{
+		mSize->accept(operation);
+	}
+}

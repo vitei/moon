@@ -242,22 +242,29 @@
 
 start                   :   START_USE use
                             {
+                                LOG("start                   :   START_USE use");
+
                                 data->uses->push_back($2);
                             }
                         |   START_INCLUDE include
                             {
+                                LOG("start                   :   START_INCLUDE include");
+
                                 data->statements = $2;
                             }
                         ;
 
 use                     :   o_program_includes o_program_uses o_declarations o_functions
                             {
+                                LOG("use                     :   o_program_includes o_program_uses o_declarations o_functions");
+
                                 tree::Statements *useStatements = NULL;
 
                                 // Check there is actually something in this scope...
                                 // (Uses are not nested so we don't count them here...)
                                 if($1 || $3 || $4)
                                 {
+
                                     useStatements = $1;
 
                                     if($3)
@@ -293,6 +300,8 @@ use                     :   o_program_includes o_program_uses o_declarations o_f
 
 include                 :   o_program_includes o_defines
                             {
+                                LOG("include                 :   o_program_includes o_defines");
+
                                 $$ = $1;
 
                                 if($2)
@@ -312,20 +321,28 @@ include                 :   o_program_includes o_defines
 
 o_program_includes      :   /* Empty */
                             {
+                                LOG("o_program_includes      :   /* Empty */");
+
                                 $$ = NULL;
                             }
                         |   program_includes
                             {
+                                LOG("o_program_includes      :   program_includes");
+
                                 $$ = $1;
                             }
                         ;
 
 program_includes        :   include_statement
                             {
+                                LOG("program_includes        :   include_statement");
+
                                 $$ = $1;
                             }
                         |   program_includes include_statement
                             {
+                                LOG("program_includes        :   program_includes include_statement");
+
                                 $$ = $1;
 
                                 if($2)
@@ -345,6 +362,8 @@ program_includes        :   include_statement
 
 include_statement       :   TOKEN_INCLUDE TOKEN_ID TOKEN_EOS
                             {
+                                LOG("include_statement       :   TOKEN_INCLUDE TOKEN_ID TOKEN_EOS");
+
                                 $$ = NULL;
 
                                 char tmp[1024];
@@ -374,15 +393,29 @@ include_statement       :   TOKEN_INCLUDE TOKEN_ID TOKEN_EOS
                         ;
 
 o_program_uses          :   /* Empty */
+                            {
+                                LOG("o_program_uses          :   /* Empty */");
+                            }
                         |   program_uses
+                            {
+                                LOG("o_program_uses          :   program_uses");
+                            }
                         ;
 
 program_uses            :   use_statement
+                            {
+                                LOG("program_uses            :   use_statement");
+                            }
                         |   program_uses use_statement
+                            {
+                                LOG("program_uses            :   program_uses use_statement");
+                            }
                         ;
 
 use_statement           :   TOKEN_USE TOKEN_NAME TOKEN_EOS
                             {
+                                LOG("use_statement           :   TOKEN_USE TOKEN_NAME TOKEN_EOS");
+
                                 char tmp[1024];
 
                                 loader::useNameToFilename(tmp, $2);
@@ -409,10 +442,14 @@ use_statement           :   TOKEN_USE TOKEN_NAME TOKEN_EOS
 
 o_defines               :   /* Empty */
                             {
+                                LOG("o_defines               :   /* Empty */");
+
                                 $$ = NULL;
                             }
                         |   define
                             {
+                                LOG("o_defines               :   define");
+
                                 if($1)
                                 {
                                     $$ = new tree::Statements();
@@ -425,6 +462,8 @@ o_defines               :   /* Empty */
                             }
                         |   define defines
                             {
+                                LOG("o_defines               :   define defines");
+
                                 $$ = $2;
 
                                 if($1)
@@ -444,6 +483,8 @@ o_defines               :   /* Empty */
 
 defines                 :   define
                             {
+                                LOG("defines                 :   define");
+
                                 if($1)
                                 {
                                     $$ = new tree::Statements();
@@ -456,6 +497,8 @@ defines                 :   define
                             }
                         |   defines define
                             {
+                                LOG("defines                 :   defines define");
+
                                 $$ = $1;
 
                                 if($2)
@@ -471,16 +514,22 @@ defines                 :   define
 
 define                  :   import_statement
                             {
+                                LOG("define                  :   import_statement");
+
                                 $$ = $1;
                             }
                         |   s_constant_statement
                             {
+                                LOG("define                  :   s_constant_statement");
+
                                 $$ = $1;
                             }
                         ;
 
 import_statement        :   TOKEN_IMPORT function_prototype TOKEN_EOS
                             {
+                                LOG("import_statement        :   TOKEN_IMPORT function_prototype TOKEN_EOS");
+
                                 if($2->getType() == NULL)
                                 {
                                     tree::Void *type = new tree::Void();
@@ -496,11 +545,15 @@ import_statement        :   TOKEN_IMPORT function_prototype TOKEN_EOS
 
 s_constant_statement    :   constant_statement
                             {
+                                LOG("s_constant_statement    :   constant_statement");
+
                                 $$ = $1;
                             }
                             /* FIXME, what to do about global scoping?? */
                         |   TOKEN_SHARED constant_statement
                             {
+                                LOG("s_constant_statement    :   TOKEN_SHARED constant_statement");
+
                                 $$ = new tree::SharedScoping($2);
                                 $$->setLocation(@1);
                             }
@@ -508,10 +561,14 @@ s_constant_statement    :   constant_statement
 
 o_declarations          :   /* Empty */
                             {
+                                LOG("o_declarations          :   /* Empty */");
+
                                 $$ = NULL;
                             }
                         |   declaration
                             {
+                                LOG("o_declarations          :   declaration");
+
                                 if($1)
                                 {
                                     $$ = new tree::Statements();
@@ -524,6 +581,8 @@ o_declarations          :   /* Empty */
                             }
                         |   declaration declarations
                             {
+                                LOG("o_declarations          :   declaration declarations");
+
                                 $$ = $2;
 
                                 if($1)
@@ -543,6 +602,8 @@ o_declarations          :   /* Empty */
 
 declarations            :   declaration
                             {
+                                LOG("declarations            :   declaration");
+
                                 if($1)
                                 {
                                     $$ = new tree::Statements();
@@ -555,6 +616,8 @@ declarations            :   declaration
                             }
                         |   declarations declaration
                             {
+                                LOG("declarations            :   declarations declaration");
+
                                 $$ = $1;
 
                                 if($2)
@@ -570,20 +633,28 @@ declarations            :   declaration
 
 declaration             :   s_variable_statement
                             {
+                                LOG("declaration             :   s_variable_statement");
+
                                 $$ = $1;
                             }
                         |   define
                             {
+                                LOG("declaration             :   define");
+
                                 $$ = $1;
                             }
                         ;
 
 s_variable_statement    :   variable_statement
                             {
+                                LOG("s_variable_statement    :   variable_statement");
+
                                 $$ = $1;
                             }
                         |   TOKEN_GLOBAL variable TOKEN_EOS
                             {
+                                LOG("s_variable_statement    :   TOKEN_GLOBAL variable TOKEN_EOS");
+
                                 tree::Execute *execute = new tree::Execute($2);
                                 execute->setLocation(@2);
 
@@ -592,6 +663,8 @@ s_variable_statement    :   variable_statement
                             }
                         |   TOKEN_SHARED variable_statement
                             {
+                                LOG("s_variable_statement    :   TOKEN_SHARED variable_statement");
+
                                 $$ = new tree::SharedScoping($2);
                                 $$->setLocation(@1);
                             }
@@ -599,10 +672,14 @@ s_variable_statement    :   variable_statement
 
 o_functions             :   /* Empty */
                             {
+                                LOG("o_functions             :   /* Empty */");
+
                                 $$ = NULL;
                             }
                         |   s_function
                             {
+                                LOG("o_functions             :   s_function");
+
                                 if($1)
                                 {
                                     $$ = new tree::Statements();
@@ -615,6 +692,8 @@ o_functions             :   /* Empty */
                             }
                         |   s_function functions
                             {
+                                LOG("o_functions             :   s_function functions");
+
                                 $$ = $2;
 
                                 if($1)
@@ -634,6 +713,8 @@ o_functions             :   /* Empty */
 
 functions               :   s_function
                             {
+                                LOG("functions               :   s_function");
+
                                 if($1)
                                 {
                                     $$ = new tree::Statements();
@@ -646,6 +727,8 @@ functions               :   s_function
                             }
                         |   functions s_function
                             {
+                                LOG("functions               :   functions s_function");
+
                                 $$ = $1;
 
                                 if($2)
@@ -654,6 +737,7 @@ functions               :   s_function
                                     {
                                         $$ = new tree::Statements();
                                     }
+
                                     $$->push_back($2);
                                 }
                             }
@@ -661,11 +745,15 @@ functions               :   s_function
 
 s_function              :   function
                             {
+                                LOG("s_function              :   function");
+
                                 $$ = $1;
                             }
                             /* FIXME, what to do about global scoping?? */
                         |   TOKEN_SHARED function
                             {
+                                LOG("s_function              :   TOKEN_SHARED function");
+
                                 $$ = new tree::SharedScoping($2);
                                 $$->setLocation(@1);
                             }
@@ -673,6 +761,8 @@ s_function              :   function
 
 function                :   function_prototype TOKEN_EOS o_statements TOKEN_END TOKEN_EOS /* FIXME, support states: function_prototype function_state TOKEN_EOS o_statements TOKEN_END TOKEN_EOS */
                             {
+                                LOG("function                :   function_prototype TOKEN_EOS o_statements TOKEN_END TOKEN_EOS");
+
                                 $$ = new tree::Function($1, $3);
                                 $$->setLocation(@1);
 
@@ -683,11 +773,15 @@ function                :   function_prototype TOKEN_EOS o_statements TOKEN_END 
 
 function_prototype      :   TOKEN_DEF TOKEN_ID TOKEN_PARENTHESIS_OPEN o_arguments TOKEN_PARENTHESIS_CLOSE
                             {
+                                LOG("function_prototype      :   TOKEN_DEF TOKEN_ID TOKEN_PARENTHESIS_OPEN o_arguments TOKEN_PARENTHESIS_CLOSE");
+
                                 $$ = new tree::FunctionPrototype(NULL, std::string($2), $4);
                                 $$->setLocation(@1);
                             }
                         |   TOKEN_DEF TOKEN_ID TOKEN_PARENTHESIS_OPEN o_arguments TOKEN_PARENTHESIS_CLOSE TOKEN_CAST type
                             {
+                                LOG("function_prototype      :   TOKEN_DEF TOKEN_ID TOKEN_PARENTHESIS_OPEN o_arguments TOKEN_PARENTHESIS_CLOSE TOKEN_CAST type");
+
                                 $$ = new tree::FunctionPrototype($7, std::string($2), $4);
                                 $$->setLocation(@1);
                             }
@@ -695,16 +789,22 @@ function_prototype      :   TOKEN_DEF TOKEN_ID TOKEN_PARENTHESIS_OPEN o_argument
 
 o_arguments             :   /* Empty */
                             {
+                                LOG("o_arguments             :   /* Empty */");
+
                                 $$ = NULL;
                             }
                         |   arguments
                             {
+                                LOG("o_arguments             :   arguments");
+
                                 $$ = $1;
                             }
                         ;
 
 arguments               :   argument
                             {
+                                LOG("arguments               :   argument");
+
                                 if($1)
                                 {
                                     $$ = new tree::Expressions();
@@ -717,6 +817,8 @@ arguments               :   argument
                             }
                         |   arguments TOKEN_COMMA argument
                             {
+                                LOG("arguments               :   arguments TOKEN_COMMA argument");
+
                                 $$ = $1;
 
                                 if($3)
@@ -732,16 +834,22 @@ arguments               :   argument
 
 argument                :   TOKEN_ID
                             {
+                                LOG("argument                :   TOKEN_ID");
+
                                 $$ = new tree::Variable(NULL, std::string($1));
                                 $$->setLocation(@1);
                             }
                         |   TOKEN_ID TOKEN_CAST type
                             {
+                                LOG("argument                :   TOKEN_ID TOKEN_CAST type");
+
                                 $$ = new tree::Variable($3, std::string($1));
                                 $$->setLocation(@1);
                             }
                         |   variable
                             {
+                                LOG("argument                :   variable");
+
                                 $$ = $1;
                             }
                         ;
@@ -758,16 +866,22 @@ argument                :   TOKEN_ID
 
 o_statements            :   /* Empty */
                             {
+                                LOG("o_statements            :   /* Empty */");
+
                                 $$ = NULL;
                             }
                         |   statements
                             {
+                                LOG("o_statements            :   statements");
+
                                 $$ = $1;
                             }
                         ;
 
 statements              :   statement
                             {
+                                LOG("statements              :   statement");
+
                                 if($1)
                                 {
                                     $$ = new tree::Statements();
@@ -780,6 +894,8 @@ statements              :   statement
                             }
                         |   statements statement
                             {
+                                LOG("statements              :   statements statement");
+
                                 $$ = $1;
 
                                 if($2)
@@ -788,6 +904,7 @@ statements              :   statement
                                     {
                                         $$ = new tree::Statements();
                                     }
+
                                     $$->push_back($2);
                                 }
                             }
@@ -795,32 +912,46 @@ statements              :   statement
 
 statement               :   constant_statement
                             {
+                                LOG("statement               :   constant_statement");
+
                                 $$ = $1;
                             }
                         |   variable_statement
                             {
+                                LOG("statement               :   variable_statement");
+
                                 $$ = $1;
                             }
                         |   conditional_statement
                             {
+                                LOG("statement               :   conditional_statement");
+
                                 $$ = $1;
                             }
                         |   loop_statement
                             {
+                                LOG("statement               :   loop_statement");
+
                                 $$ = $1;
                             }
                         |   single_statement TOKEN_EOS
                             {
+                                LOG("statement               :   single_statement TOKEN_EOS");
+
                                 $$ = $1;
                             }
                         |   block_statement
                             {
+                                LOG("statement               :   block_statement");
+
                                 $$ = $1;
                             }
                         ;
 
 constant_statement      :   constant_assignment TOKEN_EOS
                             {
+                                LOG("constant_statement      :   constant_assignment TOKEN_EOS");
+
                                 $$ = new tree::Execute($1);
                                 $$->setLocation(@1);
                             }
@@ -828,6 +959,8 @@ constant_statement      :   constant_assignment TOKEN_EOS
 
 constant_assignment     :   constant TOKEN_EQUALS expression
                             {
+                                LOG("constant_assignment     :   constant TOKEN_EQUALS expression");
+
                                 $$ = new tree::Assign($1, $3);
                                 $$->setLocation(@2);
                             }
@@ -835,11 +968,15 @@ constant_assignment     :   constant TOKEN_EQUALS expression
 
 constant                :   TOKEN_CONST TOKEN_NAME
                             {
+                                LOG("constant                :   TOKEN_CONST TOKEN_NAME");
+
                                 $$ = new tree::Constant(NULL, std::string($2));
                                 $$->setLocation(@1);
                             }
                         |   TOKEN_CONST TOKEN_NAME TOKEN_CAST type
                             {
+                                LOG("constant                :   TOKEN_CONST TOKEN_NAME TOKEN_CAST type");
+
                                 $$ = new tree::Constant($4, std::string($2));
                                 $$->setLocation(@1);
                             }
@@ -847,6 +984,8 @@ constant                :   TOKEN_CONST TOKEN_NAME
 
 variable_statement      :   variable_assignment TOKEN_EOS
                             {
+                                LOG("variable_statement      :   variable_assignment TOKEN_EOS");
+
                                 $$ = new tree::Execute($1);
                                 $$->setLocation(@1);
                             }
@@ -854,10 +993,14 @@ variable_statement      :   variable_assignment TOKEN_EOS
 
 variable_assignment     :   variable
                             {
+                                LOG("variable_assignment     :   variable");
+
                                 $$ = $1;
                             }
                         |   variable TOKEN_EQUALS expression
                             {
+                                LOG("variable_assignment     :   variable TOKEN_EQUALS expression");
+
                                 $$ = new tree::Assign($1, $3);
                                 $$->setLocation(@2);
                             }
@@ -865,11 +1008,15 @@ variable_assignment     :   variable
 
 variable                :   TOKEN_DEF TOKEN_ID
                             {
+                                LOG("variable                :   TOKEN_DEF TOKEN_ID");
+
                                 $$ = new tree::Variable(NULL, std::string($2));
                                 $$->setLocation(@1);
                             }
                         |   TOKEN_DEF TOKEN_ID TOKEN_CAST type
                             {
+                                LOG("variable                :   TOKEN_DEF TOKEN_ID TOKEN_CAST type");
+
                                 $$ = new tree::Variable($4, std::string($2));
                                 $$->setLocation(@1);
                             }
@@ -877,11 +1024,15 @@ variable                :   TOKEN_DEF TOKEN_ID
 
 conditional_statement   :   single_statement TOKEN_IF expression TOKEN_EOS
                             {
+                                LOG("conditional_statement   :   single_statement TOKEN_IF expression TOKEN_EOS");
+
                                 $$ = new tree::If($3, $1);
                                 $$->setLocation(@2);
                             }
                         |   single_statement TOKEN_IF expression TOKEN_ELSE single_statement TOKEN_EOS
                             {
+                                LOG("conditional_statement   :   single_statement TOKEN_IF expression TOKEN_ELSE single_statement TOKEN_EOS");
+
                                 $$ = new tree::If($3, $1, $5);
                                 $$->setLocation(@2);
                             }
@@ -889,6 +1040,8 @@ conditional_statement   :   single_statement TOKEN_IF expression TOKEN_EOS
 
 loop_statement          :   single_statement TOKEN_WHILE expression TOKEN_EOS
                             {
+                                LOG("loop_statement          :   single_statement TOKEN_WHILE expression TOKEN_EOS");
+
                                 $$ = new tree::While($3, $1);
                                 $$->setLocation(@2);
                             }
@@ -896,21 +1049,29 @@ loop_statement          :   single_statement TOKEN_WHILE expression TOKEN_EOS
 
 single_statement        :   execute_statement
                             {
+                                LOG("single_statement        :   execute_statement");
+
                                 $$ = $1;
                             }
                         |   return_statement
                             {
+                                LOG("single_statement        :   return_statement");
+
                                 $$ = $1;
                             }
 
                         /*|   state_statement
                             {
+                                LOG("single_statement        :   state_statement");
+
                                 $$ = $1;
                             }*/
                         ;
 
 execute_statement       :   assign_or_function
                             {
+                                LOG("execute_statement       :   assign_or_function");
+
                                 if($1)
                                 {
                                     $$ = new tree::Execute($1);
@@ -925,26 +1086,36 @@ execute_statement       :   assign_or_function
 
 assign_or_function      :   assignment
                             {
+                                LOG("assign_or_function      :   assignment");
+
                                 $$ = $1;
                             }
                         |   call_expression
                             {
+                                LOG("assign_or_function      :   call_expression");
+
                                 $$ = $1;
                             }
 
                         |   error                                                                       /* Special case!! Checking here will catch a lot of cases, should produce better error reports */
                             {
+                                LOG("assign_or_function      :   error");
+
                                 $$ = NULL; // FIXME
                             }
                         ;
 
 assignment              :   assignee TOKEN_EQUALS expression
                             {
+                                LOG("assignment              :   assignee TOKEN_EQUALS expression");
+
                                 $$ = new tree::Assign($1, $3);
                                 $$->setLocation(@2);
                             }
                         |   assignee TOKEN_OR_EQUALS expression
                             {
+                                LOG("assignment              :   assignee TOKEN_OR_EQUALS expression");
+
                                 tree::Or *orExpression = new tree::Or($1, $3);
                                 orExpression->setLocation(@2);
 
@@ -953,6 +1124,8 @@ assignment              :   assignee TOKEN_EQUALS expression
                             }
                         |   assignee TOKEN_XOR_EQUALS expression
                             {
+                                LOG("assignment              :   assignee TOKEN_XOR_EQUALS expression");
+
                                 tree::Xor *xorExpression = new tree::Xor($1, $3);
                                 xorExpression->setLocation(@2);
 
@@ -961,6 +1134,8 @@ assignment              :   assignee TOKEN_EQUALS expression
                             }
                         |   assignee TOKEN_AND_EQUALS expression
                             {
+                                LOG("assignment              :   assignee TOKEN_AND_EQUALS expression");
+
                                 tree::And *andExpression = new tree::And($1, $3);
                                 andExpression->setLocation(@2);
 
@@ -969,6 +1144,8 @@ assignment              :   assignee TOKEN_EQUALS expression
                             }
                         |   assignee TOKEN_ADD_EQUALS expression
                             {
+                                LOG("assignment              :   assignee TOKEN_ADD_EQUALS expression");
+
                                 tree::Add *add = new tree::Add($1, $3);
                                 add->setLocation(@2);
 
@@ -977,6 +1154,8 @@ assignment              :   assignee TOKEN_EQUALS expression
                             }
                         |   assignee TOKEN_SUBTRACT_EQUALS expression
                             {
+                                LOG("assignment              :   assignee TOKEN_SUBTRACT_EQUALS expression");
+
                                 tree::Subtract *subtract = new tree::Subtract($1, $3);
                                 subtract->setLocation(@2);
 
@@ -985,6 +1164,8 @@ assignment              :   assignee TOKEN_EQUALS expression
                             }
                         |   assignee TOKEN_MULTIPLY_EQUALS expression
                             {
+                                LOG("assignment              :   assignee TOKEN_MULTIPLY_EQUALS expression");
+
                                 tree::Multiply *multiply = new tree::Multiply($1, $3);
                                 multiply->setLocation(@2);
 
@@ -993,6 +1174,8 @@ assignment              :   assignee TOKEN_EQUALS expression
                             }
                         |   assignee TOKEN_DIVIDE_EQUALS expression
                             {
+                                LOG("assignment              :   assignee TOKEN_DIVIDE_EQUALS expression");
+
                                 tree::Divide *divide = new tree::Divide($1, $3);
                                 divide->setLocation(@2);
 
@@ -1001,6 +1184,8 @@ assignment              :   assignee TOKEN_EQUALS expression
                             }
                         |   assignee TOKEN_MODULUS_EQUALS expression
                             {
+                                LOG("assignment              :   assignee TOKEN_MODULUS_EQUALS expression");
+
                                 tree::Modulus *modulus = new tree::Modulus($1, $3);
                                 modulus->setLocation(@2);
 
@@ -1011,10 +1196,14 @@ assignment              :   assignee TOKEN_EQUALS expression
 
 assignee                :   identifier
                             {
+                                LOG("assignee                :   identifier");
+
                                 $$ = $1;
                             }
                         |   assignee TOKEN_BRACKETS_OPEN expression TOKEN_BRACKETS_CLOSE
                             {
+                                LOG("assignee                :   assignee TOKEN_BRACKETS_OPEN expression TOKEN_BRACKETS_CLOSE");
+
                                 $$ = new tree::ArrayAccess($1, $3);
                                 $$->setLocation(@2);
                             }
@@ -1022,16 +1211,22 @@ assignee                :   identifier
 
 expression              :   l_or_expression
                             {
+                                LOG("expression              :   l_or_expression");
+
                                 $$ = $1;
                             }
                         ;
 
 l_or_expression         :   l_and_expression
                             {
+                                LOG("l_or_expression         :   l_and_expression");
+
                                 $$ = $1;
                             }
                         |   l_or_expression TOKEN_LOGICAL_OR l_and_expression
                             {
+                                LOG("l_or_expression         :   l_or_expression TOKEN_LOGICAL_OR l_and_expression");
+
                                 $$ = new tree::LogicalOr($1, $3);
                                 $$->setLocation(@2);
                             }
@@ -1039,10 +1234,14 @@ l_or_expression         :   l_and_expression
 
 l_and_expression        :   or_expression
                             {
+                                LOG("l_and_expression        :   or_expression");
+
                                 $$ = $1;
                             }
                         |   l_and_expression TOKEN_LOGICAL_AND or_expression
                             {
+                                LOG("l_and_expression        :   l_and_expression TOKEN_LOGICAL_AND or_expression");
+
                                 $$ = new tree::LogicalAnd($1, $3);
                                 $$->setLocation(@2);
                             }
@@ -1050,10 +1249,14 @@ l_and_expression        :   or_expression
 
 or_expression           :   xor_expression
                             {
+                                LOG("or_expression           :   xor_expression");
+
                                 $$ = $1;
                             }
                         |   or_expression TOKEN_OR xor_expression
                             {
+                                LOG("or_expression           :   or_expression TOKEN_OR xor_expression");
+
                                 $$ = new tree::Or($1, $3);
                                 $$->setLocation(@2);
                             }
@@ -1061,10 +1264,14 @@ or_expression           :   xor_expression
 
 xor_expression          :   and_expression
                             {
+                                LOG("xor_expression          :   and_expression");
+
                                 $$ = $1;
                             }
                         |   xor_expression TOKEN_XOR and_expression
                             {
+                                LOG("xor_expression          :   xor_expression TOKEN_XOR and_expression");
+
                                 $$ = new tree::Xor($1, $3);
                                 $$->setLocation(@2);
                             }
@@ -1072,10 +1279,14 @@ xor_expression          :   and_expression
 
 and_expression          :   eq_expression
                             {
+                                LOG("and_expression          :   eq_expression");
+
                                 $$ = $1;
                             }
                         |   and_expression TOKEN_AND eq_expression
                             {
+                                LOG("and_expression          :   and_expression TOKEN_AND eq_expression");
+
                                 $$ = new tree::And($1, $3);
                                 $$->setLocation(@2);
                             }
@@ -1083,15 +1294,21 @@ and_expression          :   eq_expression
 
 eq_expression           :   rel_expression
                             {
+                                LOG("eq_expression           :   rel_expression");
+
                                 $$ = $1;
                             }
                         |   eq_expression TOKEN_EQ rel_expression
                             {
+                                LOG("eq_expression           :   eq_expression TOKEN_EQ rel_expression");
+
                                 $$ = new tree::Equal($1, $3);
                                 $$->setLocation(@2);
                             }
                         |   eq_expression TOKEN_NE rel_expression
                             {
+                                LOG("eq_expression           :   eq_expression TOKEN_NE rel_expression");
+
                                 $$ = new tree::Unequal($1, $3);
                                 $$->setLocation(@2);
                             }
@@ -1099,25 +1316,35 @@ eq_expression           :   rel_expression
 
 rel_expression          :   add_expression
                             {
+                                LOG("rel_expression          :   add_expression");
+
                                 $$ = $1;
                             }
                         |   rel_expression TOKEN_LT add_expression
                             {
+                                LOG("rel_expression          :   rel_expression TOKEN_LT add_expression");
+
                                 $$ = new tree::LessThan($1, $3);
                                 $$->setLocation(@2);
                             }
                         |   rel_expression TOKEN_LE add_expression
                             {
+                                LOG("rel_expression          :   rel_expression TOKEN_LE add_expression");
+
                                 $$ = new tree::LessEqual($1, $3);
                                 $$->setLocation(@2);
                             }
                         |   rel_expression TOKEN_GT add_expression
                             {
+                                LOG("rel_expression          :   rel_expression TOKEN_GT add_expression");
+
                                 $$ = new tree::GreaterThan($1, $3);
                                 $$->setLocation(@2);
                             }
                         |   rel_expression TOKEN_GE add_expression
                             {
+                                LOG("rel_expression          :   rel_expression TOKEN_GE add_expression");
+
                                 $$ = new tree::GreaterEqual($1, $3);
                                 $$->setLocation(@2);
                             }
@@ -1125,15 +1352,21 @@ rel_expression          :   add_expression
 
 add_expression          :   mult_expression
                             {
+                                LOG("add_expression          :   mult_expression");
+
                                 $$ = $1;
                             }
                         |   add_expression TOKEN_ADD mult_expression
                             {
+                                LOG("add_expression          :   add_expression TOKEN_ADD mult_expression");
+
                                 $$ = new tree::Add($1, $3);
                                 $$->setLocation(@2);
                             }
                         |   add_expression TOKEN_SUBTRACT mult_expression
                             {
+                                LOG("add_expression          :   add_expression TOKEN_SUBTRACT mult_expression");
+
                                 $$ = new tree::Subtract($1, $3);
                                 $$->setLocation(@2);
                             }
@@ -1141,20 +1374,28 @@ add_expression          :   mult_expression
 
 mult_expression         :   cast_expression
                             {
+                                LOG("mult_expression         :   cast_expression");
+
                                 $$ = $1;
                             }
                         |   mult_expression TOKEN_MULTIPLY cast_expression
                             {
+                                LOG("mult_expression         :   mult_expression TOKEN_MULTIPLY cast_expression");
+
                                 $$ = new tree::Multiply($1, $3);
                                 $$->setLocation(@2);
                             }
                         |   mult_expression TOKEN_DIVIDE cast_expression
                             {
+                                LOG("mult_expression         :   mult_expression TOKEN_DIVIDE cast_expression");
+
                                 $$ = new tree::Divide($1, $3);
                                 $$->setLocation(@2);
                             }
                         |   mult_expression TOKEN_MODULUS cast_expression
                             {
+                                LOG("mult_expression         :   mult_expression TOKEN_MODULUS cast_expression");
+
                                 $$ = new tree::Modulus($1, $3);
                                 $$->setLocation(@2);
                             }
@@ -1162,10 +1403,14 @@ mult_expression         :   cast_expression
 
 cast_expression         :   unary_expression
                             {
+                                LOG("cast_expression         :   unary_expression");
+
                                 $$ = $1;
                             }
                         |   expression_atom TOKEN_CAST type
                             {
+                                LOG("cast_expression         :   expression_atom TOKEN_CAST type");
+
                                 $$ = new tree::Cast($3, $1);
                                 $$->setLocation(@2);
                             }
@@ -1173,20 +1418,28 @@ cast_expression         :   unary_expression
 
 unary_expression        :   access_expression
                             {
+                                LOG("unary_expression        :   access_expression");
+
                                 $$ = $1;
                             }
                         |   TOKEN_SUBTRACT access_expression
                             {
+                                LOG("unary_expression        :   TOKEN_SUBTRACT access_expression");
+
                                 $$ = new tree::Minus($2);
                                 $$->setLocation(@1);
                             }
                         |   TOKEN_LOGICAL_NOT access_expression
                             {
+                                LOG("unary_expression        :   TOKEN_LOGICAL_NOT access_expression");
+
                                 $$ = new tree::LogicalNot($2);
                                 $$->setLocation(@1);
                             }
                         |   TOKEN_NOT access_expression
                             {
+                                LOG("unary_expression        :   TOKEN_NOT access_expression");
+
                                 $$ = new tree::Not($2);
                                 $$->setLocation(@1);
                             }
@@ -1194,15 +1447,21 @@ unary_expression        :   access_expression
 
 access_expression       :   postfix_expression
                             {
+                                LOG("access_expression       :   postfix_expression");
+
                                 $$ = $1;
                             }
                         /*| postfix_expression TOKEN_DIRECT_ACCESS postfix_expression
                             {
+                                LOG("access_expression       :   postfix_expression TOKEN_DIRECT_ACCESS postfix_expression");
+
                                 $$ = new tree::DirectAccess($1, $3);
                                 $$->setLocation(@1);
                             }
                         |   postfix_expression TOKEN_MESSAGE_ACCESS postfix_expression
                             {
+                                LOG("access_expression       :   postfix_expression TOKEN_MESSAGE_ACCESS postfix_expression");
+
                                 $$ = new tree::MessageAccess($1, $3);
                                 $$->setLocation(@1);
                             }*/
@@ -1210,20 +1469,28 @@ access_expression       :   postfix_expression
 
 postfix_expression      :   expression_atom
                             {
+                                LOG("postfix_expression      :   expression_atom");
+
                                 $$ = $1;
                             }
                         |   array_expression
                             {
+                                LOG("postfix_expression      :   array_expression");
+
                                 $$ = $1;
                             }
                         |   call_expression
                             {
+                                LOG("postfix_expression      :   call_expression");
+
                                 $$ = $1;
                             }
                         ;
 
 array_expression        :   postfix_expression TOKEN_BRACKETS_OPEN expression TOKEN_BRACKETS_CLOSE
                             {
+                                LOG("array_expression        :   postfix_expression TOKEN_BRACKETS_OPEN expression TOKEN_BRACKETS_CLOSE");
+
                                 $$ = new tree::ArrayAccess($1, $3);
                                 $$->setLocation(@1);
                             }
@@ -1231,6 +1498,8 @@ array_expression        :   postfix_expression TOKEN_BRACKETS_OPEN expression TO
 
 call_expression         :   identifier TOKEN_PARENTHESIS_OPEN o_argument_expressions TOKEN_PARENTHESIS_CLOSE
                             {
+                                LOG("call_expression         :   identifier TOKEN_PARENTHESIS_OPEN o_argument_expressions TOKEN_PARENTHESIS_CLOSE");
+
                                 $$ = new tree::FunctionCall($1, $3);
                                 $$->setLocation(@1);
                             }
@@ -1238,16 +1507,22 @@ call_expression         :   identifier TOKEN_PARENTHESIS_OPEN o_argument_express
 
 o_argument_expressions  :   /* Empty */
                             {
+                                LOG("o_argument_expressions  :   /* Empty */");
+
                                 $$ = NULL;
                             }
                         |   argument_expressions
                             {
+                                LOG("o_argument_expressions  :   argument_expressions");
+
                                 $$ = $1;
                             }
                         ;
 
 argument_expressions    :   expression
                             {
+                                LOG("argument_expressions    :   expression");
+
                                 if($1)
                                 {
                                     $$ = new tree::Expressions();
@@ -1260,6 +1535,8 @@ argument_expressions    :   expression
                             }
                         |   argument_expressions TOKEN_COMMA expression
                             {
+                                LOG("argument_expressions    :   argument_expressions TOKEN_COMMA expression");
+
                                 $$ = $1;
 
                                 if($3)
@@ -1268,6 +1545,7 @@ argument_expressions    :   expression
                                     {
                                         $$ = new tree::Expressions();
                                     }
+
                                     $$->push_back($3);
                                 }
                             }
@@ -1275,120 +1553,148 @@ argument_expressions    :   expression
 
 expression_atom         :   name /* Constant */
                             {
+                                LOG("expression_atom         :   name");
+
                                 $$ = $1;
                             }
                         |   TOKEN_TRUE
                             {
+                                LOG("expression_atom         :   TOKEN_TRUE");
+
                                 $$ = new tree::BoolLiteral(true);
                                 $$->setLocation(@1);
                             }
                         |   TOKEN_FALSE
                             {
+                                LOG("expression_atom         :   TOKEN_FALSE");
+
                                 $$ = new tree::BoolLiteral(false);
                                 $$->setLocation(@1);
                             }
                         |   TOKEN_INTEGER
                             {
+                                LOG("expression_atom         :   TOKEN_INTEGER");
+
                                 $$ = new tree::IntLiteral($1);
                                 $$->setLocation(@1);
                             }
                         |   TOKEN_FLOAT
                             {
+                                LOG("expression_atom         :   TOKEN_FLOAT");
+
                                 $$ = new tree::FloatLiteral($1);
                                 $$->setLocation(@1);
                             }
                         |   TOKEN_STRING
                             {
+                                LOG("expression_atom         :   TOKEN_STRING");
+
                                 $$ = new tree::StringLiteral(std::string($1));
                                 $$->setLocation(@1);
                             }
                         |   identifier
                             {
+                                LOG("expression_atom         :   identifier");
+
                                 $$ = $1;
                             }
                         |   TOKEN_PARENTHESIS_OPEN expression TOKEN_PARENTHESIS_CLOSE
                             {
+                                LOG("expression_atom         :   TOKEN_PARENTHESIS_OPEN expression TOKEN_PARENTHESIS_CLOSE");
+
                                 $$ = $2;
                             }
                         ;
 
 type                    :   TOKEN_TYPE_BOOL
                             {
+                                LOG("type                    :   TOKEN_TYPE_BOOL");
+
                                 $$ = new tree::Bool();
                                 $$->setLocation(@1);
                             }
                         |   TOKEN_TYPE_INT
                             {
+                                LOG("type                    :   TOKEN_TYPE_INT");
+
                                 $$ = new tree::Int();
                                 $$->setLocation(@1);
                             }
-                        |   TOKEN_TYPE_INT TOKEN_LT TOKEN_INTEGER TOKEN_GT
+                        |   TOKEN_TYPE_INT TOKEN_LT expression TOKEN_GT
                             {
+                                LOG("type                    :   TOKEN_TYPE_INT TOKEN_LT expression TOKEN_GT");
+
                                 $$ = new tree::Int($3);
                                 $$->setLocation(@1);
                             }
                         |   TOKEN_TYPE_FLOAT
                             {
+                                LOG("type                    :   TOKEN_TYPE_FLOAT");
+
                                 $$ = new tree::Float();
                                 $$->setLocation(@1);
                             }
-                        |   TOKEN_TYPE_FLOAT TOKEN_LT TOKEN_INTEGER TOKEN_GT
+                        |   TOKEN_TYPE_FLOAT TOKEN_LT expression TOKEN_GT
                             {
+                                LOG("type                    :   TOKEN_TYPE_FLOAT TOKEN_LT expression TOKEN_GT");
+
                                 $$ = new tree::Float($3);
                                 $$->setLocation(@1);
                             }
                         |   TOKEN_TYPE_STRING
                             {
+                                LOG("type                    :   TOKEN_TYPE_STRING");
+
                                 $$ = new tree::String();
                                 $$->setLocation(@1);
                             }
-                        |   TOKEN_TYPE_STRING TOKEN_LT TOKEN_INTEGER TOKEN_GT
+                        |   TOKEN_TYPE_STRING TOKEN_LT expression TOKEN_GT
                             {
+                                LOG("type                    :   TOKEN_TYPE_STRING TOKEN_LT expression TOKEN_GT");
+
                                 $$ = new tree::String($3);
                                 $$->setLocation(@1);
                             }
 
                         /*|   TOKEN_NAME
                             {
+                                LOG("type                    :   TOKEN_NAME");
+
                                 $$ = new tree::UDT($1);                       // UDTs force this class to be needed?? FIXME
                                 $$->setLocation(@1);
                             }*/
 
 
-                        |   type TOKEN_BRACKETS_OPEN TOKEN_INTEGER TOKEN_BRACKETS_CLOSE
+                        |   type TOKEN_BRACKETS_OPEN expression TOKEN_BRACKETS_CLOSE
                             {
-                                try
-                                {
-                                    tree::Array *array = dynamic_cast<tree::Array *>($1);
+                                LOG("type                    :   type TOKEN_BRACKETS_OPEN expression TOKEN_BRACKETS_CLOSE");
 
-                                    if(array)
-                                    {
-                                        for(tree::Array *nextArray = dynamic_cast<tree::Array *>(array->getType()); nextArray; array = nextArray, nextArray = dynamic_cast<tree::Array *>(array->getType()))
-                                            ;
+								tree::Array *array = dynamic_cast<tree::Array *>($1);
 
-                                        tree::Array *childArray = new tree::Array(array->getType(), $3);
-                                        childArray->setLocation(@2);
+								if(array)
+								{
+									for(tree::Array *nextArray = dynamic_cast<tree::Array *>(array->getType()); nextArray; array = nextArray, nextArray = dynamic_cast<tree::Array *>(array->getType()))
+										;
 
-                                        array->setType(childArray);
+									tree::Array *childArray = new tree::Array(array->getType(), $3);
+									childArray->setLocation(@2);
 
-                                        $$ = $1;
-                                    }
-                                    else
-                                    {
-                                        $$ = new tree::Array($1, $3);
-                                        $$->setLocation(@2);
-                                    }
-                                }
-                                catch(tree::Array::InvalidSizeException &e)
-                                {
-                                    error::enqueue(@3, "Invalid array size");
-                                    $$ = NULL;
-                                }
+									array->setType(childArray);
+
+									$$ = $1;
+								}
+								else
+								{
+									$$ = new tree::Array($1, $3);
+									$$->setLocation(@2);
+								}
                             }
                         ;
 
 identifier              :   TOKEN_ID
                             {
+                                LOG("identifier              :   TOKEN_ID");
+
                                 $$ = new tree::Identifier(std::string($1));
                                 $$->setLocation(@1);
                             }
@@ -1396,6 +1702,8 @@ identifier              :   TOKEN_ID
 
 name                    :   TOKEN_NAME
                             {
+                                LOG("name                    :   TOKEN_NAME");
+
                                 $$ = new tree::Identifier(std::string($1));
                                 $$->setLocation(@1);
                             }
@@ -1403,16 +1711,22 @@ name                    :   TOKEN_NAME
 
 block_statement         :   if_statement
                             {
+                                LOG("block_statement         :   if_statement");
+
                                 $$ = $1;
                             }
                         |   while_statement
                             {
+                                LOG("block_statement         :   while_statement");
+
                                 $$ = $1;
                             }
                         ;
 
 if_statement            :   TOKEN_IF expression TOKEN_EOS o_statements TOKEN_END TOKEN_EOS
                             {
+                                LOG("if_statement            :   TOKEN_IF expression TOKEN_EOS o_statements TOKEN_END TOKEN_EOS");
+
                                 tree::AnonymousScope *trueStatements = new tree::AnonymousScope($4);
                                 trueStatements->setLocation(@4);
 
@@ -1421,6 +1735,8 @@ if_statement            :   TOKEN_IF expression TOKEN_EOS o_statements TOKEN_END
                             }
                         |   TOKEN_IF expression TOKEN_EOS o_statements TOKEN_ELSE TOKEN_EOS o_statements TOKEN_END TOKEN_EOS
                             {
+                                LOG("if_statement            :   TOKEN_IF expression TOKEN_EOS o_statements TOKEN_ELSE TOKEN_EOS o_statements TOKEN_END TOKEN_EOS");
+
                                 tree::AnonymousScope *trueStatements = new tree::AnonymousScope($4);
                                 trueStatements->setLocation(@4);
 
@@ -1432,6 +1748,8 @@ if_statement            :   TOKEN_IF expression TOKEN_EOS o_statements TOKEN_END
                             }
                         |   TOKEN_IF expression TOKEN_EOS o_statements TOKEN_ELSE if_statement
                             {
+                                LOG("if_statement            :   TOKEN_IF expression TOKEN_EOS o_statements TOKEN_ELSE if_statement");
+
                                 tree::AnonymousScope *trueStatements = new tree::AnonymousScope($4);
                                 trueStatements->setLocation(@4);
 
@@ -1442,6 +1760,8 @@ if_statement            :   TOKEN_IF expression TOKEN_EOS o_statements TOKEN_END
 
 while_statement         :   TOKEN_WHILE expression TOKEN_EOS o_statements TOKEN_END TOKEN_EOS
                             {
+                                LOG("while_statement         :   TOKEN_WHILE expression TOKEN_EOS o_statements TOKEN_END TOKEN_EOS");
+
                                 tree::AnonymousScope *loopStatements = new tree::AnonymousScope($4);
                                 loopStatements->setLocation(@4);
 
@@ -1452,11 +1772,15 @@ while_statement         :   TOKEN_WHILE expression TOKEN_EOS o_statements TOKEN_
 
 return_statement        :   TOKEN_RETURN
                             {
+                                LOG("return_statement        :   TOKEN_RETURN");
+
                                 $$ = new tree::Return(NULL);
                                 $$->setLocation(@1);
                             }
                         |   TOKEN_RETURN expression
                             {
+                                LOG("return_statement        :   TOKEN_RETURN expression");
+
                                 $$ = new tree::Return($2);
                                 $$->setLocation(@1);
                             }
@@ -1464,6 +1788,8 @@ return_statement        :   TOKEN_RETURN
 
 /*state_statement         :   TOKEN_STATE state
                             {
+                                LOG("state_statement         :   TOKEN_STATE state");
+
                                 $$ = new tree::SetState($2);
                                 $$->setLocation(@1);
                             }
@@ -1471,11 +1797,15 @@ return_statement        :   TOKEN_RETURN
 
 /*state                   :   TOKEN_RESET
                             {
+                                LOG("state                   :   TOKEN_RESET");
+
                                 $$ = new tree::DefaultState();
                                 $$->setLocation(@1);
                             }
                         |   TOKEN_NAME
                             {
+                                LOG("state                   :   TOKEN_NAME");
+
                                 $$ = new tree::NamedState($1);
                                 $$->setLocation(@1);
                             }

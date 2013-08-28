@@ -8,6 +8,7 @@
 
 namespace tree
 {
+	class Expression;
 	class Operation;
 
 	/* ---- ONLY ABSTRACT CLASSES BELOW HERE ---- */
@@ -39,6 +40,11 @@ namespace tree
 		virtual bool canPerform(const Operation &operation) const
 		{
 			return false;
+		}
+
+		virtual bool isResolved() const
+		{
+			return true;
 		}
 
 	protected:
@@ -77,10 +83,7 @@ namespace tree
 #endif
 
 	protected:
-		virtual bool equals(const Type &type) const
-		{
-			return dynamic_cast<const Void *>(&type) != 0;
-		}
+		virtual bool equals(const Type &type) const;
 	};
 
 	class Bool : public Type
@@ -101,10 +104,7 @@ namespace tree
 #endif
 
 	protected:
-		virtual bool equals(const Type &type) const
-		{
-			return dynamic_cast<const Bool *>(&type) != 0;
-		}
+		virtual bool equals(const Type &type) const;
 	};
 
 	class Int : public Type
@@ -112,14 +112,20 @@ namespace tree
 	public:
 		static const unsigned int DEFAULT_SIZE = 32;
 
-		Int(unsigned int Size = DEFAULT_SIZE) : mSize(Size) {}
+		Int() : mSize(NULL) {}
+		Int(Expression *size) : mSize(size) {}
 
 		bool canCast(const Type &from, bool autoCast = false) const;
 		bool canPerform(const Operation &operation) const;
 
-		unsigned int getSize()
+		Expression *getSize() const
 		{
 			return mSize;
+		}
+
+		void setSize(Expression *size)
+		{
+			mSize = size;
 		}
 
 		virtual const char *getTypeName() const
@@ -128,26 +134,18 @@ namespace tree
 		}
 
 #ifdef DEBUG
-		virtual void printType() { LOG("INT %d", mSize); }
+		virtual void printType() { LOG("INT %d", /*mSize*/0); } // FIXME
 #endif
 
-	protected:
-		virtual bool equals(const Type &type) const
-		{
-			const Int *integer = dynamic_cast<const Int *>(&type);
+		virtual bool isResolved() const;
 
-			if(integer)
-			{
-				return mSize == integer->mSize;
-			}
-			else
-			{
-				return false;
-			}
-		}
+		virtual void childAccept(operation::Operation *operation);
+
+	protected:
+		virtual bool equals(const Type &type) const;
 
 	private:
-		unsigned int mSize;
+		Expression *mSize;
 	};
 
 	class Float : public Type
@@ -155,14 +153,20 @@ namespace tree
 	public:
 		static const unsigned int DEFAULT_SIZE = 32;
 
-		Float(unsigned int Size = DEFAULT_SIZE) : mSize(Size) {}
+		Float() : mSize(NULL) {}
+		Float(Expression *size) : mSize(size) {}
 
 		bool canCast(const Type &from, bool autoCast = false) const;
 		bool canPerform(const Operation &operation) const;
 
-		unsigned int getSize()
+		Expression *getSize() const
 		{
 			return mSize;
+		}
+
+		void setSize(Expression *size)
+		{
+			mSize = size;
 		}
 
 		virtual const char *getTypeName() const
@@ -171,40 +175,38 @@ namespace tree
 		}
 
 #ifdef DEBUG
-		virtual void printType() { LOG("FLOAT %d", mSize); }
+		virtual void printType() { LOG("FLOAT %d", /*mSize*/0); } // FIXME
 #endif
 
-	protected:
-		virtual bool equals(const Type &type) const
-		{
-			const Float *floatingPoint = dynamic_cast<const Float *>(&type);
+		virtual bool isResolved() const;
 
-			if(floatingPoint)
-			{
-				return mSize == floatingPoint->mSize;
-			}
-			else
-			{
-				return false;
-			}
-		}
+		virtual void childAccept(operation::Operation *operation);
+
+	protected:
+		virtual bool equals(const Type &type) const;
 
 	private:
-		unsigned int mSize;
+		Expression *mSize;
 	};
 
 	class String : public Type
 	{
 	public:
-		static const unsigned int DEFAULT_SIZE = 256;
+		static const unsigned int DEFAULT_SIZE = 32;
 
-		String(unsigned int Size = DEFAULT_SIZE) : mSize(Size) {}
+		String() : mSize(NULL) {}
+		String(Expression *size) : mSize(size) {}
 
 		bool canCast(const Type &from, bool autoCast = false) const;
 
-		unsigned int getSize() const
+		Expression *getSize() const
 		{
 			return mSize;
+		}
+
+		void setSize(Expression *size)
+		{
+			mSize = size;
 		}
 
 		virtual const char *getTypeName() const
@@ -213,41 +215,31 @@ namespace tree
 		}
 
 #ifdef DEBUG
-		virtual void printType() { LOG("STRING %d", mSize); }
+		virtual void printType() { LOG("STRING %d", /*mSize*/0); } // FIXME
 #endif
 
-	protected:
-		virtual bool equals(const Type &type) const
-		{
-			const String *string = dynamic_cast<const String *>(&type);
+		virtual bool isResolved() const;
 
-			if(string)
-			{
-				return mSize == string->mSize;
-			}
-			else
-			{
-				return false;
-			}
-		}
+		virtual void childAccept(operation::Operation *operation);
+
+	protected:
+		virtual bool equals(const Type &type) const;
 
 	private:
-		unsigned int mSize;
+		Expression *mSize;
 	};
 
 	class Array : public Type
 	{
 	public:
-		static const unsigned long UNDEFINED_SIZE = 0;
-
-		class InvalidSizeException : public tree::Type::InvalidException
+		/*class InvalidSizeException : public tree::Type::InvalidException
 		{
 		public:
 			InvalidSizeException(Type *_type) : InvalidException(_type) {}
-		};
+		};*/
 
-		Array(Type *type) : mType(type), mSize(UNDEFINED_SIZE) {}
-		Array(Type *type, long long size);
+		//Array(Type *type);
+		Array(Type *type, Expression *size) : mType(type), mSize(size) {}
 
 		bool canCast(const Type &from, bool autoCast = false) const;
 
@@ -261,9 +253,14 @@ namespace tree
 			mType = type;
 		}
 
-		unsigned long getSize()
+		Expression *getSize() const
 		{
 			return mSize;
+		}
+
+		void setSize(Expression *size)
+		{
+			mSize = size;
 		}
 
 		virtual const char *getTypeName() const
@@ -279,34 +276,24 @@ namespace tree
 
 			for(const tree::Array *i = this; i; i = dynamic_cast<const tree::Array *>(i->mType))
 			{
-				typeName << "[" << i->mSize << "]";
+				////typeName << "[" << i->mSize << "]"; FIXME
 			}
 
 			return typeName.str().c_str(); // FIXME, is this unsafe??
 		}
 
 #ifdef DEBUG
-		virtual void printType() { LOG("Array[%lu]", mSize); if(mType) { mType->printType(); } }
+		virtual void printType() { LOG("Array[%u]", /*mSize*/0); if(mType) { mType->printType(); } } // FIXME
 #endif
 
-	protected:
-		virtual bool equals(const Type &type) const
-		{
-			const Array *array = dynamic_cast<const Array *>(&type);
+		virtual void childAccept(operation::Operation *operation);
 
-			if(array)
-			{
-				return mSize == array->mSize && (*mType == *array->mType);
-			}
-			else
-			{
-				return false;
-			}
-		}
+	protected:
+		virtual bool equals(const Type &type) const;
 
 	private:
 		Type *mType;
-		unsigned long mSize;
+		Expression *mSize;
 	};
 }
 

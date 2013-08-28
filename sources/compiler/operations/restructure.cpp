@@ -374,3 +374,71 @@ void operation::Restructure::processFunctionParameters(tree::Function *function)
 		mCurrentScope = currentScope;
 	}
 }
+
+void operation::Restructure::dispatch(tree::Int *integer)
+{
+	tree::Expression *size = NULL;
+
+	if(integer->getSize())
+	{
+		size = static_cast<tree::Expression *>(mNodeMap.top());
+		mNodeMap.pop();
+	}
+
+	integer->setSize(size);
+
+	dispatch(static_cast<tree::Type *>(integer));
+}
+
+void operation::Restructure::dispatch(tree::Float *floatingPoint)
+{
+	tree::Expression *size = NULL;
+
+	if(floatingPoint->getSize())
+	{
+		size = static_cast<tree::Expression *>(mNodeMap.top());
+		mNodeMap.pop();
+	}
+
+	floatingPoint->setSize(size);
+
+	dispatch(static_cast<tree::Type *>(floatingPoint));
+}
+
+void operation::Restructure::dispatch(tree::String *string)
+{
+	tree::Expression *size = NULL;
+
+	if(string->getSize())
+	{
+		size = static_cast<tree::Expression *>(mNodeMap.top());
+		mNodeMap.pop();
+	}
+
+	string->setSize(size);
+
+	dispatch(static_cast<tree::Type *>(string));
+}
+
+void operation::Restructure::dispatch(tree::Array *array)
+{
+	tree::Type *type = NULL;
+	tree::Expression *size = NULL;
+
+	if(array->getSize())
+	{
+		size = static_cast<tree::Expression *>(mNodeMap.top());
+		mNodeMap.pop();
+	}
+
+	if(array->getType())
+	{
+		type = static_cast<tree::Type *>(mNodeMap.top());
+		mNodeMap.pop();
+	}
+
+	array->setType(type);
+	array->setSize(size);
+
+	dispatch(static_cast<tree::Type *>(array));
+}

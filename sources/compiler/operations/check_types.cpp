@@ -20,6 +20,16 @@ bool operation::CheckTypes::run(tree::Program *program)
 	}
 }
 
+void operation::CheckTypes::visit(tree::Type *type)
+{
+	LOG("CheckTypes::visit::Type");
+
+	if(!type->isResolved())
+	{
+		throw IncompleteException();
+	}
+}
+
 void operation::CheckTypes::visit(tree::TypedIdentity *typedIdentity)
 {
 	LOG("CheckTypes::visit::TypedIdentity");

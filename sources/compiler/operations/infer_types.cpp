@@ -60,6 +60,12 @@ void operation::InferTypes::visit(tree::Assign *assign)
 		{
 			tree::Type *rhsType = assign->getRHS()->getType();
 
+			// If the type is not resolved yet then we can't be sure about any type inference.
+			if(rhsType && !rhsType->isResolved())
+			{
+				rhsType = NULL;
+			}
+
 			if(   !rhsType                                                                     // If this type is not resolved then flag we can't process it
 			   || mTypeResolution.find(identity) == mTypeResolution.end()                      // If this identity hasn't been added yet then add it
 			   || (mTypeResolution[identity] && rhsType->canCast(*mTypeResolution[identity]))) // If there is a current type and the RHS type can handle it then use the RHS type

@@ -143,11 +143,16 @@ void tree::FunctionCall::setPrototype(tree::Expression *prototype)
 
 tree::BoolLiteral::BoolLiteral(tree::Literal *literal) : Literal(new Bool())
 {
+	tree::BoolLiteral *boolLiteral;
 	tree::IntLiteral *intLiteral;
 	tree::FloatLiteral *floatLiteral;
 	tree::StringLiteral *stringLiteral;
 
-	if((intLiteral = dynamic_cast<tree::IntLiteral *>(literal)))
+	if((boolLiteral = dynamic_cast<tree::BoolLiteral *>(literal)))
+	{
+		mValue = boolLiteral->getValue();
+	}
+	else if((intLiteral = dynamic_cast<tree::IntLiteral *>(literal)))
 	{
 		mValue = (intLiteral->getValue() != 0);
 	}
@@ -165,14 +170,26 @@ tree::BoolLiteral::BoolLiteral(tree::Literal *literal) : Literal(new Bool())
 	}
 }
 
+bool tree::BoolLiteral::equals(const Literal &literal) const
+{
+	const tree::BoolLiteral *boolLiteral;
+
+	return (boolLiteral = dynamic_cast<const tree::BoolLiteral *>(&literal)) && mValue == boolLiteral->mValue;
+}
+
 tree::IntLiteral::IntLiteral(tree::Literal *literal) : Literal(new Int())
 {
 	tree::BoolLiteral *boolLiteral;
+	tree::IntLiteral *intLiteral;
 	tree::FloatLiteral *floatLiteral;
 
 	if((boolLiteral = dynamic_cast<tree::BoolLiteral *>(literal)))
 	{
 		mValue = boolLiteral->getValue() ? 1 : 0;
+	}
+	else if((intLiteral = dynamic_cast<tree::IntLiteral *>(literal)))
+	{
+		mValue = intLiteral->getValue();
 	}
 	else if((floatLiteral = dynamic_cast<tree::FloatLiteral *>(literal)))
 	{
@@ -184,10 +201,18 @@ tree::IntLiteral::IntLiteral(tree::Literal *literal) : Literal(new Int())
 	}
 }
 
+bool tree::IntLiteral::equals(const Literal &literal) const
+{
+	const tree::IntLiteral *intLiteral;
+
+	return (intLiteral = dynamic_cast<const tree::IntLiteral *>(&literal)) && mValue == intLiteral->mValue;
+}
+
 tree::FloatLiteral::FloatLiteral(tree::Literal *literal) : Literal(new Float())
 {
 	tree::BoolLiteral *boolLiteral;
 	tree::IntLiteral *intLiteral;
+	tree::FloatLiteral *floatLiteral;
 
 	if((boolLiteral = dynamic_cast<tree::BoolLiteral *>(literal)))
 	{
@@ -197,15 +222,42 @@ tree::FloatLiteral::FloatLiteral(tree::Literal *literal) : Literal(new Float())
 	{
 		mValue = (float)intLiteral->getValue();
 	}
+	else if((floatLiteral = dynamic_cast<tree::FloatLiteral *>(literal)))
+	{
+		mValue = floatLiteral->getValue();
+	}
 	else
 	{
 		throw tree::FloatLiteral::InvalidException(literal);
 	}
 }
 
+bool tree::FloatLiteral::equals(const Literal &literal) const
+{
+	const tree::FloatLiteral *floatLiteral;
+
+	return (floatLiteral = dynamic_cast<const tree::FloatLiteral *>(&literal)) && mValue == floatLiteral->mValue;
+}
+
 tree::StringLiteral::StringLiteral(tree::Literal *literal) : Literal(new String())
 {
-	throw tree::StringLiteral::InvalidException(literal);
+	tree::StringLiteral *stringLiteral;
+
+	if((stringLiteral = dynamic_cast<tree::StringLiteral *>(literal)))
+	{
+		mValue = stringLiteral->getValue();
+	}
+	else
+	{
+		throw tree::StringLiteral::InvalidException(literal);
+	}
+}
+
+bool tree::StringLiteral::equals(const Literal &literal) const
+{
+	const tree::StringLiteral *stringLiteral;
+
+	return (stringLiteral = dynamic_cast<const tree::StringLiteral *>(&literal)) && mValue == stringLiteral->mValue;
 }
 
 tree::Literal *tree::LogicalOr::calculate() const
