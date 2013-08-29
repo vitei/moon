@@ -152,11 +152,15 @@ namespace tree
 
 		virtual const char *getTypeName() const
 		{
-			return "integer";
+			std::stringstream typeName;
+
+			typeName << getSizeInt() << " bit integer";
+
+			return typeName.str().c_str(); // FIXME, is this unsafe??
 		}
 
 #ifdef DEBUG
-		virtual void printType() { LOG("INT %d", /*mSize*/0); } // FIXME
+		virtual void printType() { LOG("INT<%d>", getSizeInt()); }
 #endif
 
 		virtual unsigned int getSizeInt() const;
@@ -177,11 +181,15 @@ namespace tree
 
 		virtual const char *getTypeName() const
 		{
-			return "floating point";
+			std::stringstream typeName;
+
+			typeName << getSizeInt() << " bit floating point";
+
+			return typeName.str().c_str(); // FIXME, is this unsafe??
 		}
 
 #ifdef DEBUG
-		virtual void printType() { LOG("FLOAT %d", /*mSize*/0); } // FIXME
+		virtual void printType() { LOG("FLOAT<%d>", getSizeInt()); }
 #endif
 
 		virtual unsigned int getSizeInt() const;
@@ -201,11 +209,15 @@ namespace tree
 
 		virtual const char *getTypeName() const
 		{
-			return "string";
+			std::stringstream typeName;
+
+			typeName << getSizeInt() << " byte string";
+
+			return typeName.str().c_str(); // FIXME, is this unsafe??
 		}
 
 #ifdef DEBUG
-		virtual void printType() { LOG("STRING %d", /*mSize*/0); } // FIXME
+		virtual void printType() { LOG("STRING<%d>", getSizeInt()); }
 #endif
 
 		virtual unsigned int getSizeInt() const;
@@ -251,14 +263,14 @@ namespace tree
 
 			for(const tree::Array *i = this; i; i = dynamic_cast<const tree::Array *>(i->mType))
 			{
-				////typeName << "[" << i->mSize << "]"; FIXME
+				typeName << "[" << i->getSizeInt() << "]";
 			}
 
 			return typeName.str().c_str(); // FIXME, is this unsafe??
 		}
 
 #ifdef DEBUG
-		virtual void printType() { LOG("Array[%u]", /*mSize*/0); if(mType) { mType->printType(); } } // FIXME
+		virtual void printType() { LOG("Array[%u]", getSizeInt()); if(mType) { mType->printType(); } } // FIXME
 #endif
 
 		virtual unsigned int getSizeInt() const;
