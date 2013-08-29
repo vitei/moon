@@ -192,6 +192,37 @@ namespace tree
 		return !(literal1 == literal2);
 	}
 
+	class NumericLiteral : public Literal
+	{
+	protected:
+		NumericLiteral(Type *type) : Literal(type) { /* Abstract class */ }
+
+		virtual bool lessThan(const NumericLiteral &numericLiteral) const = 0;
+
+	private:
+		friend bool operator < (const NumericLiteral &numericLiteral1, const NumericLiteral &numericLiteral2);
+	};
+
+	inline bool operator < (const NumericLiteral &numericLiteral1, const NumericLiteral &numericLiteral2)
+	{
+		return numericLiteral1.lessThan(numericLiteral2);
+	}
+
+	inline bool operator <= (const NumericLiteral &numericLiteral1, const NumericLiteral &numericLiteral2)
+	{
+		return numericLiteral1 < numericLiteral2 || numericLiteral1 == numericLiteral2;
+	}
+
+	inline bool operator > (const NumericLiteral &numericLiteral1, const NumericLiteral &numericLiteral2)
+	{
+		return !(numericLiteral1 < numericLiteral2);
+	}
+
+	inline bool operator >= (const NumericLiteral &numericLiteral1, const NumericLiteral &numericLiteral2)
+	{
+		return numericLiteral1 > numericLiteral2 || numericLiteral1 == numericLiteral2;
+	}
+
 	class Operation : public Expression
 	{
 	public:
@@ -582,12 +613,11 @@ namespace tree
 		bool mValue;
 	};
 
-	class IntLiteral : public Literal
+	class IntLiteral : public NumericLiteral
 	{
 	public:
-		IntLiteral(int value) : Literal(new Int()), mValue(value) {}
+		IntLiteral(int value) : NumericLiteral(new Int()), mValue(value) {}
 		IntLiteral(Literal *literal);
-
 
 		int getValue() const
 		{
@@ -599,16 +629,17 @@ namespace tree
 #endif
 
 	protected:
+		virtual bool lessThan(const NumericLiteral &numericLiteral) const;
 		virtual bool equals(const Literal &literal) const;
 
 	private:
 		int mValue;
 	};
 
-	class FloatLiteral : public Literal
+	class FloatLiteral : public NumericLiteral
 	{
 	public:
-		FloatLiteral(float value) : Literal(new Float()), mValue(value) {}
+		FloatLiteral(float value) : NumericLiteral(new Float()), mValue(value) {}
 		FloatLiteral(Literal *literal);
 
 		float getValue() const
@@ -621,6 +652,7 @@ namespace tree
 #endif
 
 	protected:
+		virtual bool lessThan(const NumericLiteral &numericLiteral) const;
 		virtual bool equals(const Literal &literal) const;
 
 	private:

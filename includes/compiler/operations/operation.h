@@ -25,6 +25,8 @@ namespace operation
 		 \
 		PROCESS_ACTION(tree::Identity, tree::TypedIdentity, return_type, name) \
 		 \
+		PROCESS_ACTION(tree::Literal, tree::NumericLiteral, return_type, name) \
+		 \
 		PROCESS_ACTION(tree::Operation, tree::BinaryOperation, return_type, name) \
 		PROCESS_ACTION(tree::Operation, tree::UnaryOperation, return_type, name) \
 		 \
@@ -75,9 +77,10 @@ namespace operation
 		PROCESS_ACTION(tree::Expression, tree::Identifier, return_type, name) \
 		 \
 		PROCESS_ACTION(tree::Literal, tree::BoolLiteral, return_type, name) \
-		PROCESS_ACTION(tree::Literal, tree::IntLiteral, return_type, name) \
-		PROCESS_ACTION(tree::Literal, tree::FloatLiteral, return_type, name) \
 		PROCESS_ACTION(tree::Literal, tree::StringLiteral, return_type, name) \
+		 \
+		PROCESS_ACTION(tree::NumericLiteral, tree::IntLiteral, return_type, name) \
+		PROCESS_ACTION(tree::NumericLiteral, tree::FloatLiteral, return_type, name) \
 		 \
 		PROCESS_ACTION(tree::NamedScope, tree::Program, return_type, name) \
 		PROCESS_ACTION(tree::NamedScope, tree::Use, return_type, name) \

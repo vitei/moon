@@ -177,7 +177,7 @@ bool tree::BoolLiteral::equals(const Literal &literal) const
 	return (boolLiteral = dynamic_cast<const tree::BoolLiteral *>(&literal)) && mValue == boolLiteral->mValue;
 }
 
-tree::IntLiteral::IntLiteral(tree::Literal *literal) : Literal(new Int())
+tree::IntLiteral::IntLiteral(tree::Literal *literal) : NumericLiteral(new Int())
 {
 	tree::BoolLiteral *boolLiteral;
 	tree::IntLiteral *intLiteral;
@@ -201,6 +201,25 @@ tree::IntLiteral::IntLiteral(tree::Literal *literal) : Literal(new Int())
 	}
 }
 
+bool tree::IntLiteral::lessThan(const tree::NumericLiteral &numericLiteral) const
+{
+	const tree::IntLiteral *intLiteral;
+	const tree::FloatLiteral *floatLiteral;
+
+	if((intLiteral = dynamic_cast<const tree::IntLiteral *>(&numericLiteral)))
+	{
+		return mValue < intLiteral->mValue;
+	}
+	else if((floatLiteral = dynamic_cast<const tree::FloatLiteral *>(&numericLiteral)))
+	{
+		return mValue < floatLiteral->getValue();
+	}
+
+	ASSERT("Should never reach here...");
+
+	return false;
+}
+
 bool tree::IntLiteral::equals(const Literal &literal) const
 {
 	const tree::IntLiteral *intLiteral;
@@ -208,7 +227,7 @@ bool tree::IntLiteral::equals(const Literal &literal) const
 	return (intLiteral = dynamic_cast<const tree::IntLiteral *>(&literal)) && mValue == intLiteral->mValue;
 }
 
-tree::FloatLiteral::FloatLiteral(tree::Literal *literal) : Literal(new Float())
+tree::FloatLiteral::FloatLiteral(tree::Literal *literal) : NumericLiteral(new Float())
 {
 	tree::BoolLiteral *boolLiteral;
 	tree::IntLiteral *intLiteral;
@@ -230,6 +249,25 @@ tree::FloatLiteral::FloatLiteral(tree::Literal *literal) : Literal(new Float())
 	{
 		throw tree::FloatLiteral::InvalidException(literal);
 	}
+}
+
+bool tree::FloatLiteral::lessThan(const tree::NumericLiteral &numericLiteral) const
+{
+	const tree::IntLiteral *intLiteral;
+	const tree::FloatLiteral *floatLiteral;
+
+	if((intLiteral = dynamic_cast<const tree::IntLiteral *>(&numericLiteral)))
+	{
+		return mValue < intLiteral->getValue();
+	}
+	else if((floatLiteral = dynamic_cast<const tree::FloatLiteral *>(&numericLiteral)))
+	{
+		return mValue < floatLiteral->mValue;
+	}
+
+	ASSERT("Should never reach here...");
+
+	return false;
 }
 
 bool tree::FloatLiteral::equals(const Literal &literal) const
