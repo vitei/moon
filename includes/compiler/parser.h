@@ -13,21 +13,11 @@ namespace parser
 	class Data
 	{
 	public:
-		void addParsedUseFile(const std::string &filename)
-		{
-			mParsedUseFiles.push_back(filename);
-		}
-
-		void addParsedIncludeFile(const std::string &filename)
-		{
-			mParsedIncludeFiles[currentName].push_back(filename);
-		}
-
 		bool isParsedUseFile(const std::string &filename)
 		{
-			for(std::vector<std::string>::iterator i = mParsedUseFiles.begin(), end = mParsedUseFiles.end(); i != end; ++i)
+			for(std::vector<std::string *>::iterator i = mParsedUseFiles.begin(), end = mParsedUseFiles.end(); i != end; ++i)
 			{
-				if(*i == filename)
+				if(**i == filename)
 				{
 					return true;
 				}
@@ -38,11 +28,11 @@ namespace parser
 
 		bool isParsedIncludeFile(const std::string &filename)
 		{
-			std::vector<std::string> currentIncludeFiles = mParsedIncludeFiles[currentName];
+			std::vector<std::string *> &currentIncludeFiles = mParsedIncludeFiles[currentName];
 
-			for(std::vector<std::string>::iterator i = currentIncludeFiles.begin(), end = currentIncludeFiles.end(); i != end; ++i)
+			for(std::vector<std::string *>::iterator i = currentIncludeFiles.begin(), end = currentIncludeFiles.end(); i != end; ++i)
 			{
-				if(*i == filename)
+				if(**i == filename)
 				{
 					return true;
 				}
@@ -62,10 +52,10 @@ namespace parser
 		tree::Statements *statements;
 
 	private:
-		void parse(lexer::Data::FileType type, const std::string &filename);
+		void parse(lexer::Data::FileType type, std::string *filename);
 
-		std::vector<std::string> mParsedUseFiles;
-		std::map<std::string, std::vector<std::string> > mParsedIncludeFiles;
+		std::vector<std::string *> mParsedUseFiles;
+		std::map< std::string, std::vector<std::string *> > mParsedIncludeFiles;
 	};
 }
 

@@ -9,13 +9,14 @@
 
 extern int yyparse(parser::Data *parserData);
 
-void parser::Data::parse(lexer::Data::FileType type, const std::string &filename)
+void parser::Data::parse(lexer::Data::FileType type, std::string *filename)
 {
 	lexer::Data lexerData;
-	void *tmp = lexer;
-	FILE *input = fopen(filename.c_str(), "r");
+	void *previousLexer = lexer;
+	std::string *previousFilename = currentFilename;
+	FILE *input = fopen(filename->c_str(), "r");
 
-	currentFilename = &const_cast<std::string &>(filename);
+	currentFilename = filename;
 
 	lexerData.type = type;
 	lexerData.startSymbolIssued = false;
@@ -26,24 +27,26 @@ void parser::Data::parse(lexer::Data::FileType type, const std::string &filename
 	yylex_destroy(lexer);
 	fclose(input);
 
-	lexer = tmp;
+	lexer = previousLexer;
+	currentFilename = previousFilename;
 }
 
 void parser::Data::parseUse(const std::string &name, const std::string &filename)
 {
+	std::string *filenamePtr = new std::string(filename);
 	std::string previousName = currentName;
+
+	mParsedUseFiles.push_back(filenamePtr);
 
 	currentName = name;
 
-	addParsedUseFile(filename);
-
 	if(filename.rfind(".lmoon") == filename.length() - 6)
 	{
-		parse(lexer::Data::TYPE_LITERATE_USE, filename);
+		parse(lexer::Data::TYPE_LITERATE_USE, filenamePtr);
 	}
 	else
 	{
-		parse(lexer::Data::TYPE_USE, filename);
+		parse(lexer::Data::TYPE_USE, filenamePtr);
 	}
 
 	currentName = previousName;
@@ -51,6 +54,9 @@ void parser::Data::parseUse(const std::string &name, const std::string &filename
 
 void parser::Data::parseInclude(const std::string &filename)
 {
-	addParsedIncludeFile(filename);
-	parse(lexer::Data::TYPE_INCLUDE, filename);
+	std::string *filenamePtr = new std::string(filename);
+
+	mParsedIncludeFiles[currentName].push_back(filenamePtr);
+
+	parse(lexer::Data::TYPE_INCLUDE, filenamePtr);
 }
