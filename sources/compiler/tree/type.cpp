@@ -1,6 +1,19 @@
 #include "compiler/tree.h"
 
 
+void tree::SizedType::setSize(tree::Expression *size)
+{
+	// Check that if the size expression is a literal that it is an integer
+	if(!(dynamic_cast<tree::Literal *>(size) && !dynamic_cast<tree::IntLiteral *>(size)))
+	{
+		mSize.expression = size;
+	}
+	else
+	{
+		throw tree::SizedType::InvalidException(this);
+	}
+}
+
 bool tree::SizedType::isResolved() const
 {
 	return !mSize.expression || dynamic_cast<tree::IntLiteral *>(mSize.expression);

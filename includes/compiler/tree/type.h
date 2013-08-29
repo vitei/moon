@@ -65,16 +65,25 @@ namespace tree
 	class SizedType : public Type
 	{
 	public:
+		class InvalidException : public tree::Type::InvalidException
+		{
+		public:
+			InvalidException(SizedType *_type) : tree::Type::InvalidException(_type) {}
+
+			virtual void reset()
+			{
+				LOG("tree::SizedType::InvalidException::reset");
+				static_cast<tree::SizedType *>(type)->setSize(NULL);
+			}
+		};
+
 		Expression *getSize() const
 		{
 			return mSize.expression;
 		}
 
-		void setSize(Expression *size)
-		{
-			mSize.expression = size;
-		}
-
+		void setSize(Expression *size);
+		
 		virtual unsigned int getSizeInt() const = 0;
 		virtual bool isResolved() const;
 
