@@ -170,8 +170,6 @@ void operation::CastExpressions::visit(tree::While *whileStatement)
 #ifdef DEBUG
 			type->printType();
 #endif
-			test->printNode();
-			test->getLocation().printLocation();
 
 			tree::Cast *cast = new tree::Cast(new tree::Bool(), test, true);
 
