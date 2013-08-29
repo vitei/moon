@@ -68,7 +68,7 @@ void typeProgram(tree::Program *program)
 	{
 		doOperations(*program, operations);
 	}
-	while(!operation::CheckTypes::run(program));
+	while(!operation::CheckTypes::run(program)); // FIXME, this doesn't work correctly. Stages should flag if further loops are required...
 }
 
 
