@@ -57,7 +57,7 @@
 	#define ASSERT_LOG(test, ...) { (void)(test); }
 	#define LOG(...) {}
 	#define WARNING(...) {}
-	#define ERROR(...) {}
+	#define ERROR(...) { exit(EXIT_FAILURE); }
 #endif
 
 #endif
