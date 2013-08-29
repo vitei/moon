@@ -9,6 +9,7 @@
 namespace tree
 {
 	class Expression;
+	class IntLiteral;
 	class Operation;
 
 	/* ---- ONLY ABSTRACT CLASSES BELOW HERE ---- */
@@ -64,24 +65,29 @@ namespace tree
 	class SizedType : public Type
 	{
 	public:
-		SizedType(Expression *size = NULL) : mSize(size) {}
-
 		Expression *getSize() const
 		{
-			return mSize;
+			return mSize.expression;
 		}
 
 		void setSize(Expression *size)
 		{
-			mSize = size;
+			mSize.expression = size;
 		}
 
+		virtual unsigned int getSizeInt() const = 0;
 		virtual bool isResolved() const;
 
 		virtual void childAccept(operation::Operation *operation);
 
 	protected:
-		Expression *mSize;
+		SizedType(Expression *size = NULL) { mSize.expression = size; }
+
+		union
+		{
+			Expression *expression;
+			IntLiteral *intLiteral;
+		} mSize;
 	};
 
 	/* ---- ONLY CONCRETE CLASSES BELOW HERE ---- */
@@ -144,6 +150,8 @@ namespace tree
 		virtual void printType() { LOG("INT %d", /*mSize*/0); } // FIXME
 #endif
 
+		virtual unsigned int getSizeInt() const;
+
 	protected:
 		virtual bool equals(const Type &type) const;
 	};
@@ -167,6 +175,8 @@ namespace tree
 		virtual void printType() { LOG("FLOAT %d", /*mSize*/0); } // FIXME
 #endif
 
+		virtual unsigned int getSizeInt() const;
+
 	protected:
 		virtual bool equals(const Type &type) const;
 	};
@@ -188,6 +198,8 @@ namespace tree
 #ifdef DEBUG
 		virtual void printType() { LOG("STRING %d", /*mSize*/0); } // FIXME
 #endif
+
+		virtual unsigned int getSizeInt() const;
 
 	protected:
 		virtual bool equals(const Type &type) const;
@@ -239,6 +251,8 @@ namespace tree
 #ifdef DEBUG
 		virtual void printType() { LOG("Array[%u]", /*mSize*/0); if(mType) { mType->printType(); } } // FIXME
 #endif
+
+		virtual unsigned int getSizeInt() const;
 
 		virtual void childAccept(operation::Operation *operation);
 

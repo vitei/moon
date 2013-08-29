@@ -3,16 +3,16 @@
 
 bool tree::SizedType::isResolved() const
 {
-	return !mSize || dynamic_cast<tree::IntLiteral *>(mSize);
+	return !mSize.expression || dynamic_cast<tree::IntLiteral *>(mSize.expression);
 }
 
 void tree::SizedType::childAccept(operation::Operation *operation)
 {
 	Type::childAccept(operation);
 
-	if(mSize)
+	if(mSize.expression)
 	{
-		mSize->accept(operation);
+		mSize.expression->accept(operation);
 	}
 }
 
@@ -55,14 +55,17 @@ bool tree::Bool::equals(const Type &type) const
 
 bool tree::Int::canCast(const tree::Type &from, bool autoCast) const
 {
+	const tree::Int *fromInt;
+
 	if(dynamic_cast<const tree::Bool *>(&from) ||
-	   dynamic_cast<const tree::Int *>(&from)) // FIXME, needs size
+	   ((fromInt = dynamic_cast<const tree::Int *>(&from)) && fromInt->getSizeInt() <= getSizeInt()))
 	{
 		return true;
 	}
 	else if(!autoCast)
 	{
-		if(dynamic_cast<const tree::Float *>(&from))
+		if(dynamic_cast<const tree::Int *>(&from) ||
+		   dynamic_cast<const tree::Float *>(&from))
 		{
 			return true;
 		}
@@ -91,13 +94,20 @@ bool tree::Int::canPerform(const Operation &operation) const
 	return false;
 }
 
+unsigned int tree::Int::getSizeInt() const
+{
+	ASSERT(isResolved());
+
+	return mSize.intLiteral ? mSize.intLiteral->getValue() : tree::Int::DEFAULT_SIZE;
+}
+
 bool tree::Int::equals(const Type &type) const
 {
-	const Int *integer = dynamic_cast<const Int *>(&type);
+	const Int *integer = dynamic_cast<const tree::Int *>(&type);
 
 	if(integer)
 	{
-		return mSize == integer->mSize; // FIXME
+		return getSizeInt() == integer->getSizeInt();
 	}
 	else
 	{
@@ -107,11 +117,20 @@ bool tree::Int::equals(const Type &type) const
 
 bool tree::Float::canCast(const tree::Type &from, bool autoCast) const
 {
+	const tree::Float *fromFloat;
+
 	if(dynamic_cast<const tree::Bool *>(&from) ||
 	   dynamic_cast<const tree::Int *>(&from) ||
-	   dynamic_cast<const tree::Float *>(&from)) // FIXME, needs size
+	   ((fromFloat = dynamic_cast<const tree::Float *>(&from)) && fromFloat->getSize() <= getSize()))
 	{
 		return true;
+	}
+	else if(!autoCast)
+	{
+		if(dynamic_cast<const tree::Float *>(&from))
+		{
+			return true;
+		}
 	}
 
 	return false;
@@ -132,13 +151,20 @@ bool tree::Float::canPerform(const Operation &operation) const
 	return false;
 }
 
+unsigned int tree::Float::getSizeInt() const
+{
+	ASSERT(isResolved());
+
+	return mSize.intLiteral ? mSize.intLiteral->getValue() : tree::Float::DEFAULT_SIZE;
+}
+
 bool tree::Float::equals(const Type &type) const
 {
-	const Float *floatingPoint = dynamic_cast<const Float *>(&type);
+	const Float *floatingPoint = dynamic_cast<const tree::Float *>(&type);
 
 	if(floatingPoint)
 	{
-		return mSize == floatingPoint->mSize; // FIXME
+		return getSizeInt() == floatingPoint->getSizeInt();
 	}
 	else
 	{
@@ -150,7 +176,7 @@ bool tree::String::canCast(const tree::Type &from, bool autoCast) const
 {
 	const tree::String *string;
 
-	if((string = dynamic_cast<const tree::String *>(&from))/* && string->getSize() <= getSize()*/) // FIXME
+	if((string = dynamic_cast<const tree::String *>(&from)) && string->getSizeInt() <= getSizeInt())
 	{
 		return true;
 	}
@@ -158,16 +184,20 @@ bool tree::String::canCast(const tree::Type &from, bool autoCast) const
 	return false;
 }
 
+unsigned int tree::String::getSizeInt() const
+{
+	ASSERT(isResolved());
+
+	return mSize.intLiteral ? mSize.intLiteral->getValue() : tree::String::DEFAULT_SIZE;
+}
+
 bool tree::String::equals(const Type &type) const
 {
-	const String *string = dynamic_cast<const String *>(&type);
+	const String *string = dynamic_cast<const tree::String *>(&type);
 
 	if(string)
 	{
-		tree::Literal *aSize = dynamic_cast<tree::Literal *>(mSize);
-		tree::Literal *bSize = dynamic_cast<tree::Literal *>(string->mSize);
-
-		return aSize && bSize && *aSize == *bSize;
+		return getSizeInt() == string->getSizeInt();
 	}
 	else
 	{
@@ -181,13 +211,21 @@ bool tree::String::equals(const Type &type) const
 
 bool tree::Array::canCast(const tree::Type &from, bool autoCast) const
 {
-	/*if(dynamic_cast<tree::Bool *>(&from) ||
-	   dynamic_cast<tree::Int *>(&from))
+	const tree::Array *array;
+
+	if((array = dynamic_cast<const tree::Array *>(&from)) && array->getSizeInt() <= getSizeInt())
 	{
 		return true;
-	}*/
+	}
 
 	return false;
+}
+
+unsigned int tree::Array::getSizeInt() const
+{
+	ASSERT(isResolved());
+
+	return mSize.intLiteral->getValue();
 }
 
 bool tree::Array::equals(const Type &type) const
@@ -196,10 +234,7 @@ bool tree::Array::equals(const Type &type) const
 
 	if(array)
 	{
-		tree::Literal *aSize = dynamic_cast<tree::Literal *>(mSize);
-		tree::Literal *bSize = dynamic_cast<tree::Literal *>(array->mSize);
-
-		return aSize && bSize && *aSize == *bSize && (*mType == *array->mType);
+		return getSizeInt() == array->getSizeInt();
 	}
 	else
 	{
