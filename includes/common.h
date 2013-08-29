@@ -7,8 +7,8 @@
 
 #define UNUSED(variable) ((void)&variable)
 
-#define __RANDOM_VARIABLE_NAME_CAT(name, num) name##num							// This is HORRIBLE...
-#define __RANDOM_VARIABLE_NAME(name, num) __RANDOM_VARIABLE_NAME_CAT(name, num)	// ...but it works
+#define __RANDOM_VARIABLE_NAME_CAT(name, num) name##num                         // This is HORRIBLE...
+#define __RANDOM_VARIABLE_NAME(name, num) __RANDOM_VARIABLE_NAME_CAT(name, num) // ...but it works
 #define PADDING(numBytes) unsigned char __RANDOM_VARIABLE_NAME(_padding, __LINE__)[numBytes]
 
 #ifdef DEBUG
