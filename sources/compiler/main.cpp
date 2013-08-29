@@ -47,10 +47,18 @@ void typeProgram(tree::Program *program)
 {
 	// The list of operations to perform...
 	TreeOperation operations[] = {
-		operation::ResolveTypes::run,
-		operation::CastExpressions::run,
-		operation::InferTypes::run,
+		// First we need to compute any constants we can so that types that use these as sizes 
 		operation::ComputeConstants::run,
+
+		// Next we can resolve and infer any types
+		// Types may use constants for their inference...
+		operation::ResolveTypes::run,
+		operation::InferTypes::run,
+
+		// Now we can create any castings that are needed for the next pass...
+		operation::CastExpressions::run,
+
+		// Remove any junk nodes
 		operation::RemoveDeadNodes::run,
 
 		NULL
