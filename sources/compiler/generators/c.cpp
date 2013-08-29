@@ -1149,21 +1149,7 @@ void generator::C::Printer::outputType(tree::Type *type)
 	}
 	else if((integer = dynamic_cast<tree::Int *>(type)))
 	{
-		unsigned int size = tree::Int::DEFAULT_SIZE;
-
-		if(integer->getSize())
-		{
-#ifdef DEBUG
-			tree::IntLiteral *calculatedSize = dynamic_cast<tree::IntLiteral *>(integer->getSize());
-			ASSERT(calculatedSize);
-#else
-			tree::IntLiteral *calculatedSize = static_cast<tree::IntLiteral *>(integer->getSize());
-#endif
-
-			size = calculatedSize->getValue();
-		}
-
-		switch(size)
+		switch(integer->getSizeInt())
 		{
 			case 8:
 				*mOutput << "char";
@@ -1187,21 +1173,7 @@ void generator::C::Printer::outputType(tree::Type *type)
 	}
 	else if((floatingPoint = dynamic_cast<tree::Float *>(type)))
 	{
-		unsigned int size = tree::Float::DEFAULT_SIZE;
-
-		if(floatingPoint->getSize())
-		{
-#ifdef DEBUG
-			tree::IntLiteral *calculatedSize = dynamic_cast<tree::IntLiteral *>(floatingPoint->getSize());
-			ASSERT(calculatedSize);
-#else
-			tree::IntLiteral *calculatedSize = static_cast<tree::IntLiteral *>(floatingPoint->getSize());
-#endif
-
-			size = calculatedSize->getValue();
-		}
-
-		switch(size)
+		switch(floatingPoint->getSizeInt())
 		{
 			case 32:
 				*mOutput << "float";
@@ -1243,32 +1215,11 @@ void generator::C::Printer::outputDimensions(tree::Type *type)
 
 	if((string = dynamic_cast<tree::String *>(type)))
 	{
-		unsigned int size = tree::String::DEFAULT_SIZE;
-
-		if(string->getSize())
-		{
-#ifdef DEBUG
-			tree::IntLiteral *calculatedSize = dynamic_cast<tree::IntLiteral *>(string->getSize());
-			ASSERT(calculatedSize);
-#else
-			tree::IntLiteral *calculatedSize = static_cast<tree::IntLiteral *>(string->getSize());
-#endif
-
-			size = calculatedSize->getValue();
-		}
-
-		*mOutput << "[" << size << "]";
+		*mOutput << "[" << string->getSizeInt() << "]";
 	}
 	else if((array = dynamic_cast<tree::Array *>(type)))
 	{
-#ifdef DEBUG
-		tree::IntLiteral *calculatedSize = dynamic_cast<tree::IntLiteral *>(array->getSize());
-		ASSERT(calculatedSize);
-#else
-		tree::IntLiteral *calculatedSize = static_cast<tree::IntLiteral *>(array->getSize());
-#endif
-
-		*mOutput << "[" << calculatedSize->getValue() << "]";
+		*mOutput << "[" << array->getSizeInt() << "]";
 		outputDimensions(array->getType());
 	}
 }
