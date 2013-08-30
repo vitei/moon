@@ -595,7 +595,7 @@ namespace tree
 	{
 	public:
 		BoolLiteral(bool value) : Literal(new Bool()), mValue(value) {}
-		BoolLiteral(Literal *literal);
+		BoolLiteral(Literal *literal, tree::Bool *type = NULL);
 
 		bool getValue() const
 		{
@@ -617,7 +617,7 @@ namespace tree
 	{
 	public:
 		IntLiteral(int value) : NumericLiteral(new Int()), mValue(value) {}
-		IntLiteral(Literal *literal);
+		IntLiteral(Literal *literal, tree::Int *type = NULL);
 
 		int getValue() const
 		{
@@ -640,7 +640,7 @@ namespace tree
 	{
 	public:
 		FloatLiteral(float value) : NumericLiteral(new Float()), mValue(value) {}
-		FloatLiteral(Literal *literal);
+		FloatLiteral(Literal *literal, tree::Float *type = NULL);
 
 		float getValue() const
 		{
@@ -663,7 +663,7 @@ namespace tree
 	{
 	public:
 		StringLiteral(std::string value) : Literal(new String(new IntLiteral(value.length()))), mValue(value) {}
-		StringLiteral(Literal *literal);
+		StringLiteral(Literal *literal, tree::String *type = NULL);
 
 		const std::string getValue() const
 		{

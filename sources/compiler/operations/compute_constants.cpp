@@ -39,22 +39,27 @@ tree::Node *operation::ComputeConstants::restructure(tree::Cast *cast)
 	if(literal)
 	{
 		tree::Type *type = cast->getType();
+		tree::Bool *boolean;
+		tree::Int *integer;
+		tree::Float *floatingPoint;
+		tree::String *string;
 
-		if(dynamic_cast<tree::Bool *>(type))
+		if((boolean = dynamic_cast<tree::Bool *>(type)))
 		{
-			return new tree::BoolLiteral(literal);
+			return new tree::BoolLiteral(literal, boolean);
 		}
-		else if(dynamic_cast<tree::Int *>(type))
+		else if((integer = dynamic_cast<tree::Int *>(type)))
 		{
-			return new tree::IntLiteral(literal);
+			return new tree::IntLiteral(literal, integer);
 		}
-		else if(dynamic_cast<tree::Float *>(type))
+		else if((floatingPoint = dynamic_cast<tree::Float *>(type)))
 		{
-			return new tree::FloatLiteral(literal);
+			return new tree::FloatLiteral(literal, floatingPoint);
 		}
-		/*else if(dynamic_cast<tree::String *>(type))
+		else if((string = dynamic_cast<tree::String *>(type)))
 		{
-		}*/
+			return new tree::StringLiteral(literal, string);
+		}
 	}
 
 	return cast;

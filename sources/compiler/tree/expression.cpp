@@ -141,7 +141,7 @@ void tree::FunctionCall::setPrototype(tree::Expression *prototype)
 	}
 }
 
-tree::BoolLiteral::BoolLiteral(tree::Literal *literal) : Literal(new Bool())
+tree::BoolLiteral::BoolLiteral(tree::Literal *literal, tree::Bool *type) : Literal(type ? type : new Bool())
 {
 	tree::BoolLiteral *boolLiteral;
 	tree::IntLiteral *intLiteral;
@@ -177,7 +177,7 @@ bool tree::BoolLiteral::equals(const Literal &literal) const
 	return (boolLiteral = dynamic_cast<const tree::BoolLiteral *>(&literal)) && mValue == boolLiteral->mValue;
 }
 
-tree::IntLiteral::IntLiteral(tree::Literal *literal) : NumericLiteral(new Int())
+tree::IntLiteral::IntLiteral(tree::Literal *literal, tree::Int *type) : NumericLiteral(type ? type : new Int())
 {
 	tree::BoolLiteral *boolLiteral;
 	tree::IntLiteral *intLiteral;
@@ -227,7 +227,7 @@ bool tree::IntLiteral::equals(const Literal &literal) const
 	return (intLiteral = dynamic_cast<const tree::IntLiteral *>(&literal)) && mValue == intLiteral->mValue;
 }
 
-tree::FloatLiteral::FloatLiteral(tree::Literal *literal) : NumericLiteral(new Float())
+tree::FloatLiteral::FloatLiteral(tree::Literal *literal, tree::Float *type) : NumericLiteral(type ? type : new Float())
 {
 	tree::BoolLiteral *boolLiteral;
 	tree::IntLiteral *intLiteral;
@@ -277,7 +277,7 @@ bool tree::FloatLiteral::equals(const Literal &literal) const
 	return (floatLiteral = dynamic_cast<const tree::FloatLiteral *>(&literal)) && mValue == floatLiteral->mValue;
 }
 
-tree::StringLiteral::StringLiteral(tree::Literal *literal) : Literal(new String())
+tree::StringLiteral::StringLiteral(tree::Literal *literal, tree::String *type) : Literal(type ? type : new String())
 {
 	tree::StringLiteral *stringLiteral;
 
