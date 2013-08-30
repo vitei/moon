@@ -1669,25 +1669,25 @@ type                    :   TOKEN_TYPE_BOOL
                             {
                                 LOG("type                    :   type TOKEN_BRACKETS_OPEN expression TOKEN_BRACKETS_CLOSE");
 
-								tree::Array *array = dynamic_cast<tree::Array *>($1);
+                                tree::Array *array = dynamic_cast<tree::Array *>($1);
 
-								if(array)
-								{
-									for(tree::Array *nextArray = dynamic_cast<tree::Array *>(array->getType()); nextArray; array = nextArray, nextArray = dynamic_cast<tree::Array *>(array->getType()))
-										;
+                                if(array)
+                                {
+                                    for(tree::Array *nextArray = dynamic_cast<tree::Array *>(array->getType()); nextArray; array = nextArray, nextArray = dynamic_cast<tree::Array *>(array->getType()))
+                                        ;
 
-									tree::Array *childArray = new tree::Array(array->getType(), $3);
-									childArray->setLocation(@2);
+                                    tree::Array *childArray = new tree::Array(array->getType(), $3);
+                                    childArray->setLocation(@2);
 
-									array->setType(childArray);
+                                    array->setType(childArray);
 
-									$$ = $1;
-								}
-								else
-								{
-									$$ = new tree::Array($1, $3);
-									$$->setLocation(@2);
-								}
+                                    $$ = $1;
+                                }
+                                else
+                                {
+                                    $$ = new tree::Array($1, $3);
+                                    $$->setLocation(@2);
+                                }
                             }
                         ;
 
