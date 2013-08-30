@@ -1,0 +1,3 @@
+[submodule "contrib/vim-moon"]
+	path = contrib/vim-moon
+	url = https://github.com/dpwright/vim-moon.git
