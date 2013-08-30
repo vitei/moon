@@ -22,8 +22,9 @@ namespace operation
 		virtual void visit(tree::Return *returnStatement);
 
 	private:
-		CastExpressions() : mPrototype(NULL) {}
+		CastExpressions() : mValidated(false), mPrototype(NULL) {}
 
+		bool mValidated;
 		tree::FunctionPrototype *mPrototype;
 	};
 }

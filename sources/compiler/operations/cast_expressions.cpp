@@ -6,9 +6,11 @@
 bool operation::CastExpressions::run(tree::Program *program)
 {
 	operation::CastExpressions operation;
+
+	operation.mValidated = true;
 	program->accept(&operation);
 
-	return true; // The other operations should catch the unresolved types...
+	return operation.mValidated;
 }
 
 void operation::CastExpressions::visit(tree::BinaryOperation *binaryOperation)
@@ -18,29 +20,46 @@ void operation::CastExpressions::visit(tree::BinaryOperation *binaryOperation)
 	ASSERT(binaryOperation->getLHS());
 	ASSERT(binaryOperation->getRHS());
 
-	if(binaryOperation->getType())
+	tree::Type *operationType = binaryOperation->getType();
+
+	if(operationType && operationType->isResolved())
 	{
-		if(binaryOperation->getLHS()->getType())
+		tree::Type *lhsType = binaryOperation->getLHS()->getType();
+		tree::Type *rhsType = binaryOperation->getRHS()->getType();
+
+		if(lhsType && lhsType->isResolved())
 		{
-			if(*binaryOperation->getLHS()->getType() != *binaryOperation->getType())
+			if(*lhsType != *operationType)
 			{
-				tree::Cast *cast = new tree::Cast(binaryOperation->getType(), binaryOperation->getLHS(), true);
+				tree::Cast *cast = new tree::Cast(operationType, binaryOperation->getLHS(), true);
 
 				cast->setLocation(binaryOperation->getLocation());
 				binaryOperation->setLHS(cast);
 			}
 		}
-
-		if(binaryOperation->getRHS()->getType())
+		else
 		{
-			if(*binaryOperation->getRHS()->getType() != *binaryOperation->getType())
+			mValidated = false;
+		}
+
+		if(rhsType && rhsType->isResolved())
+		{
+			if(*rhsType != *operationType)
 			{
-				tree::Cast *cast = new tree::Cast(binaryOperation->getType(), binaryOperation->getRHS(), true);
+				tree::Cast *cast = new tree::Cast(operationType, binaryOperation->getRHS(), true);
 
 				cast->setLocation(binaryOperation->getLocation());
 				binaryOperation->setRHS(cast);
 			}
 		}
+		else
+		{
+			mValidated = false;
+		}
+	}
+	else
+	{
+		mValidated = false;
 	}
 }
 
@@ -54,7 +73,7 @@ void operation::CastExpressions::visit(tree::BooleanBinaryOperation *booleanBina
 	tree::Type *typeA = booleanBinaryOperation->getLHS()->getType();
 	tree::Type *typeB = booleanBinaryOperation->getRHS()->getType();
 
-	if(typeA && typeB)
+	if(typeA && typeA->isResolved() && typeB && typeB->isResolved())
 	{
 		if(*typeA != *typeB)
 		{
@@ -73,6 +92,10 @@ void operation::CastExpressions::visit(tree::BooleanBinaryOperation *booleanBina
 				booleanBinaryOperation->setLHS(cast);
 			}
 		}
+	}
+	else
+	{
+		mValidated = false;
 	}
 }
 
@@ -97,7 +120,7 @@ void operation::CastExpressions::visit(tree::FunctionCall *functionCall)
 			tree::Type *expectedType = (*j)->getType();
 			tree::Type *actualType = (*i)->getType();
 
-			if(expectedType && actualType)
+			if(expectedType && expectedType->isResolved() && actualType && actualType->isResolved())
 			{
 				// Check the types in-case unresolved
 				if(*expectedType != *actualType)
@@ -107,6 +130,10 @@ void operation::CastExpressions::visit(tree::FunctionCall *functionCall)
 					cast->setLocation((*i)->getLocation());
 					*i = cast;
 				}
+			}
+			else
+			{
+				mValidated = false;
 			}
 		}
 	}
@@ -139,7 +166,7 @@ void operation::CastExpressions::visit(tree::If *ifStatement)
 
 	tree::Type *type = test->getType();
 
-	if(type)
+	if(type && type->isResolved())
 	{
 		if(!dynamic_cast<tree::Bool *>(type))
 		{
@@ -153,6 +180,10 @@ void operation::CastExpressions::visit(tree::If *ifStatement)
 			ifStatement->setTest(cast);
 		}
 	}
+	else
+	{
+		mValidated = false;
+	}
 }
 
 void operation::CastExpressions::visit(tree::While *whileStatement)
@@ -165,7 +196,7 @@ void operation::CastExpressions::visit(tree::While *whileStatement)
 
 	tree::Type *type = test->getType();
 
-	if(type)
+	if(type && type->isResolved())
 	{
 		if(!dynamic_cast<tree::Bool *>(type))
 		{
@@ -179,6 +210,10 @@ void operation::CastExpressions::visit(tree::While *whileStatement)
 			whileStatement->setTest(cast);
 		}
 	}
+	else
+	{
+		mValidated = false;
+	}
 }
 
 void operation::CastExpressions::visit(tree::Return *returnStatement)
@@ -188,7 +223,7 @@ void operation::CastExpressions::visit(tree::Return *returnStatement)
 	tree::Type *type = mPrototype->getType();
 	tree::Expression *returnExpression = returnStatement->getReturn();
 
-	if(type)
+	if(type && type->isResolved())
 	{
 		if(!returnExpression)
 		{
@@ -202,7 +237,7 @@ void operation::CastExpressions::visit(tree::Return *returnStatement)
 		{
 			tree::Type *returnType = returnExpression->getType();
 
-			if(returnType)
+			if(returnType && returnType->isResolved())
 			{
 				if(*returnType != *type)
 				{
@@ -212,6 +247,14 @@ void operation::CastExpressions::visit(tree::Return *returnStatement)
 					returnStatement->setReturn(cast);
 				}
 			}
+			else
+			{
+				mValidated = false;
+			}
 		}
+	}
+	else
+	{
+		mValidated = false;
 	}
 }

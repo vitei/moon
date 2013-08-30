@@ -21,8 +21,6 @@ bool operation::InferTypes::run(tree::Program *program)
 		}
 	}
 
-	if(!operation.mValidated) LOG("InferTypes not resolved");
-
 	return operation.mValidated;
 }
 
@@ -75,15 +73,10 @@ void operation::InferTypes::visit(tree::Assign *assign)
 		{
 			tree::Type *rhsType = assign->getRHS()->getType();
 
-			if(rhsType)
+			// If the type is not resolved yet then we can't be sure about any type inference.
+			if(rhsType && !rhsType->isResolved())
 			{
-				tree::SizedType *sizedType = dynamic_cast<tree::SizedType *>(rhsType);
-
-				// If the type is not resolved yet then we can't be sure about any type inference.
-				if(sizedType && !sizedType->isResolved())
-				{
-					rhsType = NULL;
-				}
+				rhsType = NULL;
 			}
 
 			if(   !rhsType                                                                     // If this type is not resolved then flag we can't process it

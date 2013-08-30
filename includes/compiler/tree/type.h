@@ -43,6 +43,11 @@ namespace tree
 			return false;
 		}
 
+		virtual bool isResolved() const
+		{
+			return true;
+		}
+
 	protected:
 		Type() { /* Abstract class */ }
 
@@ -83,9 +88,10 @@ namespace tree
 		}
 
 		void setSize(Expression *size);
-		
-		virtual unsigned int getSizeInt() const = 0;
+
 		virtual bool isResolved() const;
+
+		virtual unsigned int getSizeInt() const = 0;
 
 		virtual void childAccept(operation::Operation *operation);
 
