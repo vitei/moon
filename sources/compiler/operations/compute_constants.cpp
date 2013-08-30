@@ -5,9 +5,11 @@
 bool operation::ComputeConstants::run(tree::Program *program)
 {
 	operation::ComputeConstants operation;
+
+	operation.mValidated = true;
 	program->accept(&operation);
 
-	return true;
+	return operation.mValidated;
 }
 
 tree::Node *operation::ComputeConstants::restructure(tree::Assign *assign)
@@ -39,26 +41,34 @@ tree::Node *operation::ComputeConstants::restructure(tree::Cast *cast)
 	if(literal)
 	{
 		tree::Type *type = cast->getType();
-		tree::Bool *boolean;
-		tree::Int *integer;
-		tree::Float *floatingPoint;
-		tree::String *string;
 
-		if((boolean = dynamic_cast<tree::Bool *>(type)))
+		if(type->isResolved())
 		{
-			return new tree::BoolLiteral(literal, boolean);
+			tree::Bool *boolean;
+			tree::Int *integer;
+			tree::Float *floatingPoint;
+			tree::String *string;
+
+			if((boolean = dynamic_cast<tree::Bool *>(type)))
+			{
+				return new tree::BoolLiteral(literal, boolean);
+			}
+			else if((integer = dynamic_cast<tree::Int *>(type)))
+			{
+				return new tree::IntLiteral(literal, integer);
+			}
+			else if((floatingPoint = dynamic_cast<tree::Float *>(type)))
+			{
+				return new tree::FloatLiteral(literal, floatingPoint);
+			}
+			else if((string = dynamic_cast<tree::String *>(type)))
+			{
+				return new tree::StringLiteral(literal, string);
+			}
 		}
-		else if((integer = dynamic_cast<tree::Int *>(type)))
+		else
 		{
-			return new tree::IntLiteral(literal, integer);
-		}
-		else if((floatingPoint = dynamic_cast<tree::Float *>(type)))
-		{
-			return new tree::FloatLiteral(literal, floatingPoint);
-		}
-		else if((string = dynamic_cast<tree::String *>(type)))
-		{
-			return new tree::StringLiteral(literal, string);
+			mValidated = false;
 		}
 	}
 
@@ -94,9 +104,22 @@ tree::Node *operation::ComputeConstants::restructure(tree::BinaryOperation *bina
 		ASSERT(lhsLiteral->getType());
 		ASSERT(rhsLiteral->getType());
 
-		if(rhsLiteral && *lhsLiteral->getType() == *rhsLiteral->getType())
+		if(rhsLiteral)
 		{
-			return binaryOperation->calculate();
+			tree::Type *lhsType = lhsLiteral->getType();
+			tree::Type *rhsType = rhsLiteral->getType();
+
+			if(lhsType && lhsType->isResolved() && rhsType && rhsType->isResolved())
+			{
+				if(*lhsType == *rhsType)
+				{
+					return binaryOperation->calculate();
+				}
+			}
+			else
+			{
+				mValidated = false;
+			}
 		}
 	}
 
@@ -111,7 +134,16 @@ tree::Node *operation::ComputeConstants::restructure(tree::UnaryOperation *unary
 
 	if(literal)
 	{
-		return unaryOperation->calculate();
+		tree::Type *type = literal->getType();
+
+		if(type && type->isResolved())
+		{
+			return unaryOperation->calculate();
+		}
+		else
+		{
+			mValidated = false;
+		}
 	}
 
 	return unaryOperation;

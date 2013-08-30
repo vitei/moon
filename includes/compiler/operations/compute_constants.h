@@ -19,7 +19,9 @@ namespace operation
 		virtual tree::Node *restructure(tree::UnaryOperation *unaryOperation);
 
 	private:
-		ComputeConstants() {}
+		ComputeConstants() : mValidated(false) {}
+
+		bool mValidated;
 	};
 }
 
