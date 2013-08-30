@@ -62,7 +62,7 @@ bool doValidatingOperations(tree::Program &program, ValidatingTreeOperation *ope
 	return r;
 }
 
-void typeProgram(tree::Program *program)
+void resolveProgram(tree::Program *program)
 {
 	// The list of operations to perform...
 	ValidatingTreeOperation operations[] = {
@@ -283,7 +283,7 @@ int main(int argc, char *argv[])
 					operation::ScopeParents::run,
 					operation::ResolveIdentities::run,
 
-					typeProgram,
+					resolveProgram,
 
 					// Remove any junk nodes
 					operation::RemoveDeadNodes::run,
