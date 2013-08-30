@@ -11,7 +11,7 @@ namespace operation
 	class InferTypes : public Operation
 	{
 	public:
-		static void run(tree::Program *program);
+		static bool run(tree::Program *program);
 
 		virtual void visit(tree::Access *access);
 		virtual void visit(tree::Assign *assign);
@@ -23,7 +23,9 @@ namespace operation
 		virtual bool doProcessChildren(tree::Assign *assign) { return false; }
 
 	private:
-		InferTypes() : mPrototype(NULL), mAssignIdentity(NULL), mSelfReference(false) {}
+		InferTypes() : mValidated(false), mPrototype(NULL), mAssignIdentity(NULL), mSelfReference(false) {}
+
+		bool mValidated;
 
 		tree::FunctionPrototype *mPrototype;
 		std::map<tree::TypedIdentity *, tree::Type *> mTypeResolution;

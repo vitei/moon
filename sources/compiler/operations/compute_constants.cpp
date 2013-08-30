@@ -2,10 +2,12 @@
 #include "compiler/tree.h"
 
 
-void operation::ComputeConstants::run(tree::Program *program)
+bool operation::ComputeConstants::run(tree::Program *program)
 {
 	operation::ComputeConstants operation;
 	program->accept(&operation);
+
+	return true;
 }
 
 tree::Node *operation::ComputeConstants::restructure(tree::Assign *assign)

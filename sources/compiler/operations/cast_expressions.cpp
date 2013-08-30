@@ -3,10 +3,12 @@
 #include "compiler/tree.h"
 
 
-void operation::CastExpressions::run(tree::Program *program)
+bool operation::CastExpressions::run(tree::Program *program)
 {
 	operation::CastExpressions operation;
 	program->accept(&operation);
+
+	return true; // The other operations should catch the unresolved types...
 }
 
 void operation::CastExpressions::visit(tree::BinaryOperation *binaryOperation)

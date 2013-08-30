@@ -15,6 +15,7 @@
 const char *DIRECTORY_SEPARATORS = " ,:";
 
 typedef void (*TreeOperation)(tree::Program *program);
+typedef bool (*ValidatingTreeOperation)(tree::Program *program);
 
 enum Generators
 {
@@ -43,10 +44,28 @@ void doOperations(tree::Program &program, TreeOperation *operations)
 	}
 }
 
+bool doValidatingOperations(tree::Program &program, ValidatingTreeOperation *operations)
+{
+	bool r = true;
+
+	for(unsigned char i = 0; operations[i]; i++)
+	{
+		r &= operations[i](&program);
+
+		if(error::count() != 0)
+		{
+			LOG("Errors encountered in stage %u", i);
+			break;
+		}
+	}
+
+	return r;
+}
+
 void typeProgram(tree::Program *program)
 {
 	// The list of operations to perform...
-	TreeOperation operations[] = {
+	ValidatingTreeOperation operations[] = {
 		// First we need to compute any constants we can so that types that use these as sizes 
 		operation::ComputeConstants::run,
 
@@ -58,17 +77,11 @@ void typeProgram(tree::Program *program)
 		// Now we can create any castings that are needed for the next pass...
 		operation::CastExpressions::run,
 
-		// Remove any junk nodes
-		operation::RemoveDeadNodes::run,
-
 		NULL
 	};
 
-	do
-	{
-		doOperations(*program, operations);
-	}
-	while(!operation::CheckTypes::run(program)); // FIXME, this doesn't work correctly. Stages should flag if further loops are required...
+	for(bool validated = false; !validated; validated = doValidatingOperations(*program, operations))
+		;
 }
 
 
@@ -271,6 +284,9 @@ int main(int argc, char *argv[])
 					operation::ResolveIdentities::run,
 
 					typeProgram,
+
+					// Remove any junk nodes
+					operation::RemoveDeadNodes::run,
 
 					// FIXME, need an operation here to get all variable definition statements and assign suitable default values.
 

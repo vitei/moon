@@ -3,10 +3,16 @@
 #include "compiler/tree.h"
 
 
-void operation::ResolveTypes::run(tree::Program *program)
+bool operation::ResolveTypes::run(tree::Program *program)
 {
 	operation::ResolveTypes operation;
+
+	operation.mValidated = true;
 	program->accept(&operation);
+
+	if(!operation.mValidated) LOG("ResolveTypes not resolved");
+
+	return operation.mValidated;
 }
 
 void operation::ResolveTypes::visit(tree::Access *access)
@@ -27,6 +33,11 @@ void operation::ResolveTypes::visit(tree::Access *access)
 			{
 				access->setType(type);
 			}
+		}
+
+		if(!access->getType())
+		{
+			mValidated = false;
 		}
 	}
 }
@@ -60,6 +71,11 @@ void operation::ResolveTypes::visit(tree::ArrayAccess *arrayAccess)
 				}
 			}
 		}
+
+		if(!arrayAccess->getType())
+		{
+			mValidated = false;
+		}
 	}
 }
 
@@ -85,6 +101,11 @@ void operation::ResolveTypes::visit(tree::BinaryOperation *binaryOperation)
 				setOperationType(binaryOperation, lhsType->canCast(*rhsType) ? lhsType : rhsType);
 			}
 		}
+
+		if(!binaryOperation->getType())
+		{
+			mValidated = false;
+		}
 	}
 }
 
@@ -106,6 +127,11 @@ void operation::ResolveTypes::visit(tree::Assign *assign)
 			{
 				setOperationType(assign, lhsType);
 			}
+		}
+
+		if(!assign->getType())
+		{
+			mValidated = false;
 		}
 	}
 }
@@ -136,6 +162,11 @@ void operation::ResolveTypes::visit(tree::UnaryOperation *unaryOperation)
 			{
 				setOperationType(unaryOperation, type);
 			}
+		}
+
+		if(!unaryOperation->getType())
+		{
+			mValidated = false;
 		}
 	}
 }
@@ -174,6 +205,11 @@ void operation::ResolveTypes::visit(tree::FunctionCall *functionCall)
 			{
 				functionCall->setType(type);
 			}
+		}
+
+		if(!functionCall->getType())
+		{
+			mValidated = false;
 		}
 	}
 }

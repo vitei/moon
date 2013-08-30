@@ -2,9 +2,11 @@
 #include "compiler/tree.h"
 
 
-void operation::InferTypes::run(tree::Program *program)
+bool operation::InferTypes::run(tree::Program *program)
 {
 	operation::InferTypes operation;
+
+	operation.mValidated = true;
 	program->accept(&operation);
 
 	for(std::map<tree::TypedIdentity *, tree::Type *>::iterator i = operation.mTypeResolution.begin(), e = operation.mTypeResolution.end(); i != e; ++i)
@@ -13,7 +15,15 @@ void operation::InferTypes::run(tree::Program *program)
 		{
 			i->first->setType(i->second);
 		}
+		else
+		{
+			operation.mValidated = false;
+		}
 	}
+
+	if(!operation.mValidated) LOG("InferTypes not resolved");
+
+	return operation.mValidated;
 }
 
 void operation::InferTypes::visit(tree::Access *access)
@@ -29,6 +39,11 @@ void operation::InferTypes::visit(tree::Access *access)
 		if(type)
 		{
 			access->setType(type);
+		}
+
+		if(!access->getType())
+		{
+			mValidated = false;
 		}
 	}
 }

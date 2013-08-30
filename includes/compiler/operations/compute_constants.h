@@ -10,7 +10,7 @@ namespace operation
 	class ComputeConstants : public Restructure
 	{
 	public:
-		static void run(tree::Program *program);
+		static bool run(tree::Program *program);
 
 		virtual tree::Node *restructure(tree::Assign *assign);
 		virtual tree::Node *restructure(tree::Cast *cast);

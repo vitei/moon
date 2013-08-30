@@ -10,7 +10,7 @@ namespace operation
 	class CastExpressions : public Operation
 	{
 	public:
-		static void run(tree::Program *program);
+		static bool run(tree::Program *program);
 
 		virtual void visit(tree::BinaryOperation *binaryOperation);
 		virtual void visit(tree::BooleanBinaryOperation *booleanBinaryOperation);

@@ -10,7 +10,7 @@ namespace operation
 	class ResolveTypes : public Operation
 	{
 	public:
-		static void run(tree::Program *program);
+		static bool run(tree::Program *program);
 
 		virtual void visit(tree::Access *access);
 		virtual void visit(tree::ArrayAccess *arrayAccess);
@@ -25,7 +25,9 @@ namespace operation
 		void setOperationType(tree::Operation *operation, tree::Type *type);
 
 	private:
-		ResolveTypes() {}
+		ResolveTypes() : mValidated(false) {}
+
+		bool mValidated;
 	};
 }
 
