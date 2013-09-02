@@ -27,6 +27,7 @@ namespace operation
 		virtual void dispatch(tree::Execute *execute);
 		virtual void dispatch(tree::Return *opReturn);
 		//void dispatch(tree::SetState *setState);
+		virtual void dispatch(tree::TypeDefinition *typeDefinition);
 		virtual void dispatch(tree::Function *function);
 		virtual void dispatch(tree::Scope *scope);
 		virtual void dispatch(tree::While *whileStatement);

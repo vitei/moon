@@ -2,6 +2,7 @@
 #define COMPILER_TREE_STATEMENT_H
 
 #include <list>
+#include <string>
 #include "node.h"
 #include "expression.h"
 #include "state.h"
@@ -119,6 +120,50 @@ namespace tree
 //	private:
 //		State *mState;
 //	};
+
+	class TypeDefinition : public Statement
+	{
+	public:
+		TypeDefinition(std::string name, Type *type) : mName(name), mType(type) {}
+
+		const std::string &getName() const
+		{
+			return mName;
+		}
+
+		void setName(std::string name)
+		{
+			mName = name;
+		}
+
+		Type *getType() const
+		{
+			return mType;
+		}
+
+		void setType(Type *type)
+		{
+			mType = type;
+		}
+
+		virtual void childAccept(operation::Operation *operation)
+		{
+			Statement::childAccept(operation);
+
+			if(mType)
+			{
+				mType->accept(operation);
+			}
+		}
+
+#ifdef DEBUG
+		virtual void printNode() { LOG("TypeDefinition"); }
+#endif
+
+	private:
+		std::string mName;
+		Type *mType;
+	};
 }
 
 #endif

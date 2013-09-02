@@ -175,6 +175,8 @@
 %type<statements> o_defines
 %type<statements> defines
 %type<statement> define
+%type<statement> s_type_definition
+%type<statement> type_definition
 %type<statement> import_statement
 %type<statement> s_constant_statement
 %type<statement> constant_statement
@@ -512,7 +514,13 @@ defines                 :   define
                             }
                         ;
 
-define                  :   import_statement
+define                  :   s_type_definition
+                            {
+                                LOG("define                  :   type_definition");
+
+                                $$ = $1;
+                            }
+                        |   import_statement
                             {
                                 LOG("define                  :   import_statement");
 
@@ -523,6 +531,50 @@ define                  :   import_statement
                                 LOG("define                  :   s_constant_statement");
 
                                 $$ = $1;
+                            }
+                        ;
+
+s_type_definition       :   type_definition
+                            {
+                                LOG("s_type_definition    :   type_definition");
+
+                                $$ = $1;
+                            }
+                            /* FIXME, what to do about global scoping?? */
+                        |   TOKEN_SHARED constant_statement
+                            {
+                                LOG("s_type_definition    :   TOKEN_SHARED type_definition");
+
+                                $$ = new tree::SharedScoping($2);
+                                $$->setLocation(@1);
+                            }
+                        ;
+
+type_definition         :   TOKEN_DEF TOKEN_NAME TOKEN_EOS type_members TOKEN_END TOKEN_EOS
+                            {
+                                LOG("type_definition         :   TOKEN_DEF TOKEN_NAME TOKEN_EOS type_members TOKEN_END TOKEN_EOS");
+
+                                tree::UDT *udt = new tree::UDT(std::string($2));
+                                udt->setLocation(@1);
+
+                                $$ = new tree::TypeDefinition(std::string($2), udt);
+                                $$->setLocation(@1);
+                            }
+                        ;
+
+type_members            :   type_member
+                            {
+                                LOG("type_members            :   type_member");
+                            }
+                        |   type_members type_member
+                            {
+                                LOG("type_members            :   type_members type_member");
+                            }
+                        ;
+
+type_member             :   TOKEN_ID TOKEN_CAST type TOKEN_EOS
+                            {
+                                LOG("type_member             :   TOKEN_ID TOKEN_CAST type TOKEN_EOS");
                             }
                         ;
 

@@ -180,6 +180,7 @@ namespace tree
 		DISPATCH_ACTIONS(tree::String, node, function) \
 		DISPATCH_ACTIONS(tree::StringLiteral, node, function) \
 		DISPATCH_ACTIONS(tree::Subtract, node, function) \
+		DISPATCH_ACTIONS(tree::TypeDefinition, node, function) \
 		DISPATCH_ACTIONS(tree::UDT, node, function) \
 		DISPATCH_ACTIONS(tree::Unequal, node, function) \
 		DISPATCH_ACTIONS(tree::Use, node, function) \
@@ -245,6 +246,7 @@ namespace tree
 		else ASSIGN_ACTIONS(dst, tree::String, node, function) \
 		else ASSIGN_ACTIONS(dst, tree::StringLiteral, node, function) \
 		else ASSIGN_ACTIONS(dst, tree::Subtract, node, function) \
+		else ASSIGN_ACTIONS(dst, tree::TypeDefinition, node, function) \
 		else ASSIGN_ACTIONS(dst, tree::UDT, node, function) \
 		else ASSIGN_ACTIONS(dst, tree::Unequal, node, function) \
 		else ASSIGN_ACTIONS(dst, tree::Use, node, function) \

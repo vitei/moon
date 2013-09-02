@@ -270,6 +270,21 @@ void operation::Restructure::dispatch(tree::Return *opReturn)
 //	operation::Restructure::dispatch(static_cast<tree::Statement *>(setState));
 //}
 
+void operation::Restructure::dispatch(tree::TypeDefinition *typeDefinition)
+{
+	tree::Type *type = NULL;
+
+	if(typeDefinition->getType())
+	{
+		type = static_cast<tree::Type *>(mNodeMap.top());
+		mNodeMap.pop();
+	}
+
+	typeDefinition->setType(type);
+
+	dispatch(static_cast<tree::Statement *>(typeDefinition));
+}
+
 void operation::Restructure::dispatch(tree::Function *function)
 {
 	tree::FunctionPrototype *functionPrototype = static_cast<tree::FunctionPrototype *>(mNodeMap.top());

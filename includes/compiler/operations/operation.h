@@ -100,10 +100,11 @@ namespace operation
 		PROCESS_ACTION(tree::Statement, tree::Execute, return_type, name) \
 		PROCESS_ACTION(tree::Statement, tree::Return, return_type, name) \
 		/*PROCESS_ACTION(tree::Statement, tree::SetState, return_type, name)*/ \
+		PROCESS_ACTION(tree::Statement, tree::TypeDefinition, return_type, name) \
 		PROCESS_ACTION(tree::Statement, tree::While, return_type, name) \
 		 \
 		PROCESS_ACTION(tree::Type, tree::Bool, return_type, name) \
-		PROCESS_ACTION(tree::Type, tree::UDT, return_type, name) /* FIXME */ \
+		PROCESS_ACTION(tree::Type, tree::UDT, return_type, name) \
 		PROCESS_ACTION(tree::Type, tree::Void, return_type, name) \
 		 \
 		PROCESS_ACTION(tree::SizedType, tree::Array, return_type, name) \
