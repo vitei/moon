@@ -32,7 +32,7 @@ namespace tree
 			tree::Identifier *identifier;
 		};
 
-		Scope *getParent()
+		Scope *getParent() const
 		{
 			return mParent;
 		}
@@ -47,7 +47,7 @@ namespace tree
 			return mIdentities;
 		}
 
-		Statements *getStatements()
+		Statements *getStatements() const
 		{
 			return mStatements;
 		}
@@ -83,7 +83,7 @@ namespace tree
 	public:
 		NamedScope(std::string name, Statements *statements) : Scope(statements), mName(name) {}
 
-		const std::string &getName()
+		const std::string &getName() const
 		{
 			return mName;
 		}
@@ -95,7 +95,6 @@ namespace tree
 	private:
 		std::string mName;
 	};
-	
 }
 
 #endif

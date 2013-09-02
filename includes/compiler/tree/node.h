@@ -80,7 +80,7 @@ namespace tree
 		void visit(operation::Operation *operation);
 		Node *restructure(operation::Restructure *operation);
 
-		Location &getLocation()
+		const Location &getLocation() const
 		{
 			return mLocation;
 		}
@@ -91,7 +91,7 @@ namespace tree
 			mLocation = location;
 		}
 
-		void *getMetadata()
+		void *getMetadata() const
 		{
 			return mMetadata;
 		}

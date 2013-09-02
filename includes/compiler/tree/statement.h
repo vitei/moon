@@ -26,7 +26,7 @@ namespace tree
 	public:
 		Execute(Expression *expression) : mExpression(expression) {}
 
-		Expression *getExpression()
+		Expression *getExpression() const
 		{
 			return mExpression;
 		}
@@ -59,7 +59,7 @@ namespace tree
 	public:
 		Return(Expression *expression) : mReturn(expression) {}
 
-		Expression *getReturn()
+		Expression *getReturn() const
 		{
 			return mReturn;
 		}

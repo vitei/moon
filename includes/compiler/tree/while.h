@@ -16,7 +16,7 @@ namespace tree
 	public:
 		While(Expression *test, Statement *loopStatement) : mTest(test), mLoopStatement(loopStatement) {}
 
-		Expression *getTest()
+		Expression *getTest() const
 		{
 			return mTest;
 		}
@@ -26,7 +26,7 @@ namespace tree
 			mTest = test;
 		}
 
-		Statement *getLoopStatement()
+		Statement *getLoopStatement() const
 		{
 			return mLoopStatement;
 		}

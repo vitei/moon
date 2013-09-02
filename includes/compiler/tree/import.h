@@ -17,7 +17,7 @@ namespace tree
 	public:
 		Import(FunctionPrototype *prototype) : mPrototype(prototype) {}
 
-		FunctionPrototype *getPrototype()
+		FunctionPrototype *getPrototype() const
 		{
 			return mPrototype;
 		}

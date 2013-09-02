@@ -12,7 +12,7 @@ namespace tree
 	class Scoping : public Statement
 	{
 	public:
-		Statement *getScoped()
+		Statement *getScoped() const
 		{
 			return mScoped;
 		}

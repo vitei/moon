@@ -22,12 +22,12 @@ namespace tree
 	public:
 		FunctionPrototype(Type *type, std::string name, Expressions *arguments) : TypedIdentity(type, name), mArguments(arguments), mFunction(NULL) {}
 
-		Expressions *getArguments()
+		Expressions *getArguments() const
 		{
 			return mArguments;
 		}
 
-		Function *getFunction()
+		Function *getFunction() const
 		{
 			return mFunction;
 		}
@@ -51,7 +51,7 @@ namespace tree
 	public:
 		Function(FunctionPrototype *prototype, Statements *statements) : Scope(statements), mOriginalScope(NULL), mPrototype(prototype) {}
 
-		FunctionPrototype *getPrototype()
+		FunctionPrototype *getPrototype() const
 		{
 			return mPrototype;
 		}

@@ -16,7 +16,7 @@ namespace tree
 	public:
 		If(Expression *test, Statement *trueStatement, Statement *falseStatement = NULL) : mTest(test), mTrueStatement(trueStatement), mFalseStatement(falseStatement) {}
 
-		Expression *getTest()
+		Expression *getTest() const
 		{
 			return mTest;
 		}
@@ -26,7 +26,7 @@ namespace tree
 			mTest = test;
 		}
 
-		Statement *getTrueStatement()
+		Statement *getTrueStatement() const
 		{
 			return mTrueStatement;
 		}
@@ -36,7 +36,7 @@ namespace tree
 			mTrueStatement = trueScope;
 		}
 
-		Statement *getFalseStatement()
+		Statement *getFalseStatement() const
 		{
 			return mFalseStatement;
 		}

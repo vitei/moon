@@ -57,7 +57,7 @@ namespace tree
 	class Identity : public Expression
 	{
 	public:
-		const std::string &getName()
+		const std::string &getName() const
 		{
 			return mName;
 		}
@@ -121,14 +121,14 @@ namespace tree
 			}
 		};
 
-		Expression *getContainer()
+		Expression *getContainer() const
 		{
 			return mContainer;
 		}
 
 		void setContainer(Expression *container);
 
-		Expression *getTarget()
+		Expression *getTarget() const
 		{
 			return mTarget;
 		}
@@ -382,7 +382,7 @@ namespace tree
 	public:
 		Identifier(std::string name) : mName(name) {}
 
-		const std::string &getName()
+		const std::string &getName() const
 		{
 			return mName;
 		}
@@ -400,7 +400,7 @@ namespace tree
 	public:
 		Constant(Type *type, std::string name) : TypedIdentity(type, name), mValue(NULL) {}
 
-		Literal *getValue()
+		Literal *getValue() const
 		{
 			return mValue;
 		}
@@ -456,7 +456,7 @@ namespace tree
 			//checkCast();
 		}
 
-		Expression *getExpression()
+		Expression *getExpression() const
 		{
 			return mExpression;
 		}
@@ -560,14 +560,14 @@ namespace tree
 
 		FunctionCall(Identifier *functionPrototype, Expressions *arguments = NULL) : mPrototype(functionPrototype), mArguments(arguments) {}
 
-		Expression *getPrototype()
+		Expression *getPrototype() const
 		{
 			return mPrototype;
 		}
 
 		void setPrototype(Expression *prototype);
 
-		Expressions *getArguments()
+		Expressions *getArguments() const
 		{
 			return mArguments;
 		}
