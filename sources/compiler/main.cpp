@@ -66,7 +66,7 @@ void resolveProgram(tree::Program *program)
 {
 	// The list of operations to perform...
 	ValidatingTreeOperation operations[] = {
-		// First we need to compute any constants we can so that types that use these as sizes 
+		// First we need to compute any constants we can so that types that use these as sizes
 		operation::ComputeConstants::run,
 
 		// Next we can resolve and infer any types
@@ -223,7 +223,6 @@ int main(int argc, char *argv[])
 		{
 			std::cerr << "\t" << sGenerators[i]->getName() << std::endl;
 		}
-
 
 		std::cerr << std::endl << "Notes:" << std::endl
 			<< "\tDirectories may be separated by spaces, commas or colons." << std::endl << std::endl;
