@@ -96,12 +96,12 @@ void operation::ResolveIdentities::visit(tree::Identity *identity)
 
 	try
 	{
-		mCurrentScope->mapIdentity(identity);
+		mCurrentScope->mapNamedNode(identity->getName(), identity);
 	}
 	catch(tree::Scope::ExistsException &e)
 	{
-		std::string error = "The identifier \"" + e.identity->getName() + "\" is already defined";
-		error::enqueue(e.conflictingIdentity->getLocation(), e.identity->getLocation(), error);
+		std::string error = "The identifier \"" + identity->getName() + "\" is already defined";
+		error::enqueue(e.conflict->getLocation(), e.node->getLocation(), error);
 	}
 
 	operation::Restructure::visit(identity);
@@ -187,7 +187,7 @@ tree::Node *operation::ResolveIdentities::restructure(tree::Identifier *identifi
 
 	try
 	{
-		r = getCurrentScope()->findIdentity(identifier);
+		r = getCurrentScope()->findNamedNode(identifier);
 	}
 	catch(tree::Scope::NotFoundException &e)
 	{
@@ -196,14 +196,14 @@ tree::Node *operation::ResolveIdentities::restructure(tree::Identifier *identifi
 			tree::Variable *variable = new tree::Variable(NULL, identifier->getName());
 
 			variable->setLocation(identifier->getLocation());
-			getCurrentScope()->mapIdentity(variable);
+			getCurrentScope()->mapNamedNode(variable->getName(), variable);
 
 			r = variable;
 		}
 		else
 		{
-			std::string error = "The identifier \"" + e.identifier->getName() + "\" does not exist";
-			error::enqueue(e.identifier->getLocation(), error);
+			std::string error = "The identifier \"" + identifier->getName() + "\" does not exist";
+			error::enqueue(identifier->getLocation(), error);
 		}
 	}
 

@@ -66,7 +66,7 @@ namespace tree
 	class Identity : public Expression
 	{
 	public:
-		const std::string &getName() const
+		virtual const std::string &getName() const
 		{
 			return mName;
 		}
@@ -82,8 +82,6 @@ namespace tree
 	private:
 		std::string mName;
 	};
-
-	typedef std::map<std::string, Identity *> Identities;
 
 	class TypedIdentity : public Identity
 	{

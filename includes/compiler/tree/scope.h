@@ -19,10 +19,10 @@ namespace tree
 		class ExistsException : public std::exception
 		{
 		public:
-			ExistsException(tree::Identity *_identity, tree::Identity *_conflictingIdentity) : identity(_identity), conflictingIdentity(_conflictingIdentity) {}
+			ExistsException(tree::Node *_node, tree::Node *_conflict) : node(_node), conflict(_conflict) {}
 
-			tree::Identity *identity;
-			tree::Identity *conflictingIdentity;
+			tree::Node *node;
+			tree::Node *conflict;
 		};
 
 		class NotFoundException : public std::exception
@@ -32,6 +32,8 @@ namespace tree
 
 			tree::Identifier *identifier;
 		};
+
+		typedef std::map<std::string, tree::Node *> NamedNodes;
 
 		Scope *getParent() const
 		{
@@ -43,9 +45,9 @@ namespace tree
 			mParent = parent;
 		}
 
-		Identities &getIdentities()
+		NamedNodes &getNamedNodes()
 		{
-			return mIdentities;
+			return mNamedNodes;
 		}
 
 		Statements *getStatements() const
@@ -53,15 +55,15 @@ namespace tree
 			return mStatements;
 		}
 
-		virtual void checkIdentity(Identity *identity);
-		void mapIdentity(Identity *identity);
-		virtual Identity *findIdentity(Identifier *identifier);
+		virtual void checkNamedNode(const std::string &name, Node *node);
+		virtual Node *findNamedNode(Identifier *identifier);
+		void mapNamedNode(const std::string &name, Node *node);
 
 	protected:
 		Scope(Statements *statements) : mParent(NULL), mStatements(statements) { /* Abstract class */ }
 
 		Scope *mParent;
-		Identities mIdentities;
+		NamedNodes mNamedNodes;
 
 	private:
 		Statements *mStatements;

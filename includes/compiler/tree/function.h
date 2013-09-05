@@ -50,8 +50,8 @@ namespace tree
 			}
 		}
 
-		virtual void checkIdentity(Identity *identity);
-		virtual Identity *findIdentity(Identifier *identifier);
+		virtual void checkNamedNode(const std::string &name, Node *node);
+		virtual Node *findNamedNode(Identifier *identifier);
 
 #ifdef DEBUG
 		virtual void printNode() { LOG("Function"); }

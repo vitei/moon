@@ -51,13 +51,17 @@ void MangleNames::visit(tree::Scope *scope)
 
 void MangleNames::visit(tree::Program *program)
 {
-	for(tree::Identities::iterator i = program->getIdentities().begin(), end = program->getIdentities().end(); i != end; ++i)
+	for(tree::Scope::NamedNodes::iterator i = program->getNamedNodes().begin(), end = program->getNamedNodes().end(); i != end; ++i)
 	{
-		tree::Identity *identity = i->second;
-		Mangled *cName = new Mangled("moon$$" + program->getName() + "_" + identity->getName());
+		tree::Identity *identity = dynamic_cast<tree::Identity *>(i->second);
 
-		ASSERT(!identity->getMetadata());
-		identity->setMetadata(cName);
+		if(identity)
+		{
+			Mangled *cName = new Mangled("moon$$" + program->getName() + "_" + identity->getName());
+
+			ASSERT(!identity->getMetadata());
+			identity->setMetadata(cName);
+		}
 	}
 
 	visit(static_cast<tree::Scope *>(program));
@@ -67,27 +71,31 @@ void MangleNames::visit(tree::Aggregate *aggregate)
 {
 	tree::Program *program = static_cast<tree::Program *>(aggregate->getParent());
 
-	for(tree::Identities::iterator i = aggregate->getIdentities().begin(), end = aggregate->getIdentities().end(); i != end; ++i)
+	for(tree::Scope::NamedNodes::iterator i = aggregate->getNamedNodes().begin(), end = aggregate->getNamedNodes().end(); i != end; ++i)
 	{
-		tree::Identity *identity = i->second;
-		Mangled *cName;
+		tree::Identity *identity = dynamic_cast<tree::Identity *>(i->second);
 
-		if(dynamic_cast<tree::Variable *>(identity))
+		if(identity)
 		{
-			std::string mangledName = "moon$$" + program->getName() + "_" + identity->getName();
-			cName = new Mangled(mangledName, "scope->" + mangledName);
-		}
-		else if(!dynamic_cast<tree::Function *>(identity))
-		{
-			cName = new Mangled("moon$$" + program->getName() + "_" + identity->getName());
-		}
-		else
-		{
-			ERROR("Unknown identity type");
-		}
+			Mangled *cName;
 
-		ASSERT(!identity->getMetadata());
-		identity->setMetadata(cName);
+			if(dynamic_cast<tree::Variable *>(identity))
+			{
+				std::string mangledName = "moon$$" + program->getName() + "_" + identity->getName();
+				cName = new Mangled(mangledName, "scope->" + mangledName);
+			}
+			else if(!dynamic_cast<tree::Function *>(identity))
+			{
+				cName = new Mangled("moon$$" + program->getName() + "_" + identity->getName());
+			}
+			else
+			{
+				ERROR("Unknown identity type");
+			}
+
+			ASSERT(!identity->getMetadata());
+			identity->setMetadata(cName);
+		}
 	}
 
 	visit(static_cast<tree::Scope *>(aggregate));
@@ -98,23 +106,27 @@ void MangleNames::visit(tree::Use *use)
 	tree::Aggregate *aggregate = static_cast<tree::Aggregate *>(use->getParent());
 	tree::Program *program = static_cast<tree::Program *>(aggregate->getParent());
 
-	for(tree::Identities::iterator i = use->getIdentities().begin(), end = use->getIdentities().end(); i != end; ++i)
+	for(tree::Scope::NamedNodes::iterator i = use->getNamedNodes().begin(), end = use->getNamedNodes().end(); i != end; ++i)
 	{
-		tree::Identity *identity = i->second;
-		Mangled *cName;
+		tree::Identity *identity = dynamic_cast<tree::Identity *>(i->second);
 
-		if(dynamic_cast<tree::Variable *>(identity))
+		if(identity)
 		{
-			std::string mangledName = "moon$$" + program->getName() + "_" + use->getName() + "_" + identity->getName();
-			cName = new Mangled(mangledName, "scope->" + mangledName);
-		}
-		else
-		{
-			cName = new Mangled("moon$$" + program->getName() + "_" + use->getName() + "_" + identity->getName());
-		}
+			Mangled *cName;
 
-		ASSERT(!identity->getMetadata());
-		identity->setMetadata(cName);
+			if(dynamic_cast<tree::Variable *>(identity))
+			{
+				std::string mangledName = "moon$$" + program->getName() + "_" + use->getName() + "_" + identity->getName();
+				cName = new Mangled(mangledName, "scope->" + mangledName);
+			}
+			else
+			{
+				cName = new Mangled("moon$$" + program->getName() + "_" + use->getName() + "_" + identity->getName());
+			}
+
+			ASSERT(!identity->getMetadata());
+			identity->setMetadata(cName);
+		}
 	}
 
 	visit(static_cast<tree::Scope *>(use));
@@ -129,13 +141,17 @@ void MangleNames::visit(tree::Function *function)
 
 	tree::Expressions *arguments = prototype->getArguments();
 
-	for(tree::Identities::iterator i = function->getIdentities().begin(), end = function->getIdentities().end(); i != end; ++i)
+	for(tree::Scope::NamedNodes::iterator i = function->getNamedNodes().begin(), end = function->getNamedNodes().end(); i != end; ++i)
 	{
-		tree::Identity *identity = i->second;
-		Mangled *cName = new Mangled(cPrototypeName->useName + "_" + identity->getName());
+		tree::Identity *identity = dynamic_cast<tree::Identity *>(i->second);
 
-		ASSERT(!identity->getMetadata());
-		identity->setMetadata(cName);
+		if(identity)
+		{
+			Mangled *cName = new Mangled(cPrototypeName->useName + "_" + identity->getName());
+
+			ASSERT(!identity->getMetadata());
+			identity->setMetadata(cName);
+		}
 	}
 
 	visit(static_cast<tree::Scope *>(function));
@@ -156,12 +172,16 @@ void MangleNames::visit(tree::AnonymousScope *anonymousScope)
 	ASSERT(prototype->getMetadata());
 	Mangled *cPrototypeName = static_cast<Mangled *>(prototype->getMetadata());
 
-	for(tree::Identities::iterator i = anonymousScope->getIdentities().begin(), end = anonymousScope->getIdentities().end(); i != end; ++i)
+	for(tree::Scope::NamedNodes::iterator i = anonymousScope->getNamedNodes().begin(), end = anonymousScope->getNamedNodes().end(); i != end; ++i)
 	{
-		tree::Identity *identity = i->second;
-		Mangled *cName = new Mangled(cPrototypeName->useName + "_" + identity->getName());
+		tree::Identity *identity = dynamic_cast<tree::Identity *>(i->second);
 
-		identity->setMetadata(cName);
+		if(identity)
+		{
+			Mangled *cName = new Mangled(cPrototypeName->useName + "_" + identity->getName());
+
+			identity->setMetadata(cName);
+		}
 	}
 
 	visit(static_cast<tree::Scope *>(anonymousScope));
@@ -220,13 +240,11 @@ void OutputVariables::run(generator::C::Printer *printer, tree::Program *program
 
 void OutputVariables::visit(tree::Program *program)
 {
-	for(tree::Identities::iterator i = program->getIdentities().begin(), end = program->getIdentities().end(); i != end; ++i)
+	for(tree::Scope::NamedNodes::iterator i = program->getNamedNodes().begin(), end = program->getNamedNodes().end(); i != end; ++i)
 	{
-		tree::Identity *identity = i->second;
-
-		if(dynamic_cast<tree::Variable *>(identity))
+		if(dynamic_cast<tree::Variable *>(i->second))
 		{
-			mPrinter->outputExtern(static_cast<tree::TypedIdentity *>(identity));
+			mPrinter->outputExtern(static_cast<tree::TypedIdentity *>(i->second));
 		}
 	}
 
@@ -246,13 +264,11 @@ void OutputVariables::visit(tree::Program *program)
 
 void OutputVariables::visit(tree::Aggregate *aggregate)
 {
-	for(tree::Identities::iterator i = aggregate->getIdentities().begin(), end = aggregate->getIdentities().end(); i != end; ++i)
+	for(tree::Scope::NamedNodes::iterator i = aggregate->getNamedNodes().begin(), end = aggregate->getNamedNodes().end(); i != end; ++i)
 	{
-		tree::Identity *identity = i->second;
-
-		if(dynamic_cast<tree::Variable *>(identity))
+		if(dynamic_cast<tree::Variable *>(i->second))
 		{
-			mIdentities.push_back(static_cast<tree::TypedIdentity *>(identity));
+			mIdentities.push_back(static_cast<tree::TypedIdentity *>(i->second));
 		}
 	}
 
@@ -261,13 +277,11 @@ void OutputVariables::visit(tree::Aggregate *aggregate)
 
 void OutputVariables::visit(tree::Use *use)
 {
-	for(tree::Identities::iterator i = use->getIdentities().begin(), end = use->getIdentities().end(); i != end; ++i)
+	for(tree::Scope::NamedNodes::iterator i = use->getNamedNodes().begin(), end = use->getNamedNodes().end(); i != end; ++i)
 	{
-		tree::Identity *identity = i->second;
-
-		if(dynamic_cast<tree::Variable *>(identity))
+		if(dynamic_cast<tree::Variable *>(i->second))
 		{
-			mIdentities.push_back(static_cast<tree::TypedIdentity *>(identity));
+			mIdentities.push_back(static_cast<tree::TypedIdentity *>(i->second));
 		}
 	}
 }
@@ -546,24 +560,26 @@ void generator::C::Printer::output(tree::Function *function)
 
 	increaseDepth();
 
-	for(tree::Identities::iterator i = function->getIdentities().begin(), end = function->getIdentities().end(); i != end; ++i)
+	for(tree::Scope::NamedNodes::iterator i = function->getNamedNodes().begin(), end = function->getNamedNodes().end(); i != end; ++i)
 	{
-		bool argumentExists = false;
+		tree::Identity *identity = dynamic_cast<tree::Identity *>(i->second);
 
-		if(arguments)
+		if(identity && !dynamic_cast<tree::Constant *>(identity))
 		{
-			argumentExists = std::find(arguments->begin(), arguments->end(), i->second) != arguments->end(); // FIXME, inefficient
-		}
+			bool argumentExists = false;
 
-		if(!argumentExists)
-		{
-			if(!dynamic_cast<tree::Constant *>(i->second))
+			if(arguments)
+			{
+				argumentExists = std::find(arguments->begin(), arguments->end(), identity) != arguments->end(); // FIXME, inefficient
+			}
+
+			if(!argumentExists)
 			{
 #ifdef DEBUG
-				tree::TypedIdentity *typedIdentity = dynamic_cast<tree::TypedIdentity *>(i->second);
+				tree::TypedIdentity *typedIdentity = dynamic_cast<tree::TypedIdentity *>(identity);
 				ASSERT(typedIdentity);
 #else
-				tree::TypedIdentity *typedIdentity = static_cast<tree::TypedIdentity *>(i->second);
+				tree::TypedIdentity *typedIdentity = static_cast<tree::TypedIdentity *>(identity);
 #endif
 
 				outputTabs();
@@ -585,15 +601,17 @@ void generator::C::Printer::output(tree::AnonymousScope *anonymousScope)
 {
 	increaseDepth();
 
-	for(tree::Identities::iterator i = anonymousScope->getIdentities().begin(), end = anonymousScope->getIdentities().end(); i != end; ++i)
+	for(tree::Scope::NamedNodes::iterator i = anonymousScope->getNamedNodes().begin(), end = anonymousScope->getNamedNodes().end(); i != end; ++i)
 	{
-		if(!dynamic_cast<tree::Constant *>(i->second))
+		tree::Identity *identity = dynamic_cast<tree::Identity *>(i->second);
+
+		if(identity && !dynamic_cast<tree::Constant *>(identity))
 		{
 #ifdef DEBUG
-			tree::TypedIdentity *typedIdentity = dynamic_cast<tree::TypedIdentity *>(i->second);
+			tree::TypedIdentity *typedIdentity = dynamic_cast<tree::TypedIdentity *>(identity);
 			ASSERT(typedIdentity);
 #else
-			tree::TypedIdentity *typedIdentity = static_cast<tree::TypedIdentity *>(i->second);
+			tree::TypedIdentity *typedIdentity = static_cast<tree::TypedIdentity *>(identity);
 #endif
 
 			outputTabs();
