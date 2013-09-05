@@ -4,6 +4,7 @@
 #include "compiler/tree/aggregate.h"
 #include "compiler/tree/expression.h"
 #include "compiler/tree/function.h"
+#include "compiler/tree/identifier.h"
 #include "compiler/tree/if.h"
 #include "compiler/tree/import.h"
 #include "compiler/tree/program.h"

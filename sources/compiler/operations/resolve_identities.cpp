@@ -124,7 +124,7 @@ void operation::ResolveIdentities::visit(tree::Expression *expression)
 		}
 		catch(tree::FunctionCall::InvalidFunctionException &e)
 		{
-			tree::Identifier *identifier = static_cast<tree::Identifier *>(e.functionCall->getPrototype());
+			tree::Identifier *identifier = (tree::Identifier *)e.functionCall->getPrototype();
 			std::string error = "The identifier \"" + identifier->getName() + "\" does not refer to a function";
 
 			error::enqueue(identifier->getLocation(), error);
@@ -147,7 +147,7 @@ void operation::ResolveIdentities::visit(tree::Expression *expression)
 			ASSERT(e.expression);
 			ASSERT(dynamic_cast<tree::Identifier *>(e.expression));
 
-			tree::Identifier *identifier = static_cast<tree::Identifier *>(e.expression);
+			tree::Identifier *identifier = (tree::Identifier *)e.expression;
 			std::string error = "The identifier \"" + identifier->getName() + "\" cannot be used in an expression";
 
 			error::enqueue(identifier->getLocation(), error);

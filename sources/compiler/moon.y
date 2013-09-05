@@ -817,9 +817,6 @@ function                :   function_prototype TOKEN_EOS o_statements TOKEN_END 
 
                                 $$ = new tree::Function($1, $3);
                                 $$->setLocation(@1);
-
-                                // FIXME: this might be better done elsewhere??
-                                static_cast<tree::FunctionPrototype *>($1)->setFunction(static_cast<tree::Function *>($$));
                             }
                         ;
 
@@ -1250,7 +1247,7 @@ assignee                :   identifier
                             {
                                 LOG("assignee                :   identifier");
 
-                                $$ = $1;
+                                $<id>$ = $1;
                             }
                         |   assignee TOKEN_BRACKETS_OPEN expression TOKEN_BRACKETS_CLOSE
                             {
@@ -1552,7 +1549,8 @@ call_expression         :   identifier TOKEN_PARENTHESIS_OPEN o_argument_express
                             {
                                 LOG("call_expression         :   identifier TOKEN_PARENTHESIS_OPEN o_argument_expressions TOKEN_PARENTHESIS_CLOSE");
 
-                                $$ = new tree::FunctionCall($1, $3);
+                                // This C style cast is nasty but done for good reason.
+                                $$ = new tree::FunctionCall((tree::FunctionPrototype *)$1, $3);
                                 $$->setLocation(@1);
                             }
                         ;
@@ -1607,7 +1605,7 @@ expression_atom         :   name /* Constant */
                             {
                                 LOG("expression_atom         :   name");
 
-                                $$ = $1;
+                                $<id>$ = $1;
                             }
                         |   TOKEN_TRUE
                             {
@@ -1648,7 +1646,7 @@ expression_atom         :   name /* Constant */
                             {
                                 LOG("expression_atom         :   identifier");
 
-                                $$ = $1;
+                                $<id>$ = $1;
                             }
                         |   TOKEN_PARENTHESIS_OPEN expression TOKEN_PARENTHESIS_CLOSE
                             {
@@ -1707,16 +1705,12 @@ type                    :   TOKEN_TYPE_BOOL
                                 $$ = new tree::String($3);
                                 $$->setLocation(@1);
                             }
-
-                        /*|   TOKEN_NAME
+                        |   name
                             {
-                                LOG("type                    :   TOKEN_NAME");
+                                LOG("type                    :   name");
 
-                                $$ = new tree::UDT($1);                       // UDTs force this class to be needed?? FIXME
-                                $$->setLocation(@1);
-                            }*/
-
-
+                                $<id>$ = $1;
+                            }
                         |   type TOKEN_BRACKETS_OPEN expression TOKEN_BRACKETS_CLOSE
                             {
                                 LOG("type                    :   type TOKEN_BRACKETS_OPEN expression TOKEN_BRACKETS_CLOSE");

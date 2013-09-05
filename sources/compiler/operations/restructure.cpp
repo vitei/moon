@@ -174,11 +174,11 @@ void operation::Restructure::dispatch(tree::Import *import)
 
 void operation::Restructure::dispatch(tree::FunctionCall *functionCall)
 {
-	tree::Expression *functionPrototype = NULL;
+	tree::FunctionPrototype *functionPrototype = NULL;
 
 	if(functionCall->getPrototype())
 	{
-		functionPrototype = static_cast<tree::Expression *>(mNodeMap.top());
+		functionPrototype = static_cast<tree::FunctionPrototype *>(mNodeMap.top());
 		mNodeMap.pop();
 	}
 

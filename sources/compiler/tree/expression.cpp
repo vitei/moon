@@ -114,19 +114,20 @@ void tree::Cast::checkCast()
 	}
 }
 
-void tree::FunctionCall::setPrototype(tree::Expression *prototype)
+void tree::FunctionCall::setPrototype(tree::FunctionPrototype *prototype)
 {
+	tree::Node *node = static_cast<tree::Node *>(prototype); // This is required as the "function prototype" might be an identifier
 	tree::FunctionPrototype *p;
 
 	if(prototype == NULL)
 	{
 		mPrototype = NULL;
 	}
-	else if(dynamic_cast<tree::Identifier *>(prototype))
+	else if(dynamic_cast<tree::Identifier *>(node))
 	{
 		mPrototype = prototype;
 	}
-	else if((p = dynamic_cast<tree::FunctionPrototype *>(prototype)))
+	else if((p = dynamic_cast<tree::FunctionPrototype *>(node)))
 	{
 		mPrototype = p;
 

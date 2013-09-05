@@ -377,24 +377,6 @@ namespace tree
 
 	/* ---- ONLY CONCRETE CLASSES BELOW HERE ---- */
 
-	class Identifier : public Expression
-	{
-	public:
-		Identifier(std::string name) : mName(name) {}
-
-		const std::string &getName() const
-		{
-			return mName;
-		}
-
-#ifdef DEBUG
-		virtual void printNode() { LOG("Identifier: \"%s\"", mName.c_str()); }
-#endif
-
-	private:
-		std::string mName;
-	};
-
 	class Constant : public TypedIdentity
 	{
 	public:
@@ -449,12 +431,6 @@ namespace tree
 		}
 
 		void checkCast();
-
-		virtual void setType(Type *type)
-		{
-			Expression::setType(type);
-			//checkCast();
-		}
 
 		Expression *getExpression() const
 		{
@@ -521,7 +497,23 @@ namespace tree
 #endif
 	};
 
-	class FunctionPrototype;
+	class FunctionPrototype : public TypedIdentity
+	{
+	public:
+		FunctionPrototype(Type *type, std::string name, Expressions *arguments) : TypedIdentity(type, name), mArguments(arguments) {}
+
+		Expressions *getArguments() const
+		{
+			return mArguments;
+		}
+
+#ifdef DEBUG
+		virtual void printNode() { LOG("FunctionPrototype"); }
+#endif
+
+	private:
+		Expressions *mArguments;
+	};
 
 	class FunctionCall : public Expression
 	{
@@ -558,14 +550,14 @@ namespace tree
 			}
 		};
 
-		FunctionCall(Identifier *functionPrototype, Expressions *arguments = NULL) : mPrototype(functionPrototype), mArguments(arguments) {}
+		FunctionCall(FunctionPrototype *functionPrototype, Expressions *arguments = NULL) : mPrototype(functionPrototype), mArguments(arguments) {}
 
-		Expression *getPrototype() const
+		FunctionPrototype *getPrototype() const
 		{
 			return mPrototype;
 		}
 
-		void setPrototype(Expression *prototype);
+		void setPrototype(FunctionPrototype *prototype);
 
 		Expressions *getArguments() const
 		{
@@ -587,7 +579,7 @@ namespace tree
 #endif
 
 	private:
-		Expression *mPrototype;
+		FunctionPrototype *mPrototype;
 		Expressions *mArguments;
 	};
 
