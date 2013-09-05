@@ -21,6 +21,7 @@ namespace operation
 		virtual void dispatch(tree::Function *function);
 
 		virtual void visit(tree::Identity *identity);
+		virtual void visit(tree::TypeDefinition *typeDefinition);
 		virtual void visit(tree::Expression *expression);
 		virtual void visit(tree::Assign *assign);
 

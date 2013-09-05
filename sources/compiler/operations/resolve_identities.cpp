@@ -90,6 +90,23 @@ void operation::ResolveIdentities::dispatch(tree::Function *function)
 	operation::Restructure::dispatch(static_cast<tree::Statement *>(function));
 }
 
+void operation::ResolveIdentities::visit(tree::TypeDefinition *typeDefinition)
+{
+	LOG("ResolveIdentities::visit::TypeDefinition");
+
+	try
+	{
+		mCurrentScope->mapNamedNode(typeDefinition->getName(), typeDefinition->getType());
+	}
+	catch(tree::Scope::ExistsException &e)
+	{
+		std::string error = "The identifier \"" + typeDefinition->getName() + "\" is already defined";
+		error::enqueue(e.conflict->getLocation(), e.node->getLocation(), error);
+	}
+
+	operation::Restructure::visit(typeDefinition);
+}
+
 void operation::ResolveIdentities::visit(tree::Identity *identity)
 {
 	LOG("ResolveIdentities::visit::Identity");
