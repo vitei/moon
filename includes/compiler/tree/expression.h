@@ -25,15 +25,24 @@ namespace tree
 			InvalidException(Expression *_expression) : expression(_expression) { /* Abstract class */ }
 		};
 
+		class InvalidTypeException : public InvalidException
+		{
+		public:
+			InvalidTypeException(Expression *_expression) : InvalidException(_expression) {}
+
+			virtual void reset()
+			{
+				LOG("tree::Expression::InvalidTypeException::reset");
+				expression->setType(NULL);
+			}
+		};
+
 		Type *getType() const
 		{
 			return mType;
 		}
 
-		virtual void setType(Type *type)
-		{
-			mType = type;
-		}
+		virtual void setType(Type *type);
 
 		virtual void childAccept(operation::Operation *operation)
 		{

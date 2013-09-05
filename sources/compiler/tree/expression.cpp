@@ -1,6 +1,29 @@
 #include "compiler/tree.h"
 
 
+void tree::Expression::setType(tree::Type *type)
+{
+	tree::Node *node = static_cast<tree::Node *>(type); // This is required as the "type" might be an identifier
+	tree::Type *t;
+
+	if(type == NULL)
+	{
+		mType = NULL;
+	}
+	else if(dynamic_cast<tree::Identifier *>(node))
+	{
+		mType = type;
+	}
+	else if((t = dynamic_cast<tree::Type *>(node)))
+	{
+		mType = t;
+	}
+	else
+	{
+		throw tree::Expression::InvalidTypeException(this);
+	}
+}
+
 void tree::Access::setContainer(Expression *container)
 {
 	if(container == NULL)
