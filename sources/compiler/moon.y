@@ -212,6 +212,7 @@
 %type<statement> execute_statement
 %type<expression> assign_or_function
 %type<expression> assignment
+%type<expression> access_assignee
 %type<expression> assignee
 %type<expression> expression
 %type<expression> l_or_expression
@@ -1168,16 +1169,16 @@ assign_or_function      :   assignment
                             }
                         ;
 
-assignment              :   assignee TOKEN_EQUALS expression
+assignment              :   access_assignee TOKEN_EQUALS expression
                             {
-                                LOG("assignment              :   assignee TOKEN_EQUALS expression");
+                                LOG("assignment              :   access_assignee TOKEN_EQUALS expression");
 
                                 $$ = new tree::Assign($1, $3);
                                 $$->setLocation(@2);
                             }
-                        |   assignee TOKEN_OR_EQUALS expression
+                        |   access_assignee TOKEN_OR_EQUALS expression
                             {
-                                LOG("assignment              :   assignee TOKEN_OR_EQUALS expression");
+                                LOG("assignment              :   access_assignee TOKEN_OR_EQUALS expression");
 
                                 tree::Or *orExpression = new tree::Or($1, $3);
                                 orExpression->setLocation(@2);
@@ -1185,9 +1186,9 @@ assignment              :   assignee TOKEN_EQUALS expression
                                 $$ = new tree::Assign($1, orExpression);
                                 $$->setLocation(@2);
                             }
-                        |   assignee TOKEN_XOR_EQUALS expression
+                        |   access_assignee TOKEN_XOR_EQUALS expression
                             {
-                                LOG("assignment              :   assignee TOKEN_XOR_EQUALS expression");
+                                LOG("assignment              :   access_assignee TOKEN_XOR_EQUALS expression");
 
                                 tree::Xor *xorExpression = new tree::Xor($1, $3);
                                 xorExpression->setLocation(@2);
@@ -1195,9 +1196,9 @@ assignment              :   assignee TOKEN_EQUALS expression
                                 $$ = new tree::Assign($1, xorExpression);
                                 $$->setLocation(@2);
                             }
-                        |   assignee TOKEN_AND_EQUALS expression
+                        |   access_assignee TOKEN_AND_EQUALS expression
                             {
-                                LOG("assignment              :   assignee TOKEN_AND_EQUALS expression");
+                                LOG("assignment              :   access_assignee TOKEN_AND_EQUALS expression");
 
                                 tree::And *andExpression = new tree::And($1, $3);
                                 andExpression->setLocation(@2);
@@ -1205,9 +1206,9 @@ assignment              :   assignee TOKEN_EQUALS expression
                                 $$ = new tree::Assign($1, andExpression);
                                 $$->setLocation(@2);
                             }
-                        |   assignee TOKEN_ADD_EQUALS expression
+                        |   access_assignee TOKEN_ADD_EQUALS expression
                             {
-                                LOG("assignment              :   assignee TOKEN_ADD_EQUALS expression");
+                                LOG("assignment              :   access_assignee TOKEN_ADD_EQUALS expression");
 
                                 tree::Add *add = new tree::Add($1, $3);
                                 add->setLocation(@2);
@@ -1215,9 +1216,9 @@ assignment              :   assignee TOKEN_EQUALS expression
                                 $$ = new tree::Assign($1, add);
                                 $$->setLocation(@2);
                             }
-                        |   assignee TOKEN_SUBTRACT_EQUALS expression
+                        |   access_assignee TOKEN_SUBTRACT_EQUALS expression
                             {
-                                LOG("assignment              :   assignee TOKEN_SUBTRACT_EQUALS expression");
+                                LOG("assignment              :   access_assignee TOKEN_SUBTRACT_EQUALS expression");
 
                                 tree::Subtract *subtract = new tree::Subtract($1, $3);
                                 subtract->setLocation(@2);
@@ -1225,9 +1226,9 @@ assignment              :   assignee TOKEN_EQUALS expression
                                 $$ = new tree::Assign($1, subtract);
                                 $$->setLocation(@2);
                             }
-                        |   assignee TOKEN_MULTIPLY_EQUALS expression
+                        |   access_assignee TOKEN_MULTIPLY_EQUALS expression
                             {
-                                LOG("assignment              :   assignee TOKEN_MULTIPLY_EQUALS expression");
+                                LOG("assignment              :   access_assignee TOKEN_MULTIPLY_EQUALS expression");
 
                                 tree::Multiply *multiply = new tree::Multiply($1, $3);
                                 multiply->setLocation(@2);
@@ -1235,9 +1236,9 @@ assignment              :   assignee TOKEN_EQUALS expression
                                 $$ = new tree::Assign($1, multiply);
                                 $$->setLocation(@2);
                             }
-                        |   assignee TOKEN_DIVIDE_EQUALS expression
+                        |   access_assignee TOKEN_DIVIDE_EQUALS expression
                             {
-                                LOG("assignment              :   assignee TOKEN_DIVIDE_EQUALS expression");
+                                LOG("assignment              :   access_assignee TOKEN_DIVIDE_EQUALS expression");
 
                                 tree::Divide *divide = new tree::Divide($1, $3);
                                 divide->setLocation(@2);
@@ -1245,15 +1246,30 @@ assignment              :   assignee TOKEN_EQUALS expression
                                 $$ = new tree::Assign($1, divide);
                                 $$->setLocation(@2);
                             }
-                        |   assignee TOKEN_MODULUS_EQUALS expression
+                        |   access_assignee TOKEN_MODULUS_EQUALS expression
                             {
-                                LOG("assignment              :   assignee TOKEN_MODULUS_EQUALS expression");
+                                LOG("assignment              :   access_assignee TOKEN_MODULUS_EQUALS expression");
 
                                 tree::Modulus *modulus = new tree::Modulus($1, $3);
                                 modulus->setLocation(@2);
 
                                 $$ = new tree::Assign($1, modulus);
                                 $$->setLocation(@2);
+                            }
+                        ;
+
+access_assignee         :   assignee
+                            {
+                                LOG("access_assignee         :   assignee");
+
+                                $$ = $1;
+                            }
+                        |   access_assignee TOKEN_DIRECT_ACCESS assignee
+                            {
+                                LOG("access_assignee         :   access_assignee TOKEN_DIRECT_ACCESS assignee");
+
+                                $$ = new tree::DirectAccess($1, $3);
+                                $$->setLocation(@1);
                             }
                         ;
 
@@ -1514,14 +1530,14 @@ access_expression       :   postfix_expression
 
                                 $$ = $1;
                             }
-                        /*| postfix_expression TOKEN_DIRECT_ACCESS postfix_expression
+                        |   access_expression TOKEN_DIRECT_ACCESS postfix_expression
                             {
                                 LOG("access_expression       :   postfix_expression TOKEN_DIRECT_ACCESS postfix_expression");
 
                                 $$ = new tree::DirectAccess($1, $3);
                                 $$->setLocation(@1);
                             }
-                        |   postfix_expression TOKEN_MESSAGE_ACCESS postfix_expression
+                        /*|   postfix_expression TOKEN_MESSAGE_ACCESS postfix_expression
                             {
                                 LOG("access_expression       :   postfix_expression TOKEN_MESSAGE_ACCESS postfix_expression");
 
