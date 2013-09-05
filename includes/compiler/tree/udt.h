@@ -16,7 +16,7 @@ namespace tree
 	class UDT : public Type
 	{
 	public:
-		UDT(std::string name) : mName(name) {}
+		UDT(std::string name, Variables *members) : mName(name), mMembers(members) {}
 
 		const std::string &getName() const
 		{
@@ -38,6 +38,7 @@ namespace tree
 
 	private:
 		std::string mName;
+		Variables *mMembers;
 	};
 }
 

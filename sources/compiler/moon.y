@@ -78,6 +78,9 @@
     tree::Type *type;
     tree::Identifier *id;
     tree::FunctionPrototype *prototype;
+
+	tree::Variable *variable;
+	tree::Variables *variables;
     /*tree::State *state;*/
 
     /* The lexer returns these... */
@@ -177,6 +180,8 @@
 %type<statement> define
 %type<statement> s_type_definition
 %type<statement> type_definition
+%type<variables> type_members
+%type<variable> type_member
 %type<statement> import_statement
 %type<statement> s_constant_statement
 %type<statement> constant_statement
@@ -554,7 +559,7 @@ type_definition         :   TOKEN_DEF TOKEN_NAME TOKEN_EOS type_members TOKEN_EN
                             {
                                 LOG("type_definition         :   TOKEN_DEF TOKEN_NAME TOKEN_EOS type_members TOKEN_END TOKEN_EOS");
 
-                                tree::UDT *udt = new tree::UDT(std::string($2));
+                                tree::UDT *udt = new tree::UDT(std::string($2), $4);
                                 udt->setLocation(@1);
 
                                 $$ = new tree::TypeDefinition(std::string($2), udt);
@@ -565,16 +570,25 @@ type_definition         :   TOKEN_DEF TOKEN_NAME TOKEN_EOS type_members TOKEN_EN
 type_members            :   type_member
                             {
                                 LOG("type_members            :   type_member");
+
+                                $$ = new tree::Variables();
+                                $$->push_back($1);
                             }
                         |   type_members type_member
                             {
                                 LOG("type_members            :   type_members type_member");
+
+                                $$ = $1;
+                                $$->push_back($2);
                             }
                         ;
 
 type_member             :   TOKEN_ID TOKEN_CAST type TOKEN_EOS
                             {
                                 LOG("type_member             :   TOKEN_ID TOKEN_CAST type TOKEN_EOS");
+
+                                $$ = new tree::Variable($3, std::string($1));
+                                $$->setLocation(@1);
                             }
                         ;
 
