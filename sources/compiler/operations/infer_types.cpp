@@ -24,28 +24,6 @@ bool operation::InferTypes::run(tree::Program *program)
 	return operation.mValidated;
 }
 
-void operation::InferTypes::visit(tree::Access *access)
-{
-	LOG("InferTypes::visit::Access");
-
-	if(!access->getType())
-	{
-		ASSERT(access->getTarget());
-
-		tree::Type *type = access->getTarget()->getType();
-
-		if(type)
-		{
-			access->setType(type);
-		}
-
-		if(!access->getType())
-		{
-			mValidated = false;
-		}
-	}
-}
-
 void operation::InferTypes::visit(tree::Assign *assign)
 {
 	LOG("InferTypes::visit::Assign");

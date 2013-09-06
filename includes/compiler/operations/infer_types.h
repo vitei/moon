@@ -13,7 +13,6 @@ namespace operation
 	public:
 		static bool run(tree::Program *program);
 
-		virtual void visit(tree::Access *access);
 		virtual void visit(tree::Assign *assign);
 		virtual void visit(tree::Identity *identity);
 		virtual void visit(tree::Function *function);
