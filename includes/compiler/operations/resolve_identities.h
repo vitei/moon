@@ -12,13 +12,14 @@ namespace operation
 	class ResolveIdentities : public Restructure
 	{
 	public:
-		static void run(tree::Program *program);
+		static bool run(tree::Program *program);
 
 		void add(tree::Scope *parentScope, tree::Scope *scope);
 		void process();
 
 		virtual void dispatch(tree::Scope *scope);
 		virtual void dispatch(tree::Function *function);
+		virtual void dispatch(tree::Import *import);
 
 		virtual void visit(tree::Identity *identity);
 		virtual void visit(tree::TypeDefinition *typeDefinition);
@@ -30,8 +31,9 @@ namespace operation
 		virtual bool doProcessChildren(tree::Assign *assign) { return false; }
 
 	private:
-		ResolveIdentities() : mCanCreateIdentifier(false) {}
+		ResolveIdentities() : mValidated(false), mCanCreateIdentifier(false) {}
 
+		bool mValidated;
 		bool mCanCreateIdentifier;
 		std::map< tree::Scope *, std::queue<tree::Scope *> > mVisitList;
 	};

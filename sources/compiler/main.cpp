@@ -66,6 +66,9 @@ void resolveProgram(tree::Program *program)
 {
 	// The list of operations to perform...
 	ValidatingTreeOperation operations[] = {
+		// Access to UDT members requires type resolution
+		operation::ResolveIdentities::run,
+
 		// First we need to compute any constants we can so that types that use these as sizes
 		operation::ComputeConstants::run,
 
@@ -280,7 +283,6 @@ int main(int argc, char *argv[])
 				// The list of operations to perform...
 				TreeOperation operations[] = {
 					operation::ScopeParents::run,
-					operation::ResolveIdentities::run,
 
 					resolveProgram,
 

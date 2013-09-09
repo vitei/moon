@@ -8,10 +8,7 @@ void tree::Scope::checkNamedNode(const std::string &name, tree::Node *node)
 
 	if(previousValue != mNamedNodes.end())
 	{
-		if(node != previousValue->second)
-		{
-			throw tree::Scope::ExistsException(node, previousValue->second);
-		}
+		throw tree::Scope::ExistsException(node, previousValue->second);
 	}
 	else if(mParent)
 	{
@@ -40,6 +37,18 @@ tree::Node *tree::Scope::findNamedNode(tree::Identifier *identifier)
 
 void tree::Scope::mapNamedNode(const std::string &name, tree::Node *node)
 {
-	checkNamedNode(name, node);
-	mNamedNodes[name] = node;
+	try
+	{
+		checkNamedNode(name, node);
+		mNamedNodes[name] = node;
+	}
+	catch(tree::Scope::ExistsException &e)
+	{
+		// Only process this exception if we're trying to make something new...
+		// // FIXME, this is rather nasty
+		if(e.node != e.conflict)
+		{
+			throw e;
+		}
+	}
 }

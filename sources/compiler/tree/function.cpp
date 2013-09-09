@@ -8,10 +8,7 @@ void tree::Function::checkNamedNode(const std::string &name, tree::Node *node)
 
 	if(previousValue != mNamedNodes.end())
 	{
-		if(node != previousValue->second)
-		{
-			throw tree::Scope::ExistsException(node, previousValue->second);
-		}
+		throw tree::Scope::ExistsException(node, previousValue->second);
 	}
 	else if(mOriginalScope)
 	{
