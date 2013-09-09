@@ -105,37 +105,44 @@ void operation::CastExpressions::visit(tree::FunctionCall *functionCall)
 
 	ASSERT(functionCall->getPrototype());
 
-	tree::FunctionPrototype *functionPrototype = static_cast<tree::FunctionPrototype *>(functionCall->getPrototype());
+	tree::FunctionPrototype *functionPrototype = dynamic_cast<tree::FunctionPrototype *>(static_cast<tree::Node *>(functionCall->getPrototype()));
 
-	tree::Expressions *arguments = functionCall->getArguments();
-	tree::Expressions *parameters = functionPrototype->getArguments();
-
-	if(arguments && parameters)
+	if(functionPrototype)
 	{
-		for(tree::Expressions::iterator i = arguments->begin(), end = arguments->end(), j = parameters->begin(); i != end; ++i, ++j)
+		tree::Expressions *arguments = functionCall->getArguments();
+		tree::Expressions *parameters = functionPrototype->getArguments();
+
+		if(arguments && parameters)
 		{
-			// Ensure the parameter gets typed...
-			(*i)->accept(this);
-
-			tree::Type *expectedType = (*j)->getType();
-			tree::Type *actualType = (*i)->getType();
-
-			if(expectedType && expectedType->isResolved() && actualType && actualType->isResolved())
+			for(tree::Expressions::iterator i = arguments->begin(), end = arguments->end(), j = parameters->begin(); i != end; ++i, ++j)
 			{
-				// Check the types in-case unresolved
-				if(*expectedType != *actualType)
-				{
-					tree::Cast *cast = new tree::Cast(expectedType, *i, true);
+				// Ensure the parameter gets typed...
+				(*i)->accept(this);
 
-					cast->setLocation((*i)->getLocation());
-					*i = cast;
+				tree::Type *expectedType = (*j)->getType();
+				tree::Type *actualType = (*i)->getType();
+
+				if(expectedType && expectedType->isResolved() && actualType && actualType->isResolved())
+				{
+					// Check the types in-case unresolved
+					if(*expectedType != *actualType)
+					{
+						tree::Cast *cast = new tree::Cast(expectedType, *i, true);
+
+						cast->setLocation((*i)->getLocation());
+						*i = cast;
+					}
+				}
+				else
+				{
+					mValidated = false;
 				}
 			}
-			else
-			{
-				mValidated = false;
-			}
 		}
+	}
+	else
+	{
+		mValidated = false;
 	}
 }
 

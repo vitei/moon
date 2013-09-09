@@ -166,15 +166,23 @@ void operation::ResolveTypes::visit(tree::FunctionCall *functionCall)
 	{
 		ASSERT(functionCall->getPrototype());
 
-		tree::FunctionPrototype *functionPrototype = static_cast<tree::FunctionPrototype *>(functionCall->getPrototype());
-		tree::Type *type = functionPrototype->getType();
+		tree::FunctionPrototype *functionPrototype = dynamic_cast<tree::FunctionPrototype *>(static_cast<tree::Node *>(functionCall->getPrototype()));
 
-		if(type && type->isResolved())
+		if(functionPrototype)
 		{
-			functionCall->setType(type);
-		}
+			tree::Type *type = functionPrototype->getType();
 
-		if(!functionCall->getType())
+			if(type && type->isResolved())
+			{
+				functionCall->setType(type);
+			}
+
+			if(!functionCall->getType())
+			{
+				mValidated = false;
+			}
+		}
+		else
 		{
 			mValidated = false;
 		}

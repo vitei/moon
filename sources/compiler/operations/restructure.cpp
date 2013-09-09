@@ -50,21 +50,6 @@ void operation::Restructure::dispatch(tree::Access *access)
 	dispatch(static_cast<tree::Expression *>(access));
 }
 
-void operation::Restructure::dispatch(tree::UnaryOperation *unaryOperation)
-{
-	tree::Expression *expression = NULL;
-
-	if(unaryOperation->getExpression())
-	{
-		expression = static_cast<tree::Expression *>(mNodeMap.top());
-		mNodeMap.pop();
-	}
-
-	unaryOperation->setExpression(expression);
-
-	dispatch(static_cast<tree::Expression *>(unaryOperation));
-}
-
 void operation::Restructure::dispatch(tree::BinaryOperation *binaryOperation)
 {
 	tree::Expression *lhs = NULL;
@@ -85,7 +70,86 @@ void operation::Restructure::dispatch(tree::BinaryOperation *binaryOperation)
 	binaryOperation->setLHS(lhs);
 	binaryOperation->setRHS(rhs);
 
-	dispatch(static_cast<tree::Expression *>(binaryOperation));
+	dispatch(static_cast<tree::Operation *>(binaryOperation));
+}
+
+void operation::Restructure::dispatch(tree::UnaryOperation *unaryOperation)
+{
+	tree::Expression *expression = NULL;
+
+	if(unaryOperation->getExpression())
+	{
+		expression = static_cast<tree::Expression *>(mNodeMap.top());
+		mNodeMap.pop();
+	}
+
+	unaryOperation->setExpression(expression);
+
+	dispatch(static_cast<tree::Operation *>(unaryOperation));
+}
+
+void operation::Restructure::dispatch(tree::Scope *scope)
+{
+	tree::Statements *statements = scope->getStatements();
+
+	if(statements)
+	{
+		tree::Scope *oldScope = mCurrentScope;
+
+		mCurrentScope = scope;
+
+		for(tree::Statements::iterator i = statements->begin(); i != statements->end();)
+		{
+			(*i)->accept(this);
+
+			tree::Statement *statement = static_cast<tree::Statement *>(mNodeMap.top());
+			mNodeMap.pop();
+
+			if(statement)
+			{
+				*i = statement;
+				++i;
+			}
+			else
+			{
+				i = statements->erase(i);
+			}
+		}
+
+		mCurrentScope = oldScope;
+	}
+
+	dispatch(static_cast<tree::Statement *>(scope));
+}
+
+void operation::Restructure::dispatch(tree::Scoping *scoping)
+{
+	tree::Statement *statement = NULL;
+
+	if(scoping->getScoped())
+	{
+		statement = static_cast<tree::Statement *>(mNodeMap.top());
+		mNodeMap.pop();
+	}
+
+	scoping->setScoped(statement);
+
+	dispatch(static_cast<tree::Statement *>(scoping));
+}
+
+void operation::Restructure::dispatch(tree::SizedType *sizedType)
+{
+	tree::Expression *size = NULL;
+
+	if(sizedType->getSize())
+	{
+		size = static_cast<tree::Expression *>(mNodeMap.top());
+		mNodeMap.pop();
+	}
+
+	sizedType->setSize(size);
+
+	dispatch(static_cast<tree::Type *>(sizedType));
 }
 
 void operation::Restructure::dispatch(tree::Assign *assign)
@@ -124,6 +188,61 @@ void operation::Restructure::dispatch(tree::Cast *cast)
 	cast->setExpression(expression);
 
 	dispatch(static_cast<tree::Expression *>(cast));
+}
+
+void operation::Restructure::dispatch(tree::FunctionCall *functionCall)
+{
+	tree::FunctionPrototype *functionPrototype = NULL;
+
+	if(functionCall->getPrototype())
+	{
+		functionPrototype = static_cast<tree::FunctionPrototype *>(mNodeMap.top());
+		mNodeMap.pop();
+	}
+
+	functionCall->setPrototype(functionPrototype);
+
+	tree::Expressions *expressions = functionCall->getArguments();
+
+	if(expressions)
+	{
+		for(tree::Expressions::iterator i = expressions->begin(); i != expressions->end();)
+		{
+			(*i)->accept(this);
+
+			tree::Expression *expression = static_cast<tree::Expression *>(mNodeMap.top());
+			mNodeMap.pop();
+
+			if(expression)
+			{
+				*i = expression;
+				++i;
+			}
+			else
+			{
+				i = expressions->erase(i);
+			}
+		}
+	}
+
+	dispatch(static_cast<tree::Expression *>(functionCall));
+}
+
+void operation::Restructure::dispatch(tree::Function *function)
+{
+	tree::FunctionPrototype *functionPrototype = NULL;
+
+	if(function->getPrototype())
+	{
+		functionPrototype = static_cast<tree::FunctionPrototype *>(mNodeMap.top());
+		mNodeMap.pop();
+	}
+
+	function->setPrototype(functionPrototype);
+
+	processFunctionParameters(function);
+
+	dispatch(static_cast<tree::Scope *>(function));
 }
 
 void operation::Restructure::dispatch(tree::If *ifStatement)
@@ -169,60 +288,38 @@ void operation::Restructure::dispatch(tree::Import *import)
 
 	import->setPrototype(functionPrototype);
 
-	dispatch(static_cast<tree::Statement *>(import));
-}
-
-void operation::Restructure::dispatch(tree::FunctionCall *functionCall)
-{
-	tree::FunctionPrototype *functionPrototype = NULL;
-
-	if(functionCall->getPrototype())
+	if(functionPrototype)
 	{
-		functionPrototype = static_cast<tree::FunctionPrototype *>(mNodeMap.top());
-		mNodeMap.pop();
-	}
+		tree::Expressions *expressions = functionPrototype->getArguments();
+		tree::Scope *oldScope = mCurrentScope;
 
-	functionCall->setPrototype(functionPrototype);
+		mCurrentScope = NULL;
 
-	tree::Expressions *expressions = functionCall->getArguments();
-
-	if(expressions)
-	{
-		for(tree::Expressions::iterator i = expressions->begin(); i != expressions->end();)
+		if(expressions)
 		{
-			(*i)->accept(this);
-
-			tree::Expression *expression = static_cast<tree::Expression *>(mNodeMap.top());
-			mNodeMap.pop();
-
-			if(expression)
+			for(tree::Expressions::iterator i = expressions->begin(); i != expressions->end();)
 			{
-				*i = expression;
-				++i;
-			}
-			else
-			{
-				i = expressions->erase(i);
+				(*i)->accept(this);
+
+				tree::Expression *expression = static_cast<tree::Expression *>(mNodeMap.top());
+				mNodeMap.pop();
+
+				if(expression)
+				{
+					*i = expression;
+					++i;
+				}
+				else
+				{
+					i = expressions->erase(i);
+				}
 			}
 		}
+
+		mCurrentScope = oldScope;
 	}
 
-	dispatch(static_cast<tree::Expression *>(functionCall));
-}
-
-void operation::Restructure::dispatch(tree::Scoping *scoping)
-{
-	tree::Statement *statement = NULL;
-
-	if(scoping->getScoped())
-	{
-		statement = static_cast<tree::Statement *>(mNodeMap.top());
-		mNodeMap.pop();
-	}
-
-	scoping->setScoped(statement);
-
-	dispatch(static_cast<tree::Statement *>(scoping));
+	dispatch(static_cast<tree::Statement *>(import));
 }
 
 void operation::Restructure::dispatch(tree::Execute *execute)
@@ -255,21 +352,6 @@ void operation::Restructure::dispatch(tree::Return *opReturn)
 	dispatch(static_cast<tree::Statement *>(opReturn));
 }
 
-//void operation::Restructure::dispatch(tree::SetState *setState)
-//{
-//	tree::State *state = NULL;
-//
-//	if(setState->getState())
-//	{
-//		state = static_cast<tree::State *>(mNodeMap.top());
-//		mNodeMap.pop();
-//	}
-//
-//	setState->setState(state);
-//
-//	operation::Restructure::dispatch(static_cast<tree::Statement *>(setState));
-//}
-
 void operation::Restructure::dispatch(tree::TypeDefinition *typeDefinition)
 {
 	tree::Type *type = NULL;
@@ -283,52 +365,6 @@ void operation::Restructure::dispatch(tree::TypeDefinition *typeDefinition)
 	typeDefinition->setType(type);
 
 	dispatch(static_cast<tree::Statement *>(typeDefinition));
-}
-
-void operation::Restructure::dispatch(tree::Function *function)
-{
-	tree::FunctionPrototype *functionPrototype = static_cast<tree::FunctionPrototype *>(mNodeMap.top());
-	mNodeMap.pop();
-
-	function->setPrototype(functionPrototype);
-
-	processFunctionParameters(function);
-
-	dispatch(static_cast<tree::Scope *>(function));
-}
-
-void operation::Restructure::dispatch(tree::Scope *scope)
-{
-	tree::Statements *statements = scope->getStatements();
-
-	if(statements)
-	{
-		tree::Scope *currentScope = mCurrentScope;
-
-		mCurrentScope = scope;
-
-		for(tree::Statements::iterator i = statements->begin(); i != statements->end();)
-		{
-			(*i)->accept(this);
-
-			tree::Statement *statement = static_cast<tree::Statement *>(mNodeMap.top());
-			mNodeMap.pop();
-
-			if(statement)
-			{
-				*i = statement;
-				++i;
-			}
-			else
-			{
-				i = statements->erase(i);
-			}
-		}
-
-		mCurrentScope = currentScope;
-	}
-
-	dispatch(static_cast<tree::Statement *>(scope));
 }
 
 void operation::Restructure::dispatch(tree::While *whileStatement)
@@ -354,6 +390,28 @@ void operation::Restructure::dispatch(tree::While *whileStatement)
 	dispatch(static_cast<tree::Statement *>(whileStatement));
 }
 
+void operation::Restructure::dispatch(tree::UDT *udt)
+{
+	// FIXME
+
+	dispatch(static_cast<tree::Type *>(udt));
+}
+
+void operation::Restructure::dispatch(tree::Array *array)
+{
+	tree::Type *type = NULL;
+
+	if(array->getType())
+	{
+		type = static_cast<tree::Type *>(mNodeMap.top());
+		mNodeMap.pop();
+	}
+
+	array->setType(type);
+
+	dispatch(static_cast<tree::SizedType *>(array));
+}
+
 void operation::Restructure::processFunctionParameters(tree::Function *function)
 {
 	tree::FunctionPrototype *functionPrototype = function->getPrototype();
@@ -361,7 +419,7 @@ void operation::Restructure::processFunctionParameters(tree::Function *function)
 	if(functionPrototype)
 	{
 		tree::Expressions *expressions = functionPrototype->getArguments();
-		tree::Scope *currentScope = mCurrentScope;
+		tree::Scope *oldScope = mCurrentScope;
 
 		mCurrentScope = function;
 
@@ -386,36 +444,6 @@ void operation::Restructure::processFunctionParameters(tree::Function *function)
 			}
 		}
 
-		mCurrentScope = currentScope;
+		mCurrentScope = oldScope;
 	}
-}
-
-void operation::Restructure::dispatch(tree::SizedType *sizedType)
-{
-	tree::Expression *size = NULL;
-
-	if(sizedType->getSize())
-	{
-		size = static_cast<tree::Expression *>(mNodeMap.top());
-		mNodeMap.pop();
-	}
-
-	sizedType->setSize(size);
-
-	dispatch(static_cast<tree::Type *>(sizedType));
-}
-
-void operation::Restructure::dispatch(tree::Array *array)
-{
-	tree::Type *type = NULL;
-
-	if(array->getType())
-	{
-		type = static_cast<tree::Type *>(mNodeMap.top());
-		mNodeMap.pop();
-	}
-
-	array->setType(type);
-
-	dispatch(static_cast<tree::SizedType *>(array));
 }

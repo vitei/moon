@@ -4,15 +4,21 @@
 #include "compiler/tree.h"
 
 
-void operation::ResolveIdentities::run(tree::Program *program)
+bool operation::ResolveIdentities::run(tree::Program *program)
 {
 	operation::ResolveIdentities operation;
+
+	operation.mValidated = true;
 
 	if(program->getStatements())
 	{
 		operation.add(NULL, program);
 		operation.process();
 	}
+
+	ASSERT(operation.mNodeMap.size() == 0);
+
+	return operation.mValidated;
 }
 
 void operation::ResolveIdentities::add(tree::Scope *parentScope, tree::Scope *scope)
@@ -86,8 +92,35 @@ void operation::ResolveIdentities::dispatch(tree::Function *function)
 {
 	LOG("ResolveIdentities::dispatch::Function");
 
+	tree::FunctionPrototype *functionPrototype = NULL;
+
+	if(function->getPrototype())
+	{
+		functionPrototype = static_cast<tree::FunctionPrototype *>(mNodeMap.top());
+		mNodeMap.pop();
+	}
+
+	function->setPrototype(functionPrototype);
+
 	add(function->getOriginalScope() ? function->getOriginalScope() : mCurrentScope, function);
 	operation::Restructure::dispatch(static_cast<tree::Statement *>(function));
+}
+
+void operation::ResolveIdentities::dispatch(tree::Import *import)
+{
+	tree::FunctionPrototype *functionPrototype = NULL;
+
+	if(import->getPrototype())
+	{
+		functionPrototype = static_cast<tree::FunctionPrototype *>(mNodeMap.top());
+		mNodeMap.pop();
+	}
+
+	import->setPrototype(functionPrototype);
+
+	// For this, operation there is no point in processing the parameters for imports...
+
+	operation::Restructure::dispatch(static_cast<tree::Statement *>(import));
 }
 
 void operation::ResolveIdentities::visit(tree::TypeDefinition *typeDefinition)
@@ -136,6 +169,7 @@ void operation::ResolveIdentities::visit(tree::Expression *expression)
 	{
 		try
 		{
+			//operation::Restructure::visit(expression);
 			operation::Restructure::visit(static_cast<tree::Node *>(expression));
 			break;
 		}
@@ -178,7 +212,6 @@ void operation::ResolveIdentities::visit(tree::Assign *assign)
 {
 	LOG("ResolveIdentities::visit::Assign");
 
-	// FIXME!!!!
 	//static_cast<tree::Expression *>(assign)->childAccept(this);
 
 	if(assign->getRHS())

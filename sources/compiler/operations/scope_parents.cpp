@@ -6,6 +6,8 @@ void operation::ScopeParents::run(tree::Program *program)
 {
 	operation::ScopeParents operation;
 	program->accept(&operation);
+
+	ASSERT(operation.mNodeMap.size() == 1);
 }
 
 void operation::ScopeParents::setup(tree::Program *program)

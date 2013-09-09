@@ -9,6 +9,8 @@ bool operation::ComputeConstants::run(tree::Program *program)
 	operation.mValidated = true;
 	program->accept(&operation);
 
+	ASSERT(operation.mNodeMap.size() == 1);
+
 	return operation.mValidated;
 }
 

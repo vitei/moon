@@ -6,6 +6,8 @@ void operation::RemoveDeadNodes::run(tree::Program *program)
 {
 	operation::RemoveDeadNodes operation;
 	program->accept(&operation);
+
+	ASSERT(operation.mNodeMap.size() == 1);
 }
 
 tree::Node *operation::RemoveDeadNodes::restructure(tree::Execute *execute)
