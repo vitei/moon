@@ -28,6 +28,11 @@ namespace tree
 			return mName.c_str();
 		}
 
+		Variables *getMembers() const
+		{
+			return mMembers;
+		}
+
 #ifdef DEBUG
 		virtual void printNode() { LOG("UDT"); }
 		virtual void printType() { LOG("UDT: %s", mName.c_str()); }

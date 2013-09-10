@@ -20,6 +20,7 @@ namespace operation
 		virtual void dispatch(tree::Scope *scope);
 		virtual void dispatch(tree::Function *function);
 		virtual void dispatch(tree::Import *import);
+		virtual void dispatch(tree::UDT *udt);
 
 		virtual void visit(tree::Identity *identity);
 		virtual void visit(tree::TypeDefinition *typeDefinition);
@@ -31,10 +32,11 @@ namespace operation
 		virtual bool doProcessChildren(tree::Assign *assign) { return false; }
 
 	private:
-		ResolveIdentities() : mValidated(false), mCanCreateIdentifier(false) {}
+		ResolveIdentities() : mValidated(false), mCanCreateIdentifier(false), mCurrentUDT(NULL) {}
 
 		bool mValidated;
 		bool mCanCreateIdentifier;
+		tree::UDT *mCurrentUDT;
 		std::map< tree::Scope *, std::queue<tree::Scope *> > mVisitList;
 	};
 }

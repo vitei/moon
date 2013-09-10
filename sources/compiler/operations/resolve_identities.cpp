@@ -123,9 +123,43 @@ void operation::ResolveIdentities::dispatch(tree::Import *import)
 	operation::Restructure::dispatch(static_cast<tree::Statement *>(import));
 }
 
+void operation::ResolveIdentities::dispatch(tree::UDT *udt)
+{
+	tree::UDT *oldUDT = mCurrentUDT;
+
+	mCurrentUDT = udt;
+
+	tree::Variables *members = udt->getMembers();
+	ASSERT(members);
+
+	for(tree::Variables::iterator i = members->begin(); i != members->end();)
+	{
+		(*i)->accept(this);
+
+		tree::Variable *variable = static_cast<tree::Variable *>(mNodeMap.top());
+		mNodeMap.pop();
+
+		if(variable)
+		{
+			*i = variable;
+			++i;
+		}
+		else
+		{
+			i = members->erase(i);
+		}
+	}
+
+	mCurrentUDT = oldUDT;
+
+	operation::Restructure::dispatch(static_cast<tree::Type *>(udt));
+}
+
 void operation::ResolveIdentities::visit(tree::TypeDefinition *typeDefinition)
 {
 	LOG("ResolveIdentities::visit::TypeDefinition");
+
+	ASSERT(!mCurrentUDT);
 
 	try
 	{
@@ -144,14 +178,22 @@ void operation::ResolveIdentities::visit(tree::Identity *identity)
 {
 	LOG("ResolveIdentities::visit::Identity");
 
-	try
+	if(mCurrentUDT)
 	{
-		mCurrentScope->mapNamedNode(identity->getName(), identity);
+		// FIXME
+		LOG("SKIP...");
 	}
-	catch(tree::Scope::ExistsException &e)
+	else
 	{
-		std::string error = "The identifier \"" + identity->getName() + "\" is already defined";
-		error::enqueue(e.conflict->getLocation(), e.node->getLocation(), error);
+		try
+		{
+			mCurrentScope->mapNamedNode(identity->getName(), identity);
+		}
+		catch(tree::Scope::ExistsException &e)
+		{
+			std::string error = "The identifier \"" + identity->getName() + "\" is already defined";
+			error::enqueue(e.conflict->getLocation(), e.node->getLocation(), error);
+		}
 	}
 
 	operation::Restructure::visit(identity);

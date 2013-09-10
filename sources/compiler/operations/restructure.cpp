@@ -392,7 +392,26 @@ void operation::Restructure::dispatch(tree::While *whileStatement)
 
 void operation::Restructure::dispatch(tree::UDT *udt)
 {
-	// FIXME
+	tree::Variables *members = udt->getMembers();
+	ASSERT(members);
+
+	for(tree::Variables::iterator i = members->begin(); i != members->end();)
+	{
+		(*i)->accept(this);
+
+		tree::Variable *variable = static_cast<tree::Variable *>(mNodeMap.top());
+		mNodeMap.pop();
+
+		if(variable)
+		{
+			*i = variable;
+			++i;
+		}
+		else
+		{
+			i = members->erase(i);
+		}
+	}
 
 	dispatch(static_cast<tree::Type *>(udt));
 }
