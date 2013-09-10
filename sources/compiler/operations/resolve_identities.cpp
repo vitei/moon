@@ -165,7 +165,7 @@ void operation::ResolveIdentities::visit(tree::TypeDefinition *typeDefinition)
 	{
 		mCurrentScope->mapNamedNode(typeDefinition->getName(), typeDefinition->getType());
 	}
-	catch(tree::Scope::ExistsException &e)
+	catch(behaviour::NamedMap::ExistsException &e)
 	{
 		std::string error = "The identifier \"" + typeDefinition->getName() + "\" is already defined";
 		error::enqueue(e.conflict->getLocation(), e.node->getLocation(), error);
@@ -189,7 +189,7 @@ void operation::ResolveIdentities::visit(tree::Identity *identity)
 		{
 			mCurrentScope->mapNamedNode(identity->getName(), identity);
 		}
-		catch(tree::Scope::ExistsException &e)
+		catch(behaviour::NamedMap::ExistsException &e)
 		{
 			std::string error = "The identifier \"" + identity->getName() + "\" is already defined";
 			error::enqueue(e.conflict->getLocation(), e.node->getLocation(), error);
@@ -281,7 +281,7 @@ tree::Node *operation::ResolveIdentities::restructure(tree::Identifier *identifi
 	{
 		r = getCurrentScope()->findNamedNode(identifier);
 	}
-	catch(tree::Scope::NotFoundException &e)
+	catch(behaviour::NamedMap::NotFoundException &e)
 	{
 		if(mCanCreateIdentifier)
 		{

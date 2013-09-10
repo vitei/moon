@@ -4,11 +4,11 @@
 
 void tree::Function::checkNamedNode(const std::string &name, tree::Node *node)
 {
-	tree::Scope::NamedNodes::iterator previousValue = mNamedNodes.find(name);
+	behaviour::NamedMap::NamedNodes::iterator previousValue = mNamedNodes.find(name);
 
 	if(previousValue != mNamedNodes.end())
 	{
-		throw tree::Scope::ExistsException(node, previousValue->second);
+		throw behaviour::NamedMap::ExistsException(node, previousValue->second);
 	}
 	else if(mOriginalScope)
 	{
@@ -39,6 +39,6 @@ tree::Node *tree::Function::findNamedNode(tree::Identifier *identifier)
 	}
 	else
 	{
-		throw tree::Scope::NotFoundException(identifier);
+		throw behaviour::NamedMap::NotFoundException(identifier);
 	}
 }

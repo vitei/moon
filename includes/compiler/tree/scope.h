@@ -4,6 +4,7 @@
 #include <exception>
 #include <map>
 #include <string>
+#include "../behaviours/named_map.h"
 #include "node.h"
 #include "identifier.h"
 #include "statement.h"
@@ -13,28 +14,9 @@ namespace tree
 {
 	/* ---- ONLY ABSTRACT CLASSES BELOW HERE ---- */
 
-	class Scope : public Statement
+	class Scope : public Statement, public behaviour::NamedMap
 	{
 	public:
-		class ExistsException : public std::exception
-		{
-		public:
-			ExistsException(tree::Node *_node, tree::Node *_conflict) : node(_node), conflict(_conflict) {}
-
-			tree::Node *node;
-			tree::Node *conflict;
-		};
-
-		class NotFoundException : public std::exception
-		{
-		public:
-			NotFoundException(tree::Identifier *_identifier) : identifier(_identifier) {}
-
-			tree::Identifier *identifier;
-		};
-
-		typedef std::map<std::string, tree::Node *> NamedNodes;
-
 		Scope *getParent() const
 		{
 			return mParent;
@@ -57,13 +39,13 @@ namespace tree
 
 		virtual void checkNamedNode(const std::string &name, Node *node);
 		virtual Node *findNamedNode(Identifier *identifier);
-		void mapNamedNode(const std::string &name, Node *node);
+		virtual void mapNamedNode(const std::string &name, Node *node);
 
 	protected:
 		Scope(Statements *statements) : mParent(NULL), mStatements(statements) { /* Abstract class */ }
 
 		Scope *mParent;
-		NamedNodes mNamedNodes;
+		behaviour::NamedMap::NamedNodes mNamedNodes;
 
 	private:
 		Statements *mStatements;

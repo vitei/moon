@@ -4,11 +4,11 @@
 
 void tree::Scope::checkNamedNode(const std::string &name, tree::Node *node)
 {
-	tree::Scope::NamedNodes::iterator previousValue = mNamedNodes.find(name);
+	behaviour::NamedMap::NamedNodes::iterator previousValue = mNamedNodes.find(name);
 
 	if(previousValue != mNamedNodes.end())
 	{
-		throw tree::Scope::ExistsException(node, previousValue->second);
+		throw behaviour::NamedMap::ExistsException(node, previousValue->second);
 	}
 	else if(mParent)
 	{
@@ -31,7 +31,7 @@ tree::Node *tree::Scope::findNamedNode(tree::Identifier *identifier)
 	}
 	else
 	{
-		throw tree::Scope::NotFoundException(identifier);
+		throw behaviour::NamedMap::NotFoundException(identifier);
 	}
 }
 
@@ -42,7 +42,7 @@ void tree::Scope::mapNamedNode(const std::string &name, tree::Node *node)
 		checkNamedNode(name, node);
 		mNamedNodes[name] = node;
 	}
-	catch(tree::Scope::ExistsException &e)
+	catch(behaviour::NamedMap::ExistsException &e)
 	{
 		// Only process this exception if we're trying to make something new...
 		// // FIXME, this is rather nasty
