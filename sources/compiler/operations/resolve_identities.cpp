@@ -129,19 +129,19 @@ void operation::ResolveIdentities::dispatch(tree::UDT *udt)
 
 	mCurrentUDT = udt;
 
-	tree::Variables *members = udt->getMembers();
+	tree::Members *members = udt->getMembers();
 	ASSERT(members);
 
-	for(tree::Variables::iterator i = members->begin(); i != members->end();)
+	for(tree::Members::iterator i = members->begin(); i != members->end();)
 	{
 		(*i)->accept(this);
 
-		tree::Variable *variable = static_cast<tree::Variable *>(mNodeMap.top());
+		tree::Member *member = static_cast<tree::Member *>(mNodeMap.top());
 		mNodeMap.pop();
 
-		if(variable)
+		if(member)
 		{
-			*i = variable;
+			*i = member;
 			++i;
 		}
 		else

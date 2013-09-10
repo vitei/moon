@@ -141,6 +141,7 @@ namespace tree
 		 \
 		DISPATCH_ACTIONS(tree::Constant, node, function) \
 		DISPATCH_ACTIONS(tree::FunctionPrototype, node, function) \
+		DISPATCH_ACTIONS(tree::Member, node, function) \
 		DISPATCH_ACTIONS(tree::Variable, node, function) \
 		 \
 		DISPATCH_ACTIONS(tree::Add, node, function) \
@@ -221,6 +222,7 @@ namespace tree
 		 \
 		else ASSIGN_ACTIONS(dst, tree::Constant, node, function) \
 		else ASSIGN_ACTIONS(dst, tree::FunctionPrototype, node, function) \
+		else ASSIGN_ACTIONS(dst, tree::Member, node, function) \
 		else ASSIGN_ACTIONS(dst, tree::Variable, node, function) \
 		 \
 		else ASSIGN_ACTIONS(dst, tree::Add, node, function) \

@@ -14,27 +14,22 @@ namespace tree
 
 	/* ---- ONLY CONCRETE CLASSES BELOW HERE ---- */
 
+	class Member : public TypedIdentity
+	{
+	public:
+		Member(Type *type, std::string name) : TypedIdentity(type, name) {}
+
+#ifdef DEBUG
+		virtual void printNode() { LOG("Member"); }
+#endif
+	};
+
+	typedef std::list<Member *> Members;
+
 	class UDT : public Type, public behaviour::NamedMap
 	{
 	public:
-		class ExistsException : public std::exception
-		{
-		public:
-			ExistsException(tree::Variable *_variable, tree::Variable *_conflict) : variable(_variable), conflict(_conflict) {}
-
-			tree::Variable *variable;
-			tree::Variable *conflict;
-		};
-
-		class NotFoundException : public std::exception
-		{
-		public:
-			NotFoundException(tree::Identifier *_identifier) : identifier(_identifier) {}
-
-			tree::Identifier *identifier;
-		};
-
-		UDT(std::string name, Variables *members) : mName(name), mMembers(members) {}
+		UDT(std::string name, Members *members) : mName(name), mMembers(members) {}
 
 		const std::string &getName() const
 		{
@@ -46,7 +41,7 @@ namespace tree
 			return mName.c_str();
 		}
 
-		Variables *getMembers() const
+		Members *getMembers() const
 		{
 			return mMembers;
 		}
@@ -65,7 +60,7 @@ namespace tree
 
 	private:
 		std::string mName;
-		Variables *mMembers;
+		Members *mMembers;
 		behaviour::NamedMap::NamedNodes mNamedNodes;
 	};
 }

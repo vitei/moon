@@ -417,8 +417,6 @@ namespace tree
 #endif
 	};
 
-	typedef std::list<Variable *> Variables;
-
 	class Cast : public Expression
 	{
 	public:

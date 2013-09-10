@@ -249,19 +249,15 @@ void MangleNames::visit(tree::Import *import)
 
 void MangleNames::visit(tree::UDT *udt)
 {
-	for(tree::Variables::iterator i = udt->getMembers()->begin(), end = udt->getMembers()->end(); i != end; ++i)
+	for(tree::Members::iterator i = udt->getMembers()->begin(), end = udt->getMembers()->end(); i != end; ++i)
 	{
-		tree::Variable *variable = *i;
+		tree::Member *member = *i;
 
-		std::string mangledName = "moon$$" + variable->getName(); // FIXME, more mangle?
+		std::string mangledName = "moon$$" + member->getName(); // FIXME, more mangle?
 		Mangled *cName = new Mangled(mangledName, mangledName);
 
-		if(variable->getMetadata()) // FIXME, DEBUG
-		{
-			LOG("%s", ((Mangled *)variable->getMetadata())->declarationName.c_str());
-		}
-		ASSERT(!variable->getMetadata());
-		variable->setMetadata(cName);
+		ASSERT(!member->getMetadata());
+		member->setMetadata(cName);
 	}
 }
 
@@ -1228,10 +1224,10 @@ void generator::C::Printer::output(tree::UDT *udt)
 
 	increaseDepth();
 
-	tree::Variables *members = udt->getMembers();
+	tree::Members *members = udt->getMembers();
 	ASSERT(members);
 
-	for(tree::Variables::iterator i = members->begin(), e = members->end(); i != e; ++i)
+	for(tree::Members::iterator i = members->begin(), e = members->end(); i != e; ++i)
 	{
 		outputTabs();
 		outputDeclaration(*i);

@@ -79,8 +79,8 @@
     tree::Identifier *id;
     tree::FunctionPrototype *prototype;
 
-	tree::Variable *variable;
-	tree::Variables *variables;
+	tree::Member *member;
+	tree::Members *members;
     /*tree::State *state;*/
 
     /* The lexer returns these... */
@@ -180,8 +180,8 @@
 %type<statement> define
 %type<statement> s_type_definition
 %type<statement> type_definition
-%type<variables> type_members
-%type<variable> type_member
+%type<members> type_members
+%type<member> type_member
 %type<statement> import_statement
 %type<statement> s_constant_statement
 %type<statement> constant_statement
@@ -572,7 +572,7 @@ type_members            :   type_member
                             {
                                 LOG("type_members            :   type_member");
 
-                                $$ = new tree::Variables();
+                                $$ = new tree::Members();
                                 $$->push_back($1);
                             }
                         |   type_members type_member
@@ -588,7 +588,7 @@ type_member             :   TOKEN_ID TOKEN_CAST type TOKEN_EOS
                             {
                                 LOG("type_member             :   TOKEN_ID TOKEN_CAST type TOKEN_EOS");
 
-                                $$ = new tree::Variable($3, std::string($1));
+                                $$ = new tree::Member($3, std::string($1));
                                 $$->setLocation(@1);
                             }
                         ;

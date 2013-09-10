@@ -52,6 +52,7 @@ namespace operation
 		 \
 		PROCESS_ACTION(tree::TypedIdentity, tree::Constant, return_type, name) \
 		PROCESS_ACTION(tree::TypedIdentity, tree::FunctionPrototype, return_type, name) \
+		PROCESS_ACTION(tree::TypedIdentity, tree::Member, return_type, name) \
 		PROCESS_ACTION(tree::TypedIdentity, tree::Variable, return_type, name) \
 		 \
 		PROCESS_ACTION(tree::BinaryOperation, tree::Add, return_type, name) \
