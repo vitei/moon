@@ -178,22 +178,15 @@ void operation::ResolveIdentities::visit(tree::Identity *identity)
 {
 	LOG("ResolveIdentities::visit::Identity");
 
-	if(mCurrentUDT)
+	try
 	{
-		// FIXME
-		LOG("SKIP...");
+		behaviour::NamedMap *map = mCurrentUDT ? static_cast<behaviour::NamedMap *>(mCurrentUDT) : static_cast<behaviour::NamedMap *>(mCurrentScope);
+		map->mapNamedNode(identity->getName(), identity);
 	}
-	else
+	catch(behaviour::NamedMap::ExistsException &e)
 	{
-		try
-		{
-			mCurrentScope->mapNamedNode(identity->getName(), identity);
-		}
-		catch(behaviour::NamedMap::ExistsException &e)
-		{
-			std::string error = "The identifier \"" + identity->getName() + "\" is already defined";
-			error::enqueue(e.conflict->getLocation(), e.node->getLocation(), error);
-		}
+		std::string error = "The identifier \"" + identity->getName() + "\" is already defined";
+		error::enqueue(e.conflict->getLocation(), e.node->getLocation(), error);
 	}
 
 	operation::Restructure::visit(identity);
