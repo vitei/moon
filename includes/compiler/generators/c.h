@@ -61,6 +61,7 @@ namespace generator
 			void output(tree::LogicalNot *logicalNot);
 			void output(tree::Not *notExpression);
 			void output(tree::Minus *minus);
+			void output(tree::UDT *udt);
 
 			void output(tree::Execute *execute);
 			void output(tree::If *ifStatement);
@@ -129,6 +130,7 @@ namespace generator
 		virtual void generate(tree::Program *program);
 
 		void mangleNames(tree::Program *program);
+		void outputTypes(tree::Program *program);
 		void outputVariables(tree::Program *program);
 		void outputFunctions(tree::Program *program);
 		void outputNew(tree::Program *program);
