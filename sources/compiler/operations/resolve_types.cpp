@@ -21,14 +21,23 @@ void operation::ResolveTypes::visit(tree::Access *access)
 	{
 		ASSERT(access->getTarget());
 
-		tree::Type *type = access->getTarget()->getType();
+		tree::Expression *target = dynamic_cast<tree::Expression *>(static_cast<tree::Node *>(access->getTarget()));
 
-		if(type && type->isResolved())
+		if(target)
 		{
-			access->setType(type);
-		}
+			tree::Type *type = target->getType();
 
-		if(!access->getType())
+			if(type && type->isResolved())
+			{
+				access->setType(type);
+			}
+
+			if(!access->getType())
+			{
+				mValidated = false;
+			}
+		}
+		else
 		{
 			mValidated = false;
 		}
