@@ -26,10 +26,12 @@ namespace operation
 		virtual void visit(tree::TypeDefinition *typeDefinition);
 		virtual void visit(tree::Expression *expression);
 		virtual void visit(tree::Assign *assign);
+		virtual void visit(tree::DirectAccess *directAccess);
 
 		virtual tree::Node *restructure(tree::Identifier *identifier);
 
 		virtual bool doProcessChildren(tree::Assign *assign) { return false; }
+		virtual bool doProcessChildren(tree::DirectAccess *directAccess) { return false; }
 
 	private:
 		ResolveIdentities() : mValidated(false), mCanCreateIdentifier(false), mCurrentUDT(NULL) {}

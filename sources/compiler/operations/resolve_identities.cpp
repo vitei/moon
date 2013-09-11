@@ -256,6 +256,58 @@ void operation::ResolveIdentities::visit(tree::Assign *assign)
 	operation::Restructure::visit(assign);
 }
 
+void operation::ResolveIdentities::visit(tree::DirectAccess *directAccess)
+{
+	LOG("ResolveIdentities::visit::DirectAccess");
+
+	tree::Expression *container = directAccess->getContainer();
+
+	if(container)
+	{
+		container->accept(this);
+
+		RESTRUCTURE_GET(container, tree::Expression, container);
+		directAccess->setContainer(container);
+	}
+
+	tree::Identifier *identifier = tree::node_cast<tree::Identifier *>(directAccess->getTarget());
+
+	if(identifier)
+	{
+		tree::Type *type;
+
+		container = tree::node_cast<tree::Expression *>(container);
+
+		if(container && (type = container->getType()) && type->isResolved())
+		{
+			tree::UDT *udt;
+
+			if((udt = tree::node_cast<tree::UDT *>(type)))
+			{
+				try
+				{
+					directAccess->setTarget(static_cast<tree::Member *>(udt->findNamedNode(identifier)));
+				}
+				catch(behaviour::NamedMap::NotFoundException &e)
+				{
+					std::string error = "The type \"" + udt->getName() + "\" does not contain a member named \"" + identifier->getName() + "\"";
+					error::enqueue(identifier->getLocation(), error);
+				}
+			}
+			else
+			{
+				ERROR("FIXME");
+			}
+		}
+		else
+		{
+			mValidated = false;
+		}
+	}
+
+	mNodeMap.push(directAccess);
+}
+
 tree::Node *operation::ResolveIdentities::restructure(tree::Identifier *identifier)
 {
 	tree::Node *r = NULL;
