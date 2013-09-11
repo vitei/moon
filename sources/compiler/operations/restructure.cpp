@@ -16,12 +16,7 @@ void operation::Restructure::dispatch(tree::Expression *expression)
 {
 	tree::Type *type = NULL;
 
-	if(expression->getType())
-	{
-		type = static_cast<tree::Type *>(mNodeMap.top());
-		mNodeMap.pop();
-	}
-
+	RESTRUCTURE_GET(type, tree::Type, expression->getType());
 	expression->setType(type);
 
 	dispatch(static_cast<tree::Node *>(expression));
@@ -29,46 +24,28 @@ void operation::Restructure::dispatch(tree::Expression *expression)
 
 void operation::Restructure::dispatch(tree::Access *access)
 {
-	tree::Expression *container = NULL;
 	tree::Expression *target = NULL;
+	tree::Expression *container = NULL;
 
-	if(access->getTarget())
-	{
-		target = static_cast<tree::Expression *>(mNodeMap.top());
-		mNodeMap.pop();
-	}
-
-	if(access->getContainer())
-	{
-		container = static_cast<tree::Expression *>(mNodeMap.top());
-		mNodeMap.pop();
-	}
-
-	access->setContainer(container);
+	RESTRUCTURE_GET(target, tree::Expression, access->getTarget());
 	access->setTarget(target);
+
+	RESTRUCTURE_GET(container, tree::Expression, access->getContainer());
+	access->setContainer(container);
 
 	dispatch(static_cast<tree::Expression *>(access));
 }
 
 void operation::Restructure::dispatch(tree::BinaryOperation *binaryOperation)
 {
-	tree::Expression *lhs = NULL;
 	tree::Expression *rhs = NULL;
+	tree::Expression *lhs = NULL;
 
-	if(binaryOperation->getRHS())
-	{
-		rhs = static_cast<tree::Expression *>(mNodeMap.top());
-		mNodeMap.pop();
-	}
-
-	if(binaryOperation->getLHS())
-	{
-		lhs = static_cast<tree::Expression *>(mNodeMap.top());
-		mNodeMap.pop();
-	}
-
-	binaryOperation->setLHS(lhs);
+	RESTRUCTURE_GET(rhs, tree::Expression, binaryOperation->getRHS());
 	binaryOperation->setRHS(rhs);
+
+	RESTRUCTURE_GET(lhs, tree::Expression, binaryOperation->getLHS());
+	binaryOperation->setLHS(lhs);
 
 	dispatch(static_cast<tree::Operation *>(binaryOperation));
 }
@@ -77,12 +54,7 @@ void operation::Restructure::dispatch(tree::UnaryOperation *unaryOperation)
 {
 	tree::Expression *expression = NULL;
 
-	if(unaryOperation->getExpression())
-	{
-		expression = static_cast<tree::Expression *>(mNodeMap.top());
-		mNodeMap.pop();
-	}
-
+	RESTRUCTURE_GET(expression, tree::Expression, unaryOperation->getExpression());
 	unaryOperation->setExpression(expression);
 
 	dispatch(static_cast<tree::Operation *>(unaryOperation));
@@ -126,12 +98,7 @@ void operation::Restructure::dispatch(tree::Scoping *scoping)
 {
 	tree::Statement *statement = NULL;
 
-	if(scoping->getScoped())
-	{
-		statement = static_cast<tree::Statement *>(mNodeMap.top());
-		mNodeMap.pop();
-	}
-
+	RESTRUCTURE_GET(statement, tree::Statement, scoping->getScoped());
 	scoping->setScoped(statement);
 
 	dispatch(static_cast<tree::Statement *>(scoping));
@@ -141,12 +108,7 @@ void operation::Restructure::dispatch(tree::SizedType *sizedType)
 {
 	tree::Expression *size = NULL;
 
-	if(sizedType->getSize())
-	{
-		size = static_cast<tree::Expression *>(mNodeMap.top());
-		mNodeMap.pop();
-	}
-
+	RESTRUCTURE_GET(size, tree::Expression, sizedType->getSize());
 	sizedType->setSize(size);
 
 	dispatch(static_cast<tree::Type *>(sizedType));
@@ -157,19 +119,10 @@ void operation::Restructure::dispatch(tree::Assign *assign)
 	tree::Expression *lhs = NULL;
 	tree::Expression *rhs = NULL;
 
-	if(assign->getLHS())
-	{
-		lhs = static_cast<tree::Expression *>(mNodeMap.top());
-		mNodeMap.pop();
-	}
-
-	if(assign->getRHS())
-	{
-		rhs = static_cast<tree::Expression *>(mNodeMap.top());
-		mNodeMap.pop();
-	}
-
+	RESTRUCTURE_GET(lhs, tree::Expression, assign->getLHS());
 	assign->setLHS(lhs);
+
+	RESTRUCTURE_GET(rhs, tree::Expression, assign->getRHS());
 	assign->setRHS(rhs);
 
 	dispatch(static_cast<tree::Expression *>(assign));
@@ -179,12 +132,7 @@ void operation::Restructure::dispatch(tree::Cast *cast)
 {
 	tree::Expression *expression = NULL;
 
-	if(cast->getExpression())
-	{
-		expression = static_cast<tree::Expression *>(mNodeMap.top());
-		mNodeMap.pop();
-	}
-
+	RESTRUCTURE_GET(expression, tree::Expression, cast->getExpression());
 	cast->setExpression(expression);
 
 	dispatch(static_cast<tree::Expression *>(cast));
@@ -194,12 +142,7 @@ void operation::Restructure::dispatch(tree::FunctionCall *functionCall)
 {
 	tree::FunctionPrototype *functionPrototype = NULL;
 
-	if(functionCall->getPrototype())
-	{
-		functionPrototype = static_cast<tree::FunctionPrototype *>(mNodeMap.top());
-		mNodeMap.pop();
-	}
-
+	RESTRUCTURE_GET(functionPrototype, tree::FunctionPrototype, functionCall->getPrototype());
 	functionCall->setPrototype(functionPrototype);
 
 	tree::Expressions *expressions = functionCall->getArguments();
@@ -232,12 +175,7 @@ void operation::Restructure::dispatch(tree::Function *function)
 {
 	tree::FunctionPrototype *functionPrototype = NULL;
 
-	if(function->getPrototype())
-	{
-		functionPrototype = static_cast<tree::FunctionPrototype *>(mNodeMap.top());
-		mNodeMap.pop();
-	}
-
+	RESTRUCTURE_GET(functionPrototype, tree::FunctionPrototype, function->getPrototype());
 	function->setPrototype(functionPrototype);
 
 	processFunctionParameters(function);
@@ -247,31 +185,18 @@ void operation::Restructure::dispatch(tree::Function *function)
 
 void operation::Restructure::dispatch(tree::If *ifStatement)
 {
-	tree::Expression *test = NULL;
-	tree::Statement *trueStatement = NULL;
 	tree::Statement *falseStatement = NULL;
+	tree::Statement *trueStatement = NULL;
+	tree::Expression *test = NULL;
 
-	if(ifStatement->getFalseStatement())
-	{
-		falseStatement = static_cast<tree::Statement *>(mNodeMap.top());
-		mNodeMap.pop();
-	}
-
-	if(ifStatement->getTrueStatement())
-	{
-		trueStatement = static_cast<tree::Statement *>(mNodeMap.top());
-		mNodeMap.pop();
-	}
-
-	if(ifStatement->getTest())
-	{
-		test = static_cast<tree::Expression *>(mNodeMap.top());
-		mNodeMap.pop();
-	}
-
-	ifStatement->setTest(test);
-	ifStatement->setTrueStatement(trueStatement);
+	RESTRUCTURE_GET(falseStatement, tree::Statement, ifStatement->getFalseStatement());
 	ifStatement->setFalseStatement(falseStatement);
+
+	RESTRUCTURE_GET(trueStatement, tree::Statement, ifStatement->getTrueStatement());
+	ifStatement->setTrueStatement(trueStatement);
+
+	RESTRUCTURE_GET(test, tree::Expression, ifStatement->getTest());
+	ifStatement->setTest(test);
 
 	dispatch(static_cast<tree::Statement *>(ifStatement));
 }
@@ -280,12 +205,7 @@ void operation::Restructure::dispatch(tree::Import *import)
 {
 	tree::FunctionPrototype *functionPrototype = NULL;
 
-	if(import->getPrototype())
-	{
-		functionPrototype = static_cast<tree::FunctionPrototype *>(mNodeMap.top());
-		mNodeMap.pop();
-	}
-
+	RESTRUCTURE_GET(functionPrototype, tree::FunctionPrototype, import->getPrototype());
 	import->setPrototype(functionPrototype);
 
 	if(functionPrototype)
@@ -326,12 +246,7 @@ void operation::Restructure::dispatch(tree::Execute *execute)
 {
 	tree::Expression *expression = NULL;
 
-	if(execute->getExpression())
-	{
-		expression = static_cast<tree::Expression *>(mNodeMap.top());
-		mNodeMap.pop();
-	}
-
+	RESTRUCTURE_GET(expression, tree::Expression, execute->getExpression());
 	execute->setExpression(expression);
 
 	dispatch(static_cast<tree::Statement *>(execute));
@@ -341,12 +256,7 @@ void operation::Restructure::dispatch(tree::Return *opReturn)
 {
 	tree::Expression *expression = NULL;
 
-	if(opReturn->getReturn())
-	{
-		expression = static_cast<tree::Expression *>(mNodeMap.top());
-		mNodeMap.pop();
-	}
-
+	RESTRUCTURE_GET(expression, tree::Expression, opReturn->getReturn());
 	opReturn->setReturn(expression);
 
 	dispatch(static_cast<tree::Statement *>(opReturn));
@@ -356,12 +266,7 @@ void operation::Restructure::dispatch(tree::TypeDefinition *typeDefinition)
 {
 	tree::Type *type = NULL;
 
-	if(typeDefinition->getType())
-	{
-		type = static_cast<tree::Type *>(mNodeMap.top());
-		mNodeMap.pop();
-	}
-
+	RESTRUCTURE_GET(type, tree::Type, typeDefinition->getType());
 	typeDefinition->setType(type);
 
 	dispatch(static_cast<tree::Statement *>(typeDefinition));
@@ -369,23 +274,14 @@ void operation::Restructure::dispatch(tree::TypeDefinition *typeDefinition)
 
 void operation::Restructure::dispatch(tree::While *whileStatement)
 {
-	tree::Expression *test = NULL;
 	tree::Statement *loopStatement = NULL;
+	tree::Expression *test = NULL;
 
-	if(whileStatement->getLoopStatement())
-	{
-		loopStatement = static_cast<tree::Statement *>(mNodeMap.top());
-		mNodeMap.pop();
-	}
-
-	if(whileStatement->getTest())
-	{
-		test = static_cast<tree::Expression *>(mNodeMap.top());
-		mNodeMap.pop();
-	}
-
-	whileStatement->setTest(test);
+	RESTRUCTURE_GET(loopStatement, tree::Statement, whileStatement->getLoopStatement());
 	whileStatement->setLoopStatement(loopStatement);
+
+	RESTRUCTURE_GET(test, tree::Expression, whileStatement->getTest());
+	whileStatement->setTest(test);
 
 	dispatch(static_cast<tree::Statement *>(whileStatement));
 }
@@ -420,12 +316,7 @@ void operation::Restructure::dispatch(tree::Array *array)
 {
 	tree::Type *type = NULL;
 
-	if(array->getType())
-	{
-		type = static_cast<tree::Type *>(mNodeMap.top());
-		mNodeMap.pop();
-	}
-
+	RESTRUCTURE_GET(type, tree::Type, array->getType());
 	array->setType(type);
 
 	dispatch(static_cast<tree::SizedType *>(array));

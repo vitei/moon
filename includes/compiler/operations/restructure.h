@@ -50,6 +50,13 @@ namespace operation
 		std::stack<tree::Node *> mNodeMap;
 		tree::Scope *mCurrentScope;
 	};
+
+	#define RESTRUCTURE_GET(dst, type, source) \
+		if(source) \
+		{ \
+			dst = static_cast<type *>(mNodeMap.top()); \
+			mNodeMap.pop(); \
+		}
 }
 
 #endif

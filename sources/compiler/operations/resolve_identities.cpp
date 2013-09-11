@@ -84,8 +84,9 @@ void operation::ResolveIdentities::dispatch(tree::Scope *scope)
 {
 	LOG("ResolveIdentities::dispatch::Scope");
 
-	add(mCurrentScope, scope);
 	operation::Restructure::dispatch(static_cast<tree::Statement *>(scope));
+
+	add(mCurrentScope, scope);
 }
 
 void operation::ResolveIdentities::dispatch(tree::Function *function)
@@ -94,28 +95,19 @@ void operation::ResolveIdentities::dispatch(tree::Function *function)
 
 	tree::FunctionPrototype *functionPrototype = NULL;
 
-	if(function->getPrototype())
-	{
-		functionPrototype = static_cast<tree::FunctionPrototype *>(mNodeMap.top());
-		mNodeMap.pop();
-	}
-
+	RESTRUCTURE_GET(functionPrototype, tree::FunctionPrototype, function->getPrototype());
 	function->setPrototype(functionPrototype);
 
-	add(function->getOriginalScope() ? function->getOriginalScope() : mCurrentScope, function);
 	operation::Restructure::dispatch(static_cast<tree::Statement *>(function));
+
+	add(function->getOriginalScope() ? function->getOriginalScope() : mCurrentScope, function);
 }
 
 void operation::ResolveIdentities::dispatch(tree::Import *import)
 {
 	tree::FunctionPrototype *functionPrototype = NULL;
 
-	if(import->getPrototype())
-	{
-		functionPrototype = static_cast<tree::FunctionPrototype *>(mNodeMap.top());
-		mNodeMap.pop();
-	}
-
+	RESTRUCTURE_GET(functionPrototype, tree::FunctionPrototype, import->getPrototype());
 	import->setPrototype(functionPrototype);
 
 	// For this, operation there is no point in processing the parameters for imports...
