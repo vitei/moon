@@ -27,7 +27,6 @@ public:
 	virtual void visit(tree::Function *function);
 	virtual void visit(tree::AnonymousScope *anonymousScope);
 	virtual void visit(tree::Import *import);
-	virtual void visit(tree::UDT *udt);
 
 private:
 	MangleNames() {}
@@ -104,6 +103,17 @@ void MangleNames::visit(tree::Aggregate *aggregate)
 
 			ASSERT(!udt->getMetadata());
 			udt->setMetadata(cName);
+
+			for(tree::Members::iterator i = udt->getMembers()->begin(), end = udt->getMembers()->end(); i != end; ++i)
+			{
+				tree::Member *member = *i;
+
+				std::string mangledName = "moon$$" + member->getName(); // FIXME, more mangle?
+				Mangled *cName = new Mangled(mangledName, mangledName);
+
+				ASSERT(!member->getMetadata());
+				member->setMetadata(cName);
+			}
 		}
 	}
 
@@ -143,6 +153,17 @@ void MangleNames::visit(tree::Use *use)
 
 			ASSERT(!udt->getMetadata());
 			udt->setMetadata(cName);
+
+			for(tree::Members::iterator i = udt->getMembers()->begin(), end = udt->getMembers()->end(); i != end; ++i)
+			{
+				tree::Member *member = *i;
+
+				std::string mangledName = "moon$$" + member->getName(); // FIXME, more mangle?
+				Mangled *cName = new Mangled(mangledName, mangledName);
+
+				ASSERT(!member->getMetadata());
+				member->setMetadata(cName);
+			}
 		}
 	}
 
@@ -176,6 +197,17 @@ void MangleNames::visit(tree::Function *function)
 
 			ASSERT(!udt->getMetadata());
 			udt->setMetadata(cName);
+
+			for(tree::Members::iterator i = udt->getMembers()->begin(), end = udt->getMembers()->end(); i != end; ++i)
+			{
+				tree::Member *member = *i;
+
+				std::string mangledName = "moon$$" + member->getName(); // FIXME, more mangle?
+				Mangled *cName = new Mangled(mangledName, mangledName);
+
+				ASSERT(!member->getMetadata());
+				member->setMetadata(cName);
+			}
 		}
 	}
 
@@ -215,6 +247,17 @@ void MangleNames::visit(tree::AnonymousScope *anonymousScope)
 
 			ASSERT(!udt->getMetadata());
 			udt->setMetadata(cName);
+
+			for(tree::Members::iterator i = udt->getMembers()->begin(), end = udt->getMembers()->end(); i != end; ++i)
+			{
+				tree::Member *member = *i;
+
+				std::string mangledName = "moon$$" + member->getName(); // FIXME, more mangle?
+				Mangled *cName = new Mangled(mangledName, mangledName);
+
+				ASSERT(!member->getMetadata());
+				member->setMetadata(cName);
+			}
 		}
 	}
 
@@ -244,20 +287,6 @@ void MangleNames::visit(tree::Import *import)
 
 			identity->setMetadata(cName);
 		}
-	}
-}
-
-void MangleNames::visit(tree::UDT *udt)
-{
-	for(tree::Members::iterator i = udt->getMembers()->begin(), end = udt->getMembers()->end(); i != end; ++i)
-	{
-		tree::Member *member = *i;
-
-		std::string mangledName = "moon$$" + member->getName(); // FIXME, more mangle?
-		Mangled *cName = new Mangled(mangledName, mangledName);
-
-		ASSERT(!member->getMetadata());
-		member->setMetadata(cName);
 	}
 }
 
@@ -818,7 +847,9 @@ void generator::C::Printer::output(tree::Cast *cast)
 
 void generator::C::Printer::output(tree::DirectAccess *directAccess)
 {
-	ERROR("FIXME");
+	dispatch(directAccess->getContainer());
+	*mOutput << ".";
+	dispatch(directAccess->getTarget());
 }
 
 void generator::C::Printer::output(tree::MessageAccess *messageAccess)
