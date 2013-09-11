@@ -18,11 +18,11 @@ tree::Node *operation::ComputeConstants::restructure(tree::Assign *assign)
 {
 	LOG("ComputeConstants::restructure::Assign");
 
-	tree::Constant *constant = dynamic_cast<tree::Constant *>(assign->getLHS());
+	tree::Constant *constant = tree::node_cast<tree::Constant *>(assign->getLHS());
 
 	if(constant)
 	{
-		tree::Literal *literal = dynamic_cast<tree::Literal *>(assign->getRHS());
+		tree::Literal *literal = tree::node_cast<tree::Literal *>(assign->getRHS());
 
 		if(literal)
 		{
@@ -38,7 +38,7 @@ tree::Node *operation::ComputeConstants::restructure(tree::Cast *cast)
 {
 	LOG("ComputeConstants::restructure::Cast");
 
-	tree::Literal *literal = dynamic_cast<tree::Literal *>(cast->getExpression());
+	tree::Literal *literal = tree::node_cast<tree::Literal *>(cast->getExpression());
 
 	if(literal)
 	{
@@ -51,19 +51,19 @@ tree::Node *operation::ComputeConstants::restructure(tree::Cast *cast)
 			tree::Float *floatingPoint;
 			tree::String *string;
 
-			if((boolean = dynamic_cast<tree::Bool *>(type)))
+			if((boolean = tree::node_cast<tree::Bool *>(type)))
 			{
 				return new tree::BoolLiteral(literal, boolean);
 			}
-			else if((integer = dynamic_cast<tree::Int *>(type)))
+			else if((integer = tree::node_cast<tree::Int *>(type)))
 			{
 				return new tree::IntLiteral(literal, integer);
 			}
-			else if((floatingPoint = dynamic_cast<tree::Float *>(type)))
+			else if((floatingPoint = tree::node_cast<tree::Float *>(type)))
 			{
 				return new tree::FloatLiteral(literal, floatingPoint);
 			}
-			else if((string = dynamic_cast<tree::String *>(type)))
+			else if((string = tree::node_cast<tree::String *>(type)))
 			{
 				return new tree::StringLiteral(literal, string);
 			}
@@ -97,11 +97,11 @@ tree::Node *operation::ComputeConstants::restructure(tree::BinaryOperation *bina
 {
 	LOG("ComputeConstants::restructure::BinaryOperation");
 
-	tree::Literal *lhsLiteral = dynamic_cast<tree::Literal *>(binaryOperation->getLHS());
+	tree::Literal *lhsLiteral = tree::node_cast<tree::Literal *>(binaryOperation->getLHS());
 
 	if(lhsLiteral)
 	{
-		tree::Literal *rhsLiteral = dynamic_cast<tree::Literal *>(binaryOperation->getRHS());
+		tree::Literal *rhsLiteral = tree::node_cast<tree::Literal *>(binaryOperation->getRHS());
 
 		ASSERT(lhsLiteral->getType());
 		ASSERT(rhsLiteral->getType());
@@ -132,7 +132,7 @@ tree::Node *operation::ComputeConstants::restructure(tree::UnaryOperation *unary
 {
 	LOG("ComputeConstants::restructure::UnaryOperation");
 
-	tree::Literal *literal = dynamic_cast<tree::Literal *>(unaryOperation->getExpression());
+	tree::Literal *literal = tree::node_cast<tree::Literal *>(unaryOperation->getExpression());
 
 	if(literal)
 	{

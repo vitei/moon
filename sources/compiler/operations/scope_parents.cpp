@@ -46,7 +46,7 @@ tree::Node *operation::ScopeParents::restructure(tree::GlobalScoping *globalScop
 {
 	LOG("ScopeParents::restructure::GlobalScoping");
 
-	tree::Function *function = dynamic_cast<tree::Function *>(globalScoping->getScoped());
+	tree::Function *function = tree::node_cast<tree::Function *>(globalScoping->getScoped());
 
 	if(function)
 	{
@@ -63,7 +63,7 @@ tree::Node *operation::ScopeParents::restructure(tree::SharedScoping *sharedScop
 {
 	LOG("ScopeParents::restructure::SharedScoping");
 
-	tree::Function *function = dynamic_cast<tree::Function *>(sharedScoping->getScoped());
+	tree::Function *function = tree::node_cast<tree::Function *>(sharedScoping->getScoped());
 
 	if(function)
 	{

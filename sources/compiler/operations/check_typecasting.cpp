@@ -22,13 +22,13 @@ void operation::CheckTypecasting::visit(tree::Cast *cast)
 	{
 		tree::Expression *expression = cast->getExpression();
 
-		if(dynamic_cast<tree::Void *>(expression->getType()))
+		if(tree::node_cast<tree::Void *>(expression->getType()))
 		{
-			ASSERT(dynamic_cast<tree::FunctionCall *>(expression));
+			ASSERT(tree::node_cast<tree::FunctionCall *>(expression));
 
 			tree::FunctionCall *functionCall = static_cast<tree::FunctionCall *>(expression);
 
-			ASSERT(dynamic_cast<tree::FunctionPrototype *>(functionCall->getPrototype()));
+			ASSERT(tree::node_cast<tree::FunctionPrototype *>(functionCall->getPrototype()));
 
 			std::string error = "Function \"" + static_cast<tree::FunctionPrototype *>(functionCall->getPrototype())->getName() + "\" does not return a value";
 

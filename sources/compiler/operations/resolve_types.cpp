@@ -21,7 +21,7 @@ void operation::ResolveTypes::visit(tree::Access *access)
 	{
 		ASSERT(access->getTarget());
 
-		tree::Expression *target = dynamic_cast<tree::Expression *>(static_cast<tree::Node *>(access->getTarget()));
+		tree::Expression *target = tree::node_cast<tree::Expression *>(access->getTarget());
 
 		if(target)
 		{
@@ -52,24 +52,33 @@ void operation::ResolveTypes::visit(tree::ArrayAccess *arrayAccess)
 	{
 		ASSERT(arrayAccess->getContainer());
 
-		tree::Type *type = arrayAccess->getContainer()->getType();
+		tree::Expression *container = tree::node_cast<tree::Expression *>(arrayAccess->getContainer());
 
-		if(type && type->isResolved())
+		if(container)
 		{
-			tree::Array *arrayType = dynamic_cast<tree::Array *>(type);
+			tree::Type *type = container->getType();
 
-			if(arrayType)
+			if(type && type->isResolved())
 			{
-				arrayAccess->setType(arrayType->getType());
+				tree::Array *arrayType = dynamic_cast<tree::Array *>(type);
+
+				if(arrayType)
+				{
+					arrayAccess->setType(arrayType->getType());
+				}
+				else
+				{
+					error::enqueue(arrayAccess->getLocation(), "Expression result is not an array");
+					arrayAccess->setContainer(NULL);
+				}
 			}
-			else
+
+			if(!arrayAccess->getType())
 			{
-				error::enqueue(arrayAccess->getLocation(), "Expression result is not an array");
-				arrayAccess->setContainer(NULL);
+				mValidated = false;
 			}
 		}
-
-		if(!arrayAccess->getType())
+		else
 		{
 			mValidated = false;
 		}
@@ -85,15 +94,25 @@ void operation::ResolveTypes::visit(tree::BinaryOperation *binaryOperation)
 		ASSERT(binaryOperation->getLHS());
 		ASSERT(binaryOperation->getRHS());
 
-		tree::Type *lhsType = binaryOperation->getLHS()->getType();
-		tree::Type *rhsType = binaryOperation->getRHS()->getType();
+		tree::Expression *lhs = tree::node_cast<tree::Expression *>(binaryOperation->getLHS());
+		tree::Expression *rhs = tree::node_cast<tree::Expression *>(binaryOperation->getRHS());
 
-		if(lhsType && lhsType->isResolved() && rhsType && rhsType->isResolved())
+		if(lhs && rhs)
 		{
-			setOperationType(binaryOperation, lhsType->canCast(*rhsType) ? lhsType : rhsType);
-		}
+			tree::Type *lhsType = lhs->getType();
+			tree::Type *rhsType = rhs->getType();
 
-		if(!binaryOperation->getType())
+			if(lhsType && lhsType->isResolved() && rhsType && rhsType->isResolved())
+			{
+				setOperationType(binaryOperation, lhsType->canCast(*rhsType) ? lhsType : rhsType);
+			}
+
+			if(!binaryOperation->getType())
+			{
+				mValidated = false;
+			}
+		}
+		else
 		{
 			mValidated = false;
 		}
@@ -108,14 +127,23 @@ void operation::ResolveTypes::visit(tree::Assign *assign)
 	{
 		ASSERT(assign->getLHS());
 
-		tree::Type *lhsType = assign->getLHS()->getType();
+		tree::Expression *lhs = tree::node_cast<tree::Expression *>(assign->getLHS());
 
-		if(lhsType && lhsType->isResolved())
+		if(lhs)
 		{
-			setOperationType(assign, lhsType);
-		}
+			tree::Type *lhsType = lhs->getType();
 
-		if(!assign->getType())
+			if(lhsType && lhsType->isResolved())
+			{
+				setOperationType(assign, lhsType);
+			}
+
+			if(!assign->getType())
+			{
+				mValidated = false;
+			}
+		}
+		else
 		{
 			mValidated = false;
 		}
@@ -138,14 +166,23 @@ void operation::ResolveTypes::visit(tree::UnaryOperation *unaryOperation)
 	{
 		ASSERT(unaryOperation->getExpression());
 
-		tree::Type *type = unaryOperation->getExpression()->getType();
+		tree::Expression *expression = tree::node_cast<tree::Expression *>(unaryOperation->getExpression());
 
-		if(type && type->isResolved())
+		if(expression)
 		{
-			setOperationType(unaryOperation, type);
-		}
+			tree::Type *type = expression->getType();
 
-		if(!unaryOperation->getType())
+			if(type && type->isResolved())
+			{
+				setOperationType(unaryOperation, type);
+			}
+
+			if(!unaryOperation->getType())
+			{
+				mValidated = false;
+			}
+		}
+		else
 		{
 			mValidated = false;
 		}
@@ -175,7 +212,7 @@ void operation::ResolveTypes::visit(tree::FunctionCall *functionCall)
 	{
 		ASSERT(functionCall->getPrototype());
 
-		tree::FunctionPrototype *functionPrototype = dynamic_cast<tree::FunctionPrototype *>(static_cast<tree::Node *>(functionCall->getPrototype()));
+		tree::FunctionPrototype *functionPrototype = tree::node_cast<tree::FunctionPrototype *>(functionCall->getPrototype());
 
 		if(functionPrototype)
 		{

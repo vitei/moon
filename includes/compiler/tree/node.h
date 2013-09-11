@@ -120,6 +120,11 @@ namespace tree
 
 	/* ---- ONLY CONCRETE CLASSES BELOW HERE ---- */
 
+	template <class T>
+	T const node_cast(tree::Node *node)
+	{
+		return dynamic_cast<T>(node);
+	}
 
 	/* ---- Helper macros ---- */
 

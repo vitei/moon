@@ -34,7 +34,7 @@ void operation::InferTypes::visit(tree::Assign *assign)
 
 	lhs->accept(this);
 
-	tree::TypedIdentity *identity = dynamic_cast<tree::TypedIdentity *>(lhs);
+	tree::TypedIdentity *identity = tree::node_cast<tree::TypedIdentity *>(lhs);
 
 	if(identity && !identity->getType())
 	{

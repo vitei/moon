@@ -45,7 +45,7 @@ void operation::ResolveIdentities::process()
 			mCurrentScope = visitNext.front();
 			visitNext.pop();
 
-			tree::Function *function = dynamic_cast<tree::Function *>(mCurrentScope);
+			tree::Function *function = tree::node_cast<tree::Function *>(mCurrentScope);
 
 			if(function)
 			{
@@ -223,7 +223,7 @@ void operation::ResolveIdentities::visit(tree::Expression *expression)
 		catch(tree::Expression::InvalidException &e)
 		{
 			ASSERT(e.expression);
-			ASSERT(dynamic_cast<tree::Identifier *>(e.expression));
+			ASSERT(tree::node_cast<tree::Identifier *>(e.expression));
 
 			tree::Identifier *identifier = (tree::Identifier *)e.expression;
 			std::string error = "The identifier \"" + identifier->getName() + "\" cannot be used in an expression";

@@ -17,39 +17,49 @@ void operation::CastExpressions::visit(tree::BinaryOperation *binaryOperation)
 {
 	LOG("CastExpressions::visit::BinaryOperation");
 
-	ASSERT(binaryOperation->getLHS());
-	ASSERT(binaryOperation->getRHS());
-
 	tree::Type *operationType = binaryOperation->getType();
 
 	if(operationType && operationType->isResolved())
 	{
-		tree::Type *lhsType = binaryOperation->getLHS()->getType();
-		tree::Type *rhsType = binaryOperation->getRHS()->getType();
+		ASSERT(binaryOperation->getLHS());
+		ASSERT(binaryOperation->getRHS());
 
-		if(lhsType && lhsType->isResolved())
+		tree::Expression *lhs = tree::node_cast<tree::Expression *>(binaryOperation->getLHS());
+		tree::Expression *rhs = tree::node_cast<tree::Expression *>(binaryOperation->getRHS());
+
+		if(lhs && rhs)
 		{
-			if(*lhsType != *operationType)
-			{
-				tree::Cast *cast = new tree::Cast(operationType, binaryOperation->getLHS(), true);
+			tree::Type *lhsType = lhs->getType();
+			tree::Type *rhsType = rhs->getType();
 
-				cast->setLocation(binaryOperation->getLocation());
-				binaryOperation->setLHS(cast);
+			if(lhsType && lhsType->isResolved())
+			{
+				if(*lhsType != *operationType)
+				{
+					tree::Cast *cast = new tree::Cast(operationType, lhs, true);
+
+					cast->setLocation(binaryOperation->getLocation());
+					binaryOperation->setLHS(cast);
+				}
 			}
-		}
-		else
-		{
-			mValidated = false;
-		}
-
-		if(rhsType && rhsType->isResolved())
-		{
-			if(*rhsType != *operationType)
+			else
 			{
-				tree::Cast *cast = new tree::Cast(operationType, binaryOperation->getRHS(), true);
+				mValidated = false;
+			}
 
-				cast->setLocation(binaryOperation->getLocation());
-				binaryOperation->setRHS(cast);
+			if(rhsType && rhsType->isResolved())
+			{
+				if(*rhsType != *operationType)
+				{
+					tree::Cast *cast = new tree::Cast(operationType, rhs, true);
+
+					cast->setLocation(binaryOperation->getLocation());
+					binaryOperation->setRHS(cast);
+				}
+			}
+			else
+			{
+				mValidated = false;
 			}
 		}
 		else
@@ -70,27 +80,37 @@ void operation::CastExpressions::visit(tree::BooleanBinaryOperation *booleanBina
 	ASSERT(booleanBinaryOperation->getLHS());
 	ASSERT(booleanBinaryOperation->getRHS());
 
-	tree::Type *typeA = booleanBinaryOperation->getLHS()->getType();
-	tree::Type *typeB = booleanBinaryOperation->getRHS()->getType();
+	tree::Expression *lhs = tree::node_cast<tree::Expression *>(booleanBinaryOperation->getLHS());
+	tree::Expression *rhs = tree::node_cast<tree::Expression *>(booleanBinaryOperation->getRHS());
 
-	if(typeA && typeA->isResolved() && typeB && typeB->isResolved())
+	if(lhs && rhs)
 	{
-		if(*typeA != *typeB)
+		tree::Type *typeA = lhs->getType();
+		tree::Type *typeB = rhs->getType();
+
+		if(typeA && typeA->isResolved() && typeB && typeB->isResolved())
 		{
-			if(typeA->canCast(*typeB, true))
+			if(*typeA != *typeB)
 			{
-				tree::Cast *cast = new tree::Cast(typeA, booleanBinaryOperation->getRHS(), true);
+				if(typeA->canCast(*typeB, true))
+				{
+					tree::Cast *cast = new tree::Cast(typeA, rhs, true);
 
-				cast->setLocation(booleanBinaryOperation->getLocation());
-				booleanBinaryOperation->setRHS(cast);
-			}
-			else
-			{
-				tree::Cast *cast = new tree::Cast(typeB, booleanBinaryOperation->getLHS(), true);
+					cast->setLocation(booleanBinaryOperation->getLocation());
+					booleanBinaryOperation->setRHS(cast);
+				}
+				else
+				{
+					tree::Cast *cast = new tree::Cast(typeB, lhs, true);
 
-				cast->setLocation(booleanBinaryOperation->getLocation());
-				booleanBinaryOperation->setLHS(cast);
+					cast->setLocation(booleanBinaryOperation->getLocation());
+					booleanBinaryOperation->setLHS(cast);
+				}
 			}
+		}
+		else
+		{
+			mValidated = false;
 		}
 	}
 	else
@@ -105,7 +125,7 @@ void operation::CastExpressions::visit(tree::FunctionCall *functionCall)
 
 	ASSERT(functionCall->getPrototype());
 
-	tree::FunctionPrototype *functionPrototype = dynamic_cast<tree::FunctionPrototype *>(static_cast<tree::Node *>(functionCall->getPrototype()));
+	tree::FunctionPrototype *functionPrototype = tree::node_cast<tree::FunctionPrototype *>(functionCall->getPrototype());
 
 	if(functionPrototype)
 	{
@@ -167,24 +187,27 @@ void operation::CastExpressions::visit(tree::If *ifStatement)
 {
 	LOG("CastExpressions::setup::If");
 
-	tree::Expression *test = ifStatement->getTest();
+	ASSERT(ifStatement->getTest());
 
-	ASSERT(test);
+	tree::Expression *test = tree::node_cast<tree::Expression *>(ifStatement->getTest());
 
-	tree::Type *type = test->getType();
-
-	if(type && type->isResolved())
+	if(test)
 	{
-		if(!dynamic_cast<tree::Bool *>(type))
+		tree::Type *type = test->getType();
+
+		if(type && type->isResolved())
 		{
-#ifdef DEBUG
-			type->printType();
-#endif
+			if(!dynamic_cast<tree::Bool *>(type))
+			{
+				tree::Cast *cast = new tree::Cast(new tree::Bool(), test, true);
 
-			tree::Cast *cast = new tree::Cast(new tree::Bool(), test, true);
-
-			cast->setLocation(test->getLocation());
-			ifStatement->setTest(cast);
+				cast->setLocation(test->getLocation());
+				ifStatement->setTest(cast);
+			}
+		}
+		else
+		{
+			mValidated = false;
 		}
 	}
 	else
@@ -197,24 +220,27 @@ void operation::CastExpressions::visit(tree::While *whileStatement)
 {
 	LOG("CastExpressions::visit::While");
 
-	tree::Expression *test = whileStatement->getTest();
+	ASSERT(whileStatement->getTest());
 
-	ASSERT(test);
+	tree::Expression *test = tree::node_cast<tree::Expression *>(whileStatement->getTest());
 
-	tree::Type *type = test->getType();
-
-	if(type && type->isResolved())
+	if(test)
 	{
-		if(!dynamic_cast<tree::Bool *>(type))
+		tree::Type *type = test->getType();
+
+		if(type && type->isResolved())
 		{
-#ifdef DEBUG
-			type->printType();
-#endif
+			if(!dynamic_cast<tree::Bool *>(type))
+			{
+				tree::Cast *cast = new tree::Cast(new tree::Bool(), test, true);
 
-			tree::Cast *cast = new tree::Cast(new tree::Bool(), test, true);
-
-			cast->setLocation(test->getLocation());
-			whileStatement->setTest(cast);
+				cast->setLocation(test->getLocation());
+				whileStatement->setTest(cast);
+			}
+		}
+		else
+		{
+			mValidated = false;
 		}
 	}
 	else
@@ -228,11 +254,10 @@ void operation::CastExpressions::visit(tree::Return *returnStatement)
 	LOG("CastExpressions::visit::Return");
 
 	tree::Type *type = mPrototype->getType();
-	tree::Expression *returnExpression = returnStatement->getReturn();
 
 	if(type && type->isResolved())
 	{
-		if(!returnExpression)
+		if(!returnStatement->getReturn())
 		{
 			if(*type != tree::Void())
 			{
@@ -242,16 +267,25 @@ void operation::CastExpressions::visit(tree::Return *returnStatement)
 		}
 		else
 		{
-			tree::Type *returnType = returnExpression->getType();
+			tree::Expression *returnExpression = tree::node_cast<tree::Expression *>(returnStatement->getReturn());
 
-			if(returnType && returnType->isResolved())
+			if(returnExpression)
 			{
-				if(*returnType != *type)
-				{
-					tree::Cast *cast = new tree::Cast(type, returnExpression, true);
+				tree::Type *returnType = returnExpression->getType();
 
-					cast->setLocation(returnStatement->getLocation());
-					returnStatement->setReturn(cast);
+				if(returnType && returnType->isResolved())
+				{
+					if(*returnType != *type)
+					{
+						tree::Cast *cast = new tree::Cast(type, returnExpression, true);
+
+						cast->setLocation(returnStatement->getLocation());
+						returnStatement->setReturn(cast);
+					}
+				}
+				else
+				{
+					mValidated = false;
 				}
 			}
 			else
