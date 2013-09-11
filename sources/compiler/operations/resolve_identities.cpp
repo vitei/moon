@@ -239,7 +239,7 @@ void operation::ResolveIdentities::visit(tree::Assign *assign)
 {
 	LOG("ResolveIdentities::visit::Assign");
 
-	//static_cast<tree::Expression *>(assign)->childAccept(this);
+	assign->Expression::childAccept(this);
 
 	if(assign->getRHS())
 	{
@@ -253,7 +253,7 @@ void operation::ResolveIdentities::visit(tree::Assign *assign)
 		mCanCreateIdentifier = false;
 	}
 
-	operation::Restructure::visit(static_cast<tree::Expression *>(assign));
+	operation::Restructure::visit(assign);
 }
 
 tree::Node *operation::ResolveIdentities::restructure(tree::Identifier *identifier)
