@@ -3,6 +3,7 @@
 
 #include <map>
 #include <queue>
+#include "compiler/behaviours/named_map.h"
 #include "compiler/tree.h"
 #include "restructure.h"
 
@@ -26,19 +27,23 @@ namespace operation
 		virtual void visit(tree::TypeDefinition *typeDefinition);
 		virtual void visit(tree::Expression *expression);
 		virtual void visit(tree::Assign *assign);
+		virtual void visit(tree::ArrayAccess *arrayAccess);
 		virtual void visit(tree::DirectAccess *directAccess);
+		virtual void visit(tree::Member *member);
 
 		virtual tree::Node *restructure(tree::Identifier *identifier);
 
 		virtual bool doProcessChildren(tree::Assign *assign) { return false; }
+		virtual bool doProcessChildren(tree::ArrayAccess *arrayAccess) { return false; }
 		virtual bool doProcessChildren(tree::DirectAccess *directAccess) { return false; }
+		virtual bool doProcessChildren(tree::Member *member) { return false; }
 
 	private:
-		ResolveIdentities() : mValidated(false), mCanCreateIdentifier(false), mCurrentUDT(NULL) {}
+		ResolveIdentities() : mValidated(false), mCanCreateIdentifier(false), mCurrentMap(NULL) {}
 
 		bool mValidated;
 		bool mCanCreateIdentifier;
-		tree::UDT *mCurrentUDT;
+		behaviour::NamedMap *mCurrentMap;
 		std::map< tree::Scope *, std::queue<tree::Scope *> > mVisitList;
 	};
 }

@@ -45,6 +45,8 @@ void operation::ResolveIdentities::process()
 			mCurrentScope = visitNext.front();
 			visitNext.pop();
 
+			mCurrentMap = mCurrentScope;
+
 			tree::Function *function = tree::node_cast<tree::Function *>(mCurrentScope);
 
 			if(function)
@@ -117,9 +119,9 @@ void operation::ResolveIdentities::dispatch(tree::Import *import)
 
 void operation::ResolveIdentities::dispatch(tree::UDT *udt)
 {
-	tree::UDT *oldUDT = mCurrentUDT;
+	behaviour::NamedMap *oldMap = mCurrentMap;
 
-	mCurrentUDT = udt;
+	mCurrentMap = udt;
 
 	tree::Members *members = udt->getMembers();
 	ASSERT(members);
@@ -142,7 +144,7 @@ void operation::ResolveIdentities::dispatch(tree::UDT *udt)
 		}
 	}
 
-	mCurrentUDT = oldUDT;
+	mCurrentMap = oldMap;
 
 	operation::Restructure::dispatch(static_cast<tree::Type *>(udt));
 }
@@ -151,15 +153,13 @@ void operation::ResolveIdentities::visit(tree::TypeDefinition *typeDefinition)
 {
 	LOG("ResolveIdentities::visit::TypeDefinition");
 
-	ASSERT(!mCurrentUDT);
-
 	try
 	{
-		mCurrentScope->mapNamedNode(typeDefinition->getName(), typeDefinition->getType());
+		mCurrentMap->mapNamedNode(typeDefinition->getName(), typeDefinition->getType());
 	}
 	catch(behaviour::NamedMap::ExistsException &e)
 	{
-		std::string error = "The identifier \"" + typeDefinition->getName() + "\" is already defined";
+		std::string error = "The type \"" + typeDefinition->getName() + "\" is already defined";
 		error::enqueue(e.conflict->getLocation(), e.node->getLocation(), error);
 	}
 
@@ -172,8 +172,7 @@ void operation::ResolveIdentities::visit(tree::Identity *identity)
 
 	try
 	{
-		behaviour::NamedMap *map = mCurrentUDT ? static_cast<behaviour::NamedMap *>(mCurrentUDT) : static_cast<behaviour::NamedMap *>(mCurrentScope);
-		map->mapNamedNode(identity->getName(), identity);
+		mCurrentMap->mapNamedNode(identity->getName(), identity);
 	}
 	catch(behaviour::NamedMap::ExistsException &e)
 	{
@@ -196,7 +195,6 @@ void operation::ResolveIdentities::visit(tree::Expression *expression)
 	{
 		try
 		{
-			//operation::Restructure::visit(expression);
 			operation::Restructure::visit(static_cast<tree::Node *>(expression));
 			break;
 		}
@@ -232,6 +230,9 @@ void operation::ResolveIdentities::visit(tree::Expression *expression)
 			e.reset();
 			mNodeMap = nodeMapClone;
 		}
+
+		// On error, restore the default resolution scope
+		mCurrentMap = mCurrentScope;
 	}
 }
 
@@ -248,7 +249,9 @@ void operation::ResolveIdentities::visit(tree::Assign *assign)
 
 	if(assign->getLHS())
 	{
-		mCanCreateIdentifier = true;
+		// Only create the identifier if we're assigning to an identifier
+		mCanCreateIdentifier = tree::node_cast<tree::Identifier *>(assign->getLHS());
+
 		assign->getLHS()->accept(this);
 		mCanCreateIdentifier = false;
 	}
@@ -256,56 +259,82 @@ void operation::ResolveIdentities::visit(tree::Assign *assign)
 	operation::Restructure::visit(assign);
 }
 
+void operation::ResolveIdentities::visit(tree::ArrayAccess *arrayAccess)
+{
+	LOG("ResolveIdentities::visit::ArrayAccess");
+
+	arrayAccess->Expression::childAccept(this);
+
+	if(arrayAccess->getContainer())
+	{
+		arrayAccess->getContainer()->accept(this);
+	}
+
+	if(arrayAccess->getTarget())
+	{
+		behaviour::NamedMap *oldMap = mCurrentMap;
+
+		mCurrentMap = mCurrentScope;
+		arrayAccess->getTarget()->accept(this);
+		mCurrentMap = oldMap;
+	}
+
+	operation::Restructure::visit(arrayAccess);
+}
+
 void operation::ResolveIdentities::visit(tree::DirectAccess *directAccess)
 {
 	LOG("ResolveIdentities::visit::DirectAccess");
 
-	tree::Expression *container = directAccess->getContainer();
+	directAccess->Expression::childAccept(this);
 
-	if(container)
+	if(directAccess->getContainer())
 	{
-		container->accept(this);
-
-		RESTRUCTURE_GET(container, tree::Expression, container);
-		directAccess->setContainer(container);
+		directAccess->getContainer()->accept(this);
 	}
 
-	tree::Identifier *identifier = tree::node_cast<tree::Identifier *>(directAccess->getTarget());
-
-	if(identifier)
+	if(directAccess->getTarget())
 	{
+		tree::Expression *container = tree::node_cast<tree::Expression *>(directAccess->getContainer());
 		tree::Type *type;
-
-		container = tree::node_cast<tree::Expression *>(container);
 
 		if(container && (type = container->getType()) && type->isResolved())
 		{
-			tree::UDT *udt;
+			// Should check that the type is a UDT somewhere...
+			// FIXME
+			//
+			behaviour::NamedMap *oldMap = mCurrentMap;
 
-			if((udt = tree::node_cast<tree::UDT *>(type)))
-			{
-				try
-				{
-					directAccess->setTarget(static_cast<tree::Member *>(udt->findNamedNode(identifier)));
-				}
-				catch(behaviour::NamedMap::NotFoundException &e)
-				{
-					std::string error = "The type \"" + udt->getName() + "\" does not contain a member named \"" + identifier->getName() + "\"";
-					error::enqueue(identifier->getLocation(), error);
-				}
-			}
-			else
-			{
-				ERROR("FIXME");
-			}
+			mCurrentMap = static_cast<tree::UDT *>(type); // FIXME
+			directAccess->getTarget()->accept(this);
+			mCurrentMap = oldMap;
 		}
 		else
 		{
+			mNodeMap.push(directAccess->getTarget());
 			mValidated = false;
 		}
 	}
 
-	mNodeMap.push(directAccess);
+	operation::Restructure::visit(directAccess);
+}
+
+void operation::ResolveIdentities::visit(tree::Member *member)
+{
+	LOG("ResolveIdentities::visit::Member");
+
+	member->Node::childAccept(this);
+
+	if(member->getType())
+	{
+		behaviour::NamedMap *oldMap = mCurrentMap;
+
+		mCurrentMap = mCurrentScope;
+		member->getType()->accept(this);
+		mCurrentMap = oldMap;
+	}
+
+	visit(static_cast<tree::Identity *>(member));
 }
 
 tree::Node *operation::ResolveIdentities::restructure(tree::Identifier *identifier)
@@ -316,7 +345,7 @@ tree::Node *operation::ResolveIdentities::restructure(tree::Identifier *identifi
 
 	try
 	{
-		r = getCurrentScope()->findNamedNode(identifier);
+		r = mCurrentMap->findNamedNode(identifier);
 	}
 	catch(behaviour::NamedMap::NotFoundException &e)
 	{
@@ -325,14 +354,24 @@ tree::Node *operation::ResolveIdentities::restructure(tree::Identifier *identifi
 			tree::Variable *variable = new tree::Variable(NULL, identifier->getName());
 
 			variable->setLocation(identifier->getLocation());
-			getCurrentScope()->mapNamedNode(variable->getName(), variable);
+			mCurrentMap->mapNamedNode(variable->getName(), variable);
 
 			r = variable;
 		}
 		else
 		{
-			std::string error = "The identifier \"" + identifier->getName() + "\" does not exist";
-			error::enqueue(identifier->getLocation(), error);
+			tree::UDT *udt = dynamic_cast<tree::UDT *>(mCurrentMap);
+
+			if(udt)
+			{
+				std::string error = "The type \"" + udt->getName() + "\" does not contain a member named \"" + identifier->getName() + "\"";
+				error::enqueue(identifier->getLocation(), error);
+			}
+			else
+			{
+				std::string error = "The identifier \"" + identifier->getName() + "\" does not exist";
+				error::enqueue(identifier->getLocation(), error);
+			}
 		}
 	}
 
