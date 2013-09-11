@@ -83,7 +83,7 @@ void resolveProgram(tree::Program *program)
 		NULL
 	};
 
-	for(bool validated = false; !validated; validated = doValidatingOperations(*program, operations))
+	for(bool validated = false; !validated && !error::count(); validated = doValidatingOperations(*program, operations))
 		;
 }
 
