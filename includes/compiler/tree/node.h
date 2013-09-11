@@ -125,7 +125,7 @@ namespace tree
 
 	// This is rather ugly but it saves a LOT of typing...
 	#define DISPATCH_ACTIONS(class, node, function) \
-		if(dynamic_cast<class *>(node)) \
+		if(dynamic_cast<class *>(static_cast<tree::Node *>(node))) \
 		{ \
 			return function(static_cast<class *>(node)); \
 		}
@@ -206,7 +206,7 @@ namespace tree
 		ERROR("Unknown concrete class");
 
 	#define ASSIGN_ACTIONS(dst, class, node, function) \
-		if(dynamic_cast<class *>(node)) \
+		if(dynamic_cast<class *>(static_cast<tree::Node *>(node))) \
 		{ \
 			dst = function(static_cast<class *>(node)); \
 		}
