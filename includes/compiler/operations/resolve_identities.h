@@ -39,10 +39,11 @@ namespace operation
 		virtual bool doProcessChildren(tree::Member *member) { return false; }
 
 	private:
-		ResolveIdentities() : mValidated(false), mCanCreateIdentifier(false), mCurrentMap(NULL) {}
+		ResolveIdentities() : mValidated(false), mCanCreateIdentifier(false), mCanMapIdentifier(true), mCurrentMap(NULL) {}
 
 		bool mValidated;
 		bool mCanCreateIdentifier;
+		bool mCanMapIdentifier;
 		behaviour::NamedMap *mCurrentMap;
 		std::map< tree::Scope *, std::queue<tree::Scope *> > mVisitList;
 	};

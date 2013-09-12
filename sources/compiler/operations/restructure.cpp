@@ -211,9 +211,9 @@ void operation::Restructure::dispatch(tree::Import *import)
 	if(functionPrototype)
 	{
 		tree::Expressions *expressions = functionPrototype->getArguments();
-		tree::Scope *oldScope = mCurrentScope;
+		//tree::Scope *oldScope = mCurrentScope;
 
-		mCurrentScope = NULL;
+		//mCurrentScope = NULL;
 
 		if(expressions)
 		{
@@ -236,7 +236,7 @@ void operation::Restructure::dispatch(tree::Import *import)
 			}
 		}
 
-		mCurrentScope = oldScope;
+		//mCurrentScope = oldScope;
 	}
 
 	dispatch(static_cast<tree::Statement *>(import));

@@ -1380,6 +1380,7 @@ void generator::C::Printer::outputType(tree::Type *type)
 	else
 	{
 #ifdef DEBUG
+		type->printNode();
 		type->printType();
 #endif
 		ERROR("Unknown type");

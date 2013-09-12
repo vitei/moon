@@ -107,14 +107,9 @@ void operation::ResolveIdentities::dispatch(tree::Function *function)
 
 void operation::ResolveIdentities::dispatch(tree::Import *import)
 {
-	tree::FunctionPrototype *functionPrototype = NULL;
-
-	RESTRUCTURE_GET(functionPrototype, tree::FunctionPrototype, import->getPrototype());
-	import->setPrototype(functionPrototype);
-
-	// For this, operation there is no point in processing the parameters for imports...
-
-	operation::Restructure::dispatch(static_cast<tree::Statement *>(import));
+	mCanMapIdentifier = false;
+	operation::Restructure::dispatch(import);
+	mCanMapIdentifier = true;
 }
 
 void operation::ResolveIdentities::dispatch(tree::UDT *udt)
@@ -153,14 +148,17 @@ void operation::ResolveIdentities::visit(tree::TypeDefinition *typeDefinition)
 {
 	LOG("ResolveIdentities::visit::TypeDefinition");
 
-	try
+	if(mCanMapIdentifier)
 	{
-		mCurrentMap->mapNamedNode(typeDefinition->getName(), typeDefinition->getType());
-	}
-	catch(behaviour::NamedMap::ExistsException &e)
-	{
-		std::string error = "The type \"" + typeDefinition->getName() + "\" is already defined";
-		error::enqueue(e.conflict->getLocation(), e.node->getLocation(), error);
+		try
+		{
+			mCurrentMap->mapNamedNode(typeDefinition->getName(), typeDefinition->getType());
+		}
+		catch(behaviour::NamedMap::ExistsException &e)
+		{
+			std::string error = "The type \"" + typeDefinition->getName() + "\" is already defined";
+			error::enqueue(e.conflict->getLocation(), e.node->getLocation(), error);
+		}
 	}
 
 	operation::Restructure::visit(typeDefinition);
@@ -170,14 +168,17 @@ void operation::ResolveIdentities::visit(tree::Identity *identity)
 {
 	LOG("ResolveIdentities::visit::Identity");
 
-	try
+	if(mCanMapIdentifier)
 	{
-		mCurrentMap->mapNamedNode(identity->getName(), identity);
-	}
-	catch(behaviour::NamedMap::ExistsException &e)
-	{
-		std::string error = "The identifier \"" + identity->getName() + "\" is already defined";
-		error::enqueue(e.conflict->getLocation(), e.node->getLocation(), error);
+		try
+		{
+			mCurrentMap->mapNamedNode(identity->getName(), identity);
+		}
+		catch(behaviour::NamedMap::ExistsException &e)
+		{
+			std::string error = "The identifier \"" + identity->getName() + "\" is already defined";
+			error::enqueue(e.conflict->getLocation(), e.node->getLocation(), error);
+		}
 	}
 
 	operation::Restructure::visit(identity);
