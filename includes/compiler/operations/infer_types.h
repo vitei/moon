@@ -1,6 +1,7 @@
 #ifndef COMPILER_OPERATIONS_INFER_TYPES_H
 #define COMPILER_OPERATIONS_INFER_TYPES_H
 
+#include <list>
 #include <map>
 #include "compiler/tree.h"
 #include "operation.h"
@@ -15,6 +16,7 @@ namespace operation
 
 		virtual void visit(tree::Assign *assign);
 		virtual void visit(tree::Identity *identity);
+		virtual void visit(tree::Identifier *identifier);
 		virtual void visit(tree::Function *function);
 		virtual void visit(tree::Scope *scope);
 		virtual void visit(tree::Return *returnStatement);
@@ -31,6 +33,8 @@ namespace operation
 
 		tree::TypedIdentity *mAssignIdentity;
 		bool mSelfReference;
+
+		std::list<tree::Identity *> mAccessedUnresolvedIdentities;
 	};
 }
 

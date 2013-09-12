@@ -1,3 +1,4 @@
+#include "compiler/error.h"
 #include "compiler/operations.h"
 #include "compiler/tree.h"
 
@@ -18,6 +19,15 @@ bool operation::InferTypes::run(tree::Program *program)
 		else
 		{
 			operation.mValidated = false;
+		}
+	}
+
+	if(operation.mValidated && !operation.mAccessedUnresolvedIdentities.empty())
+	{
+		for(std::list<tree::Identity *>::iterator i = operation.mAccessedUnresolvedIdentities.begin(), e = operation.mAccessedUnresolvedIdentities.end(); i != e; ++i)
+		{
+			std::string error = "The type of identifier \"" + (*i)->getName() + "\" could not be inferred";
+			error::enqueue((*i)->getLocation(), error);
 		}
 	}
 
@@ -81,6 +91,19 @@ void operation::InferTypes::visit(tree::Identity *identity)
 	{
 		mSelfReference = true;
 	}
+
+	if(!identity->getType())
+	{
+		mAccessedUnresolvedIdentities.push_back(identity);
+	}
+}
+
+void operation::InferTypes::visit(tree::Identifier *identifier)
+{
+	LOG("InferTypes::visit::Identifier");
+
+	// Can't be sure of types when there are still identifiers...
+	mValidated = false;
 }
 
 void operation::InferTypes::visit(tree::Function *function)
