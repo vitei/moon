@@ -27,7 +27,7 @@
     #define YYLLOC_DEFAULT(Current, Rhs, N) \
         do \
         { \
-            if(YYID(N)) \
+            if(N) \
             { \
                 (Current).filename = YYRHSLOC(Rhs, 1).filename; \
                 (Current).start = YYRHSLOC(Rhs, 1).start; \
@@ -39,7 +39,7 @@
                 (Current).start = (Current).end = YYRHSLOC(Rhs, 0).end; \
             } \
         } \
-        while(YYID(0));
+        while(0);
 %}
 
 /* GLR */
