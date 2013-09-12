@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <ostream>
 #include "compiler/generators.h"
 #include "compiler/operations.h"

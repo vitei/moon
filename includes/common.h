@@ -1,6 +1,9 @@
 #ifndef COMMON_H
 #define COMMON_H
 
+#include <cstdlib>
+
+
 #ifndef NULL
 	#define NULL 0
 #endif
@@ -14,7 +17,6 @@
 #ifdef DEBUG
 	#include <iostream>
 	#include <cstdio>
-	#include <cstdlib>
 
 	#define ASSERT(test) \
 	{ \
