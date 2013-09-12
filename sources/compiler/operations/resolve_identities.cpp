@@ -300,14 +300,25 @@ void operation::ResolveIdentities::visit(tree::DirectAccess *directAccess)
 
 		if(container && (type = container->getType()) && type->isResolved())
 		{
-			// Should check that the type is a UDT somewhere...
-			// FIXME
-			//
-			behaviour::NamedMap *oldMap = mCurrentMap;
+			tree::UDT *udt = tree::node_cast<tree::UDT *>(type);;
 
-			mCurrentMap = static_cast<tree::UDT *>(type); // FIXME
-			directAccess->getTarget()->accept(this);
-			mCurrentMap = oldMap;
+			// FIXME, is this the best??
+			// We could do this using exceptions...
+			if(udt)
+			{
+				behaviour::NamedMap *oldMap = mCurrentMap;
+
+				mCurrentMap = udt;
+				directAccess->getTarget()->accept(this);
+				mCurrentMap = oldMap;
+			}
+			else
+			{
+				std::string error = std::string("No members for type \"") + type->getTypeName() + "\"";
+				error::enqueue(directAccess->getLocation(), error);
+
+				mNodeMap.push(NULL); // FIXME
+			}
 		}
 		else
 		{
