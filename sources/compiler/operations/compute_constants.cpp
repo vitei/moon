@@ -104,10 +104,11 @@ tree::Node *operation::ComputeConstants::restructure(tree::BinaryOperation *bina
 		tree::Literal *rhsLiteral = tree::node_cast<tree::Literal *>(binaryOperation->getRHS());
 
 		ASSERT(lhsLiteral->getType());
-		ASSERT(rhsLiteral->getType());
 
 		if(rhsLiteral)
 		{
+			ASSERT(rhsLiteral->getType());
+
 			tree::Type *lhsType = lhsLiteral->getType();
 			tree::Type *rhsType = rhsLiteral->getType();
 
