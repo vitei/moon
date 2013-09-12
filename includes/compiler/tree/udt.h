@@ -36,6 +36,8 @@ namespace tree
 			return mName;
 		}
 
+		bool canPerform(const Operation &operation) const;
+
 		virtual const char *getTypeName() const
 		{
 			return mName.c_str();
