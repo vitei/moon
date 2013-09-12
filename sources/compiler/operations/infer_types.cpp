@@ -24,10 +24,14 @@ bool operation::InferTypes::run(tree::Program *program)
 
 	if(operation.mValidated && !operation.mAccessedUnresolvedIdentities.empty())
 	{
-		for(std::list<tree::Identity *>::iterator i = operation.mAccessedUnresolvedIdentities.begin(), e = operation.mAccessedUnresolvedIdentities.end(); i != e; ++i)
+		for(std::set<tree::Identity *>::iterator i = operation.mAccessedUnresolvedIdentities.begin(), e = operation.mAccessedUnresolvedIdentities.end(); i != e; ++i)
 		{
-			std::string error = "The type of identifier \"" + (*i)->getName() + "\" could not be inferred";
-			error::enqueue((*i)->getLocation(), error);
+			// We need to check the type again because it might have been assigned one by now...
+			if(!(*i)->getType())
+			{
+				std::string error = "The type of identifier \"" + (*i)->getName() + "\" could not be inferred";
+				error::enqueue((*i)->getLocation(), error);
+			}
 		}
 	}
 
@@ -94,7 +98,7 @@ void operation::InferTypes::visit(tree::Identity *identity)
 
 	if(!identity->getType())
 	{
-		mAccessedUnresolvedIdentities.push_back(identity);
+		mAccessedUnresolvedIdentities.insert(identity);
 	}
 }
 

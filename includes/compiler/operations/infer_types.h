@@ -1,8 +1,8 @@
 #ifndef COMPILER_OPERATIONS_INFER_TYPES_H
 #define COMPILER_OPERATIONS_INFER_TYPES_H
 
-#include <list>
 #include <map>
+#include <set>
 #include "compiler/tree.h"
 #include "operation.h"
 
@@ -34,7 +34,7 @@ namespace operation
 		tree::TypedIdentity *mAssignIdentity;
 		bool mSelfReference;
 
-		std::list<tree::Identity *> mAccessedUnresolvedIdentities;
+		std::set<tree::Identity *> mAccessedUnresolvedIdentities;
 	};
 }
 
