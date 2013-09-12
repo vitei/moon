@@ -90,12 +90,13 @@ void operation::InferTypes::visit(tree::Function *function)
 	mPrototype = function->getPrototype();
 	ASSERT(mPrototype);
 
-	if(!mPrototype->getType())
+	visit(static_cast<tree::Scope *>(function));
+
+	if(!mPrototype->getType() && mTypeResolution.find(mPrototype) == mTypeResolution.end())
 	{
 		mTypeResolution[mPrototype] = new tree::Void();
 	}
 
-	visit(static_cast<tree::Scope *>(function));
 	mPrototype = NULL;
 }
 
@@ -120,6 +121,7 @@ void operation::InferTypes::visit(tree::Return *returnStatement)
 		tree::Type *returnType = returnStatement->getReturn()->getType();
 
 		if(   !returnType                                                                         // If this type is not resolved then flag we can't process it
+		   || mTypeResolution.find(mPrototype) == mTypeResolution.end()                           // If the return type hasn't been added yet then add it
 		   || (mTypeResolution[mPrototype] && returnType->canCast(*mTypeResolution[mPrototype]))) // If there is a current type and the return type can handle it then use the return type
 		{
 			mTypeResolution[mPrototype] = returnType;
