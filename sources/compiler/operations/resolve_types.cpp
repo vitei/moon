@@ -236,6 +236,40 @@ void operation::ResolveTypes::visit(tree::FunctionCall *functionCall)
 	}
 }
 
+void operation::ResolveTypes::visit(tree::IfExpression *ifExpression)
+{
+	LOG("ResolveTypes::visit::IfExpression");
+
+	if(!ifExpression->getType())
+	{
+		ASSERT(ifExpression->getTrueResult());
+		ASSERT(ifExpression->getFalseResult());
+
+		tree::Expression *trueResult = tree::node_cast<tree::Expression *>(ifExpression->getTrueResult());
+		tree::Expression *falseResult = tree::node_cast<tree::Expression *>(ifExpression->getFalseResult());
+
+		if(trueResult && falseResult)
+		{
+			tree::Type *trueResultType = trueResult->getType();
+			tree::Type *falseResultType = falseResult->getType();
+
+			if(trueResultType && trueResultType->isResolved() && falseResultType && falseResultType->isResolved())
+			{
+				ifExpression->setType(trueResultType->canCast(*falseResultType) ? trueResultType : falseResultType);
+			}
+
+			if(!ifExpression->getType())
+			{
+				mValidated = false;
+			}
+		}
+		else
+		{
+			mValidated = false;
+		}
+	}
+}
+
 void operation::ResolveTypes::visit(tree::Scope *scope)
 {
 	tree::Statements *statements = scope->getStatements();

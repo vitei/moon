@@ -172,6 +172,24 @@ void operation::Restructure::dispatch(tree::FunctionCall *functionCall)
 	dispatch(static_cast<tree::Expression *>(functionCall));
 }
 
+void operation::Restructure::dispatch(tree::IfExpression *ifExpression)
+{
+	tree::Expression *mFalseResult = NULL;
+	tree::Expression *mTrueResult = NULL;
+	tree::Expression *mTest = NULL;
+
+	RESTRUCTURE_GET(mFalseResult, tree::Expression, ifExpression->getFalseResult());
+	ifExpression->setFalseResult(mFalseResult);
+
+	RESTRUCTURE_GET(mTrueResult, tree::Expression, ifExpression->getTrueResult());
+	ifExpression->setTrueResult(mTrueResult);
+
+	RESTRUCTURE_GET(mTest, tree::Expression, ifExpression->getTest());
+	ifExpression->setTest(mTest);
+
+	dispatch(static_cast<tree::Expression *>(ifExpression));
+}
+
 void operation::Restructure::dispatch(tree::Function *function)
 {
 	tree::FunctionPrototype *functionPrototype = NULL;

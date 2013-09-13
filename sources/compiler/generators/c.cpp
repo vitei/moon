@@ -848,6 +848,15 @@ void generator::C::Printer::output(tree::Cast *cast)
 	*mOutput << ")";
 }
 
+void generator::C::Printer::output(tree::IfExpression *ifExpression)
+{
+	dispatch(ifExpression->getTest());
+	*mOutput << " ? ";
+	dispatch(ifExpression->getTrueResult());
+	*mOutput << " : ";
+	dispatch(ifExpression->getFalseResult());
+}
+
 void generator::C::Printer::output(tree::DirectAccess *directAccess)
 {
 	dispatch(directAccess->getContainer());

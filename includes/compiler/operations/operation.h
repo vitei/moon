@@ -79,6 +79,7 @@ namespace operation
 		 \
 		PROCESS_ACTION(tree::Expression, tree::Cast, return_type, name) \
 		PROCESS_ACTION(tree::Expression, tree::FunctionCall, return_type, name) \
+		PROCESS_ACTION(tree::Expression, tree::IfExpression, return_type, name) \
 		 \
 		PROCESS_ACTION(tree::Literal, tree::BoolLiteral, return_type, name) \
 		PROCESS_ACTION(tree::Literal, tree::StringLiteral, return_type, name) \

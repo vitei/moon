@@ -34,6 +34,7 @@ namespace generator
 			void output(tree::FunctionPrototype *functionPrototype);
 			void output(tree::Identity *identity);
 			void output(tree::Cast *cast);
+			void output(tree::IfExpression *ifExpression);
 			void output(tree::DirectAccess *directAccess);
 			void output(tree::MessageAccess *messageAccess);
 			void output(tree::ArrayAccess *arrayAccess);

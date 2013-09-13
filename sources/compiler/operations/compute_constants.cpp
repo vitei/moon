@@ -78,6 +78,31 @@ tree::Node *operation::ComputeConstants::restructure(tree::Cast *cast)
 	return cast;
 }
 
+tree::Node *operation::ComputeConstants::restructure(tree::IfExpression *ifExpression)
+{
+	LOG("ComputeConstants::restructure::IfExpression");
+
+	tree::Literal *literal = tree::node_cast<tree::Literal *>(ifExpression->getTest());
+
+	if(literal)
+	{
+		tree::Type *type = ifExpression->getType();
+
+		if(type && type->isResolved())
+		{
+			tree::BoolLiteral *value = static_cast<tree::BoolLiteral *>(literal);
+
+			return value->getValue() ? ifExpression->getTrueResult() : ifExpression->getFalseResult();
+		}
+		else
+		{
+			mValidated = false;
+		}
+	}
+
+	return ifExpression;
+}
+
 tree::Node *operation::ComputeConstants::restructure(tree::Constant *constant)
 {
 	LOG("ComputeConstants::restructure::Constant");

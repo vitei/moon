@@ -235,6 +235,7 @@
 %type<expressions> o_argument_expressions
 %type<expressions> argument_expressions
 %type<expression> expression_atom
+%type<expression> conditional_expression
 %type<type> type
 %type<id> identifier
 %type<id> name
@@ -1680,11 +1681,33 @@ expression_atom         :   name /* Constant */
 
                                 $<id>$ = $1;
                             }
-                        |   TOKEN_PARENTHESIS_OPEN expression TOKEN_PARENTHESIS_CLOSE
+                        |   TOKEN_PARENTHESIS_OPEN conditional_expression TOKEN_PARENTHESIS_CLOSE
                             {
-                                LOG("expression_atom         :   TOKEN_PARENTHESIS_OPEN expression TOKEN_PARENTHESIS_CLOSE");
+                                LOG("expression_atom         :   TOKEN_PARENTHESIS_OPEN conditional_expression TOKEN_PARENTHESIS_CLOSE");
 
                                 $$ = $2;
+                            }
+                        ;
+
+conditional_expression  :   expression
+                            {
+                                LOG("conditional_expression  :   expression");
+
+                                $$ = $1;
+                            }
+                        |   expression TOKEN_IF expression
+                            {
+                                LOG("conditional_expression  :   expression TOKEN_IF expression");
+
+                                $$ = new tree::IfExpression($3, $1);
+                                $$->setLocation(@2);
+                            }
+                        |   expression TOKEN_IF expression TOKEN_ELSE expression
+                            {
+                                LOG("conditional_expression  :   expression TOKEN_IF expression TOKEN_ELSE expression");
+
+                                $$ = new tree::IfExpression($3, $1, $5);
+                                $$->setLocation(@2);
                             }
                         ;
 

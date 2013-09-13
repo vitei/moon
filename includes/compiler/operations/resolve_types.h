@@ -19,6 +19,7 @@ namespace operation
 		virtual void visit(tree::UnaryOperation *unaryOperation);
 		virtual void visit(tree::BooleanUnaryOperation *booleanUnaryOperation);
 		virtual void visit(tree::FunctionCall *functionCall);
+		virtual void visit(tree::IfExpression *ifExpression);
 		virtual void visit(tree::Scope *scope);
 
 		void setOperationType(tree::Operation *operation, tree::Type *type);

@@ -23,6 +23,7 @@ namespace operation
 		virtual void dispatch(tree::Assign *assign);
 		virtual void dispatch(tree::Cast *cast);
 		virtual void dispatch(tree::FunctionCall *functionCall);
+		virtual void dispatch(tree::IfExpression *ifExpression);
 		virtual void dispatch(tree::Function *function);
 		virtual void dispatch(tree::If *ifStatement);
 		virtual void dispatch(tree::Import *import);

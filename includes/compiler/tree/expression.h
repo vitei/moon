@@ -939,6 +939,71 @@ namespace tree
 		virtual void printNode() { LOG("Minus"); }
 #endif
 	};
+
+	class IfExpression : public Expression
+	{
+	public:
+		IfExpression(Expression *test, Expression *trueResult, Expression *falseResult = NULL) : mTest(test), mTrueResult(trueResult), mFalseResult(falseResult) {}
+
+		Expression *getTest() const
+		{
+			return mTest;
+		}
+
+		void setTest(Expression *test)
+		{
+			mTest = test;
+		}
+
+		Expression *getTrueResult() const
+		{
+			return mTrueResult;
+		}
+
+		void setTrueResult(Expression *trueResult)
+		{
+			mTrueResult = trueResult;
+		}
+
+		Expression *getFalseResult() const
+		{
+			return mFalseResult;
+		}
+
+		void setFalseResult(Expression *falseResult)
+		{
+			mFalseResult = falseResult;
+		}
+
+		virtual void childAccept(operation::Operation *operation)
+		{
+			Expression::childAccept(operation);
+
+			if(mTest)
+			{
+				mTest->accept(operation);
+			}
+
+			if(mTrueResult)
+			{
+				mTrueResult->accept(operation);
+			}
+
+			if(mFalseResult)
+			{
+				mFalseResult->accept(operation);
+			}
+		}
+
+#ifdef DEBUG
+		virtual void printNode() { LOG("IfExpression"); }
+#endif
+
+	private:
+		Expression *mTest;
+		Expression *mTrueResult;
+		Expression *mFalseResult;
+	};
 }
 
 #endif

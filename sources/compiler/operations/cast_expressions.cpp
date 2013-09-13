@@ -167,6 +167,94 @@ void operation::CastExpressions::visit(tree::FunctionCall *functionCall)
 	}
 }
 
+void operation::CastExpressions::visit(tree::IfExpression *ifExpression)
+{
+	LOG("CastExpressions::visit::IfExpression");
+
+	ASSERT(ifExpression->getTest());
+
+	tree::Expression *test = tree::node_cast<tree::Expression *>(ifExpression->getTest());
+
+	if(test)
+	{
+		tree::Type *type = test->getType();
+
+		if(type && type->isResolved())
+		{
+			if(!dynamic_cast<tree::Bool *>(type))
+			{
+				tree::Cast *cast = new tree::Cast(new tree::Bool(), test, true);
+
+				cast->setLocation(test->getLocation());
+				ifExpression->setTest(cast);
+			}
+		}
+		else
+		{
+			mValidated = false;
+		}
+	}
+	else
+	{
+		mValidated = false;
+	}
+
+	tree::Type *resultType = ifExpression->getType();
+
+	if(resultType && resultType->isResolved())
+	{
+		ASSERT(ifExpression->getTrueResult());
+		ASSERT(ifExpression->getFalseResult());
+
+		tree::Expression *trueResult = tree::node_cast<tree::Expression *>(ifExpression->getTrueResult());
+		tree::Expression *falseResult = tree::node_cast<tree::Expression *>(ifExpression->getFalseResult());
+
+		if(trueResult && falseResult)
+		{
+			tree::Type *trueResultType = trueResult->getType();
+			tree::Type *falseResultType = falseResult->getType();
+
+			if(trueResultType && trueResultType->isResolved())
+			{
+				if(*trueResultType != *resultType)
+				{
+					tree::Cast *cast = new tree::Cast(resultType, trueResult, true);
+
+					cast->setLocation(ifExpression->getLocation());
+					ifExpression->setTrueResult(cast);
+				}
+			}
+			else
+			{
+				mValidated = false;
+			}
+
+			if(falseResultType && falseResultType->isResolved())
+			{
+				if(*falseResultType != *resultType)
+				{
+					tree::Cast *cast = new tree::Cast(resultType, falseResult, true);
+
+					cast->setLocation(ifExpression->getLocation());
+					ifExpression->setFalseResult(cast);
+				}
+			}
+			else
+			{
+				mValidated = false;
+			}
+		}
+		else
+		{
+			mValidated = false;
+		}
+	}
+	else
+	{
+		mValidated = false;
+	}
+}
+
 void operation::CastExpressions::visit(tree::Scope *scope)
 {
 	tree::Statements *statements = scope->getStatements();
