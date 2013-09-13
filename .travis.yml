@@ -1,0 +1,8 @@
+language: cpp
+compiler:
+  - clang
+script: make
+branches:
+  only:
+    - master
+    - develop
