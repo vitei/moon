@@ -1,6 +1,7 @@
 #ifndef COMPILER_BEHAVIOURS_NAMED_MAP_H
 #define COMPILER_BEHAVIOURS_NAMED_MAP_H
 
+#include <map>
 
 namespace tree
 {

@@ -1,6 +1,7 @@
-#include <string>
-#include "compiler/tree.h"
+#include "common.h"
 
+#include <string>
+#include "compiler/tree/scope.h"
 
 void tree::Scope::checkNamedNode(const std::string &name, tree::Node *node)
 {

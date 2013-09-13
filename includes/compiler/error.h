@@ -3,7 +3,6 @@
 
 #include "tree.h"
 
-
 namespace error
 {
 	unsigned int count();

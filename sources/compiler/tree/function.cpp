@@ -1,6 +1,7 @@
-#include <string>
-#include "compiler/tree.h"
+#include "common.h"
 
+#include <string>
+#include "compiler/tree/function.h"
 
 void tree::Function::checkNamedNode(const std::string &name, tree::Node *node)
 {

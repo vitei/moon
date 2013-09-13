@@ -1,6 +1,8 @@
 #ifndef COMPILER_OPERATIONS_OPERATION_H
 #define COMPILER_OPERATIONS_OPERATION_H
 
+#include "compiler/tree.h"
+
 namespace operation
 {
 	// This is rather ugly but it saves a LOT of typing...

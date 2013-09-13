@@ -1,10 +1,11 @@
 #ifndef COMPILER_TREE_USE_H
 #define COMPILER_TREE_USE_H
 
+#include "common.h"
+
 #include <vector>
 #include "node.h"
 #include "scope.h"
-
 
 namespace tree
 {

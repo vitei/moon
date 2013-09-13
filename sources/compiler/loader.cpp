@@ -1,3 +1,5 @@
+#include "common.h"
+
 #include <cctype>
 #include <cstring>
 #include <stack>
@@ -5,7 +7,6 @@
 #include <vector>
 #include <unistd.h>
 #include "compiler/loader.h"
-
 
 static std::vector<std::string> sUseDirectories;
 static std::vector<std::string> sIncludeDirectories;

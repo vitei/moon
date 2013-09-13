@@ -7,7 +7,6 @@
 #include "lexer.h"
 #include "tree.h"
 
-
 namespace parser
 {
 	class Data

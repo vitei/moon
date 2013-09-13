@@ -1,7 +1,8 @@
-#include "compiler/error.h"
-#include "compiler/operations.h"
-#include "compiler/tree.h"
+#include "common.h"
 
+#include "compiler/error.h"
+#include "compiler/tree.h"
+#include "compiler/operations/check_typecasting.h"
 
 void operation::CheckTypecasting::run(tree::Program *program)
 {

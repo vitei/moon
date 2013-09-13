@@ -1,5 +1,7 @@
-#include "compiler/tree.h"
+#include "common.h"
 
+#include "compiler/tree/expression.h"
+#include "compiler/tree/identifier.h"
 
 void tree::Expression::setType(tree::Type *type)
 {

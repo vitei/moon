@@ -1,11 +1,12 @@
 #ifndef COMPILER_TREE_EXPRESSION_H
 #define COMPILER_TREE_EXPRESSION_H
 
+#include "common.h"
+
 #include <list>
 #include <string>
 #include "node.h"
 #include "type.h"
-
 
 namespace tree
 {

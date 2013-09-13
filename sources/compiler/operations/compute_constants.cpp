@@ -1,6 +1,7 @@
-#include "compiler/operations.h"
-#include "compiler/tree.h"
+#include "common.h"
 
+#include "compiler/tree.h"
+#include "compiler/operations/compute_constants.h"
 
 bool operation::ComputeConstants::run(tree::Program *program)
 {

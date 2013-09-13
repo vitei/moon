@@ -1,11 +1,12 @@
 #ifndef COMPILER_GENERATORS_C_H
 #define COMPILER_GENERATORS_C_H
 
+#include "common.h"
+
 #include <ostream>
 #include <string>
 #include "compiler/tree.h"
 #include "generator.h"
-
 
 namespace generator
 {

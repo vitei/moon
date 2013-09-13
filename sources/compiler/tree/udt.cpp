@@ -1,5 +1,7 @@
-#include "compiler/tree.h"
+#include "common.h"
 
+#include "compiler/tree/identifier.h"
+#include "compiler/tree/udt.h"
 
 void tree::UDT::checkNamedNode(const std::string &name, tree::Node *node)
 {

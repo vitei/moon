@@ -1,6 +1,7 @@
-#include "compiler/operations.h"
-#include "compiler/tree.h"
+#include "common.h"
 
+#include "compiler/tree.h"
+#include "compiler/operations/scope_parents.h"
 
 void operation::ScopeParents::run(tree::Program *program)
 {

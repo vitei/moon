@@ -1,6 +1,7 @@
-#include "compiler/operations.h"
-#include "compiler/tree.h"
+#include "common.h"
 
+#include "compiler/tree.h"
+#include "compiler/operations/remove_dead_nodes.h"
 
 void operation::RemoveDeadNodes::run(tree::Program *program)
 {

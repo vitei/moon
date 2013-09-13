@@ -1,9 +1,10 @@
 #ifndef COMPILER_TREE_IDENTIFIER_H
 #define COMPILER_TREE_IDENTIFIER_H
 
+#include "common.h"
+
 #include <string>
 #include "node.h"
-
 
 namespace tree
 {

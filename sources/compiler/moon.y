@@ -7,6 +7,8 @@
  */
 
 %{
+    #include "common.h"
+
     #include <cstdio>
     #include <libgen.h>
     #include "compiler/error.h"

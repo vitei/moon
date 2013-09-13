@@ -4,7 +4,6 @@
 #include "compiler/tree.h"
 #include "operation.h"
 
-
 namespace operation
 {
 	class CastExpressions : public Operation

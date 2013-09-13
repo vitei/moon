@@ -1,3 +1,5 @@
+#include "common.h"
+
 #include <cstdio>
 #include "compiler/lexer.h"
 #include "compiler/parser.h"
@@ -5,7 +7,6 @@
 /* Generated headers */
 #include "generated/parser.h"
 #include "generated/lexer.h"
-
 
 extern int yyparse(parser::Data *parserData);
 

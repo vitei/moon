@@ -1,10 +1,11 @@
 #ifndef COMPILER_TREE_TYPE_H
 #define COMPILER_TREE_TYPE_H
 
+#include "common.h"
+
 #include <string>
 #include <sstream>
 #include "node.h"
-
 
 namespace tree
 {

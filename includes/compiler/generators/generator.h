@@ -4,8 +4,6 @@
 #include <ostream>
 #include <string>
 #include "compiler/tree.h"
-#include "compiler/operations/operation.h"
-
 
 namespace generator
 {

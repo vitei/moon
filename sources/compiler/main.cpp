@@ -1,3 +1,5 @@
+#include "common.h"
+
 #include <cstring>
 #include <libgen.h>
 #include <unistd.h>
@@ -10,7 +12,6 @@
 #include "compiler/operations.h"
 #include "compiler/parser.h"
 #include "compiler/tree.h"
-
 
 const char *DIRECTORY_SEPARATORS = " ,:";
 

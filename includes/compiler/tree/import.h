@@ -1,10 +1,11 @@
 #ifndef COMPILER_TREE_IMPORT_H
 #define COMPILER_TREE_IMPORT_H
 
+#include "common.h"
+
 #include "function.h"
 #include "node.h"
 #include "statement.h"
-
 
 namespace tree
 {

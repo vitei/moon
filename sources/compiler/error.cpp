@@ -1,7 +1,8 @@
+#include "common.h"
+
 #include <iostream>
 #include <vector>
 #include "compiler/error.h"
-
 
 class Error
 {

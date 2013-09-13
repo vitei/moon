@@ -1,4 +1,7 @@
-#include "compiler/operations.h"
+#include "common.h"
+
+#include "compiler/operations/operation.h"
+#include "compiler/operations/restructure.h"
 #include "compiler/tree.h"
 
 void tree::Node::accept(operation::Operation *operation)

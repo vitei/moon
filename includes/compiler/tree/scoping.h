@@ -1,9 +1,10 @@
 #ifndef COMPILER_TREE_SCOPING_H
 #define COMPILER_TREE_SCOPING_H
 
+#include "common.h"
+
 #include "statement.h"
 #include "node.h"
-
 
 namespace tree
 {

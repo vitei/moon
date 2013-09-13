@@ -1,7 +1,8 @@
-#include "compiler/error.h"
-#include "compiler/operations.h"
-#include "compiler/tree.h"
+#include "common.h"
 
+#include "compiler/error.h"
+#include "compiler/tree.h"
+#include "compiler/operations/cast_expressions.h"
 
 bool operation::CastExpressions::run(tree::Program *program)
 {

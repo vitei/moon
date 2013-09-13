@@ -1,12 +1,13 @@
 #ifndef COMPILER_TREE_STATEMENT_H
 #define COMPILER_TREE_STATEMENT_H
 
+#include "common.h"
+
 #include <list>
 #include <string>
 #include "node.h"
 #include "expression.h"
 #include "state.h"
-
 
 namespace tree
 {

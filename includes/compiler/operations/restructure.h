@@ -5,7 +5,6 @@
 #include "compiler/tree.h"
 #include "operation.h"
 
-
 namespace operation
 {
 	class Restructure : public Operation

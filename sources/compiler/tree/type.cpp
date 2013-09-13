@@ -1,5 +1,7 @@
-#include "compiler/tree.h"
+#include "common.h"
 
+#include "compiler/tree/expression.h"
+#include "compiler/tree/type.h"
 
 void tree::SizedType::setSize(tree::Expression *size)
 {

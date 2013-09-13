@@ -7,7 +7,6 @@
 #include "compiler/tree.h"
 #include "restructure.h"
 
-
 namespace operation
 {
 	class ResolveIdentities : public Restructure

@@ -1,9 +1,10 @@
 #ifndef COMPILER_TREE_STATE_H
 #define COMPILER_TREE_STATE_H
 
+#include "common.h"
+
 #include <string>
 #include "node.h"
-
 
 namespace tree
 {

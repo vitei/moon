@@ -1,9 +1,10 @@
 #ifndef COMPILER_TREE_WHILE_H
 #define COMPILER_TREE_WHILE_H
 
+#include "common.h"
+
 #include "node.h"
 #include "scope.h"
-
 
 namespace tree
 {

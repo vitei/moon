@@ -1,8 +1,10 @@
+#include "common.h"
+
 #include <algorithm>
 #include <ostream>
-#include "compiler/generators.h"
 #include "compiler/operations.h"
 #include "compiler/tree.h"
+#include "compiler/generators/c.h"
 
 
 class Mangled

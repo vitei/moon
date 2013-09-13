@@ -1,14 +1,15 @@
 #ifndef COMPILER_TREE_SCOPE_H
 #define COMPILER_TREE_SCOPE_H
 
+#include "common.h"
+
 #include <exception>
 #include <map>
 #include <string>
-#include "../behaviours/named_map.h"
+#include "compiler/behaviours/named_map.h"
 #include "node.h"
 #include "identifier.h"
 #include "statement.h"
-
 
 namespace tree
 {

@@ -1,10 +1,11 @@
 #ifndef COMPILER_TREE_PROGRAM_H
 #define COMPILER_TREE_PROGRAM_H
 
+#include "common.h"
+
 #include "node.h"
 #include "scope.h"
 #include "aggregate.h"
-
 
 namespace tree
 {
