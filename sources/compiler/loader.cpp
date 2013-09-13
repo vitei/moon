@@ -87,28 +87,29 @@ void loader::filenameToIncludeName(char *name, const char *filename)
 
 void loader::useNameToFilename(char *filename, const char *name)
 {
+	char *f = filename;
 	// First character is always upper case
-	*filename++ = tolower(*name++);
+	*f++ = tolower(*name++);
 
 	for(; *name; name++)
 	{
 		if(isupper(*name))
 		{
-			*filename++ = '_';
-			*filename++ = tolower(*name);
+			*f++ = '_';
+			*f++ = tolower(*name);
 		}
 		else
 		{
-			*filename++ = *name;
+			*f++ = *name;
 		}
 	}
 
 	// Check for literate moon file first...
-	strcpy(filename, ".lmoon");
+	strcpy(f, ".lmoon");
 
-	if(access(filename, R_OK) != 0)
+	if(!loader::useFile(filename, NULL))
 	{
-		strcpy(filename, ".moon");
+		strcpy(f, ".moon");
 	}
 }
 
