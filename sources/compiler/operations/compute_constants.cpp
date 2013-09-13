@@ -86,16 +86,14 @@ tree::Node *operation::ComputeConstants::restructure(tree::IfExpression *ifExpre
 {
 	LOG("ComputeConstants::restructure::IfExpression");
 
-	tree::Literal *literal = tree::node_cast<tree::Literal *>(ifExpression->getTest());
+	tree::BoolLiteral *value = tree::node_cast<tree::BoolLiteral *>(ifExpression->getTest());
 
-	if(literal)
+	if(value)
 	{
 		tree::Type *type = ifExpression->getType();
 
 		if(type && type->isResolved())
 		{
-			tree::BoolLiteral *value = static_cast<tree::BoolLiteral *>(literal);
-
 			return value->getValue() ? ifExpression->getTrueResult() : ifExpression->getFalseResult();
 		}
 		else
