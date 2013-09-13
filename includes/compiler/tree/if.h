@@ -3,8 +3,8 @@
 
 #include "common.h"
 
-#include "node.h"
-#include "scope.h"
+#include "expression.h"
+#include "statement.h"
 
 namespace tree
 {
@@ -32,9 +32,9 @@ namespace tree
 			return mTrueStatement;
 		}
 
-		void setTrueStatement(Statement *trueScope)
+		void setTrueStatement(Statement *trueStatement)
 		{
-			mTrueStatement = trueScope;
+			mTrueStatement = trueStatement;
 		}
 
 		Statement *getFalseStatement() const
@@ -42,9 +42,9 @@ namespace tree
 			return mFalseStatement;
 		}
 
-		void setFalseStatement(Statement *falseScope)
+		void setFalseStatement(Statement *falseStatement)
 		{
-			mFalseStatement = falseScope;
+			mFalseStatement = falseStatement;
 		}
 
 		virtual void childAccept(operation::Operation *operation)
