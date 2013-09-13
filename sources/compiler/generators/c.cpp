@@ -776,6 +776,10 @@ void generator::C::Printer::output(tree::Import *import)
 			outputDeclaration(typedIdentity, true);
 		}
 	}
+	else
+	{
+		*mOutput << "void";
+	}
 
 	*mOutput << ")";
 }
