@@ -45,7 +45,7 @@ tree::Node *operation::ComputeConstants::restructure(tree::Cast *cast)
 	{
 		tree::Type *type = cast->getType();
 
-		if(type->isResolved())
+		if(type && type->isResolved())
 		{
 			tree::Bool *boolean;
 			tree::Int *integer;
