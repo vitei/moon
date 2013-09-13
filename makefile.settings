@@ -1,48 +1,54 @@
 MOON_ROOT_DIR:=$(shell DIRECTORY="$(dir $(realpath $(lastword $(MAKEFILE_LIST))))"; echo $${DIRECTORY%/})
 
-BIN_DIR = $(MOON_ROOT_DIR)/bin
-INC_DIR = $(MOON_ROOT_DIR)/includes
-OBJ_DIR = $(MOON_ROOT_DIR)/obj
+BIN_DIR:=$(MOON_ROOT_DIR)/bin
+INC_DIR:=$(MOON_ROOT_DIR)/includes
+OBJ_DIR:=$(MOON_ROOT_DIR)/obj
 
 ifeq ($(OS),Windows_NT)
-	CPP_FLAGS = -D WIN32
-	PLATFORM_NAME = win
-	EXE_EXTENSION = .exe
+    CPP_FLAGS:=-D WIN32
+    PLATFORM_NAME:=win
+    EXE_EXTENSION:=.exe
 else
-	UNAME_S := $(shell uname -s)
+    UNAME_S:=$(shell uname -s)
 
-	ifeq ($(UNAME_S),Linux)
-		CPP_FLAGS = -D LINUX
-		PLATFORM_NAME = lin
-	endif
-	ifeq ($(UNAME_S),Darwin)
-		CPP_FLAGS = -D OSX
-		PLATFORM_NAME = osx
-	endif
+    ifeq ($(UNAME_S),Linux)
+        CPP_FLAGS:=-D LINUX
+        PLATFORM_NAME:=lin
+    endif
+    ifeq ($(UNAME_S),Darwin)
+        CPP_FLAGS:=-D OSX
+        PLATFORM_NAME:=osx
+    endif
 
-	EXE_EXTENSION = 
+    EXE_EXTENSION:=
 endif
 
-PLATFORM_BIN_DIR = $(BIN_DIR)/$(PLATFORM_NAME)
-PLATFORM_INC_DIR = $(INC_DIR)/$(PLATFORM_NAME)
-PLATFORM_OBJ_DIR = $(OBJ_DIR)/$(PLATFORM_NAME)
+PLATFORM_BIN_DIR:=$(BIN_DIR)/$(PLATFORM_NAME)
+PLATFORM_INC_DIR:=$(INC_DIR)/$(PLATFORM_NAME)
+PLATFORM_OBJ_DIR:=$(OBJ_DIR)/$(PLATFORM_NAME)
 
-BISON = bison
-BISON_FLAGS = --verbose
+BISON:=bison
+BISON_FLAGS:=--verbose
 
-CC = clang
-CC_FLAGS = 
-CPP_FLAGS += -I"$(INC_DIR)" -I"$(PLATFORM_INC_DIR)" -include"common.h"
+CC:=clang
+CC_FLAGS:=
+CPP_FLAGS+=-I"$(INC_DIR)" -I"$(PLATFORM_INC_DIR)" -include"common.h"
 
-CXX = clang++
-CXX_FLAGS = 
+CXX:=clang++
+CXX_FLAGS:=
 
-FLEX = flex
-FLEX_FLAGS = 
+FLEX:=flex
+FLEX_FLAGS:=
 
-DEBUG ?= 0
+LINKER:=clang++
+LINKER_FLAGS:=
+
+MOON:=$(PLATFORM_BIN_DIR)/moon$(EXE_EXTENSION)
+MOON_FLAGS:=
+
+DEBUG?=0
 
 ifeq ($(DEBUG), 1)
-	CPP_FLAGS += -g -DDEBUG
+    CPP_FLAGS+=-g -DDEBUG
 endif
 

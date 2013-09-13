@@ -1,16 +1,14 @@
 THIS_MAKEFILE_DIR:=$(shell DIRECTORY="$(dir $(realpath $(lastword $(MAKEFILE_LIST))))"; echo $${DIRECTORY%/})
 include $(THIS_MAKEFILE_DIR)/../../makefile.settings
 
-SOURCES := $(shell find $(THIS_MAKEFILE_DIR) -type f -name "*.cpp")
-OBJECTS := $(PLATFORM_OBJ_DIR)/generated_lexer.o $(PLATFORM_OBJ_DIR)/generated_parser.o
-OBJECTS += $(patsubst $(THIS_MAKEFILE_DIR)/%,$(PLATFORM_OBJ_DIR)/%,$(SOURCES:.cpp=.o))
-DEPS := $(OBJECTS:.o=.deps)
-
-COMPILER_FILENAME = moon$(EXE_EXTENSION)
+SOURCES:=$(shell find $(THIS_MAKEFILE_DIR) -type f -name "*.cpp")
+OBJECTS:=$(PLATFORM_OBJ_DIR)/generated_lexer.o $(PLATFORM_OBJ_DIR)/generated_parser.o
+OBJECTS+=$(patsubst $(THIS_MAKEFILE_DIR)/%,$(PLATFORM_OBJ_DIR)/%,$(SOURCES:.cpp=.o))
+DEPS:=$(OBJECTS:.o=.deps)
 
 .INTERMEDIATE: generated_lexer.cpp generated_parser.cpp
 
-all: compiler
+all: $(MOON)
 
 # Dependencies
 -include $(DEPS)
@@ -36,11 +34,9 @@ $(PLATFORM_OBJ_DIR)/generated_parser.o: generated_lexer.cpp
 # Rules
 include $(MOON_ROOT_DIR)/makefile.rules
 
-$(PLATFORM_BIN_DIR)/$(COMPILER_FILENAME): $(OBJECTS)
+$(MOON): $(OBJECTS)
 	@mkdir -p $(shell dirname $@)
-	@$(CXX) $(CPP_FLAGS) $(CXX_FLAGS) -o $@ $^
-
-compiler: $(PLATFORM_BIN_DIR)/$(COMPILER_FILENAME)
+	@$(LINKER) $(LINKER_FLAGS) -o $@ $^
 
 clean:
 	@rm -rf generated_*

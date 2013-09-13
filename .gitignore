@@ -1,6 +1,7 @@
 # Binaries
 bin/*
 obj/*
+tests/bin/*
 
 # Intermediate files
 includes/generated
