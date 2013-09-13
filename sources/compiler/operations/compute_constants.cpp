@@ -68,6 +68,10 @@ tree::Node *operation::ComputeConstants::restructure(tree::Cast *cast)
 			{
 				return new tree::StringLiteral(literal, string);
 			}
+			else
+			{
+				ERROR("Should never reach here");
+			}
 		}
 		else
 		{
