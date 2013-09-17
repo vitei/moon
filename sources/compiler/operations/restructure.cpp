@@ -63,6 +63,8 @@ void operation::Restructure::dispatch(tree::UnaryOperation *unaryOperation)
 
 void operation::Restructure::dispatch(tree::Scope *scope)
 {
+	dispatch(static_cast<tree::Statement *>(scope));
+
 	tree::Statements *statements = scope->getStatements();
 
 	if(statements)
@@ -91,8 +93,6 @@ void operation::Restructure::dispatch(tree::Scope *scope)
 
 		mCurrentScope = oldScope;
 	}
-
-	dispatch(static_cast<tree::Statement *>(scope));
 }
 
 void operation::Restructure::dispatch(tree::Scoping *scoping)
@@ -146,6 +146,8 @@ void operation::Restructure::dispatch(tree::FunctionCall *functionCall)
 	RESTRUCTURE_GET(functionPrototype, tree::FunctionPrototype, functionCall->getPrototype());
 	functionCall->setPrototype(functionPrototype);
 
+	dispatch(static_cast<tree::Expression *>(functionCall));
+
 	tree::Expressions *expressions = functionCall->getArguments();
 
 	if(expressions)
@@ -168,8 +170,6 @@ void operation::Restructure::dispatch(tree::FunctionCall *functionCall)
 			}
 		}
 	}
-
-	dispatch(static_cast<tree::Expression *>(functionCall));
 }
 
 void operation::Restructure::dispatch(tree::IfExpression *ifExpression)
@@ -197,9 +197,9 @@ void operation::Restructure::dispatch(tree::Function *function)
 	RESTRUCTURE_GET(functionPrototype, tree::FunctionPrototype, function->getPrototype());
 	function->setPrototype(functionPrototype);
 
-	processFunctionParameters(function);
-
 	dispatch(static_cast<tree::Scope *>(function));
+
+	processFunctionParameters(function);
 }
 
 void operation::Restructure::dispatch(tree::If *ifStatement)
@@ -226,6 +226,8 @@ void operation::Restructure::dispatch(tree::Import *import)
 
 	RESTRUCTURE_GET(functionPrototype, tree::FunctionPrototype, import->getPrototype());
 	import->setPrototype(functionPrototype);
+
+	dispatch(static_cast<tree::Statement *>(import));
 
 	if(functionPrototype)
 	{
@@ -257,8 +259,6 @@ void operation::Restructure::dispatch(tree::Import *import)
 
 		//mCurrentScope = oldScope;
 	}
-
-	dispatch(static_cast<tree::Statement *>(import));
 }
 
 void operation::Restructure::dispatch(tree::Execute *execute)
@@ -307,6 +307,8 @@ void operation::Restructure::dispatch(tree::While *whileStatement)
 
 void operation::Restructure::dispatch(tree::UDT *udt)
 {
+	dispatch(static_cast<tree::Type *>(udt));
+
 	tree::Members *members = udt->getMembers();
 	ASSERT(members);
 
@@ -327,8 +329,6 @@ void operation::Restructure::dispatch(tree::UDT *udt)
 			i = members->erase(i);
 		}
 	}
-
-	dispatch(static_cast<tree::Type *>(udt));
 }
 
 void operation::Restructure::dispatch(tree::Array *array)

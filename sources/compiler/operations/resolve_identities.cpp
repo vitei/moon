@@ -115,6 +115,8 @@ void operation::ResolveIdentities::dispatch(tree::Import *import)
 
 void operation::ResolveIdentities::dispatch(tree::UDT *udt)
 {
+	operation::Restructure::dispatch(static_cast<tree::Type *>(udt));
+
 	behaviour::NamedMap *oldMap = mCurrentMap;
 
 	mCurrentMap = udt;
@@ -142,7 +144,6 @@ void operation::ResolveIdentities::dispatch(tree::UDT *udt)
 
 	mCurrentMap = oldMap;
 
-	operation::Restructure::dispatch(static_cast<tree::Type *>(udt));
 }
 
 void operation::ResolveIdentities::visit(tree::TypeDefinition *typeDefinition)
@@ -185,58 +186,41 @@ void operation::ResolveIdentities::visit(tree::Identity *identity)
 	operation::Restructure::visit(identity);
 }
 
-void operation::ResolveIdentities::visit(tree::Expression *expression)
+/*void operation::ResolveIdentities::visit(tree::Expression *expression)
 {
 	LOG("ResolveIdentities::visit::Expression");
 
-	// FIXME, this is a terrible hack...
+	//for(;;)
+	//{
+		// FIXME, this is a terrible hack...
+	//	std::stack<tree::Node *> nodeMapClone = mNodeMap;
+		//tree::Node *noteMapTop = mNodeMap.top();
+	//	behaviour::NamedMap *currentMapClone = mCurrentMap;
 
-	std::stack<tree::Node *> nodeMapClone = mNodeMap;
+	//	expression->printNode();
 
-	for(;;)
-	{
-		try
-		{
+	//	try
+	//	{
 			operation::Restructure::visit(static_cast<tree::Node *>(expression));
-			break;
-		}
-		catch(tree::FunctionCall::InvalidFunctionException &e)
-		{
-			tree::Identifier *identifier = (tree::Identifier *)e.functionCall->getPrototype();
-			std::string error = "The identifier \"" + identifier->getName() + "\" does not refer to a function";
+	//		break;
+	//	}
+	//	catch(tree::Expression::InvalidException &e)
+	//	{
+	//		ASSERT(e.expression);
+	//		ASSERT(tree::node_cast<tree::Identifier *>(e.expression));
 
-			error::enqueue(identifier->getLocation(), error);
-			e.reset();
-			mNodeMap = nodeMapClone;
-		}
-		catch(tree::FunctionCall::InvalidArgumentsException &e)
-		{
-			tree::FunctionPrototype *functionPrototype = static_cast<tree::FunctionPrototype *>(e.functionCall->getPrototype());
-			std::stringstream error;
+	//		tree::Identifier *identifier = tree::node_cast<tree::Identifier *>(e.expression);
+	//		std::string error = "The identifier \"" + identifier->getName() + "\" cannot be used in an expression";
 
-			error << "The function \"" << functionPrototype->getName() << "\" accepts " << functionPrototype->getArguments()->size() << " parameters, not " << e.functionCall->getArguments()->size();
+	//		error::enqueue(identifier->getLocation(), error);
+	//		e.reset();
+	//	}
 
-			error::enqueue(functionPrototype->getLocation(), e.functionCall->getLocation(), error.str());
-			e.reset();
-			mNodeMap = nodeMapClone;
-		}
-		catch(tree::Expression::InvalidException &e)
-		{
-			ASSERT(e.expression);
-			ASSERT(tree::node_cast<tree::Identifier *>(e.expression));
-
-			tree::Identifier *identifier = (tree::Identifier *)e.expression;
-			std::string error = "The identifier \"" + identifier->getName() + "\" cannot be used in an expression";
-
-			error::enqueue(identifier->getLocation(), error);
-			e.reset();
-			mNodeMap = nodeMapClone;
-		}
-
-		// On error, restore the default resolution scope
-		mCurrentMap = mCurrentScope;
-	}
-}
+		// On errors, reset
+	//	mCurrentMap = currentMapClone;
+	//	mNodeMap = nodeMapClone;
+	//}
+}*/
 
 void operation::ResolveIdentities::visit(tree::Assign *assign)
 {
@@ -259,6 +243,71 @@ void operation::ResolveIdentities::visit(tree::Assign *assign)
 	}
 
 	operation::Restructure::visit(assign);
+}
+
+void operation::ResolveIdentities::visit(tree::FunctionCall *functionCall)
+{
+	tree::FunctionPrototype *functionPrototype = NULL;
+
+	functionCall->childAccept(this);
+	RESTRUCTURE_GET(functionPrototype, tree::FunctionPrototype, functionCall->getPrototype());
+
+	try
+	{
+		functionCall->setPrototype(functionPrototype);
+	}
+	catch(tree::FunctionCall::InvalidFunctionException &e)
+	{
+		tree::Identifier *identifier = tree::node_cast<tree::Identifier *>(e.functionCall->getPrototype());
+		ASSERT(identifier);
+
+		std::string error = "The identifier \"" + identifier->getName() + "\" does not refer to a function";
+
+		error::enqueue(identifier->getLocation(), error);
+		e.reset();
+	}
+	catch(tree::FunctionCall::InvalidArgumentsException &e)
+	{
+		tree::FunctionPrototype *functionPrototype = static_cast<tree::FunctionPrototype *>(e.functionCall->getPrototype());
+		std::stringstream error;
+
+		if(functionPrototype->getArguments())
+		{
+			error << "The function \"" << functionPrototype->getName() << "\" accepts " << functionPrototype->getArguments()->size() << " parameters, " << e.functionCall->getArguments()->size() << " passed";
+		}
+		else
+		{
+			error << "The function \"" << functionPrototype->getName() << "\" accepts no parameters, " << e.functionCall->getArguments()->size() << " passed";
+		}
+
+		error::enqueue(functionPrototype->getLocation(), e.functionCall->getLocation(), error.str());
+		e.reset();
+	}
+
+	operation::Restructure::dispatch(static_cast<tree::Expression *>(functionCall));
+
+	tree::Expressions *expressions = functionCall->getArguments();
+
+	if(expressions)
+	{
+		for(tree::Expressions::iterator i = expressions->begin(); i != expressions->end();)
+		{
+			(*i)->accept(this);
+
+			tree::Expression *expression = static_cast<tree::Expression *>(mNodeMap.top());
+			mNodeMap.pop();
+
+			if(expression)
+			{
+				*i = expression;
+				++i;
+			}
+			else
+			{
+				i = expressions->erase(i);
+			}
+		}
+	}
 }
 
 void operation::ResolveIdentities::visit(tree::ArrayAccess *arrayAccess)
@@ -349,6 +398,7 @@ void operation::ResolveIdentities::visit(tree::Member *member)
 
 	visit(static_cast<tree::Identity *>(member));
 }
+
 
 tree::Node *operation::ResolveIdentities::restructure(tree::Identifier *identifier)
 {
