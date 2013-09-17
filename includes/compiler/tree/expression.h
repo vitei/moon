@@ -401,7 +401,7 @@ namespace tree
 		}
 
 #ifdef DEBUG
-		virtual void printNode() { LOG("Constant"); }
+		virtual void printNode() { LOG("Constant: %s", getName().c_str()); }
 #endif
 
 	private:
@@ -414,7 +414,7 @@ namespace tree
 		Variable(Type *type, std::string name) : TypedIdentity(type, name) {}
 
 #ifdef DEBUG
-		virtual void printNode() { LOG("Variable"); }
+		virtual void printNode() { LOG("Variable: %s", getName().c_str()); }
 #endif
 	};
 
@@ -516,7 +516,7 @@ namespace tree
 		}
 
 #ifdef DEBUG
-		virtual void printNode() { LOG("FunctionPrototype"); }
+		virtual void printNode() { LOG("FunctionPrototype: %s", getName().c_str()); }
 #endif
 
 	private:
