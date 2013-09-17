@@ -824,7 +824,6 @@ tree::Literal *tree::Not::calculate() const
 	{
 		ERROR("Invalid type");
 	}
-
 }
 
 tree::Literal *tree::Minus::calculate() const
