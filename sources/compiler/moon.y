@@ -17,10 +17,6 @@
     #include "compiler/parser.h"
     #include "compiler/tree.h"
 
-    /* Generated headers */
-    #include "generated/parser.h"
-    #include "generated/lexer.h"
-
     #define YYLTYPE tree::Node::Location
     #define scanner data->lexer
 
@@ -89,6 +85,11 @@
     long int integer;
     float real;
     char string[1024]; /* FIXME: We should make this bigger... */
+}
+
+%code {
+    /* Nasty way to make this work with Bison 2.5 */
+    extern int yylex(YYSTYPE *yylval_param, YYLTYPE *yylloc_param , void *yyscanner);
 }
 
 /* Start tokens */
