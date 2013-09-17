@@ -5,20 +5,16 @@
 
 void tree::Expression::setType(tree::Type *type)
 {
-	tree::Node *node = static_cast<tree::Node *>(type); // This is required as the "type" might be an identifier
 	tree::Type *t;
 
 	if(type == NULL)
 	{
 		mType = NULL;
 	}
-	else if(dynamic_cast<tree::Identifier *>(node))
+	else if(tree::node_cast<tree::Identifier *>(type) ||
+	        tree::node_cast<tree::Type *>(type))
 	{
 		mType = type;
-	}
-	else if((t = dynamic_cast<tree::Type *>(node)))
-	{
-		mType = t;
 	}
 	else
 	{
