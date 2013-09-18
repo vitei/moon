@@ -612,10 +612,7 @@ void generator::C::generate(tree::Program *program)
 	mangleNames(program);
 
 	mPrinter.outputTabs();
-	mPrinter.outputPragma("#include <stdlib.h>");
-
-	mPrinter.outputTabs();
-	mPrinter.outputPragma("#include <stdbool.h>");
+	mPrinter.outputPragma("#include \"runtime/m.h\"");
 
 	outputTypes(program);
 	outputVariables(program);
