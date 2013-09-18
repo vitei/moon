@@ -198,7 +198,9 @@
 %type<statements> functions
 %type<statement> s_function
 %type<statement> function
+%type<prototype> m_f_prototype
 %type<prototype> function_prototype
+%type<prototype> method_prototype
 %type<expressions> o_arguments
 %type<expressions> arguments
 %type<expression> argument
@@ -831,13 +833,23 @@ s_function              :   function
                             }
                         ;
 
-function                :   function_prototype TOKEN_EOS o_statements TOKEN_END TOKEN_EOS /* FIXME, support states: function_prototype function_state TOKEN_EOS o_statements TOKEN_END TOKEN_EOS */
+function                :   m_f_prototype TOKEN_EOS o_statements TOKEN_END TOKEN_EOS /* FIXME, support states: function_prototype function_state TOKEN_EOS o_statements TOKEN_END TOKEN_EOS */
                             {
-                                LOG("function                :   function_prototype TOKEN_EOS o_statements TOKEN_END TOKEN_EOS");
+                                LOG("function                :   m_f_prototype TOKEN_EOS o_statements TOKEN_END TOKEN_EOS");
 
                                 $$ = new tree::Function($1, $3);
                                 $$->setLocation(@1);
                             }
+                        ;
+
+m_f_prototype           :    function_prototype
+                             {
+                                 $$ = $1;
+                             }
+                        |    method_prototype
+                             {
+                                 $$ = $1;
+                             }
                         ;
 
 function_prototype      :   TOKEN_DEF TOKEN_ID TOKEN_PARENTHESIS_OPEN o_arguments TOKEN_PARENTHESIS_CLOSE
@@ -853,6 +865,24 @@ function_prototype      :   TOKEN_DEF TOKEN_ID TOKEN_PARENTHESIS_OPEN o_argument
 
                                 $$ = new tree::FunctionPrototype($7, std::string($2), $4);
                                 $$->setLocation(@1);
+                            }
+                        ;
+
+method_prototype        :   TOKEN_DEF type TOKEN_DIRECT_ACCESS TOKEN_ID TOKEN_PARENTHESIS_OPEN o_arguments TOKEN_PARENTHESIS_CLOSE
+                            {
+                                LOG("method_prototype        :   TOKEN_DEF TOKEN_ID TOKEN_PARENTHESIS_OPEN o_arguments TOKEN_PARENTHESIS_CLOSE");
+
+                                //$$ = new tree::FunctionPrototype(NULL, std::string($4), $6);
+                                //$$->setLocation(@1);
+                                $$ = NULL; // FIXME
+                            }
+                        |   TOKEN_DEF type TOKEN_DIRECT_ACCESS TOKEN_ID TOKEN_PARENTHESIS_OPEN o_arguments TOKEN_PARENTHESIS_CLOSE TOKEN_CAST type
+                            {
+                                LOG("method_prototype        :   TOKEN_DEF TOKEN_ID TOKEN_PARENTHESIS_OPEN o_arguments TOKEN_PARENTHESIS_CLOSE TOKEN_CAST type");
+
+                                //$$ = new tree::FunctionPrototype($9, std::string($4), $6);
+                                //$$->setLocation(@1);
+                                $$ = NULL; // FIXME
                             }
                         ;
 
@@ -1534,6 +1564,14 @@ access_expression       :   postfix_expression
                                 LOG("access_expression       :   postfix_expression");
 
                                 $$ = $1;
+                            }
+                        |   TOKEN_DIRECT_ACCESS access_expression
+                            {
+                                LOG("access_expression       :   TOKEN_DIRECT_ACCESS access_expression");
+
+                                //$$ = new tree::DirectAccess(NULL, $2); // FIXME
+                                //$$->setLocation(@1);
+                                $$ = NULL; // FIXME
                             }
                         |   access_expression TOKEN_DIRECT_ACCESS postfix_expression
                             {
