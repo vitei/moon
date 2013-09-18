@@ -22,10 +22,16 @@ namespace operation
 		virtual void dispatch(tree::Import *import);
 		virtual void dispatch(tree::UDT *udt);
 
+		virtual void dispatch(tree::Expression *expression);
+		virtual void dispatch(tree::Access *access);
+		virtual void dispatch(tree::BinaryOperation *binaryOperation);
+		virtual void dispatch(tree::UnaryOperation *unaryOperation);
+		virtual void dispatch(tree::Assign *assign);
+		virtual void dispatch(tree::FunctionCall *functionCall);
+
 		virtual void visit(tree::Identity *identity);
 		virtual void visit(tree::TypeDefinition *typeDefinition);
 		virtual void visit(tree::Assign *assign);
-		virtual void visit(tree::FunctionCall *functionCall);
 		virtual void visit(tree::ArrayAccess *arrayAccess);
 		virtual void visit(tree::DirectAccess *directAccess);
 		virtual void visit(tree::Member *member);
@@ -33,7 +39,6 @@ namespace operation
 		virtual tree::Node *restructure(tree::Identifier *identifier);
 
 		virtual bool doProcessChildren(tree::Assign *assign) { return false; }
-		virtual bool doProcessChildren(tree::FunctionCall *functionCall) { return false; }
 		virtual bool doProcessChildren(tree::ArrayAccess *arrayAccess) { return false; }
 		virtual bool doProcessChildren(tree::DirectAccess *directAccess) { return false; }
 		virtual bool doProcessChildren(tree::Member *member) { return false; }
