@@ -232,6 +232,7 @@
 %type<expression> access_expression
 %type<expression> postfix_expression
 %type<expression> array_expression
+%type<expression> access_call_expression
 %type<expression> call_expression
 %type<expressions> o_argument_expressions
 %type<expressions> argument_expressions
@@ -1158,9 +1159,9 @@ assign_or_function      :   assignment
 
                                 $$ = $1;
                             }
-                        |   call_expression
+                        |   access_call_expression
                             {
-                                LOG("assign_or_function      :   call_expression");
+                                LOG("assign_or_function      :   access_call_expression");
 
                                 $$ = $1;
                             }
@@ -1577,6 +1578,26 @@ array_expression        :   postfix_expression TOKEN_BRACKETS_OPEN expression TO
                                 $$ = new tree::ArrayAccess($1, $3);
                                 $$->setLocation(@1);
                             }
+                        ;
+
+access_call_expression  :   call_expression
+                            {
+                                $$ = $1;
+                            }
+                        |   postfix_expression TOKEN_DIRECT_ACCESS call_expression
+                            {
+                                LOG("access_call_expression       :   postfix_expression TOKEN_DIRECT_ACCESS call_expression");
+
+                                $$ = new tree::DirectAccess($1, $3);
+                                $$->setLocation(@1);
+                            }
+                        /*|   postfix_expression TOKEN_MESSAGE_ACCESS postfix_expression
+                            {
+                                LOG("access_expression       :   postfix_expression TOKEN_MESSAGE_ACCESS postfix_expression");
+
+                                $$ = new tree::MessageAccess($1, $3);
+                                $$->setLocation(@1);
+                            }*/
                         ;
 
 call_expression         :   identifier TOKEN_PARENTHESIS_OPEN o_argument_expressions TOKEN_PARENTHESIS_CLOSE
