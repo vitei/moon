@@ -99,6 +99,13 @@
 }
 
 <PRIMED>{
+   /* Join lines */
+    [ \t]+"..."[\n\r]       {
+                                // Use ellipsis to break up big lines
+                                yylloc->advanceLine(1);
+                                yylloc->advance();
+                            }
+
     /* Skip whitespace... */
     [ \t]+                  yylloc->advance();
 
