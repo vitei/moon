@@ -612,7 +612,7 @@ void generator::C::generate(tree::Program *program)
 	mangleNames(program);
 
 	mPrinter.outputTabs();
-	mPrinter.outputPragma("#include \"runtime/m.h\"");
+	mPrinter.outputPragma("#include <m.h>");
 
 	outputTypes(program);
 	outputVariables(program);

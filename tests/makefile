@@ -7,9 +7,11 @@ PASS_TESTS_DIR:=$(THIS_MAKEFILE_DIR)/should_pass
 SOURCES:=$(shell find $(PASS_TESTS_DIR) -type f -name "*.moon")
 BINARIES:=$(patsubst $(PASS_TESTS_DIR)/%,$(OUTPUT_DIR)/%,$(SOURCES:.moon=$(EXE_EXTENSION)))
 
-LINKER_FLAGS+=-L$(PLATFORM_LIB_DIR) -lm
+CPP_FLAGS:=-I"$(INC_DIR)/runtime"
 
-MOON_FLAGS+=-B -I$(THIS_MAKEFILE_DIR)/includes -U$(THIS_MAKEFILE_DIR)/uses
+LINKER_FLAGS+=-L"$(PLATFORM_LIB_DIR)" -lm
+
+MOON_FLAGS+=-B -I"$(THIS_MAKEFILE_DIR)/includes" -U"$(THIS_MAKEFILE_DIR)/uses"
 
 all: $(BINARIES)
 
