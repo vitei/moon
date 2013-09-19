@@ -1014,6 +1014,18 @@ namespace tree
 		Expression *mTrueResult;
 		Expression *mFalseResult;
 	};
+
+	class Member : public TypedIdentity
+	{
+	public:
+		Member(Type *type, std::string name) : TypedIdentity(type, name) {}
+
+#ifdef DEBUG
+		virtual void printNode() { LOG("Member"); }
+#endif
+	};
+
+	typedef std::list<Member *> Members;
 }
 
 #endif

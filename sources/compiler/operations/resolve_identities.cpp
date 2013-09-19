@@ -493,25 +493,11 @@ void operation::ResolveIdentities::visit(tree::DirectAccess *directAccess)
 
 		if(container && (type = container->getType()) && type->isResolved())
 		{
-			tree::UDT *udt = tree::node_cast<tree::UDT *>(type);;
+			behaviour::NamedMap *oldMap = mCurrentMap;
 
-			// FIXME, is this the best??
-			// We could do this using exceptions...
-			if(udt)
-			{
-				behaviour::NamedMap *oldMap = mCurrentMap;
-
-				mCurrentMap = udt;
-				directAccess->getTarget()->accept(this);
-				mCurrentMap = oldMap;
-			}
-			else
-			{
-				std::string error = std::string("No members for type \"") + type->getTypeName() + "\"";
-				error::enqueue(directAccess->getLocation(), error);
-
-				mNodeMap.push(NULL); // FIXME
-			}
+			mCurrentMap = type;
+			directAccess->getTarget()->accept(this);
+			mCurrentMap = oldMap;
 		}
 		else
 		{
@@ -564,11 +550,11 @@ tree::Node *operation::ResolveIdentities::restructure(tree::Identifier *identifi
 		}
 		else
 		{
-			tree::UDT *udt = dynamic_cast<tree::UDT *>(mCurrentMap);
+			tree::Type *type = dynamic_cast<tree::Type *>(mCurrentMap);
 
-			if(udt)
+			if(type)
 			{
-				std::string error = "The type \"" + udt->getName() + "\" does not contain a member named \"" + identifier->getName() + "\"";
+				std::string error = std::string("The type \"") + type->getTypeName() + "\" does not contain a member named \"" + identifier->getName() + "\"";
 				error::enqueue(identifier->getLocation(), error);
 			}
 			else

@@ -102,7 +102,7 @@ void MangleNames::visit(tree::Aggregate *aggregate)
 		}
 		else if((udt = dynamic_cast<tree::UDT *>(i->second)))
 		{
-			Mangled *cName = new Mangled("moon$$" + program->getName() + "_" + udt->getName());
+			Mangled *cName = new Mangled("moon$$" + program->getName() + "_" + udt->getTypeName());
 
 			ASSERT(!udt->getMetadata());
 			udt->setMetadata(cName);
@@ -152,7 +152,7 @@ void MangleNames::visit(tree::Use *use)
 		}
 		else if((udt = dynamic_cast<tree::UDT *>(i->second)))
 		{
-			Mangled *cName = new Mangled("moon$$" + program->getName() + "_" + use->getName() + "_" + udt->getName());
+			Mangled *cName = new Mangled("moon$$" + program->getName() + "_" + use->getName() + "_" + udt->getTypeName());
 
 			ASSERT(!udt->getMetadata());
 			udt->setMetadata(cName);
@@ -196,7 +196,7 @@ void MangleNames::visit(tree::Function *function)
 		}
 		else if((udt = dynamic_cast<tree::UDT *>(i->second)))
 		{
-			Mangled *cName = new Mangled(cPrototypeName->useName + "_" + udt->getName());
+			Mangled *cName = new Mangled(cPrototypeName->useName + "_" + udt->getTypeName());
 
 			ASSERT(!udt->getMetadata());
 			udt->setMetadata(cName);
@@ -246,7 +246,7 @@ void MangleNames::visit(tree::AnonymousScope *anonymousScope)
 		}
 		else if((udt = dynamic_cast<tree::UDT *>(i->second)))
 		{
-			Mangled *cName = new Mangled(cPrototypeName->useName + "_" + udt->getName());
+			Mangled *cName = new Mangled(cPrototypeName->useName + "_" + udt->getTypeName());
 
 			ASSERT(!udt->getMetadata());
 			udt->setMetadata(cName);

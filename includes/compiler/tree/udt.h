@@ -5,7 +5,6 @@
 
 #include <list>
 #include <string>
-#include "compiler/behaviours/named_map.h"
 #include "expression.h"
 #include "node.h"
 #include "type.h"
@@ -16,27 +15,10 @@ namespace tree
 
 	/* ---- ONLY CONCRETE CLASSES BELOW HERE ---- */
 
-	class Member : public TypedIdentity
-	{
-	public:
-		Member(Type *type, std::string name) : TypedIdentity(type, name) {}
-
-#ifdef DEBUG
-		virtual void printNode() { LOG("Member"); }
-#endif
-	};
-
-	typedef std::list<Member *> Members;
-
-	class UDT : public Type, public behaviour::NamedMap
+	class UDT : public Type
 	{
 	public:
 		UDT(std::string name, Members *members) : mName(name), mMembers(members) {}
-
-		const std::string &getName() const
-		{
-			return mName;
-		}
 
 		bool canPerform(const Operation &operation) const;
 
@@ -55,17 +37,12 @@ namespace tree
 		virtual void printType() { LOG("UDT: %s", mName.c_str()); }
 #endif
 
-		virtual void checkNamedNode(const std::string &name, Node *node);
-		virtual Node *findNamedNode(Identifier *identifier);
-		virtual void mapNamedNode(const std::string &name, Node *node);
-
 	protected:
 		virtual bool equals(const Type &type) const;
 
 	private:
 		std::string mName;
 		Members *mMembers;
-		behaviour::NamedMap::NamedNodes mNamedNodes;
 	};
 }
 

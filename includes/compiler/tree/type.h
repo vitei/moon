@@ -5,6 +5,7 @@
 
 #include <string>
 #include <sstream>
+#include "compiler/behaviours/named_map.h"
 #include "node.h"
 
 namespace tree
@@ -15,7 +16,7 @@ namespace tree
 
 	/* ---- ONLY ABSTRACT CLASSES BELOW HERE ---- */
 
-	class Type : public Node
+	class Type : public Node, public behaviour::NamedMap
 	{
 	public:
 		class InvalidException : public std::exception
@@ -49,6 +50,10 @@ namespace tree
 			return true;
 		}
 
+		virtual void checkNamedNode(const std::string &name, Node *node);
+		virtual Node *findNamedNode(Identifier *identifier);
+		virtual void mapNamedNode(const std::string &name, Node *node);
+
 	protected:
 		Type() { /* Abstract class */ }
 
@@ -56,6 +61,8 @@ namespace tree
 
 	private:
 		friend bool operator == (const Type &type1, const Type &type2);
+
+		behaviour::NamedMap::NamedNodes mNamedNodes;
 	};
 
 	inline bool operator == (const Type &type1, const Type &type2)
