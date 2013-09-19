@@ -15,7 +15,7 @@ MOON_FLAGS+=-B -I"$(THIS_MAKEFILE_DIR)/includes" -U"$(THIS_MAKEFILE_DIR)/uses"
 
 all: $(BINARIES)
 
-$(PASS_TESTS_DIR)/%.c: $(PASS_TESTS_DIR)/%.moon
+$(PASS_TESTS_DIR)/%.c: $(PASS_TESTS_DIR)/%.moon $(MOON)
 	@echo $(<:.moon=$(EXE_EXTENSION)): $<
 	@$(MOON) $(MOON_FLAGS) -o $@ $<
 
