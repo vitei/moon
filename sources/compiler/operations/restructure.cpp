@@ -202,6 +202,17 @@ void operation::Restructure::dispatch(tree::Function *function)
 	processFunctionParameters(function);
 }
 
+
+void operation::Restructure::dispatch(tree::Method *method)
+{
+	tree::Type *type = NULL;
+
+	RESTRUCTURE_GET(type, tree::Type, method->getType());
+	method->setType(type);
+
+	dispatch(static_cast<tree::Function *>(method));
+}
+
 void operation::Restructure::dispatch(tree::If *ifStatement)
 {
 	tree::Statement *falseStatement = NULL;

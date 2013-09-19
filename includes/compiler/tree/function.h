@@ -5,10 +5,8 @@
 
 #include <string>
 #include "expression.h"
-#include "node.h"
 #include "scope.h"
 #include "statement.h"
-#include "type.h"
 
 namespace tree
 {

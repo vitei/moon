@@ -194,13 +194,13 @@
 %type<statements> declarations
 %type<statement> declaration
 %type<statement> s_variable_statement
-%type<statements> o_functions
-%type<statements> functions
+%type<statements> o_callables
+%type<statements> callables
+%type<statement> callable
 %type<statement> s_function
 %type<statement> function
-%type<prototype> m_f_prototype
-%type<prototype> function_prototype
-%type<prototype> method_prototype
+%type<statement> method
+%type<prototype> prototype
 %type<expressions> o_arguments
 %type<expressions> arguments
 %type<expression> argument
@@ -269,9 +269,9 @@ start                   :   START_USE use
                             }
                         ;
 
-use                     :   o_program_includes o_program_uses o_declarations o_functions
+use                     :   o_program_includes o_program_uses o_declarations o_callables
                             {
-                                LOG("use                     :   o_program_includes o_program_uses o_declarations o_functions");
+                                LOG("use                     :   o_program_includes o_program_uses o_declarations o_callables");
 
                                 tree::Statements *useStatements = NULL;
 
@@ -600,9 +600,9 @@ type_member             :   TOKEN_ID TOKEN_CAST type TOKEN_EOS
                             }
                         ;
 
-import_statement        :   TOKEN_IMPORT function_prototype TOKEN_EOS
+import_statement        :   TOKEN_IMPORT prototype TOKEN_EOS
                             {
-                                LOG("import_statement        :   TOKEN_IMPORT function_prototype TOKEN_EOS");
+                                LOG("import_statement        :   TOKEN_IMPORT prototype TOKEN_EOS");
 
                                 if($2->getType() == NULL)
                                 {
@@ -744,15 +744,15 @@ s_variable_statement    :   variable_statement
                             }
                         ;
 
-o_functions             :   /* Empty */
+o_callables             :   /* Empty */
                             {
-                                LOG("o_functions             :   /* Empty */");
+                                LOG("o_callables             :   /* Empty */");
 
                                 $$ = NULL;
                             }
-                        |   s_function
+                        |   callable
                             {
-                                LOG("o_functions             :   s_function");
+                                LOG("o_callables             :   callable");
 
                                 if($1)
                                 {
@@ -764,9 +764,9 @@ o_functions             :   /* Empty */
                                     $$ = NULL;
                                 }
                             }
-                        |   s_function functions
+                        |   callable callables
                             {
-                                LOG("o_functions             :   s_function functions");
+                                LOG("o_callables             :   callable callables");
 
                                 $$ = $2;
 
@@ -785,9 +785,9 @@ o_functions             :   /* Empty */
                             }
                         ;
 
-functions               :   s_function
+callables               :   callable
                             {
-                                LOG("functions               :   s_function");
+                                LOG("callables               :   callable");
 
                                 if($1)
                                 {
@@ -799,9 +799,9 @@ functions               :   s_function
                                     $$ = NULL;
                                 }
                             }
-                        |   functions s_function
+                        |   callables callable
                             {
-                                LOG("functions               :   functions s_function");
+                                LOG("callables               :   callables callable");
 
                                 $$ = $1;
 
@@ -814,6 +814,20 @@ functions               :   s_function
 
                                     $$->push_back($2);
                                 }
+                            }
+                        ;
+
+callable                :   s_function
+                            {
+                                LOG("callable                :   s_function");
+
+                                $$ = $1;
+                            }
+                        |   method
+                            {
+                                LOG("callable                :   method");
+
+                                $$ = $1;
                             }
                         ;
 
@@ -833,56 +847,37 @@ s_function              :   function
                             }
                         ;
 
-function                :   m_f_prototype TOKEN_EOS o_statements TOKEN_END TOKEN_EOS /* FIXME, support states: function_prototype function_state TOKEN_EOS o_statements TOKEN_END TOKEN_EOS */
+function                :   TOKEN_DEF prototype TOKEN_EOS o_statements TOKEN_END TOKEN_EOS /* FIXME, support states: function_prototype function_state TOKEN_EOS o_statements TOKEN_END TOKEN_EOS */
                             {
-                                LOG("function                :   m_f_prototype TOKEN_EOS o_statements TOKEN_END TOKEN_EOS");
+                                LOG("function                :   TOKEN_DEF prototype TOKEN_EOS o_statements TOKEN_END TOKEN_EOS");
 
-                                $$ = new tree::Function($1, $3);
+                                $$ = new tree::Function($2, $4);
                                 $$->setLocation(@1);
                             }
                         ;
 
-m_f_prototype           :    function_prototype
-                             {
-                                 $$ = $1;
-                             }
-                        |    method_prototype
-                             {
-                                 $$ = $1;
-                             }
-                        ;
-
-function_prototype      :   TOKEN_DEF TOKEN_ID TOKEN_PARENTHESIS_OPEN o_arguments TOKEN_PARENTHESIS_CLOSE
+method                  :   TOKEN_DEF type TOKEN_DIRECT_ACCESS prototype TOKEN_EOS o_statements TOKEN_END TOKEN_EOS /* FIXME, support states: function_prototype function_state TOKEN_EOS o_statements TOKEN_END TOKEN_EOS */
                             {
-                                LOG("function_prototype      :   TOKEN_DEF TOKEN_ID TOKEN_PARENTHESIS_OPEN o_arguments TOKEN_PARENTHESIS_CLOSE");
+                                LOG("method                  :   TOKEN_DEF type TOKEN_DIRECT_ACCESS prototype TOKEN_EOS o_statements TOKEN_END TOKEN_EOS");
 
-                                $$ = new tree::FunctionPrototype(NULL, std::string($2), $4);
-                                $$->setLocation(@1);
-                            }
-                        |   TOKEN_DEF TOKEN_ID TOKEN_PARENTHESIS_OPEN o_arguments TOKEN_PARENTHESIS_CLOSE TOKEN_CAST type
-                            {
-                                LOG("function_prototype      :   TOKEN_DEF TOKEN_ID TOKEN_PARENTHESIS_OPEN o_arguments TOKEN_PARENTHESIS_CLOSE TOKEN_CAST type");
-
-                                $$ = new tree::FunctionPrototype($7, std::string($2), $4);
+                                $$ = new tree::Method($2, $4, $6);
                                 $$->setLocation(@1);
                             }
                         ;
 
-method_prototype        :   TOKEN_DEF type TOKEN_DIRECT_ACCESS TOKEN_ID TOKEN_PARENTHESIS_OPEN o_arguments TOKEN_PARENTHESIS_CLOSE
+prototype               :   TOKEN_ID TOKEN_PARENTHESIS_OPEN o_arguments TOKEN_PARENTHESIS_CLOSE
                             {
-                                LOG("method_prototype        :   TOKEN_DEF TOKEN_ID TOKEN_PARENTHESIS_OPEN o_arguments TOKEN_PARENTHESIS_CLOSE");
+                                LOG("prototype               :   TOKEN_DEF TOKEN_ID TOKEN_PARENTHESIS_OPEN o_arguments TOKEN_PARENTHESIS_CLOSE");
 
-                                //$$ = new tree::FunctionPrototype(NULL, std::string($4), $6);
-                                //$$->setLocation(@1);
-                                $$ = NULL; // FIXME
+                                $$ = new tree::FunctionPrototype(NULL, std::string($1), $3);
+                                $$->setLocation(@1);
                             }
-                        |   TOKEN_DEF type TOKEN_DIRECT_ACCESS TOKEN_ID TOKEN_PARENTHESIS_OPEN o_arguments TOKEN_PARENTHESIS_CLOSE TOKEN_CAST type
+                        |   TOKEN_ID TOKEN_PARENTHESIS_OPEN o_arguments TOKEN_PARENTHESIS_CLOSE TOKEN_CAST type
                             {
-                                LOG("method_prototype        :   TOKEN_DEF TOKEN_ID TOKEN_PARENTHESIS_OPEN o_arguments TOKEN_PARENTHESIS_CLOSE TOKEN_CAST type");
+                                LOG("prototype               :   TOKEN_DEF TOKEN_ID TOKEN_PARENTHESIS_OPEN o_arguments TOKEN_PARENTHESIS_CLOSE TOKEN_CAST type");
 
-                                //$$ = new tree::FunctionPrototype($9, std::string($4), $6);
-                                //$$->setLocation(@1);
-                                $$ = NULL; // FIXME
+                                $$ = new tree::FunctionPrototype($6, std::string($1), $3);
+                                $$->setLocation(@1);
                             }
                         ;
 
@@ -1569,9 +1564,8 @@ access_expression       :   postfix_expression
                             {
                                 LOG("access_expression       :   TOKEN_DIRECT_ACCESS access_expression");
 
-                                //$$ = new tree::DirectAccess(NULL, $2); // FIXME
-                                //$$->setLocation(@1);
-                                $$ = NULL; // FIXME
+                                $$ = new tree::DirectAccess((tree::Expression *)new tree::This(), $2);
+                                $$->setLocation(@1);
                             }
                         |   access_expression TOKEN_DIRECT_ACCESS postfix_expression
                             {

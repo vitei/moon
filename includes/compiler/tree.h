@@ -7,6 +7,7 @@
 #include "compiler/tree/identifier.h"
 #include "compiler/tree/if.h"
 #include "compiler/tree/import.h"
+#include "compiler/tree/method.h"
 #include "compiler/tree/program.h"
 #include "compiler/tree/scope.h"
 #include "compiler/tree/scoping.h"

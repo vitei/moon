@@ -25,6 +25,7 @@ namespace operation
 		virtual void dispatch(tree::FunctionCall *functionCall);
 		virtual void dispatch(tree::IfExpression *ifExpression);
 		virtual void dispatch(tree::Function *function);
+		virtual void dispatch(tree::Method *method);
 		virtual void dispatch(tree::If *ifStatement);
 		virtual void dispatch(tree::Import *import);
 		virtual void dispatch(tree::Execute *execute);

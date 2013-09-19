@@ -475,6 +475,16 @@ namespace tree
 		bool mAutoCast;
 	};
 
+	class This : public Expression
+	{
+	public:
+		This() {}
+
+#ifdef DEBUG
+		virtual void printNode() { LOG("This"); }
+#endif
+	};
+
 	class DirectAccess : public Access
 	{
 	public:
