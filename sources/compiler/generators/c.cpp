@@ -829,7 +829,7 @@ void generator::C::Printer::output(tree::Cast *cast)
 	}
 	else if(dynamic_cast<tree::String *>(type))
 	{
-		*mOutput << "(char *)";
+		*mOutput << "(const char *)";
 	}
 	else if(dynamic_cast<tree::UDT *>(type))
 	{
@@ -1376,7 +1376,7 @@ void generator::C::Printer::outputType(tree::Type *type)
 	}
 	else if(dynamic_cast<tree::String *>(type))
 	{
-		*mOutput << "char";
+		*mOutput << "const char";
 	}
 	else if((udt = dynamic_cast<tree::UDT *>(type)))
 	{
