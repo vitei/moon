@@ -16,18 +16,13 @@ MOON_FLAGS+=-B -I"$(THIS_MAKEFILE_DIR)/includes" -U"$(THIS_MAKEFILE_DIR)/uses"
 all: $(BINARIES)
 
 $(PASS_TESTS_DIR)/%.c: $(PASS_TESTS_DIR)/%.moon $(MOON)
-	@echo $(<:.moon=$(EXE_EXTENSION)): $<
+	@echo $(<:.moon=.c): $<
 	@$(MOON) $(MOON_FLAGS) -o $@ $<
 
 $(OUTPUT_DIR)/%: $(PASS_TESTS_DIR)/%.c
 	@echo $(<:.c=$(EXE_EXTENSION)): $<
 	@mkdir -p $(shell dirname $@)
-	@$(LINKER) $(LINKER_FLAGS) -o $@ $<
-
-$(OUTPUT_DIR)/%: $(PASS_TESTS_DIR)/%.c
-	@echo $(<:.c=$(EXE_EXTENSION)): $<
-	@mkdir -p $(shell dirname $@)
-	@$(CC) $(CC_FLAGS) $(CPP_FLAGS) $(LINKER_FLAGS) -o $@ $<
+	@$(CC) $(CC_FLAGS) $(CPP_FLAGS) -o $@ $< $(LINKER_FLAGS)
 
 clean:
 	@rm -rf $(OUTPUT_DIR)
