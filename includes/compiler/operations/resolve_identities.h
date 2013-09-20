@@ -30,6 +30,7 @@ namespace operation
 		virtual void dispatch(tree::FunctionCall *functionCall);
 
 		virtual void visit(tree::Identity *identity);
+		virtual void visit(tree::FunctionPrototype *functionPrototype);
 		virtual void visit(tree::TypeDefinition *typeDefinition);
 		virtual void visit(tree::Assign *assign);
 		virtual void visit(tree::ArrayAccess *arrayAccess);

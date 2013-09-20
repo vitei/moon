@@ -389,26 +389,6 @@ void operation::ResolveIdentities::dispatch(tree::FunctionCall *functionCall)
 	}
 }
 
-void operation::ResolveIdentities::visit(tree::TypeDefinition *typeDefinition)
-{
-	LOG("ResolveIdentities::visit::TypeDefinition");
-
-	if(mCanMapIdentifier)
-	{
-		try
-		{
-			mCurrentMap->mapNamedNode(typeDefinition->getName(), typeDefinition->getType());
-		}
-		catch(behaviour::NamedMap::ExistsException &e)
-		{
-			std::string error = "The type \"" + typeDefinition->getName() + "\" is already defined";
-			error::enqueue(e.conflict->getLocation(), e.node->getLocation(), error);
-		}
-	}
-
-	operation::Restructure::visit(typeDefinition);
-}
-
 void operation::ResolveIdentities::visit(tree::Identity *identity)
 {
 	LOG("ResolveIdentities::visit::Identity");
@@ -427,6 +407,55 @@ void operation::ResolveIdentities::visit(tree::Identity *identity)
 	}
 
 	operation::Restructure::visit(identity);
+}
+
+void operation::ResolveIdentities::visit(tree::FunctionPrototype *functionPrototype)
+{
+	LOG("ResolveIdentities::visit::FunctionPrototype");
+
+	if(mCanMapIdentifier)
+	{
+		try
+		{
+			tree::Type *type = dynamic_cast<tree::Type *>(mCurrentMap);
+
+			if(type)
+			{
+				mCurrentScope->mapAssociatedNamedNode(type, functionPrototype->getName(), functionPrototype);
+			}
+			else
+			{
+				mCurrentMap->mapNamedNode(functionPrototype->getName(), functionPrototype);
+			}
+		}
+		catch(behaviour::NamedMap::ExistsException &e)
+		{
+			std::string error = "The identifier \"" + functionPrototype->getName() + "\" is already defined";
+			error::enqueue(e.conflict->getLocation(), e.node->getLocation(), error);
+		}
+	}
+
+	operation::Restructure::visit(functionPrototype);
+}
+
+void operation::ResolveIdentities::visit(tree::TypeDefinition *typeDefinition)
+{
+	LOG("ResolveIdentities::visit::TypeDefinition");
+
+	if(mCanMapIdentifier)
+	{
+		try
+		{
+			mCurrentMap->mapNamedNode(typeDefinition->getName(), typeDefinition->getType());
+		}
+		catch(behaviour::NamedMap::ExistsException &e)
+		{
+			std::string error = "The type \"" + typeDefinition->getName() + "\" is already defined";
+			error::enqueue(e.conflict->getLocation(), e.node->getLocation(), error);
+		}
+	}
+
+	operation::Restructure::visit(typeDefinition);
 }
 
 void operation::ResolveIdentities::visit(tree::Assign *assign)
@@ -559,7 +588,7 @@ void operation::ResolveIdentities::visit(tree::Method *method)
 		// We can only process the type...
 		if(method->getType())
 		{
-				method->getType()->accept(this);
+			method->getType()->accept(this);
 		}
 
 		RESTRUCTURE_GET(type, tree::Type, method->getType());
@@ -603,7 +632,7 @@ tree::Node *operation::ResolveIdentities::restructure(tree::Identifier *identifi
 
 			if(type)
 			{
-				if(mUnmappedMethods)
+				if(!mUnmappedMethods)
 				{
 					std::string error = std::string("The type \"") + type->getTypeName() + "\" does not contain a member named \"" + identifier->getName() + "\"";
 					error::enqueue(identifier->getLocation(), error);
