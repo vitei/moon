@@ -21,13 +21,15 @@ namespace operation
 		virtual void visit(tree::FunctionCall *functionCall);
 		virtual void visit(tree::IfExpression *ifExpression);
 		virtual void visit(tree::Scope *scope);
+		virtual void visit(tree::This *th1s);
 
 		void setOperationType(tree::Operation *operation, tree::Type *type);
 
 	private:
-		ResolveTypes() : mValidated(false) {}
+		ResolveTypes() : mValidated(false), mCurrentScope(NULL) {}
 
 		bool mValidated;
+		tree::Scope *mCurrentScope;
 	};
 }
 

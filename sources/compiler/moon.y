@@ -1294,6 +1294,16 @@ access_assignee         :   assignee
 
                                 $$ = $1;
                             }
+                        |   TOKEN_DIRECT_ACCESS assignee
+                            {
+                                LOG("access_assignee         :   TOKEN_DIRECT_ACCESS assignee");
+
+                                tree::This *th1s = new tree::This();
+                                th1s->setLocation(@1);
+
+                                $$ = new tree::DirectAccess(th1s, $2);
+                                $$->setLocation(@1);
+                            }
                         |   access_assignee TOKEN_DIRECT_ACCESS assignee
                             {
                                 LOG("access_assignee         :   access_assignee TOKEN_DIRECT_ACCESS assignee");
@@ -1564,7 +1574,10 @@ access_expression       :   postfix_expression
                             {
                                 LOG("access_expression       :   TOKEN_DIRECT_ACCESS access_expression");
 
-                                $$ = new tree::DirectAccess((tree::Expression *)new tree::This(), $2);
+                                tree::This *th1s = new tree::This();
+                                th1s->setLocation(@1);
+
+                                $$ = new tree::DirectAccess(th1s, $2);
                                 $$->setLocation(@1);
                             }
                         |   access_expression TOKEN_DIRECT_ACCESS postfix_expression
@@ -1615,6 +1628,16 @@ array_expression        :   postfix_expression TOKEN_BRACKETS_OPEN expression TO
 access_call_expression  :   call_expression
                             {
                                 $$ = $1;
+                            }
+                        |   TOKEN_DIRECT_ACCESS call_expression
+                            {
+                                LOG("access_call_expression       :   TOKEN_DIRECT_ACCESS call_expression");
+
+                                tree::This *th1s = new tree::This();
+                                th1s->setLocation(@1);
+
+                                $$ = new tree::DirectAccess(th1s, $2);
+                                $$->setLocation(@1);
                             }
                         |   postfix_expression TOKEN_DIRECT_ACCESS call_expression
                             {

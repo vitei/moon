@@ -276,7 +276,41 @@ void operation::ResolveTypes::visit(tree::Scope *scope)
 
 	if(statements)
 	{
-		for(tree::Statements::iterator i = statements->begin(), end = statements->end(); i != end; (*i++)->accept(this));
+		tree::Scope *oldScope = mCurrentScope;
+
+		mCurrentScope = scope;
+		for(tree::Statements::iterator i = statements->begin(), end = statements->end(); i != end; (*i++)->accept(this))
+			;
+		mCurrentScope = oldScope;
+	}
+}
+
+void operation::ResolveTypes::visit(tree::This *th1s)
+{
+	LOG("ResolveTypes::visit::This");
+
+	if(!th1s->getType())
+	{
+		tree::Method *method = tree::node_cast<tree::Method *>(mCurrentScope);
+
+		if(method)
+		{
+			tree::Type *type = method->getType();
+
+			if(type && type->isResolved())
+			{
+				th1s->setType(type);
+			}
+
+			if(!th1s->getType())
+			{
+				mValidated = false;
+			}
+		}
+		else
+		{
+			error::enqueue(th1s->getLocation(), "Scope is not a method");
+		}
 	}
 }
 
