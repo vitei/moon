@@ -4,10 +4,12 @@
 #include "compiler/tree.h"
 #include "compiler/operations/check_typecasting.h"
 
-void operation::CheckTypecasting::run(tree::Program *program)
+bool operation::CheckTypecasting::run(tree::Program *program)
 {
 	operation::CheckTypecasting operation;
 	program->accept(&operation);
+
+	return true;
 }
 
 

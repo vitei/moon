@@ -81,6 +81,9 @@ void resolveProgram(tree::Program *program)
 		// Now we can create any castings that are needed for the next pass...
 		operation::CastExpressions::run,
 
+		// Check that these typecasts are OK
+		operation::CheckTypecasting::run,
+
 		NULL
 	};
 
@@ -291,8 +294,6 @@ int main(int argc, char *argv[])
 					operation::RemoveDeadNodes::run,
 
 					// FIXME, need an operation here to get all variable definition statements and assign suitable default values.
-
-					operation::CheckTypecasting::run,
 
 					NULL
 				};
