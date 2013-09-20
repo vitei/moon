@@ -632,10 +632,17 @@ tree::Node *operation::ResolveIdentities::restructure(tree::Identifier *identifi
 
 			if(type)
 			{
-				if(!mUnmappedMethods)
+				try
 				{
-					std::string error = std::string("The type \"") + type->getTypeName() + "\" does not contain a member named \"" + identifier->getName() + "\"";
-					error::enqueue(identifier->getLocation(), error);
+					r = mCurrentScope->findAssociatedNamedNode(type, identifier);
+				}
+				catch(behaviour::NamedMap::NotFoundException &e)
+				{
+					if(!mUnmappedMethods)
+					{
+						std::string error = std::string("The type \"") + type->getTypeName() + "\" does not contain a member named \"" + identifier->getName() + "\"";
+						error::enqueue(identifier->getLocation(), error);
+					}
 				}
 			}
 			else
