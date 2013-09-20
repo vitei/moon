@@ -3,32 +3,34 @@
 #include <string>
 #include "compiler/tree/scope.h"
 
-void tree::Scope::checkNamedNode(const std::string &name, tree::Node *node)
+void tree::Scope::checkAssociatedNamedNode(tree::Node *association, const std::string &name, tree::Node *node)
 {
-	behaviour::NamedMap::NamedNodes::iterator previousValue = mNamedNodes.find(name);
+	const behaviour::NamedMap::NamedNodes &namedNodes = mAssociatedNamedNodes[association];
+	const behaviour::NamedMap::NamedNodes::const_iterator previousValue = namedNodes.find(name);
 
-	if(previousValue != mNamedNodes.end())
+	if(previousValue != namedNodes.end())
 	{
 		throw behaviour::NamedMap::ExistsException(node, previousValue->second);
 	}
 	else if(mParent)
 	{
-		mParent->checkNamedNode(name, node);
+		mParent->checkAssociatedNamedNode(association, name, node);
 	}
 }
 
-tree::Node *tree::Scope::findNamedNode(tree::Identifier *identifier)
+tree::Node *tree::Scope::findAssociatedNamedNode(tree::Node *association, tree::Identifier *identifier)
 {
+	const behaviour::NamedMap::NamedNodes &namedNodes = mAssociatedNamedNodes[association];
 	const std::string &name = identifier->getName();
-	std::map<std::string, Node *>::iterator identity = mNamedNodes.find(name);
+	const behaviour::NamedMap::NamedNodes::const_iterator identity = namedNodes.find(name);
 
-	if(identity != mNamedNodes.end())
+	if(identity != namedNodes.end())
 	{
 		return identity->second;
 	}
 	else if(mParent)
 	{
-		return mParent->findNamedNode(identifier);
+		return mParent->findAssociatedNamedNode(association, identifier);
 	}
 	else
 	{
@@ -36,12 +38,12 @@ tree::Node *tree::Scope::findNamedNode(tree::Identifier *identifier)
 	}
 }
 
-void tree::Scope::mapNamedNode(const std::string &name, tree::Node *node)
+void tree::Scope::mapAssociatedNamedNode(tree::Node *association, const std::string &name, tree::Node *node)
 {
 	try
 	{
-		checkNamedNode(name, node);
-		mNamedNodes[name] = node;
+		checkAssociatedNamedNode(association, name, node);
+		mAssociatedNamedNodes[association][name] = node;
 	}
 	catch(behaviour::NamedMap::ExistsException &e)
 	{

@@ -30,7 +30,7 @@ namespace tree
 
 		NamedNodes &getNamedNodes()
 		{
-			return mNamedNodes;
+			return mAssociatedNamedNodes[NULL];
 		}
 
 		Statements *getStatements() const
@@ -38,15 +38,15 @@ namespace tree
 			return mStatements;
 		}
 
-		virtual void checkNamedNode(const std::string &name, Node *node);
-		virtual Node *findNamedNode(Identifier *identifier);
-		virtual void mapNamedNode(const std::string &name, Node *node);
+		virtual void checkAssociatedNamedNode(tree::Node *association, const std::string &name, tree::Node *node);
+		virtual tree::Node *findAssociatedNamedNode(tree::Node *association, tree::Identifier *identifier);
+		virtual void mapAssociatedNamedNode(tree::Node *association, const std::string &name, tree::Node *node);
 
 	protected:
 		Scope(Statements *statements) : mParent(NULL), mStatements(statements) { /* Abstract class */ }
 
 		Scope *mParent;
-		behaviour::NamedMap::NamedNodes mNamedNodes;
+		behaviour::NamedMap::AssociatedNamedNodes mAssociatedNamedNodes;
 
 	private:
 		Statements *mStatements;

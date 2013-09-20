@@ -3,40 +3,42 @@
 #include <string>
 #include "compiler/tree/function.h"
 
-void tree::Function::checkNamedNode(const std::string &name, tree::Node *node)
+void tree::Function::checkAssociatedNamedNode(tree::Node *association, const std::string &name, tree::Node *node)
 {
-	behaviour::NamedMap::NamedNodes::iterator previousValue = mNamedNodes.find(name);
+	const behaviour::NamedMap::NamedNodes &namedNodes = mAssociatedNamedNodes[association];
+	const behaviour::NamedMap::NamedNodes::const_iterator previousValue = namedNodes.find(name);
 
-	if(previousValue != mNamedNodes.end())
+	if(previousValue != namedNodes.end())
 	{
 		throw behaviour::NamedMap::ExistsException(node, previousValue->second);
 	}
 	else if(mOriginalScope)
 	{
-		mOriginalScope->checkNamedNode(name, node);
+		mOriginalScope->checkAssociatedNamedNode(association, name, node);
 	}
 	else if(mParent)
 	{
-		mParent->checkNamedNode(name, node);
+		mParent->checkAssociatedNamedNode(association, name, node);
 	}
 }
 
-tree::Node *tree::Function::findNamedNode(tree::Identifier *identifier)
+tree::Node *tree::Function::findAssociatedNamedNode(tree::Node *association, tree::Identifier *identifier)
 {
+	const behaviour::NamedMap::NamedNodes &namedNodes = mAssociatedNamedNodes[association];
 	const std::string &name = identifier->getName();
-	std::map<std::string, Node *>::iterator identity = mNamedNodes.find(name);
+	const behaviour::NamedMap::NamedNodes::const_iterator identity = namedNodes.find(name);
 
-	if(identity != mNamedNodes.end())
+	if(identity != namedNodes.end())
 	{
 		return identity->second;
 	}
 	else if(mOriginalScope)
 	{
-		return mOriginalScope->findNamedNode(identifier);
+		return mOriginalScope->findAssociatedNamedNode(association, identifier);
 	}
 	else if(mParent)
 	{
-		return mParent->findNamedNode(identifier);
+		return mParent->findAssociatedNamedNode(association, identifier);
 	}
 	else
 	{

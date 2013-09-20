@@ -58,9 +58,6 @@ namespace tree
 			}
 		}
 
-		//virtual void checkNamedNode(const std::string &name, Node *node);
-		//virtual Node *findNamedNode(Identifier *identifier);
-
 #ifdef DEBUG
 		virtual void printNode() { LOG("Method"); }
 #endif

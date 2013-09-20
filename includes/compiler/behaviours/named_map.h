@@ -32,10 +32,15 @@ namespace behaviour
 		};
 
 		typedef std::map<std::string, tree::Node *> NamedNodes;
+		typedef std::map<tree::Node *, NamedNodes> AssociatedNamedNodes;
 
-		virtual void checkNamedNode(const std::string &name, tree::Node *node) = 0;
-		virtual tree::Node *findNamedNode(tree::Identifier *identifier) = 0;
-		virtual void mapNamedNode(const std::string &name, tree::Node *node) = 0;
+		virtual void checkAssociatedNamedNode(tree::Node *association, const std::string &name, tree::Node *node) = 0;
+		virtual tree::Node *findAssociatedNamedNode(tree::Node *association, tree::Identifier *identifier) = 0;
+		virtual void mapAssociatedNamedNode(tree::Node *association, const std::string &name, tree::Node *node) = 0;
+
+		void checkNamedNode(const std::string &name, tree::Node *node) { checkAssociatedNamedNode(NULL, name, node); }
+		tree::Node *findNamedNode(tree::Identifier *identifier) { return findAssociatedNamedNode(NULL, identifier); }
+		void mapNamedNode(const std::string &name, tree::Node *node) { mapAssociatedNamedNode(NULL, name, node); }
 
 	protected:
 		NamedMap() { /* Abstract class */ }

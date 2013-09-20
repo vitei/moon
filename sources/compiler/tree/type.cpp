@@ -4,22 +4,24 @@
 #include "compiler/tree/identifier.h"
 #include "compiler/tree/type.h"
 
-void tree::Type::checkNamedNode(const std::string &name, tree::Node *node)
+void tree::Type::checkAssociatedNamedNode(tree::Node *association, const std::string &name, tree::Node *node)
 {
-	behaviour::NamedMap::NamedNodes::iterator previousValue = mNamedNodes.find(name);
+	const behaviour::NamedMap::NamedNodes  &namedNodes = mAssociatedNamedNodes[association];
+	const behaviour::NamedMap::NamedNodes::const_iterator previousValue = namedNodes.find(name);
 
-	if(previousValue != mNamedNodes.end())
+	if(previousValue != namedNodes.end())
 	{
 		throw behaviour::NamedMap::ExistsException(node, previousValue->second);
 	}
 }
 
-tree::Node *tree::Type::findNamedNode(tree::Identifier *identifier)
+tree::Node *tree::Type::findAssociatedNamedNode(tree::Node *association, tree::Identifier *identifier)
 {
+	const behaviour::NamedMap::NamedNodes &namedNodes = mAssociatedNamedNodes[association];
 	const std::string &name = identifier->getName();
-	std::map<std::string, Node *>::iterator identity = mNamedNodes.find(name);
+	const behaviour::NamedMap::NamedNodes::const_iterator identity = namedNodes.find(name);
 
-	if(identity != mNamedNodes.end())
+	if(identity != namedNodes.end())
 	{
 		return identity->second;
 	}
@@ -29,12 +31,12 @@ tree::Node *tree::Type::findNamedNode(tree::Identifier *identifier)
 	}
 }
 
-void tree::Type::mapNamedNode(const std::string &name, tree::Node *node)
+void tree::Type::mapAssociatedNamedNode(tree::Node *association, const std::string &name, tree::Node *node)
 {
 	try
 	{
-		checkNamedNode(name, node);
-		mNamedNodes[name] = node;
+		checkAssociatedNamedNode(association, name, node);
+		mAssociatedNamedNodes[association][name] = node;
 	}
 	catch(behaviour::NamedMap::ExistsException &e)
 	{

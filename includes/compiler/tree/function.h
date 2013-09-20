@@ -49,8 +49,8 @@ namespace tree
 			}
 		}
 
-		virtual void checkNamedNode(const std::string &name, Node *node);
-		virtual Node *findNamedNode(Identifier *identifier);
+		virtual void checkAssociatedNamedNode(tree::Node *association, const std::string &name, tree::Node *node);
+		virtual tree::Node *findAssociatedNamedNode(tree::Node *association, tree::Identifier *identifier);
 
 #ifdef DEBUG
 		virtual void printNode() { LOG("Function"); }

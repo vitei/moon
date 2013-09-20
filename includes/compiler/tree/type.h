@@ -50,9 +50,9 @@ namespace tree
 			return true;
 		}
 
-		virtual void checkNamedNode(const std::string &name, Node *node);
-		virtual Node *findNamedNode(Identifier *identifier);
-		virtual void mapNamedNode(const std::string &name, Node *node);
+		virtual void checkAssociatedNamedNode(tree::Node *association, const std::string &name, tree::Node *node);
+		virtual tree::Node *findAssociatedNamedNode(tree::Node *association, tree::Identifier *identifier);
+		virtual void mapAssociatedNamedNode(tree::Node *association, const std::string &name, tree::Node *node);
 
 	protected:
 		Type() { /* Abstract class */ }
@@ -62,7 +62,7 @@ namespace tree
 	private:
 		friend bool operator == (const Type &type1, const Type &type2);
 
-		behaviour::NamedMap::NamedNodes mNamedNodes;
+		behaviour::NamedMap::AssociatedNamedNodes mAssociatedNamedNodes;
 	};
 
 	inline bool operator == (const Type &type1, const Type &type2)
