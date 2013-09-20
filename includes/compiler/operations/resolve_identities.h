@@ -35,6 +35,7 @@ namespace operation
 		virtual void visit(tree::ArrayAccess *arrayAccess);
 		virtual void visit(tree::DirectAccess *directAccess);
 		virtual void visit(tree::Member *member);
+		virtual void visit(tree::Method *method);
 
 		virtual tree::Node *restructure(tree::Identifier *identifier);
 
@@ -42,13 +43,15 @@ namespace operation
 		virtual bool doProcessChildren(tree::ArrayAccess *arrayAccess) { return false; }
 		virtual bool doProcessChildren(tree::DirectAccess *directAccess) { return false; }
 		virtual bool doProcessChildren(tree::Member *member) { return false; }
+		virtual bool doProcessChildren(tree::Method *method) { return false; }
 
 	private:
-		ResolveIdentities() : mValidated(false), mCanCreateIdentifier(false), mCanMapIdentifier(true), mCurrentMap(NULL) {}
+		ResolveIdentities() : mValidated(false), mCanCreateIdentifier(false), mCanMapIdentifier(true), mUnmappedMethods(false), mCurrentMap(NULL) {}
 
 		bool mValidated;
 		bool mCanCreateIdentifier;
 		bool mCanMapIdentifier;
+		bool mUnmappedMethods;
 		behaviour::NamedMap *mCurrentMap;
 		std::map< tree::Scope *, std::queue<tree::Scope *> > mVisitList;
 	};

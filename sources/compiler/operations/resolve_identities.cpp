@@ -527,6 +527,55 @@ void operation::ResolveIdentities::visit(tree::Member *member)
 	visit(static_cast<tree::Identity *>(member));
 }
 
+void operation::ResolveIdentities::visit(tree::Method *method)
+{
+	LOG("ResolveIdentities::visit::Method");
+
+	tree::Type *type = tree::node_cast<tree::Type *>(method->getType());
+
+	if(type && type->isResolved())
+	{
+		method->Scope::childAccept(this);
+
+		if(method->getPrototype())
+		{
+			behaviour::NamedMap *oldMap = mCurrentMap;
+
+			mCurrentMap = type;
+			method->getPrototype()->accept(this);
+			mCurrentMap = oldMap;
+		}
+
+		if(method->getType())
+		{
+			method->getType()->accept(this);
+		}
+
+		operation::Restructure::visit(static_cast<tree::Function *>(method));
+	}
+	else
+	{
+		// Can't process this method properly yet...
+		// We can only process the type...
+		if(method->getType())
+		{
+				method->getType()->accept(this);
+		}
+
+		RESTRUCTURE_GET(type, tree::Type, method->getType());
+		method->setType(type);
+
+		mNodeMap.push(method);
+
+		// Can't ensure all members are verified yet
+		mUnmappedMethods = true;
+
+		mValidated = false;
+	}
+}
+
+
+
 tree::Node *operation::ResolveIdentities::restructure(tree::Identifier *identifier)
 {
 	tree::Node *r = NULL;
@@ -554,8 +603,11 @@ tree::Node *operation::ResolveIdentities::restructure(tree::Identifier *identifi
 
 			if(type)
 			{
-				std::string error = std::string("The type \"") + type->getTypeName() + "\" does not contain a member named \"" + identifier->getName() + "\"";
-				error::enqueue(identifier->getLocation(), error);
+				if(mUnmappedMethods)
+				{
+					std::string error = std::string("The type \"") + type->getTypeName() + "\" does not contain a member named \"" + identifier->getName() + "\"";
+					error::enqueue(identifier->getLocation(), error);
+				}
 			}
 			else
 			{
