@@ -28,6 +28,11 @@ namespace tree
 			mParent = parent;
 		}
 
+		AssociatedNamedNodes &getAssociatedNamedNodes()
+		{
+			return mAssociatedNamedNodes;
+		}
+
 		NamedNodes &getNamedNodes()
 		{
 			return mAssociatedNamedNodes[NULL];

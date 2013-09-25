@@ -16,7 +16,7 @@ namespace generator
 		class Printer
 		{
 		public:
-			Printer() : mOutput(NULL), mDepth(0) {}
+			Printer() : mOutput(NULL), mProgram(NULL), mMethod(NULL), mDepth(0) {}
 
 			void init(std::ostream &output, tree::Program *program)
 			{
@@ -29,6 +29,7 @@ namespace generator
 
 			void output(tree::Scope *scope);
 			void output(tree::Function *function);
+			void output(tree::Method *method);
 			void output(tree::AnonymousScope *anonymousScope);
 			void output(tree::Import *import);
 			void output(tree::FunctionPrototype *functionPrototype);
@@ -64,6 +65,7 @@ namespace generator
 			void output(tree::Not *notExpression);
 			void output(tree::Minus *minus);
 			void output(tree::UDT *udt);
+			void output(tree::This *th1s);
 
 			void output(tree::Execute *execute);
 			void output(tree::If *ifStatement);
@@ -110,6 +112,7 @@ namespace generator
 		private:
 			std::ostream *mOutput;
 			tree::Program *mProgram;
+			tree::Method *mMethod;
 			std::string mStructName;
 			unsigned int mDepth;
 		};
