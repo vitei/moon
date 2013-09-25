@@ -903,9 +903,42 @@ void generator::C::Printer::output(tree::IfExpression *ifExpression)
 
 void generator::C::Printer::output(tree::DirectAccess *directAccess)
 {
-	dispatch(directAccess->getContainer());
-	*mOutput << ".";
-	dispatch(directAccess->getTarget());
+	tree::FunctionCall *functionCall = dynamic_cast<tree::FunctionCall *>(directAccess->getTarget());
+
+	if(functionCall)
+	{
+		tree::FunctionPrototype *prototype = static_cast<tree::FunctionPrototype *>(functionCall->getPrototype());
+
+		ASSERT(prototype->getMetadata());
+		Mangled *cName = static_cast<Mangled *>(prototype->getMetadata());
+
+		ASSERT(!cName->isImport);
+
+		*mOutput << cName->useName << "(";
+
+		tree::Expressions *arguments = functionCall->getArguments();
+
+		*mOutput << "scope, ";
+
+		dispatch(directAccess->getContainer());
+
+		if(arguments)
+		{
+			for(tree::Expressions::iterator i = arguments->begin(), end = arguments->end(); i != end; ++i)
+			{
+				*mOutput << ", ";
+				dispatch(*i);
+			}
+		}
+
+		*mOutput << ")";
+	}
+	else
+	{
+		dispatch(directAccess->getContainer());
+		*mOutput << ".";
+		dispatch(directAccess->getTarget());
+	}
 }
 
 void generator::C::Printer::output(tree::MessageAccess *messageAccess)
