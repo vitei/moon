@@ -28,9 +28,10 @@ public:
 	virtual void visit(tree::Aggregate *aggregate);
 	virtual void visit(tree::Use *use);
 	virtual void visit(tree::Function *function);
+	virtual void visit(tree::Method *method);
 
 private:
-	MangleNames() : mProgram(NULL), mAggregate(NULL), mUse(NULL), mFunction(NULL) {}
+	MangleNames() : mProgram(NULL), mAggregate(NULL), mUse(NULL), mType(NULL), mFunction(NULL) {}
 
 	void dispatch(tree::Node *node);
 
@@ -43,12 +44,14 @@ private:
 	}
 
 	void mangle(tree::Identity *identity);
+	void mangle(tree::Variable *variable);
 	void mangle(tree::FunctionPrototype *functionPrototype);
 	void mangle(tree::UDT *udt);
 
 	tree::Program *mProgram;
 	tree::Aggregate *mAggregate;
 	tree::Use *mUse;
+	tree::Type *mType;
 	tree::Function *mFunction;
 };
 
@@ -116,6 +119,15 @@ void MangleNames::visit(tree::Function *function)
 	mFunction = oldFunction;
 }
 
+void MangleNames::visit(tree::Method *method)
+{
+	tree::Type *oldType = mType;
+
+	mType = method->getType();
+	visit(static_cast<tree::Function *>(method));
+	mType = oldType;
+}
+
 void MangleNames::dispatch(tree::Node *node)
 {
 	GENERATE_DISPATCH(node, mangle)
@@ -137,6 +149,12 @@ void MangleNames::mangle(tree::Identity *identity)
 		mangledName += mUse->getName();
 	}
 
+	if(mType)
+	{
+		mangledName += "$$";
+		mangledName += mType->getTypeName();
+	}
+
 	if(mFunction)
 	{
 		mangledName += "$$";
@@ -149,15 +167,43 @@ void MangleNames::mangle(tree::Identity *identity)
 	identity->setMetadata(new Mangled(mangledName));
 }
 
+void MangleNames::mangle(tree::Variable *variable)
+{
+	mangle(static_cast<tree::Identity *>(variable));
+
+	if(mUse && !mFunction)
+	{
+		Mangled *cName = static_cast<Mangled *>(variable->getMetadata());
+		cName->useName = "moon$$scope->" + cName->declarationName;
+	}
+}
+
 void MangleNames::mangle(tree::FunctionPrototype *functionPrototype)
 {
-	/*tree::Method *method = tree::node_cast<tree::Method *>(mFunction);
+	tree::Function *function = tree::node_cast<tree::Function *>(functionPrototype->getTarget());
 
-	if(method)
+	if(function)
 	{
-	}*/
+		tree::Method *method = tree::node_cast<tree::Method *>(function);
 
-	mangle(static_cast<tree::Identity *>(functionPrototype));
+		if(method)
+		{
+			tree::Type *oldType = mType;
+
+			mType = method->getType();
+			mangle(static_cast<tree::Identity *>(functionPrototype));
+			mType = oldType;
+		}
+		else
+		{
+			mangle(static_cast<tree::Identity *>(functionPrototype));
+		}
+	}
+	else
+	{
+		ASSERT(tree::node_cast<tree::Import *>(functionPrototype->getTarget()));
+		functionPrototype->setMetadata(new Mangled(functionPrototype->getName(), true));
+	}
 
 	tree::Expressions *arguments = functionPrototype->getArguments();
 
@@ -351,7 +397,8 @@ void OutputFunctionPrototypes::visit(tree::Scope *scope)
 
 	if(statements)
 	{
-		for(tree::Statements::iterator i = statements->begin(); i != statements->end(); (*i++)->accept(this));
+		for(tree::Statements::iterator i = statements->begin(); i != statements->end(); (*i++)->accept(this))
+			;
 	}
 }
 
@@ -634,13 +681,6 @@ void generator::C::Printer::output(tree::Function *function)
 	*mOutput << "}" << std::endl;
 }
 
-void generator::C::Printer::output(tree::Method *method)
-{
-	mMethod = method;
-	output(static_cast<tree::Function *>(method));
-	mMethod = NULL;
-}
-
 void generator::C::Printer::output(tree::AnonymousScope *anonymousScope)
 {
 	increaseDepth();
@@ -706,11 +746,13 @@ void generator::C::Printer::output(tree::FunctionPrototype *functionPrototype)
 {
 	outputTabs();
 	outputDeclaration(functionPrototype, true);
-	*mOutput << "(struct " << mStructName << " *scope";
+	*mOutput << "(struct " << mStructName << " *moon$$scope";
 
-	if(mMethod)
+	tree::Method *method = tree::node_cast<tree::Method *>(functionPrototype->getTarget());
+
+	if(method)
 	{
-		tree::Type *type = mMethod->getType();
+		tree::Type *type = method->getType();
 
 		*mOutput << ", ";
 		outputType(type);
@@ -806,7 +848,7 @@ void generator::C::Printer::output(tree::DirectAccess *directAccess)
 
 		tree::Expressions *arguments = functionCall->getArguments();
 
-		*mOutput << "scope, ";
+		*mOutput << "moon$$scope, ";
 
 		dispatch(directAccess->getContainer());
 
@@ -870,7 +912,7 @@ void generator::C::Printer::output(tree::FunctionCall *functionCall)
 	}
 	else
 	{
-		*mOutput << "scope";
+		*mOutput << "moon$$scope";
 
 		if(arguments)
 		{
@@ -1415,13 +1457,13 @@ void generator::C::Printer::outputNewBegin()
 	increaseDepth();
 
 	outputTabs();
-	*mOutput << "struct " << mStructName << " *scope = (struct " << mStructName << " *)malloc(sizeof(struct " << mStructName << "));" << std::endl;
+	*mOutput << "struct " << mStructName << " *moon$$scope = (struct " << mStructName << " *)malloc(sizeof(struct " << mStructName << "));" << std::endl;
 }
 
 void generator::C::Printer::outputNewEnd()
 {
 	outputTabs();
-	*mOutput << "return scope;" << std::endl;
+	*mOutput << "return moon$$scope;" << std::endl;
 
 	decreaseDepth();
 
@@ -1440,7 +1482,7 @@ void generator::C::Printer::outputBootstrapMain()
 	increaseDepth();
 
 	outputTabs();
-	*mOutput << "moon$$" << mProgram->getName() << "_main(moon$$" << mProgram->getName() << "New());" << std::endl;
+	*mOutput << "moon$$" << mProgram->getName() << "$$main(moon$$" << mProgram->getName() << "New());" << std::endl;
 
 	outputTabs();
 	*mOutput << "return 0;" << std::endl;
