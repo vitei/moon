@@ -518,6 +518,26 @@ namespace tree
 	class FunctionPrototype : public TypedIdentity
 	{
 	public:
+		class InvalidException : public std::exception
+		{
+		public:
+			InvalidException(FunctionPrototype *_functionPrototype) : functionPrototype(_functionPrototype) {}
+
+			FunctionPrototype *functionPrototype;
+		};
+
+		class InvalidTargetException : public tree::FunctionPrototype::InvalidException
+		{
+		public:
+			InvalidTargetException(FunctionPrototype *_functionPrototype) : tree::FunctionPrototype::InvalidException(_functionPrototype) {}
+
+			virtual void reset()
+			{
+				LOG("tree::FunctionPrototype::InvalidTargetException::reset");
+				functionPrototype->setTarget(NULL);
+			}
+		};
+
 		FunctionPrototype(Type *type, std::string name, Expressions *arguments) : TypedIdentity(type, name), mArguments(arguments), mTarget(NULL) {}
 
 		Expressions *getArguments() const
@@ -530,10 +550,7 @@ namespace tree
 			return mTarget;
 		}
 
-		void setTarget(Node *node)
-		{
-			mTarget= node;
-		}
+		void setTarget(Node *target);
 
 #ifdef DEBUG
 		virtual void printNode() { LOG("FunctionPrototype: %s", getName().c_str()); }

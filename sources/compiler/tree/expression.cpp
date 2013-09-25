@@ -1,7 +1,9 @@
 #include "common.h"
 
 #include "compiler/tree/expression.h"
+#include "compiler/tree/function.h"
 #include "compiler/tree/identifier.h"
+#include "compiler/tree/import.h"
 
 void tree::Expression::setType(tree::Type *type)
 {
@@ -51,6 +53,23 @@ void tree::Access::setTarget(Expression *target)
 	else
 	{
 		throw tree::Access::InvalidTargetException(this);
+	}
+}
+
+void tree::FunctionPrototype::setTarget(Node *target)
+{
+	if(target == NULL)
+	{
+		mTarget = NULL;
+	}
+	else if(   dynamic_cast<tree::Function *>(target)
+	        || dynamic_cast<tree::Import *>(target))
+	{
+		mTarget = target;
+	}
+	else
+	{
+		throw tree::FunctionPrototype::InvalidTargetException(this);
 	}
 }
 
