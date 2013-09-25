@@ -28,11 +28,28 @@ public:
 	virtual void visit(tree::Aggregate *aggregate);
 	virtual void visit(tree::Use *use);
 	virtual void visit(tree::Function *function);
-	virtual void visit(tree::AnonymousScope *anonymousScope);
-	virtual void visit(tree::Import *import);
 
 private:
-	MangleNames() {}
+	MangleNames() : mProgram(NULL), mAggregate(NULL), mUse(NULL), mFunction(NULL) {}
+
+	void dispatch(tree::Node *node);
+
+	void mangle(tree::Node *node)
+	{
+#ifdef DEBUG
+		node->printNode();
+#endif
+		ERROR("MangleNames::mangle can't process node...");
+	}
+
+	void mangle(tree::Identity *identity);
+	void mangle(tree::FunctionPrototype *functionPrototype);
+	void mangle(tree::UDT *udt);
+
+	tree::Program *mProgram;
+	tree::Aggregate *mAggregate;
+	tree::Use *mUse;
+	tree::Function *mFunction;
 };
 
 void MangleNames::run(tree::Program *program)
@@ -43,7 +60,18 @@ void MangleNames::run(tree::Program *program)
 
 void MangleNames::visit(tree::Scope *scope)
 {
+	behaviour::NamedMap::AssociatedNamedNodes associatedNamedNodes = scope->getAssociatedNamedNodes();
 	tree::Statements *statements = scope->getStatements();
+
+	for(tree::Scope::AssociatedNamedNodes::iterator i = associatedNamedNodes.begin(), end = associatedNamedNodes.end(); i != end; ++i)
+	{
+		behaviour::NamedMap::NamedNodes namedNodes = i->second;
+
+		for(tree::Scope::NamedNodes::iterator j = namedNodes.begin(), end = namedNodes.end(); j != end; ++j)
+		{
+			dispatch(j->second);
+		}
+	}
 
 	if(statements)
 	{
@@ -54,261 +82,121 @@ void MangleNames::visit(tree::Scope *scope)
 
 void MangleNames::visit(tree::Program *program)
 {
-	behaviour::NamedMap::AssociatedNamedNodes associatedNamedNodes = program->getAssociatedNamedNodes();
+	tree::Program *oldProgram = mProgram;
 
-	for(tree::Scope::AssociatedNamedNodes::iterator i = associatedNamedNodes.begin(), end = associatedNamedNodes.end(); i != end; ++i)
-	{
-		behaviour::NamedMap::NamedNodes namedNodes = i->second;
-
-		for(tree::Scope::NamedNodes::iterator j = namedNodes.begin(), end = namedNodes.end(); j != end; ++j)
-		{
-			tree::Identity *identity = dynamic_cast<tree::Identity *>(j->second);
-
-			if(identity)
-			{
-				Mangled *cName = new Mangled("moon$$" + program->getName() + "_" + identity->getName());
-
-				ASSERT(!identity->getMetadata());
-				identity->setMetadata(cName);
-			}
-		}
-	}
-
+	mProgram = program;
 	visit(static_cast<tree::Scope *>(program));
+	mProgram = oldProgram;
 }
 
 void MangleNames::visit(tree::Aggregate *aggregate)
 {
-	tree::Program *program = static_cast<tree::Program *>(aggregate->getParent());
-	behaviour::NamedMap::AssociatedNamedNodes associatedNamedNodes = aggregate->getAssociatedNamedNodes();
+	tree::Aggregate *oldAggregate = mAggregate;
 
-	for(tree::Scope::AssociatedNamedNodes::iterator i = associatedNamedNodes.begin(), end = associatedNamedNodes.end(); i != end; ++i)
-	{
-		behaviour::NamedMap::NamedNodes namedNodes = i->second;
-
-		for(tree::Scope::NamedNodes::iterator j = namedNodes.begin(), end = namedNodes.end(); j != end; ++j)
-		{
-			tree::Identity *identity;
-			tree::UDT *udt;
-
-			if((identity = dynamic_cast<tree::Identity *>(j->second)))
-			{
-				Mangled *cName;
-
-				if(dynamic_cast<tree::Variable *>(identity))
-				{
-					std::string mangledName = "moon$$" + program->getName() + "_" + identity->getName();
-					cName = new Mangled(mangledName, "scope->" + mangledName);
-				}
-				else if(!dynamic_cast<tree::Function *>(identity))
-				{
-					cName = new Mangled("moon$$" + program->getName() + "_" + identity->getName());
-				}
-				else
-				{
-					ERROR("Unknown identity type");
-				}
-
-				ASSERT(!identity->getMetadata());
-				identity->setMetadata(cName);
-			}
-			else if((udt = dynamic_cast<tree::UDT *>(j->second)))
-			{
-				Mangled *cName = new Mangled("moon$$" + program->getName() + "_" + udt->getTypeName());
-
-				ASSERT(!udt->getMetadata());
-				udt->setMetadata(cName);
-
-				for(tree::Members::iterator k = udt->getMembers()->begin(), end = udt->getMembers()->end(); k != end; ++k)
-				{
-					tree::Member *member = *k;
-
-					std::string mangledName = "moon$$" + member->getName(); // FIXME, more mangle?
-					Mangled *cName = new Mangled(mangledName, mangledName);
-
-					ASSERT(!member->getMetadata());
-					member->setMetadata(cName);
-				}
-			}
-		}
-	}
-
+	mAggregate = aggregate;
 	visit(static_cast<tree::Scope *>(aggregate));
+	mAggregate = oldAggregate;
 }
 
 void MangleNames::visit(tree::Use *use)
 {
-	tree::Aggregate *aggregate = static_cast<tree::Aggregate *>(use->getParent());
-	tree::Program *program = static_cast<tree::Program *>(aggregate->getParent());
-	behaviour::NamedMap::AssociatedNamedNodes associatedNamedNodes = use->getAssociatedNamedNodes();
+	tree::Use *oldUse = mUse;
 
-	for(tree::Scope::AssociatedNamedNodes::iterator i = associatedNamedNodes.begin(), end = associatedNamedNodes.end(); i != end; ++i)
-	{
-		behaviour::NamedMap::NamedNodes namedNodes = i->second;
-
-		for(tree::Scope::NamedNodes::iterator j = namedNodes.begin(), end = namedNodes.end(); j != end; ++j)
-		{
-			tree::Identity *identity;
-			tree::UDT *udt;
-
-			if((identity = dynamic_cast<tree::Identity *>(j->second)))
-			{
-				Mangled *cName;
-
-				if(dynamic_cast<tree::Variable *>(identity))
-				{
-					std::string mangledName = "moon$$" + program->getName() + "_" + use->getName() + "_" + identity->getName();
-					cName = new Mangled(mangledName, "scope->" + mangledName);
-				}
-				else
-				{
-					cName = new Mangled("moon$$" + program->getName() + "_" + use->getName() + "_" + identity->getName());
-				}
-
-				ASSERT(!identity->getMetadata());
-				identity->setMetadata(cName);
-			}
-			else if((udt = dynamic_cast<tree::UDT *>(j->second)))
-			{
-				Mangled *cName = new Mangled("moon$$" + program->getName() + "_" + use->getName() + "_" + udt->getTypeName());
-
-				ASSERT(!udt->getMetadata());
-				udt->setMetadata(cName);
-
-				for(tree::Members::iterator k = udt->getMembers()->begin(), end = udt->getMembers()->end(); k != end; ++k)
-				{
-					tree::Member *member = *k;
-
-					std::string mangledName = "moon$$" + member->getName(); // FIXME, more mangle?
-					Mangled *cName = new Mangled(mangledName, mangledName);
-
-					ASSERT(!member->getMetadata());
-					member->setMetadata(cName);
-				}
-			}
-		}
-	}
-
+	mUse = use;
 	visit(static_cast<tree::Scope *>(use));
+	mUse = oldUse;
 }
 
 void MangleNames::visit(tree::Function *function)
 {
-	tree::FunctionPrototype *prototype = function->getPrototype();
+	tree::Function *oldFunction = mFunction;
 
-	ASSERT(prototype->getMetadata());
-	Mangled *cPrototypeName = static_cast<Mangled *>(prototype->getMetadata());
-
-	tree::Expressions *arguments = prototype->getArguments();
-
-	for(tree::Scope::NamedNodes::iterator i = function->getNamedNodes().begin(), end = function->getNamedNodes().end(); i != end; ++i)
-	{
-		tree::Identity *identity;
-		tree::UDT *udt;
-
-		if((identity = dynamic_cast<tree::Identity *>(i->second)))
-		{
-			Mangled *cName = new Mangled(cPrototypeName->useName + "_" + identity->getName());
-
-			ASSERT(!identity->getMetadata());
-			identity->setMetadata(cName);
-		}
-		else if((udt = dynamic_cast<tree::UDT *>(i->second)))
-		{
-			Mangled *cName = new Mangled(cPrototypeName->useName + "_" + udt->getTypeName());
-
-			ASSERT(!udt->getMetadata());
-			udt->setMetadata(cName);
-
-			for(tree::Members::iterator i = udt->getMembers()->begin(), end = udt->getMembers()->end(); i != end; ++i)
-			{
-				tree::Member *member = *i;
-
-				std::string mangledName = "moon$$" + member->getName(); // FIXME, more mangle?
-				Mangled *cName = new Mangled(mangledName, mangledName);
-
-				ASSERT(!member->getMetadata());
-				member->setMetadata(cName);
-			}
-		}
-	}
-
+	mFunction = function;
 	visit(static_cast<tree::Scope *>(function));
+	mFunction = oldFunction;
 }
 
-void MangleNames::visit(tree::AnonymousScope *anonymousScope)
+void MangleNames::dispatch(tree::Node *node)
 {
-	tree::Function *function = NULL;
+	GENERATE_DISPATCH(node, mangle)
+}
 
-	for(tree::Scope *nextScope = anonymousScope->getParent(); nextScope && !function; function = dynamic_cast<tree::Function *>(nextScope), nextScope = nextScope->getParent())
-		;
+void MangleNames::mangle(tree::Identity *identity)
+{
+	ASSERT(!identity->getMetadata());
 
-	ASSERT(function);
+	std::string mangledName = "moon";
 
-	tree::FunctionPrototype *prototype = function->getPrototype();
+	ASSERT(mProgram);
+	mangledName += "$$";
+	mangledName += mProgram->getName();
 
-	ASSERT(prototype);
-	ASSERT(prototype->getMetadata());
-	Mangled *cPrototypeName = static_cast<Mangled *>(prototype->getMetadata());
-
-	for(tree::Scope::NamedNodes::iterator i = anonymousScope->getNamedNodes().begin(), end = anonymousScope->getNamedNodes().end(); i != end; ++i)
+	if(mUse)
 	{
-		tree::Identity *identity;
-		tree::UDT *udt;
-
-		if((identity = dynamic_cast<tree::Identity *>(i->second)))
-		{
-			Mangled *cName = new Mangled(cPrototypeName->useName + "_" + identity->getName());
-
-			ASSERT(!identity->getMetadata());
-			identity->setMetadata(cName);
-		}
-		else if((udt = dynamic_cast<tree::UDT *>(i->second)))
-		{
-			Mangled *cName = new Mangled(cPrototypeName->useName + "_" + udt->getTypeName());
-
-			ASSERT(!udt->getMetadata());
-			udt->setMetadata(cName);
-
-			for(tree::Members::iterator i = udt->getMembers()->begin(), end = udt->getMembers()->end(); i != end; ++i)
-			{
-				tree::Member *member = *i;
-
-				std::string mangledName = "moon$$" + member->getName(); // FIXME, more mangle?
-				Mangled *cName = new Mangled(mangledName, mangledName);
-
-				ASSERT(!member->getMetadata());
-				member->setMetadata(cName);
-			}
-		}
+		mangledName += "$$";
+		mangledName += mUse->getName();
 	}
 
-	visit(static_cast<tree::Scope *>(anonymousScope));
+	if(mFunction)
+	{
+		mangledName += "$$";
+		mangledName += mFunction->getPrototype()->getName();
+	}
+
+	mangledName += "$$";
+	mangledName += identity->getName();
+
+	identity->setMetadata(new Mangled(mangledName));
 }
 
-void MangleNames::visit(tree::Import *import)
+void MangleNames::mangle(tree::FunctionPrototype *functionPrototype)
 {
-	tree::FunctionPrototype *prototype = import->getPrototype();
+	/*tree::Method *method = tree::node_cast<tree::Method *>(mFunction);
 
-	ASSERT(prototype->getMetadata());
+	if(method)
+	{
+	}*/
 
-	// FIXME, this is rather ugly right now...
-	Mangled *cPrototypeName = static_cast<Mangled *>(prototype->getMetadata());
-	delete cPrototypeName;
-	cPrototypeName = new Mangled(prototype->getName(), true);
-	prototype->setMetadata(cPrototypeName);
+	mangle(static_cast<tree::Identity *>(functionPrototype));
 
-	tree::Expressions *arguments = prototype->getArguments();
+	tree::Expressions *arguments = functionPrototype->getArguments();
 
 	if(arguments)
 	{
 		for(tree::Expressions::iterator i = arguments->begin(), end = arguments->end(); i != end; ++i)
 		{
-			tree::Identity *identity = static_cast<tree::Identity *>(*i);
-			Mangled *cName = new Mangled(identity->getName());
-
-			identity->setMetadata(cName);
+			dispatch(*i);
 		}
+	}
+}
+
+void MangleNames::mangle(tree::UDT *udt)
+{
+	ASSERT(!udt->getMetadata());
+
+	std::string mangledName = "moon";
+
+	ASSERT(mProgram);
+	mangledName += "$$";
+	mangledName += mProgram->getName();
+
+	if(mUse)
+	{
+		mangledName += "$$";
+		mangledName += mUse->getName();
+	}
+
+	mangledName += "$$";
+	mangledName += udt->getTypeName();
+
+	udt->setMetadata(new Mangled(mangledName));
+
+	for(tree::Members::iterator i = udt->getMembers()->begin(), end = udt->getMembers()->end(); i != end; ++i)
+	{
+		tree::Member *member = *i;
+
+		ASSERT(!member->getMetadata());
+		member->setMetadata(new Mangled("moon$$" + member->getName()));
 	}
 }
 
