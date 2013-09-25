@@ -110,7 +110,7 @@ tree::Node *operation::ComputeConstants::restructure(tree::Constant *constant)
 	LOG("ComputeConstants::restructure::Constant");
 
 	tree::Literal *literal = constant->getValue();
-	
+
 	if(literal)
 	{
 		return literal;
