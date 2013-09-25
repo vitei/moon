@@ -518,11 +518,21 @@ namespace tree
 	class FunctionPrototype : public TypedIdentity
 	{
 	public:
-		FunctionPrototype(Type *type, std::string name, Expressions *arguments) : TypedIdentity(type, name), mArguments(arguments) {}
+		FunctionPrototype(Type *type, std::string name, Expressions *arguments) : TypedIdentity(type, name), mArguments(arguments), mTarget(NULL) {}
 
 		Expressions *getArguments() const
 		{
 			return mArguments;
+		}
+
+		Node *getTarget() const
+		{
+			return mTarget;
+		}
+
+		void setTarget(Node *node)
+		{
+			mTarget= node;
 		}
 
 #ifdef DEBUG
@@ -531,6 +541,8 @@ namespace tree
 
 	private:
 		Expressions *mArguments;
+
+		Node *mTarget;
 	};
 
 	class FunctionCall : public Expression

@@ -614,6 +614,8 @@ import_statement        :   TOKEN_IMPORT prototype TOKEN_EOS
 
                                 $$ = new tree::Import($2);
                                 $$->setLocation(@1);
+
+                                $2->setTarget($$);
                             }
                         ;
 
@@ -853,6 +855,8 @@ function                :   TOKEN_DEF prototype TOKEN_EOS o_statements TOKEN_END
 
                                 $$ = new tree::Function($2, $4);
                                 $$->setLocation(@1);
+
+                                $2->setTarget($$);
                             }
                         ;
 
@@ -862,6 +866,8 @@ method                  :   TOKEN_DEF type TOKEN_DIRECT_ACCESS prototype TOKEN_E
 
                                 $$ = new tree::Method($2, $4, $6);
                                 $$->setLocation(@1);
+
+                                $4->setTarget($$);
                             }
                         ;
 
