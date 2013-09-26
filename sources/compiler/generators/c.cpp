@@ -424,6 +424,7 @@ private:
 	OutputFunctionPrototypes() {}
 
 	generator::C::Printer *mPrinter;
+	std::set<tree::FunctionPrototype *>mPrototypesOutput;
 };
 
 void OutputFunctionPrototypes::run(generator::C::Printer *printer, tree::Program *program)
@@ -446,16 +447,26 @@ void OutputFunctionPrototypes::visit(tree::Scope *scope)
 
 void OutputFunctionPrototypes::visit(tree::Function *function)
 {
-	mPrinter->output(function->getPrototype());
-	mPrinter->outputEOS();
+	tree::FunctionPrototype *prototype = function->getPrototype();
+
+	if(mPrototypesOutput.find(prototype) == mPrototypesOutput.end())
+	{
+		mPrototypesOutput.insert(prototype);
+		mPrinter->output(prototype);
+		mPrinter->outputEOS();
+	}
 }
 
 void OutputFunctionPrototypes::visit(tree::Import *import)
 {
-	//LOG("C FUNCTION");
+	tree::FunctionPrototype *prototype = import->getPrototype();
 
-	mPrinter->output(import);
-	mPrinter->outputEOS();
+	if(mPrototypesOutput.find(prototype) == mPrototypesOutput.end())
+	{
+		mPrototypesOutput.insert(prototype);
+		mPrinter->output(import);
+		mPrinter->outputEOS();
+	}
 }
 
 class OutputFunctions : public operation::Operation
