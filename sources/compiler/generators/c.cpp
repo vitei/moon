@@ -1,6 +1,7 @@
 #include "common.h"
 
 #include <algorithm>
+#include <list>
 #include <ostream>
 #include <set>
 #include "compiler/operations.h"
@@ -341,7 +342,7 @@ private:
 
 	void visitScope(tree::Scope *scope);
 
-	std::vector<tree::TypedIdentity *> mIdentities;
+	std::list<tree::TypedIdentity *> mIdentities;
 	generator::C::Printer *mPrinter;
 };
 
@@ -366,7 +367,7 @@ void OutputVariables::visit(tree::Program *program)
 
 	mPrinter->outputVariablesBegin();
 
-	for(std::vector<tree::TypedIdentity *>::iterator i = mIdentities.begin(), e = mIdentities.end(); i != e; ++i)
+	for(std::list<tree::TypedIdentity *>::iterator i = mIdentities.begin(), e = mIdentities.end(); i != e; ++i)
 	{
 		mPrinter->outputTabs();
 		mPrinter->outputDeclaration(*i);
