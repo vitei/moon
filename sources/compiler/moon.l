@@ -269,6 +269,8 @@
     "def"                   return TOKEN_DEF;
     "if"                    return TOKEN_IF;
     "else"                  return TOKEN_ELSE;
+    "for"                   return TOKEN_FOR;
+    "in"                    return TOKEN_IN;
     "while"                 return TOKEN_WHILE;
     "return"                return TOKEN_RETURN;
     /*"state"                 return TOKEN_STATE;*/

@@ -151,6 +151,7 @@ namespace tree
 		DISPATCH_ACTIONS(tree::UDT, node, function) \
 		DISPATCH_ACTIONS(tree::Bool, node, function) \
 		 \
+		DISPATCH_ACTIONS(tree::For, node, function) \
 		DISPATCH_ACTIONS(tree::While, node, function) \
 		DISPATCH_ACTIONS(tree::TypeDefinition, node, function) \
 		DISPATCH_ACTIONS(tree::Return, node, function) \
@@ -236,6 +237,7 @@ namespace tree
 		else ASSIGN_ACTIONS(dst, tree::UDT, node, function) \
 		else ASSIGN_ACTIONS(dst, tree::Bool, node, function) \
 		 \
+		else ASSIGN_ACTIONS(dst, tree::For, node, function) \
 		else ASSIGN_ACTIONS(dst, tree::While, node, function) \
 		else ASSIGN_ACTIONS(dst, tree::TypeDefinition, node, function) \
 		else ASSIGN_ACTIONS(dst, tree::Return, node, function) \

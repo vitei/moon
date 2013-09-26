@@ -75,6 +75,7 @@
 
     tree::Type *type;
     tree::Identifier *id;
+    tree::Variable *variable;
     tree::FunctionPrototype *prototype;
 
 	tree::Member *member;
@@ -157,6 +158,8 @@
 %token TOKEN_DEF
 %token TOKEN_IF
 %token TOKEN_ELSE
+%token TOKEN_FOR
+%token TOKEN_IN
 %token TOKEN_WHILE
 %token TOKEN_RETURN
 /*%token TOKEN_STATE*/
@@ -203,14 +206,14 @@
 %type<prototype> prototype
 %type<expressions> o_arguments
 %type<expressions> arguments
-%type<expression> argument
+%type<variable> argument
 /*%type<state> function_state*/
 %type<statements> o_statements
 %type<statements> statements
 %type<statement> statement
 %type<statement> variable_statement
 %type<expression> variable_assignment
-%type<identity> variable
+%type<variable> variable
 %type<statement> conditional_statement
 %type<statement> loop_statement
 %type<statement> single_statement
@@ -245,6 +248,7 @@
 %type<id> name
 %type<statement> block_statement
 %type<statement> if_statement
+%type<statement> for_statement
 %type<statement> while_statement
 %type<statement> return_statement
 /*%type<statement> state_statement*/
@@ -1893,6 +1897,12 @@ block_statement         :   if_statement
 
                                 $$ = $1;
                             }
+                        |   for_statement
+                            {
+                                LOG("block_statement         :   for_statement");
+
+                                $$ = $1;
+                            }
                         |   while_statement
                             {
                                 LOG("block_statement         :   while_statement");
@@ -1932,6 +1942,18 @@ if_statement            :   TOKEN_IF expression TOKEN_EOS o_statements TOKEN_END
                                 trueStatements->setLocation(@4);
 
                                 $$ = new tree::If($2, trueStatements, $6);
+                                $$->setLocation(@1);
+                            }
+                        ;
+
+for_statement           :   TOKEN_FOR argument TOKEN_IN expression TOKEN_EOS o_statements TOKEN_END TOKEN_EOS
+                            {
+                                LOG("for_statement           :   TOKEN_FOR argument TOKEN_IN expression TOKEN_EOS o_statements TOKEN_END TOKEN_EOS");
+
+                                tree::AnonymousScope *loopStatements = new tree::AnonymousScope($6);
+                                loopStatements->setLocation(@6);
+
+                                $$ = new tree::For($2, $4, loopStatements);
                                 $$->setLocation(@1);
                             }
                         ;

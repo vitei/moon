@@ -302,6 +302,24 @@ void operation::Restructure::dispatch(tree::TypeDefinition *typeDefinition)
 	dispatch(static_cast<tree::Statement *>(typeDefinition));
 }
 
+void operation::Restructure::dispatch(tree::For *forStatement)
+{
+	tree::Variable *variable = NULL;
+	tree::Expression *iterable = NULL;
+	tree::Statement *loopStatement = NULL;
+
+	RESTRUCTURE_GET(loopStatement, tree::Statement, forStatement->getLoopStatement());
+	forStatement->setLoopStatement(loopStatement);
+
+	RESTRUCTURE_GET(iterable, tree::Expression, forStatement->getIterable());
+	forStatement->setIterable(iterable);
+
+	RESTRUCTURE_GET(variable, tree::Variable, forStatement->getVariable());
+	forStatement->setVariable(variable);
+
+	dispatch(static_cast<tree::Statement *>(forStatement));
+}
+
 void operation::Restructure::dispatch(tree::While *whileStatement)
 {
 	tree::Statement *loopStatement = NULL;
