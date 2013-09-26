@@ -64,7 +64,6 @@ void MangleNames::run(tree::Program *program)
 void MangleNames::visit(tree::Scope *scope)
 {
 	behaviour::NamedMap::AssociatedNamedNodes associatedNamedNodes = scope->getAssociatedNamedNodes();
-	tree::Statements *statements = scope->getStatements();
 
 	for(tree::Scope::AssociatedNamedNodes::iterator i = associatedNamedNodes.begin(), end = associatedNamedNodes.end(); i != end; ++i)
 	{
@@ -75,6 +74,8 @@ void MangleNames::visit(tree::Scope *scope)
 			dispatch(j->second);
 		}
 	}
+
+	tree::Statements *statements = scope->getStatements();
 
 	if(statements)
 	{
@@ -115,7 +116,33 @@ void MangleNames::visit(tree::Function *function)
 	tree::Function *oldFunction = mFunction;
 
 	mFunction = function;
-	visit(static_cast<tree::Scope *>(function));
+
+	behaviour::NamedMap::AssociatedNamedNodes associatedNamedNodes = function->getAssociatedNamedNodes();
+	tree::Expressions *arguments = function->getPrototype()->getArguments();
+
+	for(tree::Scope::AssociatedNamedNodes::iterator i = associatedNamedNodes.begin(), end = associatedNamedNodes.end(); i != end; ++i)
+	{
+		behaviour::NamedMap::NamedNodes namedNodes = i->second;
+
+		for(tree::Scope::NamedNodes::iterator j = namedNodes.begin(), end = namedNodes.end(); j != end; ++j)
+		{
+			// If this is a parameter then it will have been processed already!
+			// FIXME, this is probably not that efficient...
+			if(!arguments || std::find(arguments->begin(), arguments->end(), j->second) == arguments->end())
+			{
+				dispatch(j->second);
+			}
+		}
+	}
+
+	tree::Statements *statements = function->getStatements();
+
+	if(statements)
+	{
+		for(tree::Statements::iterator i = statements->begin(); i != statements->end(); (*i++)->accept(this))
+			;
+	}
+
 	mFunction = oldFunction;
 }
 
@@ -209,10 +236,16 @@ void MangleNames::mangle(tree::FunctionPrototype *functionPrototype)
 
 	if(arguments)
 	{
+		tree::Function *oldFunction = mFunction;
+
+		mFunction = function;
+
 		for(tree::Expressions::iterator i = arguments->begin(), end = arguments->end(); i != end; ++i)
 		{
 			dispatch(*i);
 		}
+
+		mFunction = oldFunction;
 	}
 }
 
