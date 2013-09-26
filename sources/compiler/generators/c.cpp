@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <ostream>
+#include <set>
 #include "compiler/operations.h"
 #include "compiler/tree.h"
 #include "compiler/generators/c.h"
@@ -285,11 +286,13 @@ public:
 	static void run(generator::C::Printer *printer, tree::Program *program);
 
 	virtual void visit(tree::Scope *scope);
+	virtual void visit(tree::UDT *udt);
 
 private:
 	OutputTypes() {}
 
 	generator::C::Printer *mPrinter;
+	std::set<tree::UDT *>mTypesOutput;
 };
 
 void OutputTypes::run(generator::C::Printer *printer, tree::Program *program)
@@ -301,21 +304,26 @@ void OutputTypes::run(generator::C::Printer *printer, tree::Program *program)
 
 void OutputTypes::visit(tree::Scope *scope)
 {
-	for(tree::Scope::NamedNodes::iterator i = scope->getNamedNodes().begin(), end = scope->getNamedNodes().end(); i != end; ++i)
-	{
-		tree::UDT *udt = dynamic_cast<tree::UDT *>(i->second);
-
-		if(udt)
-		{
-			mPrinter->output(udt);
-		}
-	}
-
 	tree::Statements *statements = scope->getStatements();
 
 	if(statements)
 	{
-		for(tree::Statements::iterator i = statements->begin(); i != statements->end(); (*i++)->accept(this));
+		for(tree::Statements::iterator i = statements->begin(); i != statements->end(); (*i++)->accept(this))
+			;
+	}
+}
+
+void OutputTypes::visit(tree::UDT *udt)
+{
+	tree::Members *members = udt->getMembers();
+
+	for(tree::Members::iterator i = members->begin(); i != members->end(); (*i++)->accept(this))
+		;
+
+	if(mTypesOutput.find(udt) == mTypesOutput.end())
+	{
+		mTypesOutput.insert(udt);
+		mPrinter->output(udt);
 	}
 }
 
