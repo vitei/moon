@@ -254,7 +254,7 @@ namespace tree
 
 		bool canCast(const Type &from, bool autoCast = false) const;
 
-		Type *getType()
+		Type *getType() const
 		{
 			return mType;
 		}

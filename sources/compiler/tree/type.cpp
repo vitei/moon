@@ -266,10 +266,6 @@ bool tree::String::equals(const Type &type) const
 	}
 }
 
-/*tree::Array::Array(Type *type) : mType(type)
-{
-}*/
-
 bool tree::Array::canCast(const tree::Type &from, bool autoCast) const
 {
 	const tree::Array *array;
@@ -295,7 +291,7 @@ bool tree::Array::equals(const Type &type) const
 
 	if(array)
 	{
-		return getSizeInt() == array->getSizeInt();
+		return *getType() == *array->getType()  && getSizeInt() == array->getSizeInt();
 	}
 	else
 	{
