@@ -946,12 +946,6 @@ argument                :   TOKEN_ID
                                 $$ = new tree::Variable($3, std::string($1));
                                 $$->setLocation(@1);
                             }
-                        |   variable
-                            {
-                                LOG("argument                :   variable");
-
-                                $$ = $1;
-                            }
                         ;
 
 /*function_state          :   *//* No state *//*
