@@ -643,6 +643,11 @@ tree::Node *operation::ResolveIdentities::restructure(tree::Identifier *identifi
 						std::string error = std::string("The type \"") + type->getTypeName() + "\" does not contain a member named \"" + identifier->getName() + "\"";
 						error::enqueue(identifier->getLocation(), error);
 					}
+					else
+					{
+						// Need to try again!
+						r = identifier;
+					}
 				}
 			}
 			else
