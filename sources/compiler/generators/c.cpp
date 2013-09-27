@@ -1311,6 +1311,36 @@ void generator::C::Printer::output(tree::If *ifStatement)
 	//outputEOS();
 }
 
+void generator::C::Printer::output(tree::For *forStatement)
+{
+	tree::Array *array = static_cast<tree::Array *>(forStatement->getIterable()->getType());
+
+	outputTabs();
+	*mOutput << "for(unsigned int moon$$iterator = 0; moon$$iterator < ";
+	*mOutput << array->getSizeInt();
+	*mOutput << "; ++moon$$iterator)" << std::endl;
+
+	outputTabs();
+	*mOutput << "{" << std::endl;
+
+	tree::Statement *loopStatement = forStatement->getLoopStatement();
+
+	if(loopStatement)
+	{
+		outputTabs();
+		dispatch(forStatement->getVariable());
+		*mOutput << " = ";
+		dispatch(forStatement->getIterable());
+		*mOutput << "[moon$$iterator]";
+		outputEOS();
+
+		dispatch(loopStatement);
+	}
+
+	outputTabs();
+	*mOutput << "}" << std::endl;
+}
+
 void generator::C::Printer::output(tree::While *whileStatement)
 {
 	outputTabs();
