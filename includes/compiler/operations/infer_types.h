@@ -14,6 +14,7 @@ namespace operation
 		static bool run(tree::Program *program);
 
 		virtual void visit(tree::Assign *assign);
+		virtual void visit(tree::For *forStatement);
 		virtual void visit(tree::Identity *identity);
 		virtual void visit(tree::Identifier *identifier);
 		virtual void visit(tree::Function *function);

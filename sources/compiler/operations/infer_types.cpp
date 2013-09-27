@@ -88,6 +88,39 @@ void operation::InferTypes::visit(tree::Assign *assign)
 	}
 }
 
+void operation::InferTypes::visit(tree::For *forStatement)
+{
+	LOG("InferTypes::visit::For");
+
+	tree::Variable *variable = forStatement->getVariable();
+
+	ASSERT(variable);
+
+	if(!variable->getType())
+	{
+		tree::Expression *iterable = forStatement->getIterable();
+		ASSERT(iterable);
+		tree::Type *type = iterable->getType();
+
+		if(type)
+		{
+#ifndef DEBUG
+			tree::Array *array = static_cast<tree::Array *>(type);
+#else
+			tree::Array *array = tree::node_cast<tree::Array *>(type);
+			ASSERT(array);
+#endif
+
+			variable->setType(array->getType());
+		}
+
+		if(!variable->getType())
+		{
+			mValidated = false;
+		}
+	}
+}
+
 void operation::InferTypes::visit(tree::Identity *identity)
 {
 	LOG("InferTypes::visit::Identity");
