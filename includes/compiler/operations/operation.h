@@ -78,6 +78,7 @@ namespace operation
 		PROCESS_ACTION(tree::BooleanUnaryOperation, tree::LogicalNot, return_type, name) \
 		 \
 		PROCESS_ACTION(tree::Expression, tree::Cast, return_type, name) \
+		PROCESS_ACTION(tree::Expression, tree::ComputedArray, return_type, name) \
 		PROCESS_ACTION(tree::Expression, tree::FunctionCall, return_type, name) \
 		PROCESS_ACTION(tree::Expression, tree::IfExpression, return_type, name) \
 		PROCESS_ACTION(tree::Expression, tree::This, return_type, name) \

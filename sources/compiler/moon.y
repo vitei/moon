@@ -107,6 +107,7 @@
 %token TOKEN_BRACE_OPEN
 %token TOKEN_BRACE_CLOSE
 %token TOKEN_COMMA
+%token TOKEN_RANGE
 %token TOKEN_DIRECT_ACCESS
 %token TOKEN_MESSAGE_ACCESS
 
@@ -1767,6 +1768,18 @@ expression_atom         :   name /* Constant */
                                 LOG("expression_atom         :   TOKEN_PARENTHESIS_OPEN conditional_expression TOKEN_PARENTHESIS_CLOSE");
 
                                 $$ = $2;
+                            }
+                        |   expression TOKEN_RANGE expression
+                            {
+                                LOG("expression_atom         :   expression TOKEN_RANGE expression");
+
+								$$ = new tree::ComputedArray($1, $3);
+                            }
+                        |   expression TOKEN_COMMA expression TOKEN_RANGE expression
+                            {
+                                LOG("expression_atom         :   expression TOKEN_RANGE expression TOKEN_RANGE expression");
+
+								$$ = new tree::ComputedArray($1, $5, $3);
                             }
                         ;
 

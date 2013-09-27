@@ -139,6 +139,24 @@ void operation::Restructure::dispatch(tree::Cast *cast)
 	dispatch(static_cast<tree::Expression *>(cast));
 }
 
+void operation::Restructure::dispatch(tree::ComputedArray *computedArray)
+{
+	tree::Expression *from = NULL;
+	tree::Expression *to = NULL;
+	tree::Expression *step = NULL;
+
+	RESTRUCTURE_GET(step, tree::Expression, computedArray->getStep());
+	computedArray->setStep(step);
+
+	RESTRUCTURE_GET(to, tree::Expression, computedArray->getTo());
+	computedArray->setTo(to);
+
+	RESTRUCTURE_GET(from, tree::Expression, computedArray->getFrom());
+	computedArray->setFrom(from);
+
+	dispatch(static_cast<tree::Expression *>(computedArray));
+}
+
 void operation::Restructure::dispatch(tree::FunctionCall *functionCall)
 {
 	tree::FunctionPrototype *functionPrototype = NULL;

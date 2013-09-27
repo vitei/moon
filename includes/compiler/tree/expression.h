@@ -475,6 +475,71 @@ namespace tree
 		bool mAutoCast;
 	};
 
+	class ComputedArray : public Expression
+	{
+	public:
+		ComputedArray(tree::Expression *from, tree::Expression *to, tree::Expression *step = NULL) : mFrom(from), mTo(to), mStep(step) {}
+
+		Expression *getFrom() const
+		{
+			return mFrom;
+		}
+
+		void setFrom(Expression *from)
+		{
+			mFrom = from;
+		}
+
+		Expression *getTo() const
+		{
+			return mTo;
+		}
+
+		void setTo(Expression *to)
+		{
+			mTo = to;
+		}
+
+		Expression *getStep() const
+		{
+			return mStep;
+		}
+
+		void setStep(Expression *step)
+		{
+			mStep = step;
+		}
+
+		virtual void childAccept(operation::Operation *operation)
+		{
+			Expression::childAccept(operation);
+
+			if(mFrom)
+			{
+				mFrom->accept(operation);
+			}
+
+			if(mTo)
+			{
+				mTo->accept(operation);
+			}
+
+			if(mStep)
+			{
+				mStep->accept(operation);
+			}
+		}
+
+#ifdef DEBUG
+		virtual void printNode() { LOG("ComputedArray"); }
+#endif
+
+	private:
+		tree::Expression *mFrom;
+		tree::Expression *mTo;
+		tree::Expression *mStep;
+	};
+
 	class This : public Expression
 	{
 	public:

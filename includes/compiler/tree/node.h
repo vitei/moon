@@ -180,6 +180,7 @@ namespace tree
 		DISPATCH_ACTIONS(tree::This, node, function) \
 		DISPATCH_ACTIONS(tree::IfExpression, node, function) \
 		DISPATCH_ACTIONS(tree::FunctionCall, node, function) \
+		DISPATCH_ACTIONS(tree::ComputedArray, node, function) \
 		DISPATCH_ACTIONS(tree::Cast, node, function) \
 		 \
 		DISPATCH_ACTIONS(tree::LogicalNot, node, function) \
@@ -266,6 +267,7 @@ namespace tree
 		else ASSIGN_ACTIONS(dst, tree::This, node, function) \
 		else ASSIGN_ACTIONS(dst, tree::IfExpression, node, function) \
 		else ASSIGN_ACTIONS(dst, tree::FunctionCall, node, function) \
+		else ASSIGN_ACTIONS(dst, tree::ComputedArray, node, function) \
 		else ASSIGN_ACTIONS(dst, tree::Cast, node, function) \
 		 \
 		else ASSIGN_ACTIONS(dst, tree::LogicalNot, node, function) \
