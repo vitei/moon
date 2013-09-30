@@ -119,6 +119,8 @@ void operation::InferTypes::visit(tree::For *forStatement)
 			mValidated = false;
 		}
 	}
+
+	visit(static_cast<tree::Scope *>(forStatement));
 }
 
 void operation::InferTypes::visit(tree::Identity *identity)

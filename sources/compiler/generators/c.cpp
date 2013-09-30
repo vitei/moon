@@ -1346,12 +1346,26 @@ void generator::C::Printer::output(tree::For *forStatement)
 		outputTabs();
 		*mOutput << "{" << std::endl;
 
-		tree::Statement *loopStatement = forStatement->getLoopStatement();
-
-		if(loopStatement)
+		for(tree::Scope::NamedNodes::iterator i = forStatement->getNamedNodes().begin(), end = forStatement->getNamedNodes().end(); i != end; ++i)
 		{
-			dispatch(loopStatement);
+			tree::Identity *identity = dynamic_cast<tree::Identity *>(i->second);
+
+			if(identity && !dynamic_cast<tree::Constant *>(identity))
+			{
+#ifdef DEBUG
+				tree::TypedIdentity *typedIdentity = dynamic_cast<tree::TypedIdentity *>(identity);
+				ASSERT(typedIdentity);
+#else
+				tree::TypedIdentity *typedIdentity = static_cast<tree::TypedIdentity *>(identity);
+#endif
+
+				outputTabs();
+				outputDeclaration(typedIdentity);
+				outputEOS();
+			}
 		}
+
+		output(static_cast<tree::Scope *>(forStatement));
 
 		outputTabs();
 		*mOutput << "}" << std::endl;
@@ -1368,19 +1382,33 @@ void generator::C::Printer::output(tree::For *forStatement)
 		outputTabs();
 		*mOutput << "{" << std::endl;
 
-		tree::Statement *loopStatement = forStatement->getLoopStatement();
-
-		if(loopStatement)
+		for(tree::Scope::NamedNodes::iterator i = forStatement->getNamedNodes().begin(), end = forStatement->getNamedNodes().end(); i != end; ++i)
 		{
-			outputTabs();
-			dispatch(forStatement->getVariable());
-			*mOutput << " = ";
-			dispatch(forStatement->getIterable());
-			*mOutput << "[moon$$iterator]";
-			outputEOS();
+			tree::Identity *identity = dynamic_cast<tree::Identity *>(i->second);
 
-			dispatch(loopStatement);
+			if(identity && !dynamic_cast<tree::Constant *>(identity))
+			{
+#ifdef DEBUG
+				tree::TypedIdentity *typedIdentity = dynamic_cast<tree::TypedIdentity *>(identity);
+				ASSERT(typedIdentity);
+#else
+				tree::TypedIdentity *typedIdentity = static_cast<tree::TypedIdentity *>(identity);
+#endif
+
+				outputTabs();
+				outputDeclaration(typedIdentity);
+				outputEOS();
+			}
 		}
+
+		outputTabs();
+		dispatch(forStatement->getVariable());
+		*mOutput << " = ";
+		dispatch(forStatement->getIterable());
+		*mOutput << "[moon$$iterator]";
+		outputEOS();
+
+		output(static_cast<tree::Scope *>(forStatement));
 
 		outputTabs();
 		*mOutput << "}" << std::endl;

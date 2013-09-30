@@ -1963,10 +1963,7 @@ for_statement           :   TOKEN_FOR argument TOKEN_IN expression TOKEN_EOS o_s
                             {
                                 LOG("for_statement           :   TOKEN_FOR argument TOKEN_IN expression TOKEN_EOS o_statements TOKEN_END TOKEN_EOS");
 
-                                tree::AnonymousScope *loopStatements = new tree::AnonymousScope($6);
-                                loopStatements->setLocation(@6);
-
-                                $$ = new tree::For($2, $4, loopStatements);
+                                $$ = new tree::For($6, $2, $4);
                                 $$->setLocation(@1);
                             }
                         ;

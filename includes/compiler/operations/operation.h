@@ -94,6 +94,7 @@ namespace operation
 		 \
 		PROCESS_ACTION(tree::Scope, tree::Aggregate, return_type, name) \
 		PROCESS_ACTION(tree::Scope, tree::AnonymousScope, return_type, name) \
+		PROCESS_ACTION(tree::Scope, tree::For, return_type, name) \
 		PROCESS_ACTION(tree::Scope, tree::Function, return_type, name) \
 		 \
 		PROCESS_ACTION(tree::Function, tree::Method, return_type, name) \
@@ -111,7 +112,6 @@ namespace operation
 		/*PROCESS_ACTION(tree::Statement, tree::SetState, return_type, name)*/ \
 		PROCESS_ACTION(tree::Statement, tree::TypeDefinition, return_type, name) \
 		PROCESS_ACTION(tree::Statement, tree::While, return_type, name) \
-		PROCESS_ACTION(tree::Statement, tree::For, return_type, name) \
 		 \
 		PROCESS_ACTION(tree::Type, tree::Bool, return_type, name) \
 		PROCESS_ACTION(tree::Type, tree::UDT, return_type, name) \

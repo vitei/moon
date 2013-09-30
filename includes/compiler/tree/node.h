@@ -151,7 +151,6 @@ namespace tree
 		DISPATCH_ACTIONS(tree::UDT, node, function) \
 		DISPATCH_ACTIONS(tree::Bool, node, function) \
 		 \
-		DISPATCH_ACTIONS(tree::For, node, function) \
 		DISPATCH_ACTIONS(tree::While, node, function) \
 		DISPATCH_ACTIONS(tree::TypeDefinition, node, function) \
 		DISPATCH_ACTIONS(tree::Return, node, function) \
@@ -165,6 +164,7 @@ namespace tree
 		DISPATCH_ACTIONS(tree::Method, node, function) \
 		 \
 		DISPATCH_ACTIONS(tree::Function, node, function) \
+		DISPATCH_ACTIONS(tree::For, node, function) \
 		DISPATCH_ACTIONS(tree::AnonymousScope, node, function) \
 		DISPATCH_ACTIONS(tree::Aggregate, node, function) \
 		 \

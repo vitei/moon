@@ -12,10 +12,10 @@ namespace tree
 
 	/* ---- ONLY CONCRETE CLASSES BELOW HERE ---- */
 
-	class For : public Statement
+	class For : public Scope
 	{
 	public:
-		For(Variable *variable, Expression *iterable, Statement *loopStatement) : mVariable(variable), mIterable(iterable), mLoopStatement(loopStatement) {}
+		For(Statements *statements, Variable *variable, Expression *iterable) : Scope(statements), mVariable(variable), mIterable(iterable) {}
 
 		Variable *getVariable() const
 		{
@@ -37,19 +37,9 @@ namespace tree
 			mIterable = iterable;
 		}
 
-		Statement *getLoopStatement() const
-		{
-			return mLoopStatement;
-		}
-
-		void setLoopStatement(Statement *loopStatement)
-		{
-			mLoopStatement = loopStatement;
-		}
-
 		virtual void childAccept(operation::Operation *operation)
 		{
-			Statement::childAccept(operation);
+			Scope::childAccept(operation);
 
 			if(mVariable)
 			{
@@ -60,11 +50,6 @@ namespace tree
 			{
 				mIterable->accept(operation);
 			}
-
-			if(mLoopStatement)
-			{
-				mLoopStatement->accept(operation);
-			}
 		}
 
 #ifdef DEBUG
@@ -74,7 +59,6 @@ namespace tree
 	private:
 		Variable *mVariable;
 		Expression *mIterable;
-		Statement *mLoopStatement;
 	};
 }
 

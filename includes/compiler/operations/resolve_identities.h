@@ -30,6 +30,7 @@ namespace operation
 		virtual void dispatch(tree::FunctionCall *functionCall);
 
 		virtual void visit(tree::Identity *identity);
+		virtual void visit(tree::For *forStatement);
 		virtual void visit(tree::FunctionPrototype *functionPrototype);
 		virtual void visit(tree::TypeDefinition *typeDefinition);
 		virtual void visit(tree::Assign *assign);
@@ -40,6 +41,7 @@ namespace operation
 
 		virtual tree::Node *restructure(tree::Identifier *identifier);
 
+		virtual bool doProcessChildren(tree::For *forStatement) { return false; }
 		virtual bool doProcessChildren(tree::Assign *assign) { return false; }
 		virtual bool doProcessChildren(tree::ArrayAccess *arrayAccess) { return false; }
 		virtual bool doProcessChildren(tree::DirectAccess *directAccess) { return false; }

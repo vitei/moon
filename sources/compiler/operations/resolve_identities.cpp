@@ -409,6 +409,32 @@ void operation::ResolveIdentities::visit(tree::Identity *identity)
 	operation::Restructure::visit(identity);
 }
 
+void operation::ResolveIdentities::visit(tree::For *forStatement)
+{
+	forStatement->Scope::childAccept(this);
+
+	tree::Scope *oldScope = mCurrentScope;
+	behaviour::NamedMap *oldMap = mCurrentMap;
+
+	mCurrentScope = forStatement;
+	mCurrentMap = forStatement;
+
+	if(forStatement->getVariable())
+	{
+		forStatement->getVariable()->accept(this);
+	}
+
+	mCurrentScope = oldScope;
+	mCurrentMap = oldMap;
+
+	if(forStatement->getIterable())
+	{
+		forStatement->getIterable()->accept(this);
+	}
+
+	operation::Restructure::visit(static_cast<tree::Scope *>(forStatement));
+}
+
 void operation::ResolveIdentities::visit(tree::FunctionPrototype *functionPrototype)
 {
 	LOG("ResolveIdentities::visit::FunctionPrototype");
@@ -602,8 +628,6 @@ void operation::ResolveIdentities::visit(tree::Method *method)
 		mValidated = false;
 	}
 }
-
-
 
 tree::Node *operation::ResolveIdentities::restructure(tree::Identifier *identifier)
 {
