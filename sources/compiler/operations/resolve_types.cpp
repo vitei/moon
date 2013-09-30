@@ -198,6 +198,54 @@ void operation::ResolveTypes::visit(tree::BooleanUnaryOperation *booleanUnaryOpe
 	ASSERT(dynamic_cast<tree::Bool *>(booleanUnaryOperation->getType()));
 }
 
+void operation::ResolveTypes::visit(tree::ComputedArray *computedArray)
+{
+	LOG("ResolveTypes::visit::ComputedArray");
+
+	if(!computedArray->getType())
+	{
+		tree::Literal *fromLiteral = tree::node_cast<tree::Literal *>(computedArray->getFrom());
+		tree::Literal *toLiteral = tree::node_cast<tree::Literal *>(computedArray->getTo());
+
+		if(fromLiteral && toLiteral)
+		{
+			if(   !computedArray->getStep()
+			   || tree::node_cast<tree::Literal *>(computedArray->getTo()))
+
+			{
+				// FIXME, this is rubbish ATM...
+				// // It needs to take types into account properly...
+				tree::IntLiteral *from = dynamic_cast<tree::IntLiteral *>(fromLiteral);
+				tree::IntLiteral *to = dynamic_cast<tree::IntLiteral *>(toLiteral);
+
+				ASSERT(from);
+				ASSERT(to);
+
+				int numValues = to->getValue() - from->getValue();
+
+				if(computedArray->getStep())
+				{
+					tree::IntLiteral *step = dynamic_cast<tree::IntLiteral *>(computedArray->getStep());
+
+					ASSERT(step);
+
+					numValues /= step->getValue();
+				}
+
+				computedArray->setType(new tree::Array(new tree::Int(), new tree::IntLiteral(numValues)));
+			}
+			else
+			{
+				mValidated = false;
+			}
+		}
+		else
+		{
+			mValidated = false;
+		}
+	}
+}
+
 void operation::ResolveTypes::visit(tree::FunctionCall *functionCall)
 {
 	LOG("ResolveTypes::visit::FunctionCall");

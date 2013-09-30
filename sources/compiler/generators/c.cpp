@@ -1313,32 +1313,78 @@ void generator::C::Printer::output(tree::If *ifStatement)
 
 void generator::C::Printer::output(tree::For *forStatement)
 {
-	tree::Array *array = static_cast<tree::Array *>(forStatement->getIterable()->getType());
+	tree::ComputedArray *computedArray = tree::node_cast<tree::ComputedArray *>(forStatement->getIterable());
 
-	outputTabs();
-	*mOutput << "for(unsigned int moon$$iterator = 0; moon$$iterator < ";
-	*mOutput << array->getSizeInt();
-	*mOutput << "; ++moon$$iterator)" << std::endl;
-
-	outputTabs();
-	*mOutput << "{" << std::endl;
-
-	tree::Statement *loopStatement = forStatement->getLoopStatement();
-
-	if(loopStatement)
+	if(computedArray)
 	{
 		outputTabs();
-		dispatch(forStatement->getVariable());
+		*mOutput << "for(";
+		outputDeclaration(forStatement->getVariable());
 		*mOutput << " = ";
-		dispatch(forStatement->getIterable());
-		*mOutput << "[moon$$iterator]";
-		outputEOS();
+		dispatch(computedArray->getFrom());
+		*mOutput << "; ";
+		dispatch(forStatement->getVariable());
+		*mOutput << " <= ";
+		dispatch(computedArray->getTo());
+		*mOutput << "; ";
 
-		dispatch(loopStatement);
+		if(computedArray->getStep())
+		{
+			dispatch(forStatement->getVariable());
+			*mOutput << " += ";
+			dispatch(computedArray->getStep());
+		}
+		else
+		{
+			// FIXME, need to take type into account...
+			dispatch(forStatement->getVariable());
+			*mOutput << "++";
+		}
+
+		*mOutput << ")" << std::endl;
+
+		outputTabs();
+		*mOutput << "{" << std::endl;
+
+		tree::Statement *loopStatement = forStatement->getLoopStatement();
+
+		if(loopStatement)
+		{
+			dispatch(loopStatement);
+		}
+
+		outputTabs();
+		*mOutput << "}" << std::endl;
 	}
+	else
+	{
+		tree::Array *array = static_cast<tree::Array *>(forStatement->getIterable()->getType());
 
-	outputTabs();
-	*mOutput << "}" << std::endl;
+		outputTabs();
+		*mOutput << "for(unsigned int moon$$iterator = 0; moon$$iterator < ";
+		*mOutput << array->getSizeInt();
+		*mOutput << "; ++moon$$iterator)" << std::endl;
+
+		outputTabs();
+		*mOutput << "{" << std::endl;
+
+		tree::Statement *loopStatement = forStatement->getLoopStatement();
+
+		if(loopStatement)
+		{
+			outputTabs();
+			dispatch(forStatement->getVariable());
+			*mOutput << " = ";
+			dispatch(forStatement->getIterable());
+			*mOutput << "[moon$$iterator]";
+			outputEOS();
+
+			dispatch(loopStatement);
+		}
+
+		outputTabs();
+		*mOutput << "}" << std::endl;
+	}
 }
 
 void generator::C::Printer::output(tree::While *whileStatement)

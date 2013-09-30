@@ -18,6 +18,7 @@ namespace operation
 		virtual void visit(tree::BooleanBinaryOperation *booleanBinaryOperation);
 		virtual void visit(tree::UnaryOperation *unaryOperation);
 		virtual void visit(tree::BooleanUnaryOperation *booleanUnaryOperation);
+		virtual void visit(tree::ComputedArray *computedArray);
 		virtual void visit(tree::FunctionCall *functionCall);
 		virtual void visit(tree::IfExpression *ifExpression);
 		virtual void visit(tree::Scope *scope);
