@@ -1350,18 +1350,21 @@ void generator::C::Printer::output(tree::For *forStatement)
 		{
 			tree::Identity *identity = dynamic_cast<tree::Identity *>(i->second);
 
-			if(identity && !dynamic_cast<tree::Constant *>(identity))
+			if(identity != forStatement->getVariable())
 			{
+				if(identity && !dynamic_cast<tree::Constant *>(identity))
+				{
 #ifdef DEBUG
-				tree::TypedIdentity *typedIdentity = dynamic_cast<tree::TypedIdentity *>(identity);
-				ASSERT(typedIdentity);
+					tree::TypedIdentity *typedIdentity = dynamic_cast<tree::TypedIdentity *>(identity);
+					ASSERT(typedIdentity);
 #else
-				tree::TypedIdentity *typedIdentity = static_cast<tree::TypedIdentity *>(identity);
+					tree::TypedIdentity *typedIdentity = static_cast<tree::TypedIdentity *>(identity);
 #endif
 
-				outputTabs();
-				outputDeclaration(typedIdentity);
-				outputEOS();
+					outputTabs();
+					outputDeclaration(typedIdentity);
+					outputEOS();
+				}
 			}
 		}
 
