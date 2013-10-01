@@ -1775,11 +1775,11 @@ expression_atom         :   name /* Constant */
 
 								$$ = new tree::ComputedArray($1, $3);
                             }
-                        |   expression TOKEN_COMMA expression TOKEN_RANGE expression
+                        |   expression TOKEN_RANGE expression TOKEN_COMMA expression
                             {
                                 LOG("expression_atom         :   expression TOKEN_RANGE expression TOKEN_RANGE expression");
 
-								$$ = new tree::ComputedArray($1, $5, $3);
+								$$ = new tree::ComputedArray($1, $3, $5);
                             }
                         ;
 
