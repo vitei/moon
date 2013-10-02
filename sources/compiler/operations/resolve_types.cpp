@@ -204,35 +204,46 @@ void operation::ResolveTypes::visit(tree::ComputedArray *computedArray)
 
 	if(!computedArray->getType())
 	{
-		tree::Literal *fromLiteral = tree::node_cast<tree::Literal *>(computedArray->getFrom());
-		tree::Literal *toLiteral = tree::node_cast<tree::Literal *>(computedArray->getTo());
+		tree::Type *type = computedArray->getFrom()->getType();
 
-		if(fromLiteral && toLiteral)
+		if(type)
 		{
-			if(   !computedArray->getStep()
-			   || tree::node_cast<tree::Literal *>(computedArray->getTo()))
+			tree::Type *toType = computedArray->getTo()->getType();
 
+			if(toType)
 			{
-				// FIXME, this is rubbish ATM...
-				// // It needs to take types into account properly...
-				tree::IntLiteral *from = dynamic_cast<tree::IntLiteral *>(fromLiteral);
-				tree::IntLiteral *to = dynamic_cast<tree::IntLiteral *>(toLiteral);
-
-				ASSERT(from);
-				ASSERT(to);
-
-				int numValues = to->getValue() - from->getValue();
-
-				if(computedArray->getStep())
+				if(!computedArray->getStep())
 				{
-					tree::IntLiteral *step = dynamic_cast<tree::IntLiteral *>(computedArray->getStep());
+					if(toType->canCast(*type, true))
+					{
+						type = toType;
+					}
 
-					ASSERT(step);
-
-					numValues /= step->getValue();
+					computedArray->setType(new tree::Array(type));
 				}
+				else
+				{
+					tree::Type *stepType = computedArray->getStep()->getType();
 
-				computedArray->setType(new tree::Array(new tree::Int(), new tree::IntLiteral(numValues)));
+					if(stepType)
+					{
+						if(toType->canCast(*type, true))
+						{
+							type = toType;
+						}
+
+						if(stepType->canCast(*type, true))
+						{
+							type = stepType;
+						}
+
+						computedArray->setType(new tree::Array(type));
+					}
+					else
+					{
+						mValidated = false;
+					}
+				}
 			}
 			else
 			{
