@@ -51,7 +51,18 @@ bool doValidatingOperations(tree::Program &program, ValidatingTreeOperation *ope
 
 	for(unsigned char i = 0; operations[i]; i++)
 	{
+#ifdef DEBUG
+		bool rerunUnneeded = operations[i](&program);
+
+		if(!rerunUnneeded)
+		{
+			LOG("Re-run scheduled from stage %u", i);
+		}
+
+		r &= rerunUnneeded;
+#else
 		r &= operations[i](&program);
+#endif
 
 		if(error::count() != 0)
 		{
