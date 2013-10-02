@@ -1773,13 +1773,13 @@ expression_atom         :   name /* Constant */
                             {
                                 LOG("expression_atom         :   expression TOKEN_RANGE expression");
 
-								$$ = new tree::ComputedArray($1, $3);
+                                $$ = new tree::ComputedArray($1, $3);
                             }
                         |   expression TOKEN_RANGE expression TOKEN_COMMA expression
                             {
                                 LOG("expression_atom         :   expression TOKEN_RANGE expression TOKEN_RANGE expression");
 
-								$$ = new tree::ComputedArray($1, $3, $5);
+                                $$ = new tree::ComputedArray($1, $3, $5);
                             }
                         ;
 

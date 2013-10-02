@@ -52,7 +52,8 @@ void tree::Type::mapAssociatedNamedNode(tree::Node *association, const std::stri
 void tree::SizedType::setSize(tree::Expression *size)
 {
 	// Check that if the size expression is a literal that it is an integer
-	if(!(dynamic_cast<tree::Literal *>(size) && !dynamic_cast<tree::IntLiteral *>(size)))
+	if(!(   dynamic_cast<tree::Literal *>(size)
+	     && !dynamic_cast<tree::IntLiteral *>(size)))
 	{
 		mSize.expression = size;
 	}
@@ -86,9 +87,9 @@ bool tree::Bool::canCast(const tree::Type &from, bool autoCast) const
 {
 	if(!autoCast)
 	{
-		if(dynamic_cast<const tree::Int *>(&from) ||
-		   dynamic_cast<const tree::Float *>(&from) ||
-		   dynamic_cast<const tree::String *>(&from))
+		if(   dynamic_cast<const tree::Int *>(&from)
+		   || dynamic_cast<const tree::Float *>(&from)
+		   || dynamic_cast<const tree::String *>(&from))
 		{
 			return true;
 		}
@@ -99,9 +100,9 @@ bool tree::Bool::canCast(const tree::Type &from, bool autoCast) const
 
 bool tree::Bool::canPerform(const Operation &operation) const
 {
-	if(dynamic_cast<const tree::Assign *>(&operation) ||
-	   dynamic_cast<const tree::BooleanBinaryOperation *>(&operation) ||
-	   dynamic_cast<const tree::BooleanUnaryOperation *>(&operation))
+	if(   dynamic_cast<const tree::Assign *>(&operation)
+	   || dynamic_cast<const tree::BooleanBinaryOperation *>(&operation)
+	   || dynamic_cast<const tree::BooleanUnaryOperation *>(&operation))
 	{
 		return true;
 	}
@@ -118,15 +119,16 @@ bool tree::Int::canCast(const tree::Type &from, bool autoCast) const
 {
 	const tree::Int *fromInt;
 
-	if(dynamic_cast<const tree::Bool *>(&from) ||
-	   ((fromInt = dynamic_cast<const tree::Int *>(&from)) && fromInt->getSizeInt() <= getSizeInt()))
+	if(   dynamic_cast<const tree::Bool *>(&from)
+	   || ((   fromInt = dynamic_cast<const tree::Int *>(&from))
+	        && fromInt->getSizeInt() <= getSizeInt()))
 	{
 		return true;
 	}
 	else if(!autoCast)
 	{
-		if(dynamic_cast<const tree::Int *>(&from) ||
-		   dynamic_cast<const tree::Float *>(&from))
+		if(   dynamic_cast<const tree::Int *>(&from)
+		   || dynamic_cast<const tree::Float *>(&from))
 		{
 			return true;
 		}
@@ -137,17 +139,17 @@ bool tree::Int::canCast(const tree::Type &from, bool autoCast) const
 
 bool tree::Int::canPerform(const Operation &operation) const
 {
-	if(dynamic_cast<const tree::Assign *>(&operation) ||
-	   dynamic_cast<const tree::Or *>(&operation) ||
-	   dynamic_cast<const tree::Xor *>(&operation) ||
-	   dynamic_cast<const tree::And *>(&operation) ||
-	   dynamic_cast<const tree::Add *>(&operation) ||
-	   dynamic_cast<const tree::Subtract *>(&operation) ||
-	   dynamic_cast<const tree::Multiply *>(&operation) ||
-	   dynamic_cast<const tree::Divide *>(&operation) ||
-	   dynamic_cast<const tree::Modulus *>(&operation) ||
-	   dynamic_cast<const tree::Not *>(&operation) ||
-	   dynamic_cast<const tree::Minus *>(&operation))
+	if(   dynamic_cast<const tree::Assign *>(&operation)
+	   || dynamic_cast<const tree::Or *>(&operation)
+	   || dynamic_cast<const tree::Xor *>(&operation)
+	   || dynamic_cast<const tree::And *>(&operation)
+	   || dynamic_cast<const tree::Add *>(&operation)
+	   || dynamic_cast<const tree::Subtract *>(&operation)
+	   || dynamic_cast<const tree::Multiply *>(&operation)
+	   || dynamic_cast<const tree::Divide *>(&operation)
+	   || dynamic_cast<const tree::Modulus *>(&operation)
+	   || dynamic_cast<const tree::Not *>(&operation)
+	   || dynamic_cast<const tree::Minus *>(&operation))
 	{
 		return true;
 	}
@@ -180,9 +182,10 @@ bool tree::Float::canCast(const tree::Type &from, bool autoCast) const
 {
 	const tree::Float *fromFloat;
 
-	if(dynamic_cast<const tree::Bool *>(&from) ||
-	   dynamic_cast<const tree::Int *>(&from) ||
-	   ((fromFloat = dynamic_cast<const tree::Float *>(&from)) && fromFloat->getSize() <= getSize()))
+	if(   dynamic_cast<const tree::Bool *>(&from)
+	   || dynamic_cast<const tree::Int *>(&from)
+	   || ((   fromFloat = dynamic_cast<const tree::Float *>(&from))
+	        && fromFloat->getSize() <= getSize()))
 	{
 		return true;
 	}
@@ -199,12 +202,12 @@ bool tree::Float::canCast(const tree::Type &from, bool autoCast) const
 
 bool tree::Float::canPerform(const Operation &operation) const
 {
-	if(dynamic_cast<const tree::Assign *>(&operation) ||
-	   dynamic_cast<const tree::Add *>(&operation) ||
-	   dynamic_cast<const tree::Subtract *>(&operation) ||
-	   dynamic_cast<const tree::Multiply *>(&operation) ||
-	   dynamic_cast<const tree::Divide *>(&operation) ||
-	   dynamic_cast<const tree::Minus *>(&operation))
+	if(   dynamic_cast<const tree::Assign *>(&operation)
+	   || dynamic_cast<const tree::Add *>(&operation)
+	   || dynamic_cast<const tree::Subtract *>(&operation)
+	   || dynamic_cast<const tree::Multiply *>(&operation)
+	   || dynamic_cast<const tree::Divide *>(&operation)
+	   || dynamic_cast<const tree::Minus *>(&operation))
 	{
 		return true;
 	}
@@ -237,7 +240,8 @@ bool tree::String::canCast(const tree::Type &from, bool autoCast) const
 {
 	const tree::String *string;
 
-	if((string = dynamic_cast<const tree::String *>(&from)) && string->getSizeInt() <= getSizeInt())
+	if((   string = dynamic_cast<const tree::String *>(&from))
+	    && string->getSizeInt() <= getSizeInt())
 	{
 		return true;
 	}
