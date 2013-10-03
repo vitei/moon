@@ -249,7 +249,7 @@ namespace tree
 			InvalidSizeException(Type *_type) : InvalidException(_type) {}
 		};*/
 
-		//Array(Type *type);
+		Array(Type *type);
 		Array(Type *type, Expression *size) : SizedType(size), mType(type) {}
 
 		bool canCast(const Type &from, bool autoCast = false) const;

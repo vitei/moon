@@ -270,6 +270,10 @@ bool tree::String::equals(const Type &type) const
 	}
 }
 
+tree::Array::Array(Type *type) : SizedType(new tree::None()), mType(type)
+{
+}
+
 bool tree::Array::canCast(const tree::Type &from, bool autoCast) const
 {
 	const tree::Array *array;
