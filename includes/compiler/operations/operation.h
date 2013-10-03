@@ -83,6 +83,7 @@ namespace operation
 		PROCESS_ACTION(tree::Expression, tree::IfExpression, return_type, name) \
 		PROCESS_ACTION(tree::Expression, tree::This, return_type, name) \
 		 \
+		PROCESS_ACTION(tree::Literal, tree::None, return_type, name) \
 		PROCESS_ACTION(tree::Literal, tree::BoolLiteral, return_type, name) \
 		PROCESS_ACTION(tree::Literal, tree::StringLiteral, return_type, name) \
 		 \

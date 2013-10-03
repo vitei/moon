@@ -176,6 +176,7 @@ namespace tree
 		 \
 		DISPATCH_ACTIONS(tree::StringLiteral, node, function) \
 		DISPATCH_ACTIONS(tree::BoolLiteral, node, function) \
+		DISPATCH_ACTIONS(tree::None, node, function) \
 		 \
 		DISPATCH_ACTIONS(tree::This, node, function) \
 		DISPATCH_ACTIONS(tree::IfExpression, node, function) \
@@ -263,6 +264,7 @@ namespace tree
 		 \
 		else ASSIGN_ACTIONS(dst, tree::StringLiteral, node, function) \
 		else ASSIGN_ACTIONS(dst, tree::BoolLiteral, node, function) \
+		else ASSIGN_ACTIONS(dst, tree::None, node, function) \
 		 \
 		else ASSIGN_ACTIONS(dst, tree::This, node, function) \
 		else ASSIGN_ACTIONS(dst, tree::IfExpression, node, function) \

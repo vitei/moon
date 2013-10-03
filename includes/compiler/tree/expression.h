@@ -695,6 +695,19 @@ namespace tree
 		Expressions *mArguments;
 	};
 
+	class None : public Literal
+	{
+	public:
+		None() : Literal(new Void()) {}
+
+#ifdef DEBUG
+		virtual void printNode() { LOG("None"); }
+#endif
+
+	protected:
+		virtual bool equals(const Literal &literal) const;
+	};
+
 	class BoolLiteral : public Literal
 	{
 	public:

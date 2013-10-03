@@ -182,6 +182,11 @@ void tree::FunctionCall::setPrototype(tree::FunctionPrototype *prototype)
 	}
 }
 
+bool tree::None::equals(const Literal &literal) const
+{
+	return dynamic_cast<const tree::None *>(&literal);
+}
+
 tree::BoolLiteral::BoolLiteral(tree::Literal *literal, tree::Bool *type) : Literal(type ? type : new Bool())
 {
 	tree::BoolLiteral *boolLiteral;
