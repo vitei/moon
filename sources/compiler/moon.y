@@ -1860,6 +1860,44 @@ type                    :   TOKEN_TYPE_BOOL
 
                                 $<id>$ = $1;
                             }
+                        |   TOKEN_BRACKETS_OPEN TOKEN_BRACKETS_CLOSE
+                            {
+                                LOG("type                    :   TOKEN_BRACKETS_OPEN TOKEN_BRACKETS_CLOSE");
+
+                                $$ = new tree::Array(NULL);
+                                $$->setLocation(@1);
+                            }
+                        |   TOKEN_BRACKETS_OPEN expression TOKEN_BRACKETS_CLOSE
+                            {
+                                LOG("type                    :   TOKEN_BRACKETS_OPEN expression TOKEN_BRACKETS_CLOSE");
+
+                                $$ = new tree::Array(NULL, $2);
+                                $$->setLocation(@1);
+                            }
+                        |   type TOKEN_BRACKETS_OPEN TOKEN_BRACKETS_CLOSE
+                            {
+                                LOG("type                    :   type TOKEN_BRACKETS_OPEN TOKEN_BRACKETS_CLOSE");
+
+                                tree::Array *array = dynamic_cast<tree::Array *>($1);
+
+                                if(array)
+                                {
+                                    for(tree::Array *nextArray = dynamic_cast<tree::Array *>(array->getType()); nextArray; array = nextArray, nextArray = dynamic_cast<tree::Array *>(array->getType()))
+                                        ;
+
+                                    tree::Array *childArray = new tree::Array(array->getType());
+                                    childArray->setLocation(@2);
+
+                                    array->setType(childArray);
+
+                                    $$ = $1;
+                                }
+                                else
+                                {
+                                    $$ = new tree::Array($1);
+                                    $$->setLocation(@2);
+                                }
+                            }
                         |   type TOKEN_BRACKETS_OPEN expression TOKEN_BRACKETS_CLOSE
                             {
                                 LOG("type                    :   type TOKEN_BRACKETS_OPEN expression TOKEN_BRACKETS_CLOSE");
