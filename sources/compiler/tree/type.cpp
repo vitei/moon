@@ -51,8 +51,9 @@ void tree::Type::mapAssociatedNamedNode(tree::Node *association, const std::stri
 
 void tree::SizedType::setSize(tree::Expression *size)
 {
-	// Check that if the size expression is a literal that it is an integer
+	// Check that if the size expression is a literal that it is nothing, or an integer
 	if(!(   dynamic_cast<tree::Literal *>(size)
+	     && !dynamic_cast<tree::None *>(size)
 	     && !dynamic_cast<tree::IntLiteral *>(size)))
 	{
 		mSize.expression = size;
@@ -65,7 +66,9 @@ void tree::SizedType::setSize(tree::Expression *size)
 
 bool tree::SizedType::isResolved() const
 {
-	return !mSize.expression || dynamic_cast<tree::IntLiteral *>(mSize.expression);
+	return    !mSize.expression
+	       || dynamic_cast<tree::None *>(mSize.expression)
+	       || dynamic_cast<tree::IntLiteral *>(mSize.expression);
 }
 
 void tree::SizedType::childAccept(operation::Operation *operation)
@@ -278,17 +281,32 @@ bool tree::Array::canCast(const tree::Type &from, bool autoCast) const
 {
 	const tree::Array *array;
 
-	if((array = dynamic_cast<const tree::Array *>(&from)) && array->getSizeInt() <= getSizeInt())
+	if((   array = dynamic_cast<const tree::Array *>(&from))
+	    && getType()->canCast(*array->getType(), autoCast))
 	{
-		return true;
+		if(dynamic_cast<tree::None *>(getSizeLiteral()))
+		{
+			return true;
+		}
+		else if(dynamic_cast<tree::None *>(array->getSizeLiteral()))
+		{
+			return false;
+		}
+		else
+		{
+			return array->getSizeInt() < getSizeInt();
+		}
 	}
-
-	return false;
+	else
+	{
+		return false;
+	}
 }
 
 unsigned int tree::Array::getSizeInt() const
 {
 	ASSERT(isResolved());
+	ASSERT(dynamic_cast<tree::IntLiteral *>(getSizeLiteral()));
 
 	return mSize.intLiteral->getValue();
 }
@@ -299,7 +317,8 @@ bool tree::Array::equals(const Type &type) const
 
 	if(array)
 	{
-		return *getType() == *array->getType()  && getSizeInt() == array->getSizeInt();
+		return    *getType() == *array->getType()
+		       && *getSizeLiteral() == *array->getSizeLiteral();
 	}
 	else
 	{

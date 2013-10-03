@@ -11,6 +11,8 @@
 namespace tree
 {
 	class Expression;
+	class Literal;
+	class None;
 	class IntLiteral;
 	class Operation;
 
@@ -99,6 +101,11 @@ namespace tree
 
 		virtual bool isResolved() const;
 
+		virtual Literal *getSizeLiteral() const
+		{
+			return mSize.literal;
+		}
+
 		virtual unsigned int getSizeInt() const = 0;
 
 		virtual void childAccept(operation::Operation *operation);
@@ -109,6 +116,8 @@ namespace tree
 		union
 		{
 			Expression *expression;
+			Literal *literal;
+			None *none;
 			IntLiteral *intLiteral;
 		} mSize;
 	};
