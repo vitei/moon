@@ -1581,7 +1581,14 @@ void generator::C::Printer::outputDimensions(tree::Type *type)
 	}
 	else if((array = dynamic_cast<tree::Array *>(type)))
 	{
-		*mOutput << "[" << array->getSizeInt() << "]";
+		*mOutput << "[";
+
+		if(!dynamic_cast<tree::None *>(array->getSize()))
+		{
+			*mOutput << array->getSizeInt();
+		}
+
+		*mOutput << "]";
 		outputDimensions(array->getType());
 	}
 }
