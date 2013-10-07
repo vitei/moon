@@ -1137,7 +1137,19 @@ conditional_statement   :   single_statement TOKEN_IF expression TOKEN_EOS
                             }
                         ;
 
-loop_statement          :   single_statement TOKEN_WHILE expression TOKEN_EOS
+
+
+loop_statement          :   single_statement TOKEN_FOR argument TOKEN_IN expression TOKEN_EOS
+                            {
+                                LOG("loop_statement          :   single_statement TOKEN_FOR argument TOKEN_IN expression TOKEN_EOS");
+
+                                tree::Statements *forStatement = new tree::Statements();
+                                forStatement->push_back($1);
+
+                                $$ = new tree::For(forStatement, $3, $5);
+                                $$->setLocation(@2);
+                            }
+                        |   single_statement TOKEN_WHILE expression TOKEN_EOS
                             {
                                 LOG("loop_statement          :   single_statement TOKEN_WHILE expression TOKEN_EOS");
 
