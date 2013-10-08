@@ -107,7 +107,7 @@ void loader::useNameToFilename(char *filename, const char *name)
 	// Check for literate moon file first...
 	strcpy(f, ".lmoon");
 
-	if(!loader::useFile(filename, NULL))
+	if(!loader::useFile(filename, nullptr))
 	{
 		strcpy(f, ".moon");
 	}

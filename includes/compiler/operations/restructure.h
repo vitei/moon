@@ -41,7 +41,7 @@ namespace operation
 		PROCESS_ACTIONS(tree::Node *, restructure)
 
 	protected:
-		Restructure() : mCurrentScope(NULL) { /* Abstract class */ }
+		Restructure() : mCurrentScope(nullptr) { /* Abstract class */ }
 
 		void processFunctionParameters(tree::Function *function);
 

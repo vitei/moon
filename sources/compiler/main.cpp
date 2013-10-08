@@ -95,7 +95,7 @@ void resolveProgram(tree::Program *program)
 		// Check that these typecasts are OK
 		operation::CheckTypecasting::run,
 
-		NULL
+		nullptr
 	};
 
 	for(bool validated = false; !validated && !error::count(); validated = doValidatingOperations(*program, operations))
@@ -306,7 +306,7 @@ int main(int argc, char *argv[])
 
 					// FIXME, need an operation here to get all variable definition statements and assign suitable default values.
 
-					NULL
+					nullptr
 				};
 
 				doOperations(program, operations);

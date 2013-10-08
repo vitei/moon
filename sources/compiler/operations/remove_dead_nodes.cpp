@@ -15,5 +15,5 @@ tree::Node *operation::RemoveDeadNodes::restructure(tree::Execute *execute)
 {
 	LOG("RemoveDeadNodes::restructure::Execute");
 
-	return execute->getExpression() && !tree::node_cast<tree::Identity *>(execute->getExpression()) ? execute : NULL;
+	return execute->getExpression() && !tree::node_cast<tree::Identity *>(execute->getExpression()) ? execute : nullptr;
 }

@@ -15,7 +15,7 @@ namespace tree
 	class If : public Statement
 	{
 	public:
-		If(Expression *test, Statement *trueStatement, Statement *falseStatement = NULL) : mTest(test), mTrueStatement(trueStatement), mFalseStatement(falseStatement) {}
+		If(Expression *test, Statement *trueStatement, Statement *falseStatement = nullptr) : mTest(test), mTrueStatement(trueStatement), mFalseStatement(falseStatement) {}
 
 		Expression *getTest() const
 		{

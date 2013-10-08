@@ -60,7 +60,7 @@ void operation::InferTypes::visit(tree::Assign *assign)
 
 		assign->getRHS()->accept(this);
 
-		mAssignIdentity = NULL;
+		mAssignIdentity = nullptr;
 
 		if(!mSelfReference)
 		{
@@ -69,7 +69,7 @@ void operation::InferTypes::visit(tree::Assign *assign)
 			// If the type is not resolved yet then we can't be sure about any type inference.
 			if(rhsType && !rhsType->isResolved())
 			{
-				rhsType = NULL;
+				rhsType = nullptr;
 			}
 
 			if(   !rhsType                                                                     // If this type is not resolved then flag we can't process it
@@ -160,7 +160,7 @@ void operation::InferTypes::visit(tree::Function *function)
 		mTypeResolution[mPrototype] = new tree::Void();
 	}
 
-	mPrototype = NULL;
+	mPrototype = nullptr;
 }
 
 void operation::InferTypes::visit(tree::Scope *scope)

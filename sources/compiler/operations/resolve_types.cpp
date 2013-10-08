@@ -70,7 +70,7 @@ void operation::ResolveTypes::visit(tree::ArrayAccess *arrayAccess)
 				else
 				{
 					error::enqueue(arrayAccess->getLocation(), "Expression result is not an array");
-					arrayAccess->setContainer(NULL);
+					arrayAccess->setContainer(nullptr);
 				}
 			}
 

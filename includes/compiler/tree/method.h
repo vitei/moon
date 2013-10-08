@@ -35,7 +35,7 @@ namespace tree
 			virtual void reset()
 			{
 				LOG("tree::Method::InvalidTypeException::reset");
-				method->setType(NULL);
+				method->setType(nullptr);
 			}
 		};
 

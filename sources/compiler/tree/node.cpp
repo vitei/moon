@@ -33,5 +33,5 @@ void tree::Node::visit(operation::Operation *operation)
 tree::Node *tree::Node::restructure(operation::Restructure *operation)
 {
 	GENERATE_DISPATCH(this, operation->restructure)
-	return NULL;
+	return nullptr;
 }

@@ -278,7 +278,7 @@ use                     :   o_program_includes o_program_uses o_declarations o_c
                             {
                                 LOG("use                     :   o_program_includes o_program_uses o_declarations o_callables");
 
-                                tree::Statements *useStatements = NULL;
+                                tree::Statements *useStatements = nullptr;
 
                                 // Check there is actually something in this scope...
                                 // (Uses are not nested so we don't count them here...)
@@ -343,7 +343,7 @@ o_program_includes      :   /* Empty */
                             {
                                 LOG("o_program_includes      :   /* Empty */");
 
-                                $$ = NULL;
+                                $$ = nullptr;
                             }
                         |   program_includes
                             {
@@ -384,7 +384,7 @@ include_statement       :   TOKEN_INCLUDE TOKEN_ID TOKEN_EOS
                             {
                                 LOG("include_statement       :   TOKEN_INCLUDE TOKEN_ID TOKEN_EOS");
 
-                                $$ = NULL;
+                                $$ = nullptr;
 
                                 char tmp[1024];
 
@@ -464,7 +464,7 @@ o_defines               :   /* Empty */
                             {
                                 LOG("o_defines               :   /* Empty */");
 
-                                $$ = NULL;
+                                $$ = nullptr;
                             }
                         |   define
                             {
@@ -477,7 +477,7 @@ o_defines               :   /* Empty */
                                 }
                                 else
                                 {
-                                    $$ = NULL;
+                                    $$ = nullptr;
                                 }
                             }
                         |   define defines
@@ -512,7 +512,7 @@ defines                 :   define
                                 }
                                 else
                                 {
-                                    $$ = NULL;
+                                    $$ = nullptr;
                                 }
                             }
                         |   defines define
@@ -609,7 +609,7 @@ import_statement        :   TOKEN_IMPORT prototype TOKEN_EOS
                             {
                                 LOG("import_statement        :   TOKEN_IMPORT prototype TOKEN_EOS");
 
-                                if($2->getType() == NULL)
+                                if($2->getType() == nullptr)
                                 {
                                     tree::Void *type = new tree::Void();
 
@@ -644,7 +644,7 @@ o_declarations          :   /* Empty */
                             {
                                 LOG("o_declarations          :   /* Empty */");
 
-                                $$ = NULL;
+                                $$ = nullptr;
                             }
                         |   declaration
                             {
@@ -657,7 +657,7 @@ o_declarations          :   /* Empty */
                                 }
                                 else
                                 {
-                                    $$ = NULL;
+                                    $$ = nullptr;
                                 }
                             }
                         |   declaration declarations
@@ -692,7 +692,7 @@ declarations            :   declaration
                                 }
                                 else
                                 {
-                                    $$ = NULL;
+                                    $$ = nullptr;
                                 }
                             }
                         |   declarations declaration
@@ -755,7 +755,7 @@ o_callables             :   /* Empty */
                             {
                                 LOG("o_callables             :   /* Empty */");
 
-                                $$ = NULL;
+                                $$ = nullptr;
                             }
                         |   callable
                             {
@@ -768,7 +768,7 @@ o_callables             :   /* Empty */
                                 }
                                 else
                                 {
-                                    $$ = NULL;
+                                    $$ = nullptr;
                                 }
                             }
                         |   callable callables
@@ -803,7 +803,7 @@ callables               :   callable
                                 }
                                 else
                                 {
-                                    $$ = NULL;
+                                    $$ = nullptr;
                                 }
                             }
                         |   callables callable
@@ -880,7 +880,7 @@ prototype               :   TOKEN_ID TOKEN_PARENTHESIS_OPEN o_arguments TOKEN_PA
                             {
                                 LOG("prototype               :   TOKEN_DEF TOKEN_ID TOKEN_PARENTHESIS_OPEN o_arguments TOKEN_PARENTHESIS_CLOSE");
 
-                                $$ = new tree::FunctionPrototype(NULL, std::string($1), $3);
+                                $$ = new tree::FunctionPrototype(nullptr, std::string($1), $3);
                                 $$->setLocation(@1);
                             }
                         |   TOKEN_ID TOKEN_PARENTHESIS_OPEN o_arguments TOKEN_PARENTHESIS_CLOSE TOKEN_CAST type
@@ -896,7 +896,7 @@ o_arguments             :   /* Empty */
                             {
                                 LOG("o_arguments             :   /* Empty */");
 
-                                $$ = NULL;
+                                $$ = nullptr;
                             }
                         |   arguments
                             {
@@ -917,7 +917,7 @@ arguments               :   argument
                                 }
                                 else
                                 {
-                                    $$ = NULL;
+                                    $$ = nullptr;
                                 }
                             }
                         |   arguments TOKEN_COMMA argument
@@ -941,7 +941,7 @@ argument                :   TOKEN_ID
                             {
                                 LOG("argument                :   TOKEN_ID");
 
-                                $$ = new tree::Variable(NULL, std::string($1));
+                                $$ = new tree::Variable(nullptr, std::string($1));
                                 $$->setLocation(@1);
                             }
                         |   TOKEN_ID TOKEN_CAST type
@@ -955,7 +955,7 @@ argument                :   TOKEN_ID
 
 /*function_state          :   *//* No state *//*
                             {
-                                $$ = NULL;
+                                $$ = nullptr;
                             }
                         |   TOKEN_LT state TOKEN_GT
                             {
@@ -967,7 +967,7 @@ o_statements            :   /* Empty */
                             {
                                 LOG("o_statements            :   /* Empty */");
 
-                                $$ = NULL;
+                                $$ = nullptr;
                             }
                         |   statements
                             {
@@ -988,7 +988,7 @@ statements              :   statement
                                 }
                                 else
                                 {
-                                    $$ = NULL;
+                                    $$ = nullptr;
                                 }
                             }
                         |   statements statement
@@ -1069,7 +1069,7 @@ constant                :   TOKEN_CONST TOKEN_NAME
                             {
                                 LOG("constant                :   TOKEN_CONST TOKEN_NAME");
 
-                                $$ = new tree::Constant(NULL, std::string($2));
+                                $$ = new tree::Constant(nullptr, std::string($2));
                                 $$->setLocation(@1);
                             }
                         |   TOKEN_CONST TOKEN_NAME TOKEN_CAST type
@@ -1109,7 +1109,7 @@ variable                :   TOKEN_DEF TOKEN_ID
                             {
                                 LOG("variable                :   TOKEN_DEF TOKEN_ID");
 
-                                $$ = new tree::Variable(NULL, std::string($2));
+                                $$ = new tree::Variable(nullptr, std::string($2));
                                 $$->setLocation(@1);
                             }
                         |   TOKEN_DEF TOKEN_ID TOKEN_CAST type
@@ -1190,7 +1190,7 @@ execute_statement       :   assign_or_function
                                 }
                                 else
                                 {
-                                    $$ = NULL;
+                                    $$ = nullptr;
                                 }
                             }
                         ;
@@ -1212,7 +1212,7 @@ assign_or_function      :   assignment
                             {
                                 LOG("assign_or_function      :   error");
 
-                                $$ = NULL; // FIXME
+                                $$ = nullptr; // FIXME
                             }
                         ;
 
@@ -1686,7 +1686,7 @@ o_argument_expressions  :   /* Empty */
                             {
                                 LOG("o_argument_expressions  :   /* Empty */");
 
-                                $$ = NULL;
+                                $$ = nullptr;
                             }
                         |   argument_expressions
                             {
@@ -1707,7 +1707,7 @@ argument_expressions    :   expression
                                 }
                                 else
                                 {
-                                    $$ = NULL;
+                                    $$ = nullptr;
                                 }
                             }
                         |   argument_expressions TOKEN_COMMA expression
@@ -1876,14 +1876,14 @@ type                    :   TOKEN_TYPE_BOOL
                             {
                                 LOG("type                    :   TOKEN_BRACKETS_OPEN TOKEN_BRACKETS_CLOSE");
 
-                                $$ = new tree::Array(NULL);
+                                $$ = new tree::Array(nullptr);
                                 $$->setLocation(@1);
                             }
                         |   TOKEN_BRACKETS_OPEN expression TOKEN_BRACKETS_CLOSE
                             {
                                 LOG("type                    :   TOKEN_BRACKETS_OPEN expression TOKEN_BRACKETS_CLOSE");
 
-                                $$ = new tree::Array(NULL, $2);
+                                $$ = new tree::Array(nullptr, $2);
                                 $$->setLocation(@1);
                             }
                         |   type TOKEN_BRACKETS_OPEN TOKEN_BRACKETS_CLOSE
@@ -2034,7 +2034,7 @@ return_statement        :   TOKEN_RETURN
                             {
                                 LOG("return_statement        :   TOKEN_RETURN");
 
-                                $$ = new tree::Return(NULL);
+                                $$ = new tree::Return(nullptr);
                                 $$->setLocation(@1);
                             }
                         |   TOKEN_RETURN expression

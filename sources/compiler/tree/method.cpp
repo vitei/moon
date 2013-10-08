@@ -7,9 +7,9 @@ void tree::Method::setType(tree::Type *type)
 {
 	tree::Type *t;
 
-	if(type == NULL)
+	if(type == nullptr)
 	{
-		mType = NULL;
+		mType = nullptr;
 	}
 	else if(tree::node_cast<tree::Identifier *>(type) ||
 	        tree::node_cast<tree::Type *>(type))

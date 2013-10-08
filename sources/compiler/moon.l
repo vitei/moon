@@ -187,21 +187,21 @@
     [0-1]+":b"              {
                                 char *castPos = strchr(yytext, ':');
                                 *castPos = 0;
-                                yylval->integer = strtol(yytext, NULL, 2);
+                                yylval->integer = strtol(yytext, nullptr, 2);
 
                                 return TOKEN_INTEGER;
                             }
     [0-8]+"o:"              {
                                 char *castPos = strchr(yytext, ':');
                                 *castPos = 0;
-                                yylval->integer = strtol(yytext, NULL, 8);
+                                yylval->integer = strtol(yytext, nullptr, 8);
 
                                 return TOKEN_INTEGER;
                             }
     [0-9A-Fa-f]+"h:"        {
                                 char *castPos = strchr(yytext, ':');
                                 *castPos = 0;
-                                yylval->integer = strtol(yytext, NULL, 16);
+                                yylval->integer = strtol(yytext, nullptr, 16);
 
                                 return TOKEN_INTEGER;
                             }
@@ -221,7 +221,7 @@
                                     {
                                         if(*i != '0')
                                         {
-                                            yylval->integer = strtol(yytext, NULL, base);
+                                            yylval->integer = strtol(yytext, nullptr, base);
 
                                             if(!yylval->integer)
                                             {

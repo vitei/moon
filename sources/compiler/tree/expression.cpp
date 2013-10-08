@@ -9,9 +9,9 @@ void tree::Expression::setType(tree::Type *type)
 {
 	tree::Type *t;
 
-	if(type == NULL)
+	if(type == nullptr)
 	{
-		mType = NULL;
+		mType = nullptr;
 	}
 	else if(tree::node_cast<tree::Identifier *>(type) ||
 	        tree::node_cast<tree::Type *>(type))
@@ -26,9 +26,9 @@ void tree::Expression::setType(tree::Type *type)
 
 void tree::Access::setContainer(Expression *container)
 {
-	if(container == NULL)
+	if(container == nullptr)
 	{
-		mContainer = NULL;
+		mContainer = nullptr;
 	}
 	else if(!dynamic_cast<tree::FunctionPrototype *>(container))
 	{
@@ -42,9 +42,9 @@ void tree::Access::setContainer(Expression *container)
 
 void tree::Access::setTarget(Expression *target)
 {
-	if(target == NULL)
+	if(target == nullptr)
 	{
-		mTarget = NULL;
+		mTarget = nullptr;
 	}
 	else if(!dynamic_cast<tree::FunctionPrototype *>(target))
 	{
@@ -58,9 +58,9 @@ void tree::Access::setTarget(Expression *target)
 
 void tree::FunctionPrototype::setTarget(Node *target)
 {
-	if(target == NULL)
+	if(target == nullptr)
 	{
-		mTarget = NULL;
+		mTarget = nullptr;
 	}
 	else if(   dynamic_cast<tree::Function *>(target)
 	        || dynamic_cast<tree::Import *>(target))
@@ -75,7 +75,7 @@ void tree::FunctionPrototype::setTarget(Node *target)
 
 void tree::Operation::setType(Type *type)
 {
-	if(type == NULL || type->canPerform(*this))
+	if(type == nullptr || type->canPerform(*this))
 	{
 		tree::Expression::setType(type);
 	}
@@ -87,9 +87,9 @@ void tree::Operation::setType(Type *type)
 
 void tree::UnaryOperation::setExpression(Expression *expression)
 {
-	if(expression == NULL)
+	if(expression == nullptr)
 	{
-		mExpression = NULL;
+		mExpression = nullptr;
 	}
 	else if(!dynamic_cast<tree::FunctionPrototype *>(expression))
 	{
@@ -103,9 +103,9 @@ void tree::UnaryOperation::setExpression(Expression *expression)
 
 void tree::BinaryOperation::setLHS(Expression *lhs)
 {
-	if(lhs == NULL)
+	if(lhs == nullptr)
 	{
-		mLHS = NULL;
+		mLHS = nullptr;
 	}
 	else if(!dynamic_cast<tree::FunctionPrototype *>(lhs))
 	{
@@ -119,9 +119,9 @@ void tree::BinaryOperation::setLHS(Expression *lhs)
 
 void tree::BinaryOperation::setRHS(Expression *rhs)
 {
-	if(rhs == NULL)
+	if(rhs == nullptr)
 	{
-		mRHS = NULL;
+		mRHS = nullptr;
 	}
 	else if(!dynamic_cast<tree::FunctionPrototype *>(rhs))
 	{
@@ -159,9 +159,9 @@ void tree::FunctionCall::setPrototype(tree::FunctionPrototype *prototype)
 	tree::Node *node = static_cast<tree::Node *>(prototype); // This is required as the "function prototype" might be an identifier
 	tree::FunctionPrototype *p;
 
-	if(prototype == NULL)
+	if(prototype == nullptr)
 	{
-		mPrototype = NULL;
+		mPrototype = nullptr;
 	}
 	else if(dynamic_cast<tree::Identifier *>(node))
 	{
@@ -171,7 +171,7 @@ void tree::FunctionCall::setPrototype(tree::FunctionPrototype *prototype)
 	{
 		mPrototype = p;
 
-		if((p->getArguments() || mArguments) && ((p->getArguments() && mArguments == NULL) || (p->getArguments() == NULL && mArguments) || p->getArguments()->size() != mArguments->size()))
+		if((p->getArguments() || mArguments) && ((p->getArguments() && mArguments == nullptr) || (p->getArguments() == nullptr && mArguments) || p->getArguments()->size() != mArguments->size()))
 		{
 			throw tree::FunctionCall::InvalidArgumentsException(this);
 		}

@@ -36,11 +36,11 @@ namespace tree
 				unsigned int character;
 			};
 
-			//Location() : filename(NULL) {}
+			//Location() : filename(nullptr) {}
 
 			void reset()
 			{
-				filename = NULL;
+				filename = nullptr;
 				start.reset();
 				end.reset();
 			}
@@ -107,7 +107,7 @@ namespace tree
 #endif
 
 	protected:
-		Node() : mMetadata(NULL)
+		Node() : mMetadata(nullptr)
 		{
 			/* Abstract class */
 			mLocation.reset();

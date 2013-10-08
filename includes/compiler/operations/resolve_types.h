@@ -27,7 +27,7 @@ namespace operation
 		void setOperationType(tree::Operation *operation, tree::Type *type);
 
 	private:
-		ResolveTypes() : mValidated(false), mCurrentScope(NULL) {}
+		ResolveTypes() : mValidated(false), mCurrentScope(nullptr) {}
 
 		bool mValidated;
 		tree::Scope *mCurrentScope;

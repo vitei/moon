@@ -13,7 +13,7 @@ bool operation::ResolveIdentities::run(tree::Program *program)
 
 	if(program->getStatements())
 	{
-		operation.add(NULL, program);
+		operation.add(nullptr, program);
 		operation.process();
 	}
 
@@ -32,7 +32,7 @@ void operation::ResolveIdentities::process()
 {
 	std::queue<tree::Scope *> processNext;
 
-	processNext.push(NULL);
+	processNext.push(nullptr);
 
 	while(!processNext.empty())
 	{
@@ -96,7 +96,7 @@ void operation::ResolveIdentities::dispatch(tree::Function *function)
 {
 	LOG("ResolveIdentities::dispatch::Function");
 
-	tree::FunctionPrototype *functionPrototype = NULL;
+	tree::FunctionPrototype *functionPrototype = nullptr;
 
 	RESTRUCTURE_GET(functionPrototype, tree::FunctionPrototype, function->getPrototype());
 	function->setPrototype(functionPrototype);
@@ -147,7 +147,7 @@ void operation::ResolveIdentities::dispatch(tree::UDT *udt)
 
 void operation::ResolveIdentities::dispatch(tree::Expression *expression)
 {
-	tree::Type *type = NULL;
+	tree::Type *type = nullptr;
 
 	RESTRUCTURE_GET(type, tree::Type, expression->getType());
 
@@ -173,8 +173,8 @@ void operation::ResolveIdentities::dispatch(tree::Expression *expression)
 
 void operation::ResolveIdentities::dispatch(tree::Access *access)
 {
-	tree::Expression *target = NULL;
-	tree::Expression *container = NULL;
+	tree::Expression *target = nullptr;
+	tree::Expression *container = nullptr;
 
 	RESTRUCTURE_GET(target, tree::Expression, access->getTarget());
 	RESTRUCTURE_GET(container, tree::Expression, access->getContainer());
@@ -216,8 +216,8 @@ void operation::ResolveIdentities::dispatch(tree::Access *access)
 
 void operation::ResolveIdentities::dispatch(tree::BinaryOperation *binaryOperation)
 {
-	tree::Expression *rhs = NULL;
-	tree::Expression *lhs = NULL;
+	tree::Expression *rhs = nullptr;
+	tree::Expression *lhs = nullptr;
 
 	RESTRUCTURE_GET(rhs, tree::Expression, binaryOperation->getRHS());
 	RESTRUCTURE_GET(lhs, tree::Expression, binaryOperation->getLHS());
@@ -259,7 +259,7 @@ void operation::ResolveIdentities::dispatch(tree::BinaryOperation *binaryOperati
 
 void operation::ResolveIdentities::dispatch(tree::UnaryOperation *unaryOperation)
 {
-	tree::Expression *expression = NULL;
+	tree::Expression *expression = nullptr;
 
 	RESTRUCTURE_GET(expression, tree::Expression, unaryOperation->getExpression());
 
@@ -284,8 +284,8 @@ void operation::ResolveIdentities::dispatch(tree::UnaryOperation *unaryOperation
 
 void operation::ResolveIdentities::dispatch(tree::Assign *assign)
 {
-	tree::Expression *lhs = NULL;
-	tree::Expression *rhs = NULL;
+	tree::Expression *lhs = nullptr;
+	tree::Expression *rhs = nullptr;
 
 	RESTRUCTURE_GET(lhs, tree::Expression, assign->getLHS());
 	RESTRUCTURE_GET(rhs, tree::Expression, assign->getRHS());
@@ -327,7 +327,7 @@ void operation::ResolveIdentities::dispatch(tree::Assign *assign)
 
 void operation::ResolveIdentities::dispatch(tree::FunctionCall *functionCall)
 {
-	tree::FunctionPrototype *functionPrototype = NULL;
+	tree::FunctionPrototype *functionPrototype = nullptr;
 
 	RESTRUCTURE_GET(functionPrototype, tree::FunctionPrototype, functionCall->getPrototype());
 
@@ -631,7 +631,7 @@ void operation::ResolveIdentities::visit(tree::Method *method)
 
 tree::Node *operation::ResolveIdentities::restructure(tree::Identifier *identifier)
 {
-	tree::Node *r = NULL;
+	tree::Node *r = nullptr;
 
 	LOG("ResolveIdentities::restructure::Identifier");
 
@@ -643,7 +643,7 @@ tree::Node *operation::ResolveIdentities::restructure(tree::Identifier *identifi
 	{
 		if(mCanCreateIdentifier)
 		{
-			tree::Variable *variable = new tree::Variable(NULL, identifier->getName());
+			tree::Variable *variable = new tree::Variable(nullptr, identifier->getName());
 
 			variable->setLocation(identifier->getLocation());
 			mCurrentMap->mapNamedNode(variable->getName(), variable);

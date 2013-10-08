@@ -15,7 +15,7 @@ void operation::Restructure::dispatch(tree::Node *node)
 
 void operation::Restructure::dispatch(tree::Expression *expression)
 {
-	tree::Type *type = NULL;
+	tree::Type *type = nullptr;
 
 	RESTRUCTURE_GET(type, tree::Type, expression->getType());
 	expression->setType(type);
@@ -25,8 +25,8 @@ void operation::Restructure::dispatch(tree::Expression *expression)
 
 void operation::Restructure::dispatch(tree::Access *access)
 {
-	tree::Expression *target = NULL;
-	tree::Expression *container = NULL;
+	tree::Expression *target = nullptr;
+	tree::Expression *container = nullptr;
 
 	RESTRUCTURE_GET(target, tree::Expression, access->getTarget());
 	access->setTarget(target);
@@ -39,8 +39,8 @@ void operation::Restructure::dispatch(tree::Access *access)
 
 void operation::Restructure::dispatch(tree::BinaryOperation *binaryOperation)
 {
-	tree::Expression *rhs = NULL;
-	tree::Expression *lhs = NULL;
+	tree::Expression *rhs = nullptr;
+	tree::Expression *lhs = nullptr;
 
 	RESTRUCTURE_GET(rhs, tree::Expression, binaryOperation->getRHS());
 	binaryOperation->setRHS(rhs);
@@ -53,7 +53,7 @@ void operation::Restructure::dispatch(tree::BinaryOperation *binaryOperation)
 
 void operation::Restructure::dispatch(tree::UnaryOperation *unaryOperation)
 {
-	tree::Expression *expression = NULL;
+	tree::Expression *expression = nullptr;
 
 	RESTRUCTURE_GET(expression, tree::Expression, unaryOperation->getExpression());
 	unaryOperation->setExpression(expression);
@@ -97,7 +97,7 @@ void operation::Restructure::dispatch(tree::Scope *scope)
 
 void operation::Restructure::dispatch(tree::Scoping *scoping)
 {
-	tree::Statement *statement = NULL;
+	tree::Statement *statement = nullptr;
 
 	RESTRUCTURE_GET(statement, tree::Statement, scoping->getScoped());
 	scoping->setScoped(statement);
@@ -107,7 +107,7 @@ void operation::Restructure::dispatch(tree::Scoping *scoping)
 
 void operation::Restructure::dispatch(tree::SizedType *sizedType)
 {
-	tree::Expression *size = NULL;
+	tree::Expression *size = nullptr;
 
 	RESTRUCTURE_GET(size, tree::Expression, sizedType->getSize());
 	sizedType->setSize(size);
@@ -117,8 +117,8 @@ void operation::Restructure::dispatch(tree::SizedType *sizedType)
 
 void operation::Restructure::dispatch(tree::Assign *assign)
 {
-	tree::Expression *lhs = NULL;
-	tree::Expression *rhs = NULL;
+	tree::Expression *lhs = nullptr;
+	tree::Expression *rhs = nullptr;
 
 	RESTRUCTURE_GET(lhs, tree::Expression, assign->getLHS());
 	assign->setLHS(lhs);
@@ -131,7 +131,7 @@ void operation::Restructure::dispatch(tree::Assign *assign)
 
 void operation::Restructure::dispatch(tree::Cast *cast)
 {
-	tree::Expression *expression = NULL;
+	tree::Expression *expression = nullptr;
 
 	RESTRUCTURE_GET(expression, tree::Expression, cast->getExpression());
 	cast->setExpression(expression);
@@ -141,9 +141,9 @@ void operation::Restructure::dispatch(tree::Cast *cast)
 
 void operation::Restructure::dispatch(tree::ComputedArray *computedArray)
 {
-	tree::Expression *from = NULL;
-	tree::Expression *to = NULL;
-	tree::Expression *step = NULL;
+	tree::Expression *from = nullptr;
+	tree::Expression *to = nullptr;
+	tree::Expression *step = nullptr;
 
 	RESTRUCTURE_GET(step, tree::Expression, computedArray->getStep());
 	computedArray->setStep(step);
@@ -159,7 +159,7 @@ void operation::Restructure::dispatch(tree::ComputedArray *computedArray)
 
 void operation::Restructure::dispatch(tree::FunctionCall *functionCall)
 {
-	tree::FunctionPrototype *functionPrototype = NULL;
+	tree::FunctionPrototype *functionPrototype = nullptr;
 
 	RESTRUCTURE_GET(functionPrototype, tree::FunctionPrototype, functionCall->getPrototype());
 	functionCall->setPrototype(functionPrototype);
@@ -192,9 +192,9 @@ void operation::Restructure::dispatch(tree::FunctionCall *functionCall)
 
 void operation::Restructure::dispatch(tree::IfExpression *ifExpression)
 {
-	tree::Expression *mFalseResult = NULL;
-	tree::Expression *mTrueResult = NULL;
-	tree::Expression *mTest = NULL;
+	tree::Expression *mFalseResult = nullptr;
+	tree::Expression *mTrueResult = nullptr;
+	tree::Expression *mTest = nullptr;
 
 	RESTRUCTURE_GET(mFalseResult, tree::Expression, ifExpression->getFalseResult());
 	ifExpression->setFalseResult(mFalseResult);
@@ -210,7 +210,7 @@ void operation::Restructure::dispatch(tree::IfExpression *ifExpression)
 
 void operation::Restructure::dispatch(tree::Function *function)
 {
-	tree::FunctionPrototype *functionPrototype = NULL;
+	tree::FunctionPrototype *functionPrototype = nullptr;
 
 	RESTRUCTURE_GET(functionPrototype, tree::FunctionPrototype, function->getPrototype());
 	function->setPrototype(functionPrototype);
@@ -223,7 +223,7 @@ void operation::Restructure::dispatch(tree::Function *function)
 
 void operation::Restructure::dispatch(tree::Method *method)
 {
-	tree::Type *type = NULL;
+	tree::Type *type = nullptr;
 
 	RESTRUCTURE_GET(type, tree::Type, method->getType());
 	method->setType(type);
@@ -233,9 +233,9 @@ void operation::Restructure::dispatch(tree::Method *method)
 
 void operation::Restructure::dispatch(tree::If *ifStatement)
 {
-	tree::Statement *falseStatement = NULL;
-	tree::Statement *trueStatement = NULL;
-	tree::Expression *test = NULL;
+	tree::Statement *falseStatement = nullptr;
+	tree::Statement *trueStatement = nullptr;
+	tree::Expression *test = nullptr;
 
 	RESTRUCTURE_GET(falseStatement, tree::Statement, ifStatement->getFalseStatement());
 	ifStatement->setFalseStatement(falseStatement);
@@ -251,7 +251,7 @@ void operation::Restructure::dispatch(tree::If *ifStatement)
 
 void operation::Restructure::dispatch(tree::Import *import)
 {
-	tree::FunctionPrototype *functionPrototype = NULL;
+	tree::FunctionPrototype *functionPrototype = nullptr;
 
 	RESTRUCTURE_GET(functionPrototype, tree::FunctionPrototype, import->getPrototype());
 	import->setPrototype(functionPrototype);
@@ -263,7 +263,7 @@ void operation::Restructure::dispatch(tree::Import *import)
 		tree::Expressions *expressions = functionPrototype->getArguments();
 		//tree::Scope *oldScope = mCurrentScope;
 
-		//mCurrentScope = NULL;
+		//mCurrentScope = nullptr;
 
 		if(expressions)
 		{
@@ -292,7 +292,7 @@ void operation::Restructure::dispatch(tree::Import *import)
 
 void operation::Restructure::dispatch(tree::Execute *execute)
 {
-	tree::Expression *expression = NULL;
+	tree::Expression *expression = nullptr;
 
 	RESTRUCTURE_GET(expression, tree::Expression, execute->getExpression());
 	execute->setExpression(expression);
@@ -302,7 +302,7 @@ void operation::Restructure::dispatch(tree::Execute *execute)
 
 void operation::Restructure::dispatch(tree::Return *opReturn)
 {
-	tree::Expression *expression = NULL;
+	tree::Expression *expression = nullptr;
 
 	RESTRUCTURE_GET(expression, tree::Expression, opReturn->getReturn());
 	opReturn->setReturn(expression);
@@ -312,7 +312,7 @@ void operation::Restructure::dispatch(tree::Return *opReturn)
 
 void operation::Restructure::dispatch(tree::TypeDefinition *typeDefinition)
 {
-	tree::Type *type = NULL;
+	tree::Type *type = nullptr;
 
 	RESTRUCTURE_GET(type, tree::Type, typeDefinition->getType());
 	typeDefinition->setType(type);
@@ -322,8 +322,8 @@ void operation::Restructure::dispatch(tree::TypeDefinition *typeDefinition)
 
 void operation::Restructure::dispatch(tree::For *forStatement)
 {
-	tree::Variable *variable = NULL;
-	tree::Expression *iterable = NULL;
+	tree::Variable *variable = nullptr;
+	tree::Expression *iterable = nullptr;
 
 	RESTRUCTURE_GET(iterable, tree::Expression, forStatement->getIterable());
 	forStatement->setIterable(iterable);
@@ -336,8 +336,8 @@ void operation::Restructure::dispatch(tree::For *forStatement)
 
 void operation::Restructure::dispatch(tree::While *whileStatement)
 {
-	tree::Statement *loopStatement = NULL;
-	tree::Expression *test = NULL;
+	tree::Statement *loopStatement = nullptr;
+	tree::Expression *test = nullptr;
 
 	RESTRUCTURE_GET(loopStatement, tree::Statement, whileStatement->getLoopStatement());
 	whileStatement->setLoopStatement(loopStatement);
@@ -376,7 +376,7 @@ void operation::Restructure::dispatch(tree::UDT *udt)
 
 void operation::Restructure::dispatch(tree::Array *array)
 {
-	tree::Type *type = NULL;
+	tree::Type *type = nullptr;
 
 	RESTRUCTURE_GET(type, tree::Type, array->getType());
 	array->setType(type);

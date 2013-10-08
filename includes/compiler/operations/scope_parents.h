@@ -20,7 +20,7 @@ namespace operation
 		virtual tree::Node *restructure(tree::SharedScoping *sharedScoping);
 
 	private:
-		ScopeParents() : mProgramScope(NULL), mAggregateScope(NULL) {}
+		ScopeParents() : mProgramScope(nullptr), mAggregateScope(nullptr) {}
 
 		tree::Program *mProgramScope;
 		tree::Aggregate *mAggregateScope;

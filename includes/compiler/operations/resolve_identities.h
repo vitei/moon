@@ -49,7 +49,7 @@ namespace operation
 		virtual bool doProcessChildren(tree::Method *method) { return false; }
 
 	private:
-		ResolveIdentities() : mValidated(false), mCanCreateIdentifier(false), mCanMapIdentifier(true), mUnmappedMethods(false), mCurrentMap(NULL) {}
+		ResolveIdentities() : mValidated(false), mCanCreateIdentifier(false), mCanMapIdentifier(true), mUnmappedMethods(false), mCurrentMap(nullptr) {}
 
 		bool mValidated;
 		bool mCanCreateIdentifier;

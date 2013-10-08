@@ -88,7 +88,7 @@ namespace tree
 			virtual void reset()
 			{
 				LOG("tree::SizedType::InvalidException::reset");
-				static_cast<tree::SizedType *>(type)->setSize(NULL);
+				static_cast<tree::SizedType *>(type)->setSize(nullptr);
 			}
 		};
 
@@ -111,7 +111,7 @@ namespace tree
 		virtual void childAccept(operation::Operation *operation);
 
 	protected:
-		SizedType(Expression *size = NULL) { mSize.expression = size; }
+		SizedType(Expression *size = nullptr) { mSize.expression = size; }
 
 		union
 		{
@@ -168,7 +168,7 @@ namespace tree
 	public:
 		static const unsigned int DEFAULT_SIZE = 32;
 
-		Int(Expression *size = NULL) : SizedType(size) {}
+		Int(Expression *size = nullptr) : SizedType(size) {}
 
 		bool canCast(const Type &from, bool autoCast = false) const;
 		bool canPerform(const Operation &operation) const;
@@ -197,7 +197,7 @@ namespace tree
 	public:
 		static const unsigned int DEFAULT_SIZE = 32;
 
-		Float(Expression *size = NULL) : SizedType(size) {}
+		Float(Expression *size = nullptr) : SizedType(size) {}
 
 		bool canCast(const Type &from, bool autoCast = false) const;
 		bool canPerform(const Operation &operation) const;
@@ -226,7 +226,7 @@ namespace tree
 	public:
 		static const unsigned int DEFAULT_SIZE = 32;
 
-		String(Expression *size = NULL) : SizedType(size) {}
+		String(Expression *size = nullptr) : SizedType(size) {}
 
 		bool canCast(const Type &from, bool autoCast = false) const;
 

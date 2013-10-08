@@ -34,7 +34,7 @@ namespace tree
 			virtual void reset()
 			{
 				LOG("tree::Expression::InvalidTypeException::reset");
-				expression->setType(NULL);
+				expression->setType(nullptr);
 			}
 		};
 
@@ -56,7 +56,7 @@ namespace tree
 		}
 
 	protected:
-		Expression() : mType(NULL) { /* Abstract class */ }
+		Expression() : mType(nullptr) { /* Abstract class */ }
 
 	private:
 		Type *mType;
@@ -113,7 +113,7 @@ namespace tree
 			virtual void reset()
 			{
 				LOG("tree::Access::InvalidContainerException::reset");
-				access->setContainer(NULL);
+				access->setContainer(nullptr);
 			}
 		};
 
@@ -125,7 +125,7 @@ namespace tree
 			virtual void reset()
 			{
 				LOG("tree::Access::InvalidTargetException::reset");
-				access->setTarget(NULL);
+				access->setTarget(nullptr);
 			}
 		};
 
@@ -242,7 +242,7 @@ namespace tree
 			virtual void reset()
 			{
 				LOG("tree::Operation::NotAllowedException::reset");
-				expression->setType(NULL);
+				expression->setType(nullptr);
 			}
 		};
 
@@ -262,7 +262,7 @@ namespace tree
 			virtual void reset()
 			{
 				LOG("tree::UnaryOperation::InvalidException::reset");
-				unaryOperation->setExpression(NULL);
+				unaryOperation->setExpression(nullptr);
 			}
 
 			UnaryOperation *unaryOperation;
@@ -321,7 +321,7 @@ namespace tree
 			virtual void reset()
 			{
 				LOG("tree::BinaryOperation::InvalidLHSException::reset");
-				binaryOperation->setLHS(NULL);
+				binaryOperation->setLHS(nullptr);
 			}
 		};
 
@@ -333,7 +333,7 @@ namespace tree
 			virtual void reset()
 			{
 				LOG("tree::BinaryOperation::InvalidRHSException::reset");
-				binaryOperation->setRHS(NULL);
+				binaryOperation->setRHS(nullptr);
 			}
 		};
 
@@ -388,7 +388,7 @@ namespace tree
 	class Constant : public TypedIdentity
 	{
 	public:
-		Constant(Type *type, std::string name) : TypedIdentity(type, name), mValue(NULL) {}
+		Constant(Type *type, std::string name) : TypedIdentity(type, name), mValue(nullptr) {}
 
 		Literal *getValue() const
 		{
@@ -429,7 +429,7 @@ namespace tree
 			virtual void reset()
 			{
 				LOG("tree::Cast::InvalidException::reset");
-				//binaryExpression->setRHS(NULL);
+				//binaryExpression->setRHS(nullptr);
 			}
 		};
 
@@ -478,7 +478,7 @@ namespace tree
 	class ComputedArray : public Expression
 	{
 	public:
-		ComputedArray(tree::Expression *from, tree::Expression *to, tree::Expression *step = NULL) : mFrom(from), mTo(to), mStep(step) {}
+		ComputedArray(tree::Expression *from, tree::Expression *to, tree::Expression *step = nullptr) : mFrom(from), mTo(to), mStep(step) {}
 
 		Expression *getFrom() const
 		{
@@ -599,11 +599,11 @@ namespace tree
 			virtual void reset()
 			{
 				LOG("tree::FunctionPrototype::InvalidTargetException::reset");
-				functionPrototype->setTarget(NULL);
+				functionPrototype->setTarget(nullptr);
 			}
 		};
 
-		FunctionPrototype(Type *type, std::string name, Expressions *arguments) : TypedIdentity(type, name), mArguments(arguments), mTarget(NULL) {}
+		FunctionPrototype(Type *type, std::string name, Expressions *arguments) : TypedIdentity(type, name), mArguments(arguments), mTarget(nullptr) {}
 
 		Expressions *getArguments() const
 		{
@@ -646,7 +646,7 @@ namespace tree
 			virtual void reset()
 			{
 				LOG("tree::FunctionCall::InvalidFunctionException::reset");
-				functionCall->setPrototype(NULL);
+				functionCall->setPrototype(nullptr);
 			}
 		};
 
@@ -658,11 +658,11 @@ namespace tree
 			virtual void reset()
 			{
 				LOG("tree::FunctionCall::InvalidArgumentsException::reset");
-				functionCall->setPrototype(NULL);
+				functionCall->setPrototype(nullptr);
 			}
 		};
 
-		FunctionCall(FunctionPrototype *functionPrototype, Expressions *arguments = NULL) : mPrototype(functionPrototype), mArguments(arguments) {}
+		FunctionCall(FunctionPrototype *functionPrototype, Expressions *arguments = nullptr) : mPrototype(functionPrototype), mArguments(arguments) {}
 
 		FunctionPrototype *getPrototype() const
 		{
@@ -712,7 +712,7 @@ namespace tree
 	{
 	public:
 		BoolLiteral(bool value) : Literal(new Bool()), mValue(value) {}
-		BoolLiteral(Literal *literal, tree::Bool *type = NULL);
+		BoolLiteral(Literal *literal, tree::Bool *type = nullptr);
 
 		bool getValue() const
 		{
@@ -734,7 +734,7 @@ namespace tree
 	{
 	public:
 		IntLiteral(int value) : NumericLiteral(new Int()), mValue(value) {}
-		IntLiteral(Literal *literal, tree::Int *type = NULL);
+		IntLiteral(Literal *literal, tree::Int *type = nullptr);
 
 		int getValue() const
 		{
@@ -757,7 +757,7 @@ namespace tree
 	{
 	public:
 		FloatLiteral(float value) : NumericLiteral(new Float()), mValue(value) {}
-		FloatLiteral(Literal *literal, tree::Float *type = NULL);
+		FloatLiteral(Literal *literal, tree::Float *type = nullptr);
 
 		float getValue() const
 		{
@@ -780,7 +780,7 @@ namespace tree
 	{
 	public:
 		StringLiteral(std::string value) : Literal(new String(new IntLiteral(value.length()))), mValue(value) {}
-		StringLiteral(Literal *literal, tree::String *type = NULL);
+		StringLiteral(Literal *literal, tree::String *type = nullptr);
 
 		const std::string getValue() const
 		{
@@ -806,7 +806,7 @@ namespace tree
 		virtual Literal *calculate() const
 		{
 			ERROR("Should not be called"); // FIXME, this is probably better as a special binary operation that CAN calculate??
-			return NULL;
+			return nullptr;
 		}
 
 		virtual void childAccept(operation::Operation *operation)
@@ -1060,7 +1060,7 @@ namespace tree
 	class IfExpression : public Expression
 	{
 	public:
-		IfExpression(Expression *test, Expression *trueResult, Expression *falseResult = NULL) : mTest(test), mTrueResult(trueResult), mFalseResult(falseResult) {}
+		IfExpression(Expression *test, Expression *trueResult, Expression *falseResult = nullptr) : mTest(test), mTrueResult(trueResult), mFalseResult(falseResult) {}
 
 		Expression *getTest() const
 		{

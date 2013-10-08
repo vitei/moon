@@ -57,7 +57,7 @@ tree::Node *operation::ScopeParents::restructure(tree::GlobalScoping *globalScop
 	mProgramScope->getStatements()->push_back(globalScoping->getScoped());
 	delete globalScoping;
 
-	return NULL;
+	return nullptr;
 }
 
 tree::Node *operation::ScopeParents::restructure(tree::SharedScoping *sharedScoping)
@@ -74,5 +74,5 @@ tree::Node *operation::ScopeParents::restructure(tree::SharedScoping *sharedScop
 	mAggregateScope->getStatements()->push_back(sharedScoping->getScoped());
 	delete sharedScoping;
 
-	return NULL;
+	return nullptr;
 }

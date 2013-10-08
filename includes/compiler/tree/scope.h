@@ -35,7 +35,7 @@ namespace tree
 
 		NamedNodes &getNamedNodes()
 		{
-			return mAssociatedNamedNodes[NULL];
+			return mAssociatedNamedNodes[nullptr];
 		}
 
 		Statements *getStatements() const
@@ -48,7 +48,7 @@ namespace tree
 		virtual void mapAssociatedNamedNode(tree::Node *association, const std::string &name, tree::Node *node);
 
 	protected:
-		Scope(Statements *statements) : mParent(NULL), mStatements(statements) { /* Abstract class */ }
+		Scope(Statements *statements) : mParent(nullptr), mStatements(statements) { /* Abstract class */ }
 
 		Scope *mParent;
 		behaviour::NamedMap::AssociatedNamedNodes mAssociatedNamedNodes;

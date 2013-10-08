@@ -16,7 +16,7 @@ namespace generator
 		class Printer
 		{
 		public:
-			Printer() : mOutput(NULL), mProgram(NULL), mDepth(0) {}
+			Printer() : mOutput(nullptr), mProgram(nullptr), mDepth(0) {}
 
 			void init(std::ostream &output, tree::Program *program)
 			{

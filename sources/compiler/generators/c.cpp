@@ -33,7 +33,7 @@ public:
 	virtual void visit(tree::Method *method);
 
 private:
-	MangleNames() : mProgram(NULL), mAggregate(NULL), mUse(NULL), mType(NULL), mFunction(NULL) {}
+	MangleNames() : mProgram(nullptr), mAggregate(nullptr), mUse(nullptr), mType(nullptr), mFunction(nullptr) {}
 
 	void dispatch(tree::Node *node);
 

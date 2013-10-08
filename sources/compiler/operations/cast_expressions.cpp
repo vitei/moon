@@ -269,7 +269,7 @@ void operation::CastExpressions::visit(tree::Function *function)
 {
 	mPrototype = function->getPrototype();
 	visit(static_cast<tree::Scope *>(function));
-	mPrototype = NULL;
+	mPrototype = nullptr;
 }
 
 void operation::CastExpressions::visit(tree::If *ifStatement)

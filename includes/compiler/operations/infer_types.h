@@ -24,7 +24,7 @@ namespace operation
 		virtual bool doProcessChildren(tree::Assign *assign) { return false; }
 
 	private:
-		InferTypes() : mValidated(false), mPrototype(NULL), mAssignIdentity(NULL), mSelfReference(false) {}
+		InferTypes() : mValidated(false), mPrototype(nullptr), mAssignIdentity(nullptr), mSelfReference(false) {}
 
 		bool mValidated;
 

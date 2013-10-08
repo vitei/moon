@@ -17,7 +17,7 @@ namespace tree
 	class Function : public Scope
 	{
 	public:
-		Function(FunctionPrototype *prototype, Statements *statements) : Scope(statements), mOriginalScope(NULL), mPrototype(prototype) {}
+		Function(FunctionPrototype *prototype, Statements *statements) : Scope(statements), mOriginalScope(nullptr), mPrototype(prototype) {}
 
 		FunctionPrototype *getPrototype() const
 		{

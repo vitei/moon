@@ -28,7 +28,7 @@ tree::Node *operation::ComputeConstants::restructure(tree::Assign *assign)
 		if(literal)
 		{
 			constant->setValue(literal);
-			return NULL;
+			return nullptr;
 		}
 	}
 

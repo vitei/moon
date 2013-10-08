@@ -3,10 +3,6 @@
 
 #include <cstdlib>
 
-#ifndef NULL
-	#define NULL 0
-#endif
-
 #define UNUSED(variable) ((void)&variable)
 
 #define __RANDOM_VARIABLE_NAME_CAT(name, num) name##num                         // This is HORRIBLE...

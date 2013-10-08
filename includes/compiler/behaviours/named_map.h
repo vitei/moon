@@ -38,9 +38,9 @@ namespace behaviour
 		virtual tree::Node *findAssociatedNamedNode(tree::Node *association, tree::Identifier *identifier) = 0;
 		virtual void mapAssociatedNamedNode(tree::Node *association, const std::string &name, tree::Node *node) = 0;
 
-		void checkNamedNode(const std::string &name, tree::Node *node) { checkAssociatedNamedNode(NULL, name, node); }
-		tree::Node *findNamedNode(tree::Identifier *identifier) { return findAssociatedNamedNode(NULL, identifier); }
-		void mapNamedNode(const std::string &name, tree::Node *node) { mapAssociatedNamedNode(NULL, name, node); }
+		void checkNamedNode(const std::string &name, tree::Node *node) { checkAssociatedNamedNode(nullptr, name, node); }
+		tree::Node *findNamedNode(tree::Identifier *identifier) { return findAssociatedNamedNode(nullptr, identifier); }
+		void mapNamedNode(const std::string &name, tree::Node *node) { mapAssociatedNamedNode(nullptr, name, node); }
 
 	protected:
 		NamedMap() { /* Abstract class */ }
