@@ -40,7 +40,7 @@ CC_FLAGS:=
 CPP_FLAGS+=-I"$(INC_DIR)" -I"$(PLATFORM_INC_DIR)"
 
 CXX?=clang++
-CXX_FLAGS:= -std=c++11
+CXX_FLAGS:= -std=c++0x
 
 LINKER:=$(CXX)
 LINKER_FLAGS:=
