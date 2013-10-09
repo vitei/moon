@@ -3,7 +3,7 @@
 
 namespace lexer
 {
-	class Data
+	class Data final
 	{
 	public:
 		enum FileType

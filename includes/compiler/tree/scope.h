@@ -57,23 +57,9 @@ namespace tree
 		Statements *mStatements;
 	};
 
-	/* ---- ONLY CONCRETE CLASSES BELOW HERE ---- */
-
-	class AnonymousScope : public Scope
-	{
-	public:
-		AnonymousScope(Statements *statements) : Scope(statements) {}
-
-#ifdef DEBUG
-		virtual void printNode() { LOG("AnonymousScope"); }
-#endif
-	};
-
 	class NamedScope : public Scope
 	{
 	public:
-		NamedScope(std::string name, Statements *statements) : Scope(statements), mName(name) {}
-
 		const std::string &getName() const
 		{
 			return mName;
@@ -83,8 +69,23 @@ namespace tree
 		virtual void printNode() { LOG("NamedScope"); }
 #endif
 
+	protected:
+		NamedScope(std::string name, Statements *statements) : Scope(statements), mName(name) { /* Abstract class */ }
+
 	private:
 		std::string mName;
+	};
+
+	/* ---- ONLY CONCRETE CLASSES BELOW HERE ---- */
+
+	class AnonymousScope final : public Scope
+	{
+	public:
+		AnonymousScope(Statements *statements) : Scope(statements) {}
+
+#ifdef DEBUG
+		virtual void printNode() { LOG("AnonymousScope"); }
+#endif
 	};
 }
 

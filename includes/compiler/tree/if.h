@@ -12,7 +12,7 @@ namespace tree
 
 	/* ---- ONLY CONCRETE CLASSES BELOW HERE ---- */
 
-	class If : public Statement
+	class If final : public Statement
 	{
 	public:
 		If(Expression *test, Statement *trueStatement, Statement *falseStatement = nullptr) : mTest(test), mTrueStatement(trueStatement), mFalseStatement(falseStatement) {}

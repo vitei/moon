@@ -13,7 +13,7 @@ namespace tree
 
 	/* ---- ONLY CONCRETE CLASSES BELOW HERE ---- */
 
-	class Use : public NamedScope
+	class Use final : public NamedScope
 	{
 	public:
 		Use(std::string name, Statements *statements) : NamedScope(name, statements) {}

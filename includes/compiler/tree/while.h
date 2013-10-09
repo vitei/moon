@@ -12,7 +12,7 @@ namespace tree
 
 	/* ---- ONLY CONCRETE CLASSES BELOW HERE ---- */
 
-	class While : public Statement
+	class While final : public Statement
 	{
 	public:
 		While(Expression *test, Statement *loopStatement) : mTest(test), mLoopStatement(loopStatement) {}

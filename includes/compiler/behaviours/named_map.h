@@ -14,16 +14,16 @@ namespace behaviour
 	class NamedMap
 	{
 	public:
-		class ExistsException : public std::exception
+		class ExistsException final : public std::exception
 		{
 		public:
-			ExistsException(tree::Node *_node, tree::Node *_conflict) : node(_node), conflict(_conflict) {}
+			ExistsException(tree::Node *_node, tree::Node *_conflict) : node(_node), conflict(_conflict) { /* Abstract class */ }
 
 			tree::Node *node;
 			tree::Node *conflict;
 		};
 
-		class NotFoundException : public std::exception
+		class NotFoundException final : public std::exception
 		{
 		public:
 			NotFoundException(tree::Identifier *_identifier) : identifier(_identifier) {}

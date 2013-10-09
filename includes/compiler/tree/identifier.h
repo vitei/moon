@@ -12,7 +12,7 @@ namespace tree
 
 	/* ---- ONLY CONCRETE CLASSES BELOW HERE ---- */
 
-	class Identifier : public Node
+	class Identifier final : public Node
 	{
 	public:
 		Identifier(std::string name) : mName(name) {}

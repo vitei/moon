@@ -80,7 +80,7 @@ namespace tree
 	class SizedType : public Type
 	{
 	public:
-		class InvalidException : public tree::Type::InvalidException
+		class InvalidException final : public tree::Type::InvalidException
 		{
 		public:
 			InvalidException(SizedType *_type) : tree::Type::InvalidException(_type) {}
@@ -124,7 +124,7 @@ namespace tree
 
 	/* ---- ONLY CONCRETE CLASSES BELOW HERE ---- */
 
-	class Void : public Type
+	class Void final : public Type
 	{
 	public:
 		Void() {}
@@ -142,7 +142,7 @@ namespace tree
 		virtual bool equals(const Type &type) const;
 	};
 
-	class Bool : public Type
+	class Bool final : public Type
 	{
 	public:
 		Bool() {}
@@ -163,7 +163,7 @@ namespace tree
 		virtual bool equals(const Type &type) const;
 	};
 
-	class Int : public SizedType
+	class Int final : public SizedType
 	{
 	public:
 		static const unsigned int DEFAULT_SIZE = 32;
@@ -192,7 +192,7 @@ namespace tree
 		virtual bool equals(const Type &type) const;
 	};
 
-	class Float : public SizedType
+	class Float final : public SizedType
 	{
 	public:
 		static const unsigned int DEFAULT_SIZE = 32;
@@ -221,7 +221,7 @@ namespace tree
 		virtual bool equals(const Type &type) const;
 	};
 
-	class String : public SizedType
+	class String final : public SizedType
 	{
 	public:
 		static const unsigned int DEFAULT_SIZE = 32;
@@ -249,7 +249,7 @@ namespace tree
 		virtual bool equals(const Type &type) const;
 	};
 
-	class Array : public SizedType
+	class Array final : public SizedType
 	{
 	public:
 		/*class InvalidSizeException : public tree::Type::InvalidException

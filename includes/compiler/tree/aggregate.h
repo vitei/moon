@@ -13,7 +13,7 @@ namespace tree
 
 	/* ---- ONLY CONCRETE CLASSES BELOW HERE ---- */
 
-	class Aggregate : public Scope
+	class Aggregate final : public Scope
 	{
 	public:
 		Aggregate(Statements *uses) : Scope(uses) {}

@@ -6,7 +6,7 @@
 
 namespace operation
 {
-	class ScopeParents : public Restructure
+	class ScopeParents final : public Restructure
 	{
 	public:
 		static void run(tree::Program *program);

@@ -12,7 +12,7 @@ namespace tree
 
 	/* ---- ONLY CONCRETE CLASSES BELOW HERE ---- */
 
-	class For : public Scope
+	class For final : public Scope
 	{
 	public:
 		For(Statements *statements, Variable *variable, Expression *iterable) : Scope(statements), mVariable(variable), mIterable(iterable) {}

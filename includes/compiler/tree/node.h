@@ -18,10 +18,10 @@ namespace tree
 	class Node
 	{
 	public:
-		class Location
+		class Location final
 		{
 		public:
-			class Position
+			class Position final
 			{
 			public:
 				//Position() : line(1), character(1) {}

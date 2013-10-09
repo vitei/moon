@@ -26,7 +26,7 @@ namespace tree
 			InvalidException(Expression *_expression) : expression(_expression) { /* Abstract class */ }
 		};
 
-		class InvalidTypeException : public InvalidException
+		class InvalidTypeException final : public InvalidException
 		{
 		public:
 			InvalidTypeException(Expression *_expression) : InvalidException(_expression) {}
@@ -100,12 +100,13 @@ namespace tree
 		class InvalidException : public tree::Expression::InvalidException
 		{
 		public:
-			InvalidException(Expression *_expression, Access *_access) : tree::Expression::InvalidException(_expression), access(_access) {}
-
 			Access *access;
+
+		protected:
+			InvalidException(Expression *_expression, Access *_access) : tree::Expression::InvalidException(_expression), access(_access) { /* Abstract class */ }
 		};
 
-		class InvalidContainerException : public tree::Access::InvalidException
+		class InvalidContainerException final : public tree::Access::InvalidException
 		{
 		public:
 			InvalidContainerException(Access *_access) : tree::Access::InvalidException(_access->getContainer(), _access) {}
@@ -117,7 +118,7 @@ namespace tree
 			}
 		};
 
-		class InvalidTargetException : public tree::Access::InvalidException
+		class InvalidTargetException final : public tree::Access::InvalidException
 		{
 		public:
 			InvalidTargetException(Access *_access) : tree::Access::InvalidException(_access->getTarget(), _access) {}
@@ -169,7 +170,7 @@ namespace tree
 	class Literal : public Expression
 	{
 	public:
-		class InvalidException : public tree::Expression::InvalidException
+		class InvalidException final : public tree::Expression::InvalidException
 		{
 		public:
 			InvalidException(Literal *_literal) : tree::Expression::InvalidException(_literal) {}
@@ -234,7 +235,7 @@ namespace tree
 	class Operation : public Expression
 	{
 	public:
-		class NotAllowedException : public tree::Expression::InvalidException
+		class NotAllowedException final : public tree::Expression::InvalidException
 		{
 		public:
 			NotAllowedException(Operation *_operation) : tree::Expression::InvalidException(_operation) {}
@@ -254,7 +255,7 @@ namespace tree
 	class UnaryOperation : public Operation
 	{
 	public:
-		class InvalidException : public tree::Expression::InvalidException
+		class InvalidException final : public tree::Expression::InvalidException
 		{
 		public:
 			InvalidException(UnaryOperation *_unaryOperation) : tree::Expression::InvalidException(_unaryOperation->getExpression()), unaryOperation(_unaryOperation) {}
@@ -308,12 +309,13 @@ namespace tree
 		class InvalidException : public tree::Expression::InvalidException
 		{
 		public:
-			InvalidException(Expression *_expression, BinaryOperation *_binaryOperation) : tree::Expression::InvalidException(_expression), binaryOperation(_binaryOperation) {}
-
 			BinaryOperation *binaryOperation;
+
+		protected:
+			InvalidException(Expression *_expression, BinaryOperation *_binaryOperation) : tree::Expression::InvalidException(_expression), binaryOperation(_binaryOperation) { /* Abstract class */ }
 		};
 
-		class InvalidLHSException : public tree::BinaryOperation::InvalidException
+		class InvalidLHSException final : public tree::BinaryOperation::InvalidException
 		{
 		public:
 			InvalidLHSException(BinaryOperation *_binaryOperation) : tree::BinaryOperation::InvalidException(_binaryOperation->getLHS(), _binaryOperation) {}
@@ -325,7 +327,7 @@ namespace tree
 			}
 		};
 
-		class InvalidRHSException : public tree::BinaryOperation::InvalidException
+		class InvalidRHSException final : public tree::BinaryOperation::InvalidException
 		{
 		public:
 			InvalidRHSException(BinaryOperation *_binaryOperation) : tree::BinaryOperation::InvalidException(_binaryOperation->getRHS(), _binaryOperation) {}
@@ -385,7 +387,7 @@ namespace tree
 
 	/* ---- ONLY CONCRETE CLASSES BELOW HERE ---- */
 
-	class Constant : public TypedIdentity
+	class Constant final : public TypedIdentity
 	{
 	public:
 		Constant(Type *type, std::string name) : TypedIdentity(type, name), mValue(nullptr) {}
@@ -408,7 +410,7 @@ namespace tree
 		Literal *mValue;
 	};
 
-	class Variable : public TypedIdentity
+	class Variable final : public TypedIdentity
 	{
 	public:
 		Variable(Type *type, std::string name) : TypedIdentity(type, name) {}
@@ -418,10 +420,10 @@ namespace tree
 #endif
 	};
 
-	class Cast : public Expression
+	class Cast final : public Expression
 	{
 	public:
-		class InvalidException : public tree::Expression::InvalidException
+		class InvalidException final : public tree::Expression::InvalidException
 		{
 		public:
 			InvalidException(Expression *_expression) : tree::Expression::InvalidException(_expression) {}
@@ -475,7 +477,7 @@ namespace tree
 		bool mAutoCast;
 	};
 
-	class ComputedArray : public Expression
+	class ComputedArray final : public Expression
 	{
 	public:
 		ComputedArray(tree::Expression *from, tree::Expression *to, tree::Expression *step = nullptr) : mFrom(from), mTo(to), mStep(step) {}
@@ -540,7 +542,7 @@ namespace tree
 		tree::Expression *mStep;
 	};
 
-	class This : public Expression
+	class This final : public Expression
 	{
 	public:
 		This() {}
@@ -550,7 +552,7 @@ namespace tree
 #endif
 	};
 
-	class DirectAccess : public Access
+	class DirectAccess final : public Access
 	{
 	public:
 		DirectAccess(Expression *container, Expression *target) : Access(container, target) {}
@@ -560,7 +562,7 @@ namespace tree
 #endif
 	};
 
-	class MessageAccess : public Access
+	class MessageAccess final : public Access
 	{
 	public:
 		MessageAccess(Expression *container, Expression *target) : Access(container, target) {}
@@ -570,7 +572,7 @@ namespace tree
 #endif
 	};
 
-	class ArrayAccess : public Access
+	class ArrayAccess final : public Access
 	{
 	public:
 		ArrayAccess(Expression *array, Expression *index) : Access(array, index) {}
@@ -580,18 +582,19 @@ namespace tree
 #endif
 	};
 
-	class FunctionPrototype : public TypedIdentity
+	class FunctionPrototype final : public TypedIdentity
 	{
 	public:
 		class InvalidException : public std::exception
 		{
 		public:
-			InvalidException(FunctionPrototype *_functionPrototype) : functionPrototype(_functionPrototype) {}
-
 			FunctionPrototype *functionPrototype;
+
+		protected:
+			InvalidException(FunctionPrototype *_functionPrototype) : functionPrototype(_functionPrototype) { /* Abstract class */ }
 		};
 
-		class InvalidTargetException : public tree::FunctionPrototype::InvalidException
+		class InvalidTargetException final : public tree::FunctionPrototype::InvalidException
 		{
 		public:
 			InvalidTargetException(FunctionPrototype *_functionPrototype) : tree::FunctionPrototype::InvalidException(_functionPrototype) {}
@@ -627,18 +630,20 @@ namespace tree
 		Node *mTarget;
 	};
 
-	class FunctionCall : public Expression
+	class FunctionCall final : public Expression
 	{
 	public:
 		class InvalidException : public tree::Expression::InvalidException
 		{
 		public:
-			InvalidException(Expression *_expression, FunctionCall *_functionCall) : tree::Expression::InvalidException(_expression), functionCall(_functionCall) {}
 
 			FunctionCall *functionCall;
+
+		protected:
+			InvalidException(Expression *_expression, FunctionCall *_functionCall) : tree::Expression::InvalidException(_expression), functionCall(_functionCall) { /* Abstract class */ }
 		};
 
-		class InvalidFunctionException : public tree::FunctionCall::InvalidException
+		class InvalidFunctionException final : public tree::FunctionCall::InvalidException
 		{
 		public:
 			InvalidFunctionException(FunctionCall *_functionCall) : tree::FunctionCall::InvalidException(_functionCall->getPrototype(), _functionCall) {}
@@ -650,7 +655,7 @@ namespace tree
 			}
 		};
 
-		class InvalidArgumentsException : public tree::FunctionCall::InvalidException
+		class InvalidArgumentsException final : public tree::FunctionCall::InvalidException
 		{
 		public:
 			InvalidArgumentsException(FunctionCall *_functionCall) : tree::FunctionCall::InvalidException(_functionCall->getPrototype(), _functionCall) {}
@@ -695,7 +700,7 @@ namespace tree
 		Expressions *mArguments;
 	};
 
-	class None : public Literal
+	class None final : public Literal
 	{
 	public:
 		None() : Literal(new Void()) {}
@@ -708,7 +713,7 @@ namespace tree
 		virtual bool equals(const Literal &literal) const;
 	};
 
-	class BoolLiteral : public Literal
+	class BoolLiteral final : public Literal
 	{
 	public:
 		BoolLiteral(bool value) : Literal(new Bool()), mValue(value) {}
@@ -730,7 +735,7 @@ namespace tree
 		bool mValue;
 	};
 
-	class IntLiteral : public NumericLiteral
+	class IntLiteral final : public NumericLiteral
 	{
 	public:
 		IntLiteral(int value) : NumericLiteral(new Int()), mValue(value) {}
@@ -753,7 +758,7 @@ namespace tree
 		int mValue;
 	};
 
-	class FloatLiteral : public NumericLiteral
+	class FloatLiteral final : public NumericLiteral
 	{
 	public:
 		FloatLiteral(float value) : NumericLiteral(new Float()), mValue(value) {}
@@ -776,7 +781,7 @@ namespace tree
 		float mValue;
 	};
 
-	class StringLiteral : public Literal
+	class StringLiteral final : public Literal
 	{
 	public:
 		StringLiteral(std::string value) : Literal(new String(new IntLiteral(value.length()))), mValue(value) {}
@@ -798,7 +803,7 @@ namespace tree
 		std::string mValue;
 	};
 
-	class Assign : public BinaryOperation
+	class Assign final : public BinaryOperation
 	{
 	public:
 		Assign(Expression *lhs, Expression *rhs) : BinaryOperation(lhs, rhs) {}
@@ -829,7 +834,7 @@ namespace tree
 #endif
 	};
 
-	class LogicalOr : public BooleanBinaryOperation
+	class LogicalOr final : public BooleanBinaryOperation
 	{
 	public:
 		LogicalOr(Expression *lhs, Expression *rhs) : BooleanBinaryOperation(lhs, rhs) {}
@@ -841,7 +846,7 @@ namespace tree
 #endif
 	};
 
-	class LogicalAnd : public BooleanBinaryOperation
+	class LogicalAnd final : public BooleanBinaryOperation
 	{
 	public:
 		LogicalAnd(Expression *lhs, Expression *rhs) : BooleanBinaryOperation(lhs, rhs) {}
@@ -853,7 +858,7 @@ namespace tree
 #endif
 	};
 
-	class Or : public BinaryOperation
+	class Or final : public BinaryOperation
 	{
 	public:
 		Or(Expression *lhs, Expression *rhs) : BinaryOperation(lhs, rhs) {}
@@ -865,7 +870,7 @@ namespace tree
 #endif
 	};
 
-	class Xor : public BinaryOperation
+	class Xor final : public BinaryOperation
 	{
 	public:
 		Xor(Expression *lhs, Expression *rhs) : BinaryOperation(lhs, rhs) {}
@@ -877,7 +882,7 @@ namespace tree
 #endif
 	};
 
-	class And : public BinaryOperation
+	class And final : public BinaryOperation
 	{
 	public:
 		And(Expression *lhs, Expression *rhs) : BinaryOperation(lhs, rhs) {}
@@ -889,7 +894,7 @@ namespace tree
 #endif
 	};
 
-	class Equal : public BooleanBinaryOperation
+	class Equal final : public BooleanBinaryOperation
 	{
 	public:
 		Equal(Expression *lhs, Expression *rhs) : BooleanBinaryOperation(lhs, rhs) {}
@@ -901,7 +906,7 @@ namespace tree
 #endif
 	};
 
-	class Unequal : public BooleanBinaryOperation
+	class Unequal final : public BooleanBinaryOperation
 	{
 	public:
 		Unequal(Expression *lhs, Expression *rhs) : BooleanBinaryOperation(lhs, rhs) {}
@@ -913,7 +918,7 @@ namespace tree
 #endif
 	};
 
-	class LessThan : public BooleanBinaryOperation
+	class LessThan final : public BooleanBinaryOperation
 	{
 	public:
 		LessThan(Expression *lhs, Expression *rhs) : BooleanBinaryOperation(lhs, rhs) {}
@@ -925,7 +930,7 @@ namespace tree
 #endif
 	};
 
-	class LessEqual : public BooleanBinaryOperation
+	class LessEqual final : public BooleanBinaryOperation
 	{
 	public:
 		LessEqual(Expression *lhs, Expression *rhs) : BooleanBinaryOperation(lhs, rhs) {}
@@ -937,7 +942,7 @@ namespace tree
 #endif
 	};
 
-	class GreaterThan : public BooleanBinaryOperation
+	class GreaterThan final : public BooleanBinaryOperation
 	{
 	public:
 		GreaterThan(Expression *lhs, Expression *rhs) : BooleanBinaryOperation(lhs, rhs) {}
@@ -949,7 +954,7 @@ namespace tree
 #endif
 	};
 
-	class GreaterEqual : public BooleanBinaryOperation
+	class GreaterEqual final : public BooleanBinaryOperation
 	{
 	public:
 		GreaterEqual(Expression *lhs, Expression *rhs) : BooleanBinaryOperation(lhs, rhs) {}
@@ -961,7 +966,7 @@ namespace tree
 #endif
 	};
 
-	class Add : public BinaryOperation
+	class Add final : public BinaryOperation
 	{
 	public:
 		Add(Expression *lhs, Expression *rhs) : BinaryOperation(lhs, rhs) {}
@@ -973,7 +978,7 @@ namespace tree
 #endif
 	};
 
-	class Subtract : public BinaryOperation
+	class Subtract final : public BinaryOperation
 	{
 	public:
 		Subtract(Expression *lhs, Expression *rhs) : BinaryOperation(lhs, rhs) {}
@@ -985,7 +990,7 @@ namespace tree
 #endif
 	};
 
-	class Multiply : public BinaryOperation
+	class Multiply final : public BinaryOperation
 	{
 	public:
 		Multiply(Expression *lhs, Expression *rhs) : BinaryOperation(lhs, rhs) {}
@@ -997,7 +1002,7 @@ namespace tree
 #endif
 	};
 
-	class Divide : public BinaryOperation
+	class Divide final : public BinaryOperation
 	{
 	public:
 		Divide(Expression *lhs, Expression *rhs) : BinaryOperation(lhs, rhs) {}
@@ -1009,7 +1014,7 @@ namespace tree
 #endif
 	};
 
-	class Modulus : public BinaryOperation
+	class Modulus final : public BinaryOperation
 	{
 	public:
 		Modulus(Expression *lhs, Expression *rhs) : BinaryOperation(lhs, rhs) {}
@@ -1021,7 +1026,7 @@ namespace tree
 #endif
 	};
 
-	class LogicalNot : public BooleanUnaryOperation
+	class LogicalNot final : public BooleanUnaryOperation
 	{
 	public:
 		LogicalNot(Expression *expression) : BooleanUnaryOperation(expression) {}
@@ -1033,7 +1038,7 @@ namespace tree
 #endif
 	};
 
-	class Not : public UnaryOperation
+	class Not final : public UnaryOperation
 	{
 	public:
 		Not(Expression *expression) : UnaryOperation(expression) {}
@@ -1045,7 +1050,7 @@ namespace tree
 #endif
 	};
 
-	class Minus : public UnaryOperation
+	class Minus final : public UnaryOperation
 	{
 	public:
 		Minus(Expression *expression) : UnaryOperation(expression) {}
@@ -1057,7 +1062,7 @@ namespace tree
 #endif
 	};
 
-	class IfExpression : public Expression
+	class IfExpression final : public Expression
 	{
 	public:
 		IfExpression(Expression *test, Expression *trueResult, Expression *falseResult = nullptr) : mTest(test), mTrueResult(trueResult), mFalseResult(falseResult) {}
@@ -1122,7 +1127,7 @@ namespace tree
 		Expression *mFalseResult;
 	};
 
-	class Member : public TypedIdentity
+	class Member final : public TypedIdentity
 	{
 	public:
 		Member(Type *type, std::string name) : TypedIdentity(type, name) {}

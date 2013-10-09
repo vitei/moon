@@ -6,7 +6,7 @@
 
 namespace operation
 {
-	class CheckTypecasting : public Operation
+	class CheckTypecasting final : public Operation
 	{
 	public:
 		static bool run(tree::Program *program);

@@ -23,7 +23,7 @@ namespace tree
 
 	/* ---- ONLY CONCRETE CLASSES BELOW HERE ---- */
 
-	class Execute : public Statement
+	class Execute final : public Statement
 	{
 	public:
 		Execute(Expression *expression) : mExpression(expression) {}
@@ -56,7 +56,7 @@ namespace tree
 		Expression *mExpression;
 	};
 
-	class Return : public Statement
+	class Return final : public Statement
 	{
 	public:
 		Return(Expression *expression) : mReturn(expression) {}
@@ -89,7 +89,7 @@ namespace tree
 		Expression *mReturn;
 	};
 
-//	class SetState : public Statement
+//	class SetState final : public Statement
 //	{
 //	public:
 //		SetState(State *state) : mState(state) {}
@@ -122,7 +122,7 @@ namespace tree
 //		State *mState;
 //	};
 
-	class TypeDefinition : public Statement
+	class TypeDefinition final : public Statement
 	{
 	public:
 		TypeDefinition(std::string name, Type *type) : mName(name), mType(type) {}

@@ -13,7 +13,7 @@ namespace tree
 
 	/* ---- ONLY CONCRETE CLASSES BELOW HERE ---- */
 
-	class Method : public Function
+	class Method final : public Function
 	{
 	public:
 		class InvalidException : public std::exception
@@ -27,7 +27,7 @@ namespace tree
 			InvalidException(Method *_method) : method(_method) { /* Abstract class */ }
 		};
 
-		class InvalidTypeException : public InvalidException
+		class InvalidTypeException final : public InvalidException
 		{
 		public:
 			InvalidTypeException(Method *_method) : InvalidException(_method) {}

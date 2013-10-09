@@ -6,7 +6,7 @@
 
 namespace operation
 {
-	class ResolveTypes : public Operation
+	class ResolveTypes final : public Operation
 	{
 	public:
 		static bool run(tree::Program *program);

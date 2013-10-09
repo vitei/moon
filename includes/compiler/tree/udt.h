@@ -15,7 +15,7 @@ namespace tree
 
 	/* ---- ONLY CONCRETE CLASSES BELOW HERE ---- */
 
-	class UDT : public Type
+	class UDT final : public Type
 	{
 	public:
 		UDT(std::string name, Members *members) : mName(name), mMembers(members) {}

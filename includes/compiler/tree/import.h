@@ -13,7 +13,7 @@ namespace tree
 
 	/* ---- ONLY CONCRETE CLASSES BELOW HERE ---- */
 
-	class Import : public Statement
+	class Import final : public Statement
 	{
 	public:
 		Import(FunctionPrototype *prototype) : mPrototype(prototype) {}

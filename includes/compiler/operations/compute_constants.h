@@ -6,7 +6,7 @@
 
 namespace operation
 {
-	class ComputeConstants : public Restructure
+	class ComputeConstants final : public Restructure
 	{
 	public:
 		static bool run(tree::Program *program);

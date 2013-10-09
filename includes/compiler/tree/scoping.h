@@ -42,7 +42,7 @@ namespace tree
 
 	/* ---- ONLY CONCRETE CLASSES BELOW HERE ---- */
 
-	class GlobalScoping: public Scoping
+	class GlobalScoping final : public Scoping
 	{
 	public:
 		GlobalScoping(Statement *scoped) : Scoping(scoped) {}
@@ -52,7 +52,7 @@ namespace tree
 #endif
 	};
 
-	class SharedScoping : public Scoping
+	class SharedScoping final : public Scoping
 	{
 	public:
 		SharedScoping(Statement *scoped) : Scoping(scoped) {}

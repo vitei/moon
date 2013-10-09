@@ -6,7 +6,7 @@
 
 namespace operation
 {
-	class RemoveDeadNodes : public Restructure
+	class RemoveDeadNodes final : public Restructure
 	{
 	public:
 		static void run(tree::Program *program);

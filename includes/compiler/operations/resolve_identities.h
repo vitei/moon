@@ -9,7 +9,7 @@
 
 namespace operation
 {
-	class ResolveIdentities : public Restructure
+	class ResolveIdentities final : public Restructure
 	{
 	public:
 		static bool run(tree::Program *program);

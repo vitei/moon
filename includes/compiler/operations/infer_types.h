@@ -8,7 +8,7 @@
 
 namespace operation
 {
-	class InferTypes : public Operation
+	class InferTypes final : public Operation
 	{
 	public:
 		static bool run(tree::Program *program);

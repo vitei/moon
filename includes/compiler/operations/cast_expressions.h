@@ -6,7 +6,7 @@
 
 namespace operation
 {
-	class CastExpressions : public Operation
+	class CastExpressions final : public Operation
 	{
 	public:
 		static bool run(tree::Program *program);

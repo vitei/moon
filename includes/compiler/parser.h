@@ -9,7 +9,7 @@
 
 namespace parser
 {
-	class Data
+	class Data final
 	{
 	public:
 		bool isParsedUseFile(const std::string &filename)

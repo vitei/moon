@@ -10,10 +10,10 @@
 
 namespace generator
 {
-	class C : public Generator
+	class C final : public Generator
 	{
 	public:
-		class Printer
+		class Printer final
 		{
 		public:
 			Printer() : mOutput(nullptr), mProgram(nullptr), mDepth(0) {}

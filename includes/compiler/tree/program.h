@@ -13,7 +13,7 @@ namespace tree
 
 	/* ---- ONLY CONCRETE CLASSES BELOW HERE ---- */
 
-	class Program : public NamedScope
+	class Program final : public NamedScope
 	{
 	public:
 		Program(std::string name, Statements *aggregates) : NamedScope(name, aggregates) {}
