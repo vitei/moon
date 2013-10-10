@@ -107,7 +107,8 @@
 %token TOKEN_BRACE_OPEN
 %token TOKEN_BRACE_CLOSE
 %token TOKEN_COMMA
-%token TOKEN_RANGE
+%token TOKEN_INCLUSIVE_RANGE
+%token TOKEN_NON_INCLUSIVE_RANGE
 %token TOKEN_DIRECT_ACCESS
 %token TOKEN_MESSAGE_ACCESS
 
@@ -1788,17 +1789,29 @@ expression_atom         :   name /* Constant */
 
                                 $$ = $2;
                             }
-                        |   expression TOKEN_RANGE expression
+                        |   expression TOKEN_INCLUSIVE_RANGE expression
                             {
                                 LOG("expression_atom         :   expression TOKEN_RANGE expression");
 
                                 $$ = new tree::ComputedArray($1, $3);
                             }
-                        |   expression TOKEN_RANGE expression TOKEN_COMMA expression
+                        |   expression TOKEN_INCLUSIVE_RANGE expression TOKEN_COMMA expression
                             {
-                                LOG("expression_atom         :   expression TOKEN_RANGE expression TOKEN_RANGE expression");
+                                LOG("expression_atom         :   expression TOKEN_RANGE expression TOKEN_COMMA expression");
 
                                 $$ = new tree::ComputedArray($1, $3, $5);
+                            }
+                        |   expression TOKEN_NON_INCLUSIVE_RANGE expression
+                            {
+                                LOG("expression_atom         :   expression TOKEN_NON_INCLUSIVE_RANGE expression");
+
+                                $$ = new tree::ComputedArray($1, new tree::Subtract($3, new tree::IntLiteral(1)));
+                            }
+                        |   expression TOKEN_NON_INCLUSIVE_RANGE expression TOKEN_COMMA expression
+                            {
+                                LOG("expression_atom         :   expression TOKEN_NON_INCLUSIVE_RANGE expression TOKEN_COMMA expression");
+
+                                $$ = new tree::ComputedArray($1, new tree::Subtract($3, new tree::IntLiteral(1)), $5);
                             }
                         ;
 

@@ -99,7 +99,7 @@
 }
 
 <PRIMED>{
-   /* Join lines */
+    /* Join lines */
     [ \t]+"..."[\n\r]       {
                                 // Use ellipsis to break up big lines
                                 yylloc->advanceLine(1);
@@ -145,7 +145,8 @@
     "{"                     return TOKEN_BRACE_OPEN;
     "}"                     return TOKEN_BRACE_CLOSE;
     ","                     return TOKEN_COMMA;
-    ".."                    return TOKEN_RANGE;
+    "..."                   return TOKEN_NON_INCLUSIVE_RANGE;
+    ".."                    return TOKEN_INCLUSIVE_RANGE;
     "."                     return TOKEN_DIRECT_ACCESS;
     "->"                    return TOKEN_MESSAGE_ACCESS;
 
