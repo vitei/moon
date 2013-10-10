@@ -215,6 +215,7 @@
 %type<statement> variable_statement
 %type<expression> variable_assignment
 %type<variable> variable
+%type<statement> executable_statement
 %type<statement> conditional_statement
 %type<statement> loop_statement
 %type<statement> single_statement
@@ -1021,27 +1022,35 @@ statement               :   constant_statement
 
                                 $$ = $1;
                             }
-                        |   conditional_statement
+                        |   executable_statement TOKEN_EOS
                             {
-                                LOG("statement               :   conditional_statement");
-
-                                $$ = $1;
-                            }
-                        |   loop_statement
-                            {
-                                LOG("statement               :   loop_statement");
-
-                                $$ = $1;
-                            }
-                        |   single_statement TOKEN_EOS
-                            {
-                                LOG("statement               :   single_statement TOKEN_EOS");
+                                LOG("statement               :   executable_statement TOKEN_EOS");
 
                                 $$ = $1;
                             }
                         |   block_statement
                             {
                                 LOG("statement               :   block_statement");
+
+                                $$ = $1;
+                            }
+                        ;
+
+executable_statement    :   conditional_statement
+                            {
+                                LOG("executable_statement    :   conditional_statement");
+
+                                $$ = $1;
+                            }
+                        |   loop_statement
+                            {
+                                LOG("executable_statement    :   loop_statement");
+
+                                $$ = $1;
+                            }
+                        |   single_statement
+                            {
+                                LOG("executable_statement    :   single_statement");
 
                                 $$ = $1;
                             }
@@ -1121,27 +1130,25 @@ variable                :   TOKEN_DEF TOKEN_ID
                             }
                         ;
 
-conditional_statement   :   single_statement TOKEN_IF expression TOKEN_EOS
+conditional_statement   :   executable_statement TOKEN_IF expression
                             {
-                                LOG("conditional_statement   :   single_statement TOKEN_IF expression TOKEN_EOS");
+                                LOG("conditional_statement   :   executable_statement TOKEN_IF expression");
 
                                 $$ = new tree::If($3, $1);
                                 $$->setLocation(@2);
                             }
-                        |   single_statement TOKEN_IF expression TOKEN_ELSE single_statement TOKEN_EOS
+                        |   executable_statement TOKEN_IF expression TOKEN_ELSE single_statement
                             {
-                                LOG("conditional_statement   :   single_statement TOKEN_IF expression TOKEN_ELSE single_statement TOKEN_EOS");
+                                LOG("conditional_statement   :   executable_statement TOKEN_IF expression TOKEN_ELSE single_statement");
 
                                 $$ = new tree::If($3, $1, $5);
                                 $$->setLocation(@2);
                             }
                         ;
 
-
-
-loop_statement          :   single_statement TOKEN_FOR argument TOKEN_IN expression TOKEN_EOS
+loop_statement          :   executable_statement TOKEN_FOR argument TOKEN_IN expression
                             {
-                                LOG("loop_statement          :   single_statement TOKEN_FOR argument TOKEN_IN expression TOKEN_EOS");
+                                LOG("loop_statement          :   executable_statement TOKEN_FOR argument TOKEN_IN expression");
 
                                 tree::Statements *forStatement = new tree::Statements();
                                 forStatement->push_back($1);
@@ -1149,9 +1156,9 @@ loop_statement          :   single_statement TOKEN_FOR argument TOKEN_IN express
                                 $$ = new tree::For(forStatement, $3, $5);
                                 $$->setLocation(@2);
                             }
-                        |   single_statement TOKEN_WHILE expression TOKEN_EOS
+                        |   executable_statement TOKEN_WHILE expression
                             {
-                                LOG("loop_statement          :   single_statement TOKEN_WHILE expression TOKEN_EOS");
+                                LOG("loop_statement          :   executable_statement TOKEN_WHILE expression");
 
                                 $$ = new tree::While($3, $1);
                                 $$->setLocation(@2);
