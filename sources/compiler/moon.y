@@ -561,7 +561,7 @@ s_type_definition       :   type_definition
                                 $$ = $1;
                             }
                             /* FIXME, what to do about global scoping?? */
-                        |   TOKEN_SHARED constant_statement
+                        |   TOKEN_SHARED type_definition
                             {
                                 LOG("s_type_definition    :   TOKEN_SHARED type_definition");
 
