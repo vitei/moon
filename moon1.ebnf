@@ -1,0 +1,248 @@
+start                        = ? use identifier ?     , use
+                             | ? include identifier ? , include
+                             ;
+
+use                          = { include statement } , { use statement } , { declaration } , { scoped callable }
+                             ;
+
+include                      = { include statement } , { define }
+                             ;
+
+include statement            = "include" , identifier , eos
+                             ;
+
+use statement                = "use" , name , eos
+                             ;
+
+declaration                  = define
+                             | scoped variable statement
+                             ;
+
+define                       = scoped type definition
+                             | import statement
+                             | scoped constant statement
+                             ;
+
+scoped type definition       = [ "shared" ] , "def" , name , eos , type member , { type member } , "end" , eos
+                             ;
+
+type member                  = identifier , ":" , type , eos
+                             ;
+
+import statement             = "import" , prototype , eos
+                             ;
+
+scoped constant statement    = [ "shared" ] , constant statement
+                             ;
+
+scoped variable statement    = "global"     , variable           , eos
+                             | [ "shared" ] , variable statement
+                             ;
+
+scoped callable              = [ "shared" ] , function
+                             | [ "shared" ] , method
+                             ;
+
+function                     = "def" , prototype , eos , { statement } , "end" , eos
+                             ;
+
+method                       = "def" , type , "." , prototype , eos , { statement } , "end" , eos
+                             ;
+
+prototype                    = identifier , "(" , [ potentially typed identifier , { "," , potentially typed identifier } ] , ")" , [ ":" , type ]
+                             ;
+
+statement                    = constant statement
+                             | variable statement
+                             | executable statement , eos
+                             | block statement
+                             ;
+
+constant statement           = "const" , fixed , [ ":" , type ] , "=" , expression , eos
+                             ;
+
+variable statement           = variable , [ "=" , expression ] , eos
+                             ;
+
+variable                     = "def" , potentially typed identifier
+                             ;
+
+executable statement         = conditional statement
+                             | loop statement
+                             | single statement
+                             ;
+
+conditional statement        = executable statement , "if" , expression , [ "else" , single statement ]
+                             ;
+
+loop statement               = executable statement , "for"   , potentially typed identifier , "in" , expression
+                             | executable statement , "while" , expression
+                             ;
+
+potentially typed identifier = identifier , [ ":" , type ]
+                             ;
+
+single statement             = execute statement
+                             | return statement
+                             | break statement
+                             ;
+
+execute statement            = assignment
+                             | method call expression
+                             | call expression
+                             ;
+
+assignment                   = assignee , ( "=" | "|=" | "^=" | "&=" | "+=" | "-=" | "*=" | "/=" | "%=" ) , expression
+                             ;
+
+assignee                     = [ { assignee } , "." ] , identifier , { "[" , expression , "]" }
+                             ;
+
+expression                   = logical or expression
+                             ;
+
+logical or expression        = [ logical or expression , "||" ] , logical and expression
+                             ;
+
+logical and expression       = [ logical and expression , "&&" ] , or expression
+                             ;
+
+or expression                = [ or expression , "|" ] , xor expression
+                             ;
+
+xor expression               = [ xor expression , "^" ] , and expression
+                             ;
+
+and expression               = [ and expression , "&" ] , equal expression
+                             ;
+
+equal expression             = [ equal expression , ( "==" | "!=" ) ] , relative expression
+                             ;
+
+relative expression          = [ relative expression , ( "<" | "<=" | ">" | ">=" ) ] , add subtract expression
+                             ;
+
+add subtract expression      = [ add subtract expression , ( "+" | "-" ) ] , multiply divide expression
+                             ;
+
+multiply divide expression   = [ multiply divide expression , ( "*" | "/" ) ] , ( cast expression | unary expression )
+                             ;
+
+cast expression              = expression atom , ":" , type
+                             ;
+
+unary expression             = [ "-" , "!" , "~" ] , ( postfix expression | access expression )
+                             ;
+
+access expression            = [ postfix expression ] , "." , postfix expression , { "." , postfix expression }
+                             ;
+
+postfix expression           = array expression
+                             | method call expression
+                             | call expression
+                             | expression atom
+                             ;
+
+array expression             = postfix expression , "[" , expression , "]"
+                             ;
+
+method call expression       = [ postfix expression ] , "." , call expression
+                             ;
+
+call expression              = identifier , "(" , [ expression , { "," , expression } ] , ")"
+                             ;
+
+expression atom              = fixed
+                             | name
+                             | identifier
+                             | "true"
+                             | "false"
+                             | integer
+                             | float
+                             | string
+                             | "(" , ( conditional expression | expression ) , ")"
+                             | expression , ( ".." | "..." ) , expression , [ "," , expression ]
+                             ;
+
+conditional expression       = expression , "if" , expression , [ "else" , expression ]
+                             ;
+
+type                         = name
+                             | "bool"
+                             | "int"    , [ "<" , expression , ">" ]
+                             | "float"  , [ "<" , expression , ">" ]
+                             | "string" , [ "<" , expression , ">" ]
+                             | [ type ] , "[" , [ expression ] , "]"
+                             ;
+
+block statement              = if block
+                             | for block
+                             | while block
+                             ;
+
+if block                     = "if" , expression , eos , statement , { statement } , { "else" , "if" , expression , eos , statement , { statement } } , [ "else" , eos , statement , { statement } ] , "end" , eos
+                             ;
+
+for block                    = "for" , potentially typed identifier , "in" , expression , eos , statement , { statement } , "end" , eos
+                             ;
+
+while block                  = "while" , expression , eos , statement , { statement } , "end" , eos
+                             ;
+
+return statement             = "return" , [ expression ]
+                             ;
+
+break statement              = "break"
+                             ;
+
+fixed                        = capital letter , { "_" | capital letter | digit } (* FIXME, better name for this... *)
+                             ;
+
+name                         = capital letter , { capital letter | lower case letter | digit } (* FIXME, better name for this... *)
+                             ;
+
+identifier                   = ( "_" | lower case letter ) , { "_" | capital letter | lower case letter | digit }
+                             ;
+
+integer                      = digit           , { digit }
+                             | binary digit    , { binary digit }    , ":b"
+                             | octal digit     , { octal digit }     , ":o"
+                             | hex digit       , { hex digit }       , ":h"
+                             | digit or letter , { digit or letter } , ":"  , digit , { digit }
+                             ;
+
+float                        = digit , { digit } , "." , digit , { digit }
+                             ;
+
+string                       = '"' , ? Any character except eos or '"' ? , '"' (* FIXME, support escape characters? *)
+                             ;
+
+eos                          = { "\n" } , ( "\n" | ? EOF ? )
+                             ;
+
+capital letter               = "A" | "B" | "C" | "D" | "E" | "F" | "G" | "H" | "I" | "J" | "K" | "L" | "M" | "N" | "O" | "P" | "Q" | "R" | "S" | "T" | "U" | "V" | "W" | "X" | "Y" | "Z"
+                             ;
+
+lower case letter            = "a" | "b" | "c" | "d" | "e" | "f" | "g" | "h" | "i" | "j" | "k" | "l" | "m" | "n" | "o" | "p" | "q" | "r" | "s" | "t" | "u" | "v" | "w" | "x" | "y" | "z"
+                             ;
+
+binary digit                 = "0" | "1"
+                             ;
+
+octal digit                  = binary digit
+                             | "2" | "3" | "4" | "5" | "6" | "7"
+                             ;
+
+digit                        = octal digit
+                             | "8" | "9"
+                             ;
+
+hex digit                    = digit
+                             | "a" | "b" | "c" | "d" | "e" | "f"
+                             | "A" | "B" | "C" | "D" | "E" | "F"
+                             ;
+
+digit or letter              = digit
+                             | capital letter
+                             | lower case letter
+                             ;
