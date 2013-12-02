@@ -192,14 +192,14 @@
 
                                 return TOKEN_INTEGER;
                             }
-    [0-8]+"o:"              {
+    [0-8]+":o"              {
                                 char *castPos = strchr(yytext, ':');
                                 *castPos = 0;
                                 yylval->integer = strtol(yytext, nullptr, 8);
 
                                 return TOKEN_INTEGER;
                             }
-    [0-9A-Fa-f]+"h:"        {
+    [0-9A-Fa-f]+":h"        {
                                 char *castPos = strchr(yytext, ':');
                                 *castPos = 0;
                                 yylval->integer = strtol(yytext, nullptr, 16);
