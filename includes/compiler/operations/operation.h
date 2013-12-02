@@ -108,6 +108,7 @@ namespace operation
 		 \
 		PROCESS_ACTION(tree::Statement, tree::If, return_type, name) \
 		PROCESS_ACTION(tree::Statement, tree::Import, return_type, name) \
+		PROCESS_ACTION(tree::Statement, tree::Break, return_type, name) \
 		PROCESS_ACTION(tree::Statement, tree::Execute, return_type, name) \
 		PROCESS_ACTION(tree::Statement, tree::Return, return_type, name) \
 		/*PROCESS_ACTION(tree::Statement, tree::SetState, return_type, name)*/ \

@@ -23,6 +23,16 @@ namespace tree
 
 	/* ---- ONLY CONCRETE CLASSES BELOW HERE ---- */
 
+	class Break final : public Statement
+	{
+	public:
+		Break() {}
+
+#ifdef DEBUG
+		virtual void printNode() { LOG("Break"); }
+#endif
+	};
+
 	class Execute final : public Statement
 	{
 	public:

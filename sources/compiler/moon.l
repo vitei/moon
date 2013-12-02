@@ -274,6 +274,7 @@
     "for"                   return TOKEN_FOR;
     "in"                    return TOKEN_IN;
     "while"                 return TOKEN_WHILE;
+    "break"                 return TOKEN_BREAK;
     "return"                return TOKEN_RETURN;
     /*"state"                 return TOKEN_STATE;*/
     /*"reset"                 return TOKEN_RESET;*/

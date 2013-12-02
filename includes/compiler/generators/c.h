@@ -66,6 +66,7 @@ namespace generator
 			void output(tree::UDT *udt);
 			void output(tree::This *th1s);
 
+			void output(tree::Break *breakStatement);
 			void output(tree::Execute *execute);
 			void output(tree::If *ifStatement);
 			void output(tree::For *forStatement);

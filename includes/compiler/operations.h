@@ -2,6 +2,7 @@
 #define COMPILER_OPERATIONS_H
 
 #include "operations/cast_expressions.h"
+#include "operations/check_scoping.h"
 #include "operations/check_typecasting.h"
 #include "operations/compute_constants.h"
 #include "operations/infer_types.h"

@@ -1255,6 +1255,15 @@ void generator::C::Printer::output(tree::This *th1s)
 	*mOutput << "moon$$this";
 }
 
+void generator::C::Printer::output(tree::Break *breakStatement)
+{
+	outputTabs();
+
+	*mOutput << "break";
+
+	outputEOS();
+}
+
 void generator::C::Printer::output(tree::Execute *execute)
 {
 	outputTabs();

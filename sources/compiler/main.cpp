@@ -298,6 +298,7 @@ int main(int argc, char *argv[])
 				// The list of operations to perform...
 				TreeOperation operations[] = {
 					operation::ScopeParents::run,
+					operation::CheckScoping::run,
 
 					resolveProgram,
 

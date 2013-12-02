@@ -163,6 +163,7 @@
 %token TOKEN_FOR
 %token TOKEN_IN
 %token TOKEN_WHILE
+%token TOKEN_BREAK
 %token TOKEN_RETURN
 /*%token TOKEN_STATE*/
 /*%token TOKEN_RESET*/
@@ -254,6 +255,7 @@
 %type<statement> for_statement
 %type<statement> while_statement
 %type<statement> return_statement
+%type<statement> break_statement
 /*%type<statement> state_statement*/
 /*%type<state> state*/
 
@@ -1178,6 +1180,12 @@ single_statement        :   execute_statement
 
                                 $$ = $1;
                             }
+                        |   break_statement
+                            {
+                                LOG("single_statement        :   break_statement");
+
+                                $$ = $1;
+                            }
 
                         /*|   state_statement
                             {
@@ -2062,6 +2070,15 @@ return_statement        :   TOKEN_RETURN
                                 LOG("return_statement        :   TOKEN_RETURN expression");
 
                                 $$ = new tree::Return($2);
+                                $$->setLocation(@1);
+                            }
+                        ;
+
+break_statement         :   TOKEN_BREAK
+                            {
+                                LOG("break_statement         :   TOKEN_BREAK");
+
+                                $$ = new tree::Break();
                                 $$->setLocation(@1);
                             }
                         ;

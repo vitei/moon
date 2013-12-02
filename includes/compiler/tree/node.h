@@ -61,7 +61,6 @@ namespace tree
 				end.line += num;
 			}
 
-
 #ifdef DEBUG
 			void printLocation()
 			{
@@ -155,6 +154,7 @@ namespace tree
 		DISPATCH_ACTIONS(tree::TypeDefinition, node, function) \
 		DISPATCH_ACTIONS(tree::Return, node, function) \
 		DISPATCH_ACTIONS(tree::Execute, node, function) \
+		DISPATCH_ACTIONS(tree::Break, node, function) \
 		DISPATCH_ACTIONS(tree::Import, node, function) \
 		DISPATCH_ACTIONS(tree::If, node, function) \
 		 \
@@ -244,6 +244,7 @@ namespace tree
 		else ASSIGN_ACTIONS(dst, tree::TypeDefinition, node, function) \
 		else ASSIGN_ACTIONS(dst, tree::Return, node, function) \
 		else ASSIGN_ACTIONS(dst, tree::Execute, node, function) \
+		else ASSIGN_ACTIONS(dst, tree::Break, node, function) \
 		else ASSIGN_ACTIONS(dst, tree::Import, node, function) \
 		else ASSIGN_ACTIONS(dst, tree::If, node, function) \
 		 \

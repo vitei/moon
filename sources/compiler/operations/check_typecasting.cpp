@@ -12,7 +12,6 @@ bool operation::CheckTypecasting::run(tree::Program *program)
 	return true;
 }
 
-
 void operation::CheckTypecasting::visit(tree::Cast *cast)
 {
 	LOG("CheckTypecasting::visit::Cast");
