@@ -5,6 +5,9 @@ include $(THIS_MAKEFILE_DIR)/makefile.settings
 .PHONY: compiler runtime tests all clean
 all: compiler runtime tests
 
+debug:
+	@$(MAKE) DEBUG=1
+
 compiler:
 	@$(MAKE) -C sources/compiler
 
