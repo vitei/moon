@@ -375,6 +375,8 @@ void operation::ResolveTypes::visit(tree::This *th1s)
 
 void operation::ResolveTypes::setOperationType(tree::Operation *operation, tree::Type *type)
 {
+	ASSERT(type);
+
 	try
 	{
 		operation->setType(type);

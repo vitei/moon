@@ -22,9 +22,9 @@ namespace tree
 
 		bool canPerform(const Operation &operation) const;
 
-		virtual const char *getTypeName() const
+		virtual const std::string getTypeName() const
 		{
-			return mName.c_str();
+			return mName;
 		}
 
 		Members *getMembers() const

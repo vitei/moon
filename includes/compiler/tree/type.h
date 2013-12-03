@@ -35,7 +35,7 @@ namespace tree
 		virtual void printType() = 0;
 #endif
 
-		virtual const char *getTypeName() const = 0; // FIXME, typeName() ???
+		virtual const std::string getTypeName() const = 0; // FIXME, typeName() ???
 
 		virtual bool canCast(const Type &from, bool autoCast = false) const
 		{
@@ -129,7 +129,7 @@ namespace tree
 	public:
 		Void() {}
 
-		virtual const char *getTypeName() const
+		virtual const std::string getTypeName() const
 		{
 			return "void";
 		}
@@ -150,7 +150,7 @@ namespace tree
 		bool canCast(const Type &from, bool autoCast = false) const;
 		bool canPerform(const Operation &operation) const;
 
-		virtual const char *getTypeName() const
+		virtual const std::string getTypeName() const
 		{
 			return "boolean";
 		}
@@ -173,13 +173,13 @@ namespace tree
 		bool canCast(const Type &from, bool autoCast = false) const;
 		bool canPerform(const Operation &operation) const;
 
-		virtual const char *getTypeName() const
+		virtual const std::string getTypeName() const
 		{
 			std::stringstream typeName;
 
 			typeName << getSizeInt() << " bit integer";
 
-			return typeName.str().c_str(); // FIXME, is this unsafe??
+			return typeName.str();
 		}
 
 #ifdef DEBUG
@@ -202,13 +202,13 @@ namespace tree
 		bool canCast(const Type &from, bool autoCast = false) const;
 		bool canPerform(const Operation &operation) const;
 
-		virtual const char *getTypeName() const
+		virtual const std::string getTypeName() const
 		{
 			std::stringstream typeName;
 
 			typeName << getSizeInt() << " bit floating point";
 
-			return typeName.str().c_str(); // FIXME, is this unsafe??
+			return typeName.str();
 		}
 
 #ifdef DEBUG
@@ -230,13 +230,13 @@ namespace tree
 
 		bool canCast(const Type &from, bool autoCast = false) const;
 
-		virtual const char *getTypeName() const
+		virtual const std::string getTypeName() const
 		{
 			std::stringstream typeName;
 
 			typeName << getSizeInt() << " byte string";
 
-			return typeName.str().c_str(); // FIXME, is this unsafe??
+			return typeName.str();
 		}
 
 #ifdef DEBUG
@@ -273,7 +273,7 @@ namespace tree
 			mType = type;
 		}
 
-		virtual const char *getTypeName() const
+		virtual const std::string getTypeName() const
 		{
 			std::stringstream typeName;
 
@@ -289,7 +289,7 @@ namespace tree
 				typeName << "[" << i->getSizeInt() << "]";
 			}
 
-			return typeName.str().c_str(); // FIXME, is this unsafe??
+			return typeName.str();
 		}
 
 #ifdef DEBUG

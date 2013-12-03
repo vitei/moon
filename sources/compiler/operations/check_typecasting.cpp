@@ -38,7 +38,7 @@ void operation::CheckTypecasting::visit(tree::Cast *cast)
 		}
 		else
 		{
-			std::string error = (cast->getAutoCast() ? "Cannot automatically cast " : "Cannot cast ") + std::string(expression->getType()->getTypeName()) + " to " + std::string(cast->getType()->getTypeName());
+			std::string error = (cast->getAutoCast() ? "Cannot automatically cast " : "Cannot cast ") + expression->getType()->getTypeName() + " to " + cast->getType()->getTypeName();
 
 			error::enqueue(cast->getLocation(), error);
 		}
