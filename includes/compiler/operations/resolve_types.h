@@ -13,18 +13,14 @@ namespace operation
 
 		virtual void visit(tree::Access *access);
 		virtual void visit(tree::ArrayAccess *arrayAccess);
-		virtual void visit(tree::BinaryOperation *binaryOperation);
-		virtual void visit(tree::Assign *assign);
+		virtual void visit(tree::Operation *operation);
 		virtual void visit(tree::BooleanBinaryOperation *booleanBinaryOperation);
-		virtual void visit(tree::UnaryOperation *unaryOperation);
 		virtual void visit(tree::BooleanUnaryOperation *booleanUnaryOperation);
 		virtual void visit(tree::ComputedArray *computedArray);
 		virtual void visit(tree::FunctionCall *functionCall);
 		virtual void visit(tree::IfExpression *ifExpression);
 		virtual void visit(tree::Scope *scope);
 		virtual void visit(tree::This *th1s);
-
-		void setOperationType(tree::Operation *operation, tree::Type *type);
 
 	private:
 		ResolveTypes() : mValidated(false), mCurrentScope(nullptr) {}

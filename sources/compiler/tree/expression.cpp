@@ -4,6 +4,8 @@
 #include "compiler/tree/function.h"
 #include "compiler/tree/identifier.h"
 #include "compiler/tree/import.h"
+#include "compiler/tree/type.h"
+#include "compiler/tree/udt.h"
 
 void tree::Expression::setType(tree::Type *type)
 {
@@ -73,18 +75,6 @@ void tree::FunctionPrototype::setTarget(Node *target)
 	}
 }
 
-void tree::Operation::setType(Type *type)
-{
-	if(type == nullptr || type->canPerform(*this))
-	{
-		tree::Expression::setType(type);
-	}
-	else
-	{
-		throw tree::Operation::NotAllowedException(this);
-	}
-}
-
 void tree::UnaryOperation::setExpression(Expression *expression)
 {
 	if(expression == nullptr)
@@ -99,6 +89,22 @@ void tree::UnaryOperation::setExpression(Expression *expression)
 	{
 		throw tree::UnaryOperation::InvalidException(this);
 	}
+}
+
+bool tree::UnaryOperation::canCalculateType() const
+{
+	ASSERT(mExpression);
+
+	tree::Expression *expression = tree::node_cast<tree::Expression *>(mExpression);
+
+	if(expression)
+	{
+		tree::Type *expressionType = expression->getType();
+
+		return expressionType && expressionType->isResolved();
+	}
+
+	return false;
 }
 
 void tree::BinaryOperation::setLHS(Expression *lhs)
@@ -131,6 +137,26 @@ void tree::BinaryOperation::setRHS(Expression *rhs)
 	{
 		throw tree::BinaryOperation::InvalidRHSException(this);
 	}
+}
+
+bool tree::BinaryOperation::canCalculateType() const
+{
+	ASSERT(mLHS);
+	ASSERT(mRHS);
+
+	tree::Expression *lhs = tree::node_cast<tree::Expression *>(mLHS);
+	tree::Expression *rhs = tree::node_cast<tree::Expression *>(mRHS);
+
+	if(lhs && rhs)
+	{
+		tree::Type *lhsType = lhs->getType();
+		tree::Type *rhsType = rhs->getType();
+
+		return    lhsType && rhsType
+		       && lhsType->isResolved() && rhsType->isResolved();
+	}
+
+	return false;
 }
 
 void tree::Cast::checkCast()
@@ -364,6 +390,49 @@ tree::Literal *tree::LogicalOr::calculate() const
 	}
 }
 
+bool tree::Assign::canCalculateType() const
+{
+	ASSERT(mLHS);
+
+	tree::Expression *lhs = tree::node_cast<tree::Expression *>(mLHS);
+
+	if(lhs)
+	{
+		tree::Type *lhsType = lhs->getType();
+
+		return lhsType && lhsType->isResolved();
+	}
+
+	return false;
+}
+
+tree::Type *tree::Assign::calculateType()
+{
+//	tree::Type *targetType = mLHS->getType();
+
+//	if(   dynamic_cast<const tree::Bool *>(targetType)
+//	   || dynamic_cast<const tree::Int *>(targetType)
+//	   || dynamic_cast<const tree::Float *>(targetType)
+//	   || dynamic_cast<const tree::UDT *>(targetType))
+//	{
+//		return targetType;
+//	}
+
+	throw tree::Operation::NotAllowedException(this);
+}
+
+tree::Type *tree::LogicalOr::calculateType()
+{
+//	tree::Type *targetType = mLHS->getType();
+
+//	if(dynamic_cast<const tree::Bool *>(targetType))
+//	{
+//		return targetType;
+//	}
+
+	throw tree::Operation::NotAllowedException(this);
+}
+
 tree::Literal *tree::LogicalAnd::calculate() const
 {
 	ASSERT(dynamic_cast<tree::Literal *>(getLHS()));
@@ -382,6 +451,18 @@ tree::Literal *tree::LogicalAnd::calculate() const
 	{
 		ERROR("Invalid type");
 	}
+}
+
+tree::Type *tree::LogicalAnd::calculateType()
+{
+//	tree::Type *targetType = mLHS->getType();
+
+//	if(dynamic_cast<const tree::Bool *>(targetType))
+//	{
+//		return targetType;
+//	}
+
+	throw tree::Operation::NotAllowedException(this);
 }
 
 tree::Literal *tree::Or::calculate() const
@@ -404,6 +485,18 @@ tree::Literal *tree::Or::calculate() const
 	}
 }
 
+tree::Type *tree::Or::calculateType()
+{
+//	tree::Type *targetType = mLHS->getType();
+
+//	if(dynamic_cast<const tree::Int *>(targetType))
+//	{
+//		return targetType;
+//	}
+
+	throw tree::Operation::NotAllowedException(this);
+}
+
 tree::Literal *tree::Xor::calculate() const
 {
 	ASSERT(dynamic_cast<tree::Literal *>(getLHS()));
@@ -422,6 +515,18 @@ tree::Literal *tree::Xor::calculate() const
 	{
 		ERROR("Invalid type");
 	}
+}
+
+tree::Type *tree::Xor::calculateType()
+{
+//	tree::Type *targetType = mLHS->getType();
+
+//	if(dynamic_cast<const tree::Int *>(targetType))
+//	{
+//		return targetType;
+//	}
+
+	throw tree::Operation::NotAllowedException(this);
 }
 
 tree::Literal *tree::Equal::calculate() const
@@ -465,6 +570,18 @@ tree::Literal *tree::Equal::calculate() const
 	}
 }
 
+tree::Type *tree::Equal::calculateType()
+{
+//	tree::Type *targetType = mLHS->getType();
+
+//	if(dynamic_cast<const tree::Bool *>(targetType))
+//	{
+//		return targetType;
+//	}
+
+	throw tree::Operation::NotAllowedException(this);
+}
+
 tree::Literal *tree::Unequal::calculate() const
 {
 	ASSERT(dynamic_cast<tree::Literal *>(getLHS()));
@@ -504,6 +621,18 @@ tree::Literal *tree::Unequal::calculate() const
 	{
 		ERROR("Invalid type");
 	}
+}
+
+tree::Type *tree::Unequal::calculateType()
+{
+//	tree::Type *targetType = mLHS->getType();
+
+//	if(dynamic_cast<const tree::Bool *>(targetType))
+//	{
+//		return targetType;
+//	}
+
+	throw tree::Operation::NotAllowedException(this);
 }
 
 tree::Literal *tree::LessThan::calculate() const
@@ -547,6 +676,18 @@ tree::Literal *tree::LessThan::calculate() const
 	}
 }
 
+tree::Type *tree::LessThan::calculateType()
+{
+//	tree::Type *targetType = mLHS->getType();
+
+//	if(dynamic_cast<const tree::Bool *>(targetType))
+//	{
+//		return targetType;
+//	}
+
+	throw tree::Operation::NotAllowedException(this);
+}
+
 tree::Literal *tree::LessEqual::calculate() const
 {
 	ASSERT(dynamic_cast<tree::Literal *>(getLHS()));
@@ -586,6 +727,18 @@ tree::Literal *tree::LessEqual::calculate() const
 	{
 		ERROR("Invalid type");
 	}
+}
+
+tree::Type *tree::LessEqual::calculateType()
+{
+//	tree::Type *targetType = mLHS->getType();
+
+//	if(dynamic_cast<const tree::Bool *>(targetType))
+//	{
+//		return targetType;
+//	}
+
+	throw tree::Operation::NotAllowedException(this);
 }
 
 tree::Literal *tree::GreaterThan::calculate() const
@@ -629,6 +782,18 @@ tree::Literal *tree::GreaterThan::calculate() const
 	}
 }
 
+tree::Type *tree::GreaterThan::calculateType()
+{
+//	tree::Type *targetType = mLHS->getType();
+
+//	if(dynamic_cast<const tree::Bool *>(targetType))
+//	{
+//		return targetType;
+//	}
+
+	throw tree::Operation::NotAllowedException(this);
+}
+
 tree::Literal *tree::GreaterEqual::calculate() const
 {
 	ASSERT(dynamic_cast<tree::Literal *>(getLHS()));
@@ -670,6 +835,18 @@ tree::Literal *tree::GreaterEqual::calculate() const
 	}
 }
 
+tree::Type *tree::GreaterEqual::calculateType()
+{
+//	tree::Type *targetType = mLHS->getType();
+
+//	if(dynamic_cast<const tree::Bool *>(targetType))
+//	{
+//		return targetType;
+//	}
+
+	throw tree::Operation::NotAllowedException(this);
+}
+
 tree::Literal *tree::And::calculate() const
 {
 	ASSERT(dynamic_cast<tree::Literal *>(getLHS()));
@@ -688,6 +865,18 @@ tree::Literal *tree::And::calculate() const
 	{
 		ERROR("Invalid type");
 	}
+}
+
+tree::Type *tree::And::calculateType()
+{
+//	tree::Type *targetType = mLHS->getType();
+
+//	if(dynamic_cast<const tree::Int *>(targetType))
+//	{
+//		return targetType;
+//	}
+
+	throw tree::Operation::NotAllowedException(this);
 }
 
 tree::Literal *tree::Add::calculate() const
@@ -717,6 +906,19 @@ tree::Literal *tree::Add::calculate() const
 	}
 }
 
+tree::Type *tree::Add::calculateType()
+{
+//	tree::Type *targetType = mLHS->getType();
+
+//	if(   dynamic_cast<const tree::Int *>(targetType)
+//	   || dynamic_cast<const tree::Float *>(targetType))
+//	{
+//		return targetType;
+//	}
+
+	throw tree::Operation::NotAllowedException(this);
+}
+
 tree::Literal *tree::Subtract::calculate() const
 {
 	ASSERT(dynamic_cast<tree::Literal *>(getLHS()));
@@ -742,6 +944,19 @@ tree::Literal *tree::Subtract::calculate() const
 	{
 		ERROR("Invalid type");
 	}
+}
+
+tree::Type *tree::Subtract::calculateType()
+{
+//	tree::Type *targetType = mLHS->getType();
+
+//	if(   dynamic_cast<const tree::Int *>(targetType)
+//	   || dynamic_cast<const tree::Float *>(targetType))
+//	{
+//		return targetType;
+//	}
+
+	throw tree::Operation::NotAllowedException(this);
 }
 
 tree::Literal *tree::Multiply::calculate() const
@@ -771,6 +986,19 @@ tree::Literal *tree::Multiply::calculate() const
 	}
 }
 
+tree::Type *tree::Multiply::calculateType()
+{
+//	tree::Type *targetType = mLHS->getType();
+
+//	if(   dynamic_cast<const tree::Int *>(targetType)
+//	   || dynamic_cast<const tree::Float *>(targetType))
+//	{
+//		return targetType;
+//	}
+
+	throw tree::Operation::NotAllowedException(this);
+}
+
 tree::Literal *tree::Divide::calculate() const
 {
 	ASSERT(dynamic_cast<tree::Literal *>(getLHS()));
@@ -798,6 +1026,19 @@ tree::Literal *tree::Divide::calculate() const
 	}
 }
 
+tree::Type *tree::Divide::calculateType()
+{
+//	tree::Type *targetType = mLHS->getType();
+
+//	if(   dynamic_cast<const tree::Int *>(targetType)
+//	   || dynamic_cast<const tree::Float *>(targetType))
+//	{
+//		return targetType;
+//	}
+
+	throw tree::Operation::NotAllowedException(this);
+}
+
 tree::Literal *tree::Modulus::calculate() const
 {
 	ASSERT(dynamic_cast<tree::Literal *>(getLHS()));
@@ -818,6 +1059,18 @@ tree::Literal *tree::Modulus::calculate() const
 	}
 }
 
+tree::Type *tree::Modulus::calculateType()
+{
+//	tree::Type *targetType = mLHS->getType();
+
+//	if(dynamic_cast<const tree::Int *>(targetType))
+//	{
+//		return targetType;
+//	}
+
+	throw tree::Operation::NotAllowedException(this);
+}
+
 tree::Literal *tree::LogicalNot::calculate() const
 {
 	ASSERT(dynamic_cast<tree::Literal *>(getExpression()));
@@ -834,6 +1087,18 @@ tree::Literal *tree::LogicalNot::calculate() const
 	}
 }
 
+tree::Type *tree::LogicalNot::calculateType()
+{
+//	tree::Type *targetType = mLHS->getType();
+
+//	if(dynamic_cast<const tree::Bool *>(targetType))
+//	{
+//		return targetType;
+//	}
+
+	throw tree::Operation::NotAllowedException(this);
+}
+
 tree::Literal *tree::Not::calculate() const
 {
 	ASSERT(dynamic_cast<tree::Literal *>(getExpression()));
@@ -848,6 +1113,18 @@ tree::Literal *tree::Not::calculate() const
 	{
 		ERROR("Invalid type");
 	}
+}
+
+tree::Type *tree::Not::calculateType()
+{
+//	tree::Type *targetType = mLHS->getType();
+
+//	if(dynamic_cast<const tree::Int *>(targetType))
+//	{
+//		return targetType;
+//	}
+
+	throw tree::Operation::NotAllowedException(this);
 }
 
 tree::Literal *tree::Minus::calculate() const
@@ -869,4 +1146,17 @@ tree::Literal *tree::Minus::calculate() const
 	{
 		ERROR("Invalid type");
 	}
+}
+
+tree::Type *tree::Minus::calculateType()
+{
+//	tree::Type *targetType = mLHS->getType();
+
+//	if(   dynamic_cast<const tree::Int *>(targetType)
+//	   || dynamic_cast<const tree::Float *>(targetType))
+//	{
+//		return targetType;
+//	}
+
+	throw tree::Operation::NotAllowedException(this);
 }

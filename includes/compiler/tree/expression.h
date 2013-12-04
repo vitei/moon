@@ -247,9 +247,10 @@ namespace tree
 			}
 		};
 
-		virtual void setType(Type *type);
-
 		virtual Literal *calculate() const = 0;
+
+		virtual bool canCalculateType() const = 0;
+		virtual Type *calculateType() = 0;
 	};
 
 	class UnaryOperation : public Operation
@@ -286,6 +287,8 @@ namespace tree
 			}
 		}
 
+		virtual bool canCalculateType() const;
+
 	protected:
 		UnaryOperation(Expression *expression) : mExpression(expression) { /* Abstract class */ }
 
@@ -295,6 +298,17 @@ namespace tree
 
 	class BooleanUnaryOperation : public UnaryOperation
 	{
+	public:
+		virtual bool canCalculateType() const
+		{
+			ERROR("This should never be called");
+		}
+		
+		virtual Type *calculateType()
+		{
+			ERROR("This should never be called");
+		}
+		
 	protected:
 		BooleanUnaryOperation(Expression *expression) : UnaryOperation(expression)
 		{
@@ -368,6 +382,8 @@ namespace tree
 			}
 		}
 
+		virtual bool canCalculateType() const;
+
 	protected:
 		BinaryOperation(Expression *lhs, Expression *rhs) : mLHS(lhs), mRHS(rhs) { /* Abstract class */ }
 
@@ -377,6 +393,17 @@ namespace tree
 
 	class BooleanBinaryOperation : public BinaryOperation
 	{
+	public:
+		virtual bool canCalculateType() const
+		{
+			ERROR("This should never be called");
+		}
+
+		virtual Type *calculateType()
+		{
+			ERROR("This should never be called");
+		}
+
 	protected:
 		BooleanBinaryOperation(Expression *lhs, Expression *rhs) : BinaryOperation(lhs, rhs)
 		{
@@ -814,6 +841,9 @@ namespace tree
 			return nullptr;
 		}
 
+		virtual bool canCalculateType() const;
+		virtual Type *calculateType();
+
 		virtual void childAccept(operation::Operation *operation)
 		{
 			Expression::childAccept(operation);
@@ -841,6 +871,8 @@ namespace tree
 
 		virtual Literal *calculate() const;
 
+		virtual Type *calculateType();
+
 #ifdef DEBUG
 		virtual void printNode() { LOG("LogicalOr"); }
 #endif
@@ -852,6 +884,8 @@ namespace tree
 		LogicalAnd(Expression *lhs, Expression *rhs) : BooleanBinaryOperation(lhs, rhs) {}
 
 		virtual Literal *calculate() const;
+
+		virtual Type *calculateType();
 
 #ifdef DEBUG
 		virtual void printNode() { LOG("LogicalAnd"); }
@@ -865,6 +899,8 @@ namespace tree
 
 		virtual Literal *calculate() const;
 
+		virtual Type *calculateType();
+
 #ifdef DEBUG
 		virtual void printNode() { LOG("Or"); }
 #endif
@@ -876,6 +912,8 @@ namespace tree
 		Xor(Expression *lhs, Expression *rhs) : BinaryOperation(lhs, rhs) {}
 
 		virtual Literal *calculate() const;
+
+		virtual Type *calculateType();
 
 #ifdef DEBUG
 		virtual void printNode() { LOG("Xor"); }
@@ -889,6 +927,8 @@ namespace tree
 
 		virtual Literal *calculate() const;
 
+		virtual Type *calculateType();
+
 #ifdef DEBUG
 		virtual void printNode() { LOG("And"); }
 #endif
@@ -900,6 +940,8 @@ namespace tree
 		Equal(Expression *lhs, Expression *rhs) : BooleanBinaryOperation(lhs, rhs) {}
 
 		virtual Literal *calculate() const;
+
+		virtual Type *calculateType();
 
 #ifdef DEBUG
 		virtual void printNode() { LOG("Equal"); }
@@ -913,6 +955,8 @@ namespace tree
 
 		virtual Literal *calculate() const;
 
+		virtual Type *calculateType();
+
 #ifdef DEBUG
 		virtual void printNode() { LOG("Unequal"); }
 #endif
@@ -924,6 +968,8 @@ namespace tree
 		LessThan(Expression *lhs, Expression *rhs) : BooleanBinaryOperation(lhs, rhs) {}
 
 		virtual Literal *calculate() const;
+
+		virtual Type *calculateType();
 
 #ifdef DEBUG
 		virtual void printNode() { LOG("LessThan"); }
@@ -937,6 +983,8 @@ namespace tree
 
 		virtual Literal *calculate() const;
 
+		virtual Type *calculateType();
+
 #ifdef DEBUG
 		virtual void printNode() { LOG("LessEqual"); }
 #endif
@@ -948,6 +996,8 @@ namespace tree
 		GreaterThan(Expression *lhs, Expression *rhs) : BooleanBinaryOperation(lhs, rhs) {}
 
 		virtual Literal *calculate() const;
+
+		virtual Type *calculateType();
 
 #ifdef DEBUG
 		virtual void printNode() { LOG("GreaterThan"); }
@@ -964,6 +1014,8 @@ namespace tree
 #ifdef DEBUG
 		virtual void printNode() { LOG("GreaterEqual"); }
 #endif
+
+		virtual Type *calculateType();
 	};
 
 	class Add final : public BinaryOperation
@@ -972,6 +1024,8 @@ namespace tree
 		Add(Expression *lhs, Expression *rhs) : BinaryOperation(lhs, rhs) {}
 
 		virtual Literal *calculate() const;
+
+		virtual Type *calculateType();
 
 #ifdef DEBUG
 		virtual void printNode() { LOG("Add"); }
@@ -985,6 +1039,8 @@ namespace tree
 
 		virtual Literal *calculate() const;
 
+		virtual Type *calculateType();
+
 #ifdef DEBUG
 		virtual void printNode() { LOG("Subtract"); }
 #endif
@@ -996,6 +1052,8 @@ namespace tree
 		Multiply(Expression *lhs, Expression *rhs) : BinaryOperation(lhs, rhs) {}
 
 		virtual Literal *calculate() const;
+
+		virtual Type *calculateType();
 
 #ifdef DEBUG
 		virtual void printNode() { LOG("Multiply"); }
@@ -1009,6 +1067,8 @@ namespace tree
 
 		virtual Literal *calculate() const;
 
+		virtual Type *calculateType();
+
 #ifdef DEBUG
 		virtual void printNode() { LOG("Divide"); }
 #endif
@@ -1020,6 +1080,8 @@ namespace tree
 		Modulus(Expression *lhs, Expression *rhs) : BinaryOperation(lhs, rhs) {}
 
 		virtual Literal *calculate() const;
+
+		virtual Type *calculateType();
 
 #ifdef DEBUG
 		virtual void printNode() { LOG("Modulus"); }
@@ -1033,6 +1095,8 @@ namespace tree
 
 		virtual Literal *calculate() const;
 
+		virtual Type *calculateType();
+
 #ifdef DEBUG
 		virtual void printNode() { LOG("LogicalNot"); }
 #endif
@@ -1045,6 +1109,8 @@ namespace tree
 
 		virtual Literal *calculate() const;
 
+		virtual Type *calculateType();
+
 #ifdef DEBUG
 		virtual void printNode() { LOG("Not"); }
 #endif
@@ -1056,6 +1122,8 @@ namespace tree
 		Minus(Expression *expression) : UnaryOperation(expression) {}
 
 		virtual Literal *calculate() const;
+
+		virtual Type *calculateType();
 
 #ifdef DEBUG
 		virtual void printNode() { LOG("Minus"); }

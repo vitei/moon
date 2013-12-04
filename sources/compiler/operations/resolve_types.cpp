@@ -86,60 +86,28 @@ void operation::ResolveTypes::visit(tree::ArrayAccess *arrayAccess)
 	}
 }
 
-void operation::ResolveTypes::visit(tree::BinaryOperation *binaryOperation)
+void operation::ResolveTypes::visit(tree::Operation *operation)
 {
-	LOG("ResolveTypes::visit::BinaryOperation");
+	LOG("ResolveTypes::visit::Operation");
 
-	if(!binaryOperation->getType())
+	if(!operation->getType())
 	{
-		ASSERT(binaryOperation->getLHS());
-		ASSERT(binaryOperation->getRHS());
-
-		tree::Expression *lhs = tree::node_cast<tree::Expression *>(binaryOperation->getLHS());
-		tree::Expression *rhs = tree::node_cast<tree::Expression *>(binaryOperation->getRHS());
-
-		if(lhs && rhs)
+		if(operation->canCalculateType())
 		{
-			tree::Type *lhsType = lhs->getType();
-			tree::Type *rhsType = rhs->getType();
-
-			if(lhsType && lhsType->isResolved() && rhsType && rhsType->isResolved())
+			try
 			{
-				setOperationType(binaryOperation, lhsType->canCast(*rhsType) ? lhsType : rhsType);
+				operation->setType(operation->calculateType());
+			}
+			catch(tree::Operation::NotAllowedException &e) // FIXME, all of this...
+			{
+				//std::string error = std::string("Operation is not valid for ") + type->getTypeName() + " type";
+				std::string error = "XXXXXX";
+				error::enqueue(e.expression->getLocation(), error);
+
+				e.reset();
 			}
 
-			if(!binaryOperation->getType())
-			{
-				mValidated = false;
-			}
-		}
-		else
-		{
-			mValidated = false;
-		}
-	}
-}
-
-void operation::ResolveTypes::visit(tree::Assign *assign)
-{
-	LOG("ResolveTypes::visit::Assign");
-
-	if(!assign->getType())
-	{
-		ASSERT(assign->getLHS());
-
-		tree::Expression *lhs = tree::node_cast<tree::Expression *>(assign->getLHS());
-
-		if(lhs)
-		{
-			tree::Type *lhsType = lhs->getType();
-
-			if(lhsType && lhsType->isResolved())
-			{
-				setOperationType(assign, lhsType);
-			}
-
-			if(!assign->getType())
+			if(!operation->getType())
 			{
 				mValidated = false;
 			}
@@ -157,37 +125,6 @@ void operation::ResolveTypes::visit(tree::BooleanBinaryOperation *booleanBinaryO
 
 	ASSERT(booleanBinaryOperation->getType());
 	ASSERT(dynamic_cast<tree::Bool *>(booleanBinaryOperation->getType()));
-}
-
-void operation::ResolveTypes::visit(tree::UnaryOperation *unaryOperation)
-{
-	LOG("ResolveTypes::visit::UnaryOperation");
-
-	if(!unaryOperation->getType())
-	{
-		ASSERT(unaryOperation->getExpression());
-
-		tree::Expression *expression = tree::node_cast<tree::Expression *>(unaryOperation->getExpression());
-
-		if(expression)
-		{
-			tree::Type *type = expression->getType();
-
-			if(type && type->isResolved())
-			{
-				setOperationType(unaryOperation, type);
-			}
-
-			if(!unaryOperation->getType())
-			{
-				mValidated = false;
-			}
-		}
-		else
-		{
-			mValidated = false;
-		}
-	}
 }
 
 void operation::ResolveTypes::visit(tree::BooleanUnaryOperation *booleanUnaryOperation)
@@ -370,22 +307,5 @@ void operation::ResolveTypes::visit(tree::This *th1s)
 		{
 			error::enqueue(th1s->getLocation(), "Scope is not a method");
 		}
-	}
-}
-
-void operation::ResolveTypes::setOperationType(tree::Operation *operation, tree::Type *type)
-{
-	ASSERT(type);
-
-	try
-	{
-		operation->setType(type);
-	}
-	catch(tree::Operation::NotAllowedException &e)
-	{
-		std::string error = std::string("Operation is not valid for ") + type->getTypeName() + " type";
-		error::enqueue(e.expression->getLocation(), error);
-
-		e.reset();
 	}
 }

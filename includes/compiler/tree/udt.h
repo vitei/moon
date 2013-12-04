@@ -20,8 +20,6 @@ namespace tree
 	public:
 		UDT(std::string name, Members *members) : mName(name), mMembers(members) {}
 
-		bool canPerform(const Operation &operation) const;
-
 		virtual const std::string getTypeName() const
 		{
 			return mName;

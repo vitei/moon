@@ -42,11 +42,6 @@ namespace tree
 			return false;
 		}
 
-		virtual bool canPerform(const Operation &operation) const
-		{
-			return false;
-		}
-
 		virtual bool isResolved() const
 		{
 			return true;
@@ -148,7 +143,6 @@ namespace tree
 		Bool() {}
 
 		bool canCast(const Type &from, bool autoCast = false) const;
-		bool canPerform(const Operation &operation) const;
 
 		virtual const std::string getTypeName() const
 		{
@@ -171,7 +165,6 @@ namespace tree
 		Int(Expression *size = nullptr) : SizedType(size) {}
 
 		bool canCast(const Type &from, bool autoCast = false) const;
-		bool canPerform(const Operation &operation) const;
 
 		virtual const std::string getTypeName() const
 		{
@@ -200,7 +193,6 @@ namespace tree
 		Float(Expression *size = nullptr) : SizedType(size) {}
 
 		bool canCast(const Type &from, bool autoCast = false) const;
-		bool canPerform(const Operation &operation) const;
 
 		virtual const std::string getTypeName() const
 		{
