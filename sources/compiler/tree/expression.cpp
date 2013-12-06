@@ -7,6 +7,11 @@
 #include "compiler/tree/type.h"
 #include "compiler/tree/udt.h"
 
+tree::Type *getCastableType(tree::Type *a, tree::Type *b) // FIXME, put this somewhere better?
+{
+	return a->canCast(*b) ? a : (b->canCast(*a) ? b : nullptr);
+}
+
 void tree::Expression::setType(tree::Type *type)
 {
 	tree::Type *t;
@@ -370,6 +375,38 @@ bool tree::StringLiteral::equals(const Literal &literal) const
 	return (stringLiteral = dynamic_cast<const tree::StringLiteral *>(&literal)) && mValue == stringLiteral->mValue;
 }
 
+bool tree::Assign::canCalculateType() const
+{
+	ASSERT(mLHS);
+
+	tree::Expression *lhs = tree::node_cast<tree::Expression *>(mLHS);
+
+	if(lhs)
+	{
+		tree::Type *lhsType = lhs->getType();
+
+		return lhsType && lhsType->isResolved();
+	}
+
+	return false;
+}
+
+tree::Type *tree::Assign::calculateType()
+{
+	tree::Type *targetType = mLHS->getType();
+
+	if(   dynamic_cast<const tree::Bool *>(targetType)
+	   || dynamic_cast<const tree::Int *>(targetType)
+	   || dynamic_cast<const tree::Float *>(targetType)
+	   || dynamic_cast<const tree::String *>(targetType)
+	   || dynamic_cast<const tree::UDT *>(targetType))
+	{
+		return targetType;
+	}
+
+	throw tree::Operation::NotAllowedException(this);
+}
+
 tree::Literal *tree::LogicalOr::calculate() const
 {
 	ASSERT(dynamic_cast<tree::Literal *>(getLHS()));
@@ -390,45 +427,15 @@ tree::Literal *tree::LogicalOr::calculate() const
 	}
 }
 
-bool tree::Assign::canCalculateType() const
-{
-	ASSERT(mLHS);
-
-	tree::Expression *lhs = tree::node_cast<tree::Expression *>(mLHS);
-
-	if(lhs)
-	{
-		tree::Type *lhsType = lhs->getType();
-
-		return lhsType && lhsType->isResolved();
-	}
-
-	return false;
-}
-
-tree::Type *tree::Assign::calculateType()
-{
-//	tree::Type *targetType = mLHS->getType();
-
-//	if(   dynamic_cast<const tree::Bool *>(targetType)
-//	   || dynamic_cast<const tree::Int *>(targetType)
-//	   || dynamic_cast<const tree::Float *>(targetType)
-//	   || dynamic_cast<const tree::UDT *>(targetType))
-//	{
-//		return targetType;
-//	}
-
-	throw tree::Operation::NotAllowedException(this);
-}
-
 tree::Type *tree::LogicalOr::calculateType()
 {
-//	tree::Type *targetType = mLHS->getType();
+	tree::Type *targetType = getCastableType(mLHS->getType(), mRHS->getType());
 
-//	if(dynamic_cast<const tree::Bool *>(targetType))
-//	{
-//		return targetType;
-//	}
+	if(targetType &&
+	   dynamic_cast<const tree::Bool *>(targetType))
+	{
+		return targetType;
+	}
 
 	throw tree::Operation::NotAllowedException(this);
 }
@@ -455,12 +462,13 @@ tree::Literal *tree::LogicalAnd::calculate() const
 
 tree::Type *tree::LogicalAnd::calculateType()
 {
-//	tree::Type *targetType = mLHS->getType();
+	tree::Type *targetType = getCastableType(mLHS->getType(), mRHS->getType());
 
-//	if(dynamic_cast<const tree::Bool *>(targetType))
-//	{
-//		return targetType;
-//	}
+	if(targetType &&
+	   dynamic_cast<const tree::Bool *>(targetType))
+	{
+		return targetType;
+	}
 
 	throw tree::Operation::NotAllowedException(this);
 }
@@ -487,12 +495,13 @@ tree::Literal *tree::Or::calculate() const
 
 tree::Type *tree::Or::calculateType()
 {
-//	tree::Type *targetType = mLHS->getType();
+	tree::Type *targetType = getCastableType(mLHS->getType(), mRHS->getType());
 
-//	if(dynamic_cast<const tree::Int *>(targetType))
-//	{
-//		return targetType;
-//	}
+	if(targetType &&
+	   dynamic_cast<const tree::Int *>(targetType))
+	{
+		return targetType;
+	}
 
 	throw tree::Operation::NotAllowedException(this);
 }
@@ -519,12 +528,13 @@ tree::Literal *tree::Xor::calculate() const
 
 tree::Type *tree::Xor::calculateType()
 {
-//	tree::Type *targetType = mLHS->getType();
+	tree::Type *targetType = getCastableType(mLHS->getType(), mRHS->getType());
 
-//	if(dynamic_cast<const tree::Int *>(targetType))
-//	{
-//		return targetType;
-//	}
+	if(targetType &&
+	   dynamic_cast<const tree::Int *>(targetType))
+	{
+		return targetType;
+	}
 
 	throw tree::Operation::NotAllowedException(this);
 }
@@ -572,12 +582,13 @@ tree::Literal *tree::Equal::calculate() const
 
 tree::Type *tree::Equal::calculateType()
 {
-//	tree::Type *targetType = mLHS->getType();
+	tree::Type *targetType = getCastableType(mLHS->getType(), mRHS->getType()); // FIXME, this is all wrong for equals stuff...
 
-//	if(dynamic_cast<const tree::Bool *>(targetType))
-//	{
-//		return targetType;
-//	}
+	if(targetType &&
+	   dynamic_cast<const tree::Bool *>(targetType))
+	{
+		return targetType;
+	}
 
 	throw tree::Operation::NotAllowedException(this);
 }
@@ -869,12 +880,13 @@ tree::Literal *tree::And::calculate() const
 
 tree::Type *tree::And::calculateType()
 {
-//	tree::Type *targetType = mLHS->getType();
+	tree::Type *targetType = getCastableType(mLHS->getType(), mRHS->getType());
 
-//	if(dynamic_cast<const tree::Int *>(targetType))
-//	{
-//		return targetType;
-//	}
+	if(targetType &&
+	   dynamic_cast<const tree::Int *>(targetType))
+	{
+		return targetType;
+	}
 
 	throw tree::Operation::NotAllowedException(this);
 }
@@ -908,13 +920,14 @@ tree::Literal *tree::Add::calculate() const
 
 tree::Type *tree::Add::calculateType()
 {
-//	tree::Type *targetType = mLHS->getType();
+	tree::Type *targetType = getCastableType(mLHS->getType(), mRHS->getType());
 
-//	if(   dynamic_cast<const tree::Int *>(targetType)
-//	   || dynamic_cast<const tree::Float *>(targetType))
-//	{
-//		return targetType;
-//	}
+	if(targetType &&
+	   (   dynamic_cast<const tree::Int *>(targetType)
+	    || dynamic_cast<const tree::Float *>(targetType)))
+	{
+		return targetType;
+	}
 
 	throw tree::Operation::NotAllowedException(this);
 }
@@ -948,13 +961,14 @@ tree::Literal *tree::Subtract::calculate() const
 
 tree::Type *tree::Subtract::calculateType()
 {
-//	tree::Type *targetType = mLHS->getType();
+	tree::Type *targetType = getCastableType(mLHS->getType(), mRHS->getType());
 
-//	if(   dynamic_cast<const tree::Int *>(targetType)
-//	   || dynamic_cast<const tree::Float *>(targetType))
-//	{
-//		return targetType;
-//	}
+	if(targetType &&
+	   (   dynamic_cast<const tree::Int *>(targetType)
+	    || dynamic_cast<const tree::Float *>(targetType)))
+	{
+		return targetType;
+	}
 
 	throw tree::Operation::NotAllowedException(this);
 }
@@ -988,13 +1002,14 @@ tree::Literal *tree::Multiply::calculate() const
 
 tree::Type *tree::Multiply::calculateType()
 {
-//	tree::Type *targetType = mLHS->getType();
+	tree::Type *targetType = getCastableType(mLHS->getType(), mRHS->getType());
 
-//	if(   dynamic_cast<const tree::Int *>(targetType)
-//	   || dynamic_cast<const tree::Float *>(targetType))
-//	{
-//		return targetType;
-//	}
+	if(targetType &&
+	   (   dynamic_cast<const tree::Int *>(targetType)
+	    || dynamic_cast<const tree::Float *>(targetType)))
+	{
+		return targetType;
+	}
 
 	throw tree::Operation::NotAllowedException(this);
 }
@@ -1028,13 +1043,14 @@ tree::Literal *tree::Divide::calculate() const
 
 tree::Type *tree::Divide::calculateType()
 {
-//	tree::Type *targetType = mLHS->getType();
+	tree::Type *targetType = getCastableType(mLHS->getType(), mRHS->getType());
 
-//	if(   dynamic_cast<const tree::Int *>(targetType)
-//	   || dynamic_cast<const tree::Float *>(targetType))
-//	{
-//		return targetType;
-//	}
+	if(targetType &&
+	   (   dynamic_cast<const tree::Int *>(targetType)
+	    || dynamic_cast<const tree::Float *>(targetType)))
+	{
+		return targetType;
+	}
 
 	throw tree::Operation::NotAllowedException(this);
 }
@@ -1061,12 +1077,13 @@ tree::Literal *tree::Modulus::calculate() const
 
 tree::Type *tree::Modulus::calculateType()
 {
-//	tree::Type *targetType = mLHS->getType();
+	tree::Type *targetType = getCastableType(mLHS->getType(), mRHS->getType());
 
-//	if(dynamic_cast<const tree::Int *>(targetType))
-//	{
-//		return targetType;
-//	}
+	if(targetType &&
+	   dynamic_cast<const tree::Int *>(targetType))
+	{
+		return targetType;
+	}
 
 	throw tree::Operation::NotAllowedException(this);
 }
@@ -1089,12 +1106,13 @@ tree::Literal *tree::LogicalNot::calculate() const
 
 tree::Type *tree::LogicalNot::calculateType()
 {
-//	tree::Type *targetType = mLHS->getType();
+	tree::Type *targetType = mExpression->getType();
 
-//	if(dynamic_cast<const tree::Bool *>(targetType))
-//	{
-//		return targetType;
-//	}
+	if(targetType &&
+	   dynamic_cast<const tree::Bool *>(targetType))
+	{
+		return targetType;
+	}
 
 	throw tree::Operation::NotAllowedException(this);
 }
@@ -1117,12 +1135,13 @@ tree::Literal *tree::Not::calculate() const
 
 tree::Type *tree::Not::calculateType()
 {
-//	tree::Type *targetType = mLHS->getType();
+	tree::Type *targetType = mExpression->getType();
 
-//	if(dynamic_cast<const tree::Int *>(targetType))
-//	{
-//		return targetType;
-//	}
+	if(targetType &&
+	   dynamic_cast<const tree::Int *>(targetType))
+	{
+		return targetType;
+	}
 
 	throw tree::Operation::NotAllowedException(this);
 }
@@ -1150,13 +1169,14 @@ tree::Literal *tree::Minus::calculate() const
 
 tree::Type *tree::Minus::calculateType()
 {
-//	tree::Type *targetType = mLHS->getType();
+	tree::Type *targetType = mExpression->getType();
 
-//	if(   dynamic_cast<const tree::Int *>(targetType)
-//	   || dynamic_cast<const tree::Float *>(targetType))
-//	{
-//		return targetType;
-//	}
+	if(targetType &&
+	   (   dynamic_cast<const tree::Int *>(targetType)
+	    || dynamic_cast<const tree::Float *>(targetType)))
+	{
+		return targetType;
+	}
 
 	throw tree::Operation::NotAllowedException(this);
 }

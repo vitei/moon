@@ -292,7 +292,6 @@ namespace tree
 	protected:
 		UnaryOperation(Expression *expression) : mExpression(expression) { /* Abstract class */ }
 
-	private:
 		Expression *mExpression;
 	};
 
@@ -303,12 +302,12 @@ namespace tree
 		{
 			ERROR("This should never be called");
 		}
-		
+
 		virtual Type *calculateType()
 		{
 			ERROR("This should never be called");
 		}
-		
+
 	protected:
 		BooleanUnaryOperation(Expression *expression) : UnaryOperation(expression)
 		{
