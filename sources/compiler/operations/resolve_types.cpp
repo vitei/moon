@@ -100,9 +100,29 @@ void operation::ResolveTypes::visit(tree::Operation *operation)
 			}
 			catch(tree::Operation::NotAllowedException &e) // FIXME, all of this...
 			{
-				//std::string error = std::string("Operation is not valid for ") + type->getTypeName() + " type";
-				std::string error = "XXXXXX";
-				error::enqueue(e.expression->getLocation(), error);
+				tree::BinaryOperation *binaryOperation;
+				tree::UnaryOperation *unaryOperation;
+
+				if((binaryOperation = dynamic_cast<tree::BinaryOperation *>(operation)))
+				{
+					std::string error = "Operation cannot be performed on types "
+					                  + binaryOperation->getLHS()->getType()->getTypeName()
+					                  + " and "
+					                  + binaryOperation->getRHS()->getType()->getTypeName();
+
+					error::enqueue(e.expression->getLocation(), error);
+				}
+				else if((unaryOperation = dynamic_cast<tree::UnaryOperation *>(operation)))
+				{
+					std::string error = "Operation cannot be performed on type "
+					                  + unaryOperation->getExpression()->getType()->getTypeName();
+
+					error::enqueue(e.expression->getLocation(), error);
+				}
+				else
+				{
+					ERROR("Unknown operation type");
+				}
 
 				e.reset();
 			}
