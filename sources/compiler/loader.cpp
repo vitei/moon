@@ -191,5 +191,9 @@ bool loader::includeFile(const char *filename, char *includedFilename)
 
 bool loader::isAbsolutePath(const char *filename)
 {
+#ifdef _WIN32
+	return filename[1] == ':';
+#else
 	return *filename == '/';
+#endif
 }
