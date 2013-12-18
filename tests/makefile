@@ -19,7 +19,7 @@ $(PASS_TESTS_DIR)/%.c: $(PASS_TESTS_DIR)/%.moon $(MOON)
 	@echo $(<:.moon=.c): $<
 	@$(MOON) $(MOON_FLAGS) -o $@ $<
 
-$(OUTPUT_DIR)/%: $(PASS_TESTS_DIR)/%.c
+$(OUTPUT_DIR)/%$(EXE_EXTENSION): $(PASS_TESTS_DIR)/%.c
 	@echo $(<:.c=$(EXE_EXTENSION)): $<
 	@mkdir -p $(shell dirname $@)
 	@$(CC) $(CC_FLAGS) $(CPP_FLAGS) -o $@ $< $(LINKER_FLAGS)
