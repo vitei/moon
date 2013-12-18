@@ -17,6 +17,8 @@ namespace loader
 
 	bool useFile(const char *filename, char *usedFilename = 0);
 	bool includeFile(const char *filename, char *includedFilename = 0);
+
+	bool isAbsolutePath(const char *filename);
 }
 
 #endif

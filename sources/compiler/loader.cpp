@@ -123,7 +123,7 @@ bool loader::useFile(const char *filename, char *usedFilename)
 {
 	bool r = false;
 
-	if(*filename == '/')
+	if(isAbsolutePath(filename))
 	{
 		r = access(filename, R_OK) == 0;
 
@@ -158,7 +158,7 @@ bool loader::includeFile(const char *filename, char *includedFilename)
 {
 	bool r = false;
 
-	if(*filename == '/')
+	if(isAbsolutePath(filename))
 	{
 		r = access(filename, R_OK) == 0;
 
@@ -187,4 +187,9 @@ bool loader::includeFile(const char *filename, char *includedFilename)
 	}
 
 	return r;
+}
+
+bool loader::isAbsolutePath(const char *filename)
+{
+	return *filename == '/';
 }
