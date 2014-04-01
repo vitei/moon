@@ -1,6 +1,7 @@
 #include "common.h"
 
 #include <algorithm>
+#include <fstream>
 #include <list>
 #include <ostream>
 #include <set>
@@ -590,15 +591,21 @@ void OutputNew::outputScope(tree::Scope *scope)
 	}
 }
 
-void generator::C::run(std::ostream &output, tree::Program *program)
+void generator::C::run(tree::Program *program)
 {
-	mPrinter.init(output, program);
+	std::ofstream outputFile;
+
+	outputFile.open(mOutputFilename.c_str());
+
+	mPrinter.init(outputFile, program);
 	generate(program);
+
+	outputFile.close();
 }
 
 std::string generator::C::getOptions()
 {
-	return "B";
+	return "Bo";
 }
 
 void generator::C::handleOption(char opt, char *optarg, int optopt)
@@ -608,17 +615,24 @@ void generator::C::handleOption(char opt, char *optarg, int optopt)
 		case 'B':
 			mIsBoostrapped = true;
 			break;
+
+		case 'o':
+			mOutputFilename = optarg;
+
+			break;
 	}
 }
 
 std::string generator::C::optionsString()
 {
-	return "[-B]";
+	return "[-B] [-o<output>]";
 }
 
 std::string generator::C::optionsHelpString()
 {
-	return "\t-B Output bootstrap code";
+	return "\t-B Output bootstrap code\n"
+	       "\t-o Output C code path";
+
 }
 
 void generator::C::generate(tree::Program *program)
@@ -855,7 +869,7 @@ void generator::C::Printer::output(tree::Cast *cast)
 	}
 	else if(dynamic_cast<tree::String *>(type))
 	{
-		*mOutput << "(const char *)";
+		*mOutput << "(char *)";
 	}
 	else if(dynamic_cast<tree::UDT *>(type))
 	{
@@ -1556,7 +1570,7 @@ void generator::C::Printer::outputType(tree::Type *type)
 	}
 	else if(dynamic_cast<tree::String *>(type))
 	{
-		*mOutput << "const char";
+		*mOutput << "char";
 	}
 	else if((udt = dynamic_cast<tree::UDT *>(type)))
 	{

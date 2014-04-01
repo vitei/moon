@@ -117,9 +117,9 @@ namespace generator
 			unsigned int mDepth;
 		};
 
-		C() : mIsBoostrapped(false) {}
+		C() : mIsBoostrapped(false), mOutputFilename("a.c") {}
 
-		virtual void run(std::ostream &output, tree::Program *program);
+		virtual void run(tree::Program *program);
 
 		virtual std::string getName()
 		{
@@ -142,6 +142,7 @@ namespace generator
 
 		Printer mPrinter;
 		bool mIsBoostrapped;
+		std::string mOutputFilename;
 	};
 }
 

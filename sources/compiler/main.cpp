@@ -108,7 +108,6 @@ int main(int argc, char *argv[])
 	char opt;
 	bool usage = false;
 	bool generateDefines = false;
-	std::string outputFilename("a.c");
 
 	LOG("DEBUG OUTPUT IS ON!");
 
@@ -173,11 +172,6 @@ int main(int argc, char *argv[])
 
 			break;
 
-		case 'o':
-			outputFilename = optarg;
-
-			break;
-
 		case ':':
 		{
 			std::string error("Option \"");
@@ -215,7 +209,7 @@ int main(int argc, char *argv[])
 	if(usage) // I'm doing this backwards so that the usage text is near the command line option parser
 	{
 		std::cerr << "Usage:" << std::endl
-			<< "\t" << basename(argv[0]) << " [-D<dirs>] [-d] [-G<generator>] [-I<dirs>] [-U<dirs>] [-o<output>] [-h]";
+			<< "\t" << basename(argv[0]) << " [-D<dirs>] [-d] [-G<generator>] [-I<dirs>] [-U<dirs>] [-h]";
 
 		if(sGenerator->optionsString() != "")
 		{
@@ -229,7 +223,6 @@ int main(int argc, char *argv[])
 			<< "\t-G Use the specified generator to generate output file" << std::endl
 			<< "\t-I Scan directories for include files" << std::endl
 			<< "\t-U Scan directories for use files"<< std::endl
-			<< "\t-o Output location"<< std::endl
 			<< "\t-h Show this message" << std::endl << std::endl
 			<< "Generator options:" << std::endl
 			<< sGenerator->optionsHelpString() << std::endl << std::endl;
@@ -321,11 +314,7 @@ int main(int argc, char *argv[])
 					}
 					else
 					{
-						std::ofstream outputFile;
-
-						outputFile.open(outputFilename.c_str());
-						sGenerator->run(outputFile, &program);
-						outputFile.close();
+						sGenerator->run(&program);
 					}
 				}
 			}

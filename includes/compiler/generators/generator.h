@@ -10,7 +10,7 @@ namespace generator
 	class Generator
 	{
 	public:
-		virtual void run(std::ostream &output, tree::Program *program) = 0;
+		virtual void run(tree::Program *program) = 0;
 
 		virtual std::string getName() = 0;
 
