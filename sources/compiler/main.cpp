@@ -208,35 +208,43 @@ int main(int argc, char *argv[])
 
 	if(usage) // I'm doing this backwards so that the usage text is near the command line option parser
 	{
-		std::cerr << "Usage:" << std::endl
-			<< "\t" << basename(argv[0]) << " [-D<dirs>] [-d] [-G<generator>] [-I<dirs>] [-U<dirs>] [-h]";
+		std::cerr << "Usage:\n"
+		             "\t"
+		          << basename(argv[0])
+		          << " [-D<dirs>] [-d] [-G<generator>] [-I<dirs>] [-U<dirs>] [-h]";
 
 		if(sGenerator->optionsString() != "")
 		{
 			std::cerr << " " << sGenerator->optionsString();
 		}
 
-		std::cerr << " <input>" << std::endl << std::endl
-			<< "Options:" << std::endl
-			<< "\t-D Scan directories for define files" << std::endl
-			<< "\t-d Generate define file(s) for each input file" << std::endl
-			<< "\t-G Use the specified generator to generate output file" << std::endl
-			<< "\t-I Scan directories for include files" << std::endl
-			<< "\t-U Scan directories for use files"<< std::endl
-			<< "\t-h Show this message" << std::endl << std::endl
-			<< "Generator options:" << std::endl
-			<< sGenerator->optionsHelpString() << std::endl << std::endl;
+		std::cerr << " <input>\n\n"
 
-		std::cerr << "Avaliable Generators:" << std::endl
-			<< "\t" << sGenerators[0]->getName() << " (default)" << std::endl;
+		             "Options:\n"
+		             "\t-D Scan directories for define files\n"
+		             "\t-d Generate define file(s) for each input file\n"
+		             "\t-G Use the specified generator to generate output file\n"
+		             "\t-I Scan directories for include files\n"
+		             "\t-U Scan directories for use files\n"
+		             "\t-h Show this message\n\n"
+
+		             "Generator options:\n"
+		          << sGenerator->optionsHelpString()
+		          << "\n\n";
+
+		std::cerr << "Avaliable Generators:\n"
+		             "\t"
+		          << sGenerators[0]->getName()
+		          << " (default)\n";
 
 		for(unsigned int i = 1; i < GENERATOR_MAX; i++)
 		{
-			std::cerr << "\t" << sGenerators[i]->getName() << std::endl;
+			std::cerr << "\t" << sGenerators[i]->getName() << "\n";
 		}
 
-		std::cerr << std::endl << "Notes:" << std::endl
-			<< "\tDirectories may be separated by spaces, commas or colons." << std::endl << std::endl;
+		std::cerr << "\n"
+		             "Notes:\n"
+		             "\tDirectories may be separated by spaces, commas or colons.\n";
 	}
 	else
 	{
