@@ -21,6 +21,7 @@ typedef bool (*ValidatingTreeOperation)(tree::Program *program);
 enum Generators
 {
 	GENERATOR_C,
+	GENERATOR_OBJ_C,
 
 	GENERATOR_MAX
 };
@@ -28,6 +29,7 @@ enum Generators
 static parser::Data sParserData; // Debug filenames are maintained by this so it must persist throughout the program's life, FIXME?
 
 static generator::c::Generator sCGenerator;
+static generator::objC::Generator sObjCGenerator;
 static generator::Generator *sGenerator;
 static generator::Generator *sGenerators[GENERATOR_MAX];
 
@@ -112,6 +114,7 @@ int main(int argc, char *argv[])
 	LOG("DEBUG OUTPUT IS ON!");
 
 	sGenerators[GENERATOR_C] = &sCGenerator;
+	sGenerators[GENERATOR_OBJ_C] = &sObjCGenerator;
 	sGenerator = sGenerators[0];
 
 	std::string baseOptions("D:dG:I:U:o:h");
