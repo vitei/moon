@@ -27,7 +27,7 @@ enum Generators
 
 static parser::Data sParserData; // Debug filenames are maintained by this so it must persist throughout the program's life, FIXME?
 
-static generator::C sCGenerator;
+static generator::c::Generator sCGenerator;
 static generator::Generator *sGenerator;
 static generator::Generator *sGenerators[GENERATOR_MAX];
 

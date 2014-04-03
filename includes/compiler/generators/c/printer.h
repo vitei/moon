@@ -1,18 +1,16 @@
-#ifndef COMPILER_GENERATORS_C_H
-#define COMPILER_GENERATORS_C_H
+#ifndef COMPILER_GENERATORS_C_PRINTER_H
+#define COMPILER_GENERATORS_C_PRINTER_H
 
 #include "common.h"
 
 #include <ostream>
 #include <string>
 #include "compiler/tree.h"
-#include "generator.h"
 
 namespace generator
 {
-	class C final : public Generator
+	namespace c
 	{
-	public:
 		class Printer final
 		{
 		public:
@@ -116,34 +114,7 @@ namespace generator
 			std::string mStructName;
 			unsigned int mDepth;
 		};
-
-		C() : mIsBoostrapped(false), mOutputFilename("a.c") {}
-
-		virtual void run(tree::Program *program);
-
-		virtual std::string getName()
-		{
-			return "C";
-		}
-
-		virtual std::string getOptions();
-		virtual void handleOption(char opt, char *optarg, int optopt);
-		virtual std::string optionsString();
-		virtual std::string optionsHelpString();
-
-	private:
-		virtual void generate(tree::Program *program);
-
-		void mangleNames(tree::Program *program);
-		void outputTypes(tree::Program *program);
-		void outputVariables(tree::Program *program);
-		void outputFunctions(tree::Program *program);
-		void outputNew(tree::Program *program);
-
-		Printer mPrinter;
-		bool mIsBoostrapped;
-		std::string mOutputFilename;
-	};
+	}
 }
 
 #endif
